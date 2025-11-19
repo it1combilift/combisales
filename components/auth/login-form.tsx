@@ -1,13 +1,18 @@
 import Link from "next/link";
+import type { z } from "zod";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { Label } from "../ui/label";
 import { motion } from "framer-motion";
 import { Spinner } from "../ui/spinner";
 import { Checkbox } from "../ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState, type SyntheticEvent } from "react";
+import { loginSchema } from "@/app/schemas/auth";
+import { AlertMessage } from "@/components/alert";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -16,28 +21,66 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
+  const [alert, setAlert] = useState<{
+    variant: "destructive" | "success";
+    title: string;
+    description?: string;
+  } | null>(null);
 
-  async function onSubmit(event: SyntheticEvent) {
-    event.preventDefault();
+  type LoginValues = z.infer<typeof loginSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      remember: false,
+    },
+    mode: "onTouched",
+  });
+
+  async function onSubmit(values: LoginValues) {
     setIsLoading(true);
 
     setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+
+      if (values.email?.toLowerCase().includes("fail")) {
+        setAlert({
+          variant: "destructive",
+          title: "Error de autenticación",
+          description:
+            "Correo o contraseña inválidos. Por favor verifica e intenta de nuevo.",
+        });
+      } else {
+        setAlert({
+          variant: "success",
+          title: "Bienvenido",
+          description: "Has iniciado sesión correctamente.",
+        });
+      }
+
+      console.log("Login values:", values);
+    }, 1200);
   }
 
   return (
     <section className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden border-none shadow-2xl ring-1 ring-black/5 dark:ring-white/10">
-        <CardContent className="grid p-0 md:grid-cols-2">
-          <div className="flex flex-col justify-center p-6 bg-background relative z-10">
+        <CardContent className="grid p-0 md:grid-cols-2 px-2">
+          <div className="flex flex-col justify-center px-2 sm:px-3 md:px-4 bg-background relative z-10">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
               className="w-full max-w-md mx-auto space-y-4 sm:space-y-6"
             >
-              <div className="flex flex-col items-center text-center space-y-1">
+              <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold tracking-tight">
                   Bienvenido
                 </h1>
@@ -46,7 +89,25 @@ export function LoginForm({
                 </p>
               </div>
 
-              <form onSubmit={onSubmit} className="space-y-6">
+              {alert && (
+                <div className="w-full max-w-md mx-auto">
+                  <AlertMessage
+                    variant={
+                      alert.variant === "destructive"
+                        ? "destructive"
+                        : "success"
+                    }
+                    title={alert.title}
+                    description={alert.description}
+                  />
+                </div>
+              )}
+
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-6"
+                noValidate
+              >
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label
@@ -61,10 +122,20 @@ export function LoginForm({
                         id="email"
                         type="email"
                         placeholder="usuario@combilift.com"
-                        required
-                        className="pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all"
+                        aria-invalid={Boolean(errors.email)}
+                        {...register("email")}
+                        disabled={isLoading}
+                        className={cn(
+                          "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all",
+                          errors.email && "border-destructive"
+                        )}
                       />
                     </div>
+                    {errors.email?.message && (
+                      <p role="alert" className="text-xs text-destructive mt-1">
+                        {String(errors.email?.message)}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -87,17 +158,36 @@ export function LoginForm({
                       <Input
                         id="password"
                         placeholder="••••••••"
-                        required
                         type="password"
-                        className="pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all"
+                        aria-invalid={Boolean(errors.password)}
+                        {...register("password")}
+                        disabled={isLoading}
+                        className={cn(
+                          "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all",
+                          errors.password && "border-destructive"
+                        )}
                       />
                     </div>
+                    {errors.password?.message && (
+                      <p role="alert" className="text-xs text-destructive mt-1">
+                        {String(errors.password?.message)}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="remember"
-                      className="border-muted-foreground/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    <Controller
+                      control={control}
+                      name="remember"
+                      render={({ field }) => (
+                        <Checkbox
+                          id="remember"
+                          checked={Boolean(field.value)}
+                          onCheckedChange={(v) => field.onChange(Boolean(v))}
+                          className="border-muted-foreground/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                          disabled={isLoading}
+                        />
+                      )}
                     />
                     <Label
                       htmlFor="remember"
@@ -140,6 +230,7 @@ export function LoginForm({
                   variant="outline"
                   type="button"
                   className="w-full h-11 font-medium border-muted-foreground/20 hover:bg-muted/50 hover:text-foreground transition-all cursor-pointer"
+                  disabled={isLoading}
                 >
                   <Image
                     src="/zoho-logo.svg"
@@ -154,7 +245,7 @@ export function LoginForm({
             </motion.div>
           </div>
 
-          <div className="relative hidden md:block bg-muted overflow-hidden border-l border-white/10">
+          <div className="relative hidden md:block bg-muted overflow-hidden border-l border-white/10 rounded-lg">
             <motion.div
               initial={{ scale: 1.1, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -179,10 +270,12 @@ export function LoginForm({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
                 >
-                  <div className="w-12 h-1 bg-white/80 mb-6 rounded-full" />
+                  <div className="w-12 h-1 bg-white/80 mb-2 rounded-full" />
+
                   <h2 className="text-3xl font-bold tracking-tight text-white drop-shadow-md">
                     CombiSales
                   </h2>
+
                   <p className="text-white/90 text-xs sm:text-sm font-light leading-relaxed drop-shadow-sm max-w-md text-pretty">
                     Gestión de ventas y clientes de Combilift
                   </p>
