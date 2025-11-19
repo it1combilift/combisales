@@ -1,7 +1,7 @@
-import { ChartAreaInteractive } from '@/components/chart-area-interactive'
-import { DataTable } from '@/components/data-table'
-import { SectionCards } from '@/components/section-cards'
-import data from "@/app/dashboard/data.json"
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import { DataTable } from "@/components/data-table";
+import { SectionCards } from "@/components/section-cards";
+import data from "@/app/(protected)/dashboard/data.json";
 
 export function DashboardSection() {
   return (
@@ -12,5 +12,5 @@ export function DashboardSection() {
       </div>
       <DataTable data={data} />
     </>
-  )
+  );
 }

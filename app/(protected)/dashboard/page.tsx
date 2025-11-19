@@ -6,12 +6,13 @@ import {
   SidebarInset,
   SidebarProvider,
 } from '@/components/ui/sidebar'
+
+import { TeamSection } from '@/components/dashboard-sections/team-section'
 import { DashboardProvider, useDashboard } from '@/components/dashboard-context'
+import { ProjectsSection } from '@/components/dashboard-sections/projects-section'
 import { DashboardSection } from '@/components/dashboard-sections/dashboard-section'
 import { LifecycleSection } from '@/components/dashboard-sections/lifecycle-section'
 import { AnalyticsSection } from '@/components/dashboard-sections/analytics-section'
-import { ProjectsSection } from '@/components/dashboard-sections/projects-section'
-import { TeamSection } from '@/components/dashboard-sections/team-section'
 
 function DashboardContent() {
   const { activeSection } = useDashboard()
