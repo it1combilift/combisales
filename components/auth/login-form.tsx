@@ -200,8 +200,10 @@ export function LoginForm({
 
                 <Button
                   type="submit"
-                  className="w-full h-11 text-base font-medium shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
                   disabled={isLoading}
+                  variant="default"
+                  size="lg"
+                  className="font-medium w-full"
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-2">
