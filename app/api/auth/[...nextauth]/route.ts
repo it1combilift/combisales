@@ -1,6 +1,19 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+
+// Lazy load Prisma and bcryptjs to avoid build-time issues
+const getPrisma = async () => {
+  const { prisma } = await import("@/lib/prisma");
+  return prisma;
+};
+
+const getCompare = async () => {
+  const { compare } = await import("bcryptjs");
+  return compare;
+};
 
 export const authOptions: NextAuthOptions = {
+  adapter: undefined,
   providers: [
     {
       id: "zoho",
@@ -18,15 +31,73 @@ export const authOptions: NextAuthOptions = {
       },
       idToken: true,
       checks: ["pkce", "state"],
-      profile(profile) {
+      async profile(profile) {
+        const prisma = await getPrisma();
+        let user = await prisma.user.findUnique({
+          where: { email: profile.email },
+        });
+
+        if (!user) {
+          user = await prisma.user.create({
+            data: {
+              email: profile.email,
+              name: profile.name,
+              image: profile.picture,
+              emailVerified: new Date(),
+            },
+          });
+        }
+
         return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role,
         };
       },
     },
+    // Provider de Credentials (email/password)
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email y contraseña son requeridos");
+        }
+
+        const prisma = await getPrisma();
+        const compare = await getCompare();
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user || !user.password) {
+          throw new Error("Credenciales inválidas");
+        }
+
+        const isPasswordValid = await compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          throw new Error("Credenciales inválidas");
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          role: user.role,
+        };
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, account, user }) {
@@ -39,7 +110,22 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.image = user.image;
+        token.role = user.role;
       }
+
+      // Fetch role from database if not present in token
+      if (!token.role && token.email) {
+        const prisma = await getPrisma();
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email as string },
+          select: { role: true },
+        });
+        if (dbUser) {
+          token.role = dbUser.role;
+        }
+      }
+
       return token;
     },
 
@@ -51,9 +137,11 @@ export const authOptions: NextAuthOptions = {
           id: token.id as string,
           email: token.email as string,
           name: token.name as string,
-          image: token.picture as string,
+          image: (token.picture as string) || (token.image as string),
+          role: token.role,
         };
       }
+
       return session;
     },
   },

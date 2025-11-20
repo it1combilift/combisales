@@ -23,6 +23,7 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
+  IconUserPlus,
 } from "@tabler/icons-react"
 
 
@@ -68,6 +69,11 @@ const data = {
       title: "Team",
       url: "/dashboard/team",
       icon: IconUsers,
+    },
+    {
+      title: "Users",
+      url: "/dashboard/users",
+      icon: IconUserPlus,
     },
   ],
   navClouds: [

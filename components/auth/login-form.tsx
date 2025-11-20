@@ -9,7 +9,7 @@ import { Spinner } from "../ui/spinner";
 import { Checkbox } from "../ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { loginSchema } from "@/app/schemas/auth";
+import { loginSchema } from "@/schemas/auth";
 import { AlertMessage } from "@/components/alert";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,27 +47,42 @@ export function LoginForm({
 
   async function onSubmit(values: LoginValues) {
     setIsLoading(true);
+    setAlert(null);
 
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const result = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
 
-      if (values.email?.toLowerCase().includes("fail")) {
+      if (result?.error) {
         setAlert({
           variant: "destructive",
           title: "Error de autenticación",
-          description:
-            "Correo o contraseña inválidos. Por favor verifica e intenta de nuevo.",
+          description: result.error === "CredentialsSignin"
+            ? "Correo o contraseña inválidos. Por favor verifica e intenta de nuevo."
+            : result.error,
         });
-      } else {
+        setIsLoading(false);
+      } else if (result?.ok) {
         setAlert({
           variant: "success",
           title: "Bienvenido",
           description: "Has iniciado sesión correctamente.",
         });
+        // Redirigir al dashboard
+        window.location.href = "/dashboard";
       }
-
-      console.log("Login values:", values);
-    }, 1200);
+    } catch (error) {
+      console.error("Error al autenticar:", error);
+      setAlert({
+        variant: "destructive",
+        title: "Error de autenticación",
+        description: "Ocurrió un error al intentar iniciar sesión.",
+      });
+      setIsLoading(false);
+    }
   }
 
   // Function to handle Zoho login
