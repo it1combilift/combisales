@@ -15,6 +15,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { signIn } from "next-auth/react";
 
 export function LoginForm({
   className,
@@ -67,6 +68,22 @@ export function LoginForm({
 
       console.log("Login values:", values);
     }, 1200);
+  }
+
+  // Function to handle Zoho login
+  async function handleZohoLogin() {
+    setIsLoading(true);
+    try {
+      await signIn("zoho", { callbackUrl: "/dashboard" });
+    } catch (error) {
+      console.error("Error al autenticar con Zoho:", error);
+      setAlert({
+        variant: "destructive",
+        title: "Error de autenticación",
+        description: "No se pudo conectar con Zoho. Intenta nuevamente.",
+      });
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -233,6 +250,7 @@ export function LoginForm({
                   type="button"
                   className="w-full h-11 font-medium border-muted-foreground/20 hover:bg-muted/50 hover:text-foreground transition-all cursor-pointer"
                   disabled={isLoading}
+                  onClick={handleZohoLogin}
                 >
                   <Image
                     src="/zoho-logo.svg"

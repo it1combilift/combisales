@@ -1,6 +1,13 @@
 "use client"
 
+import Link from "next/link"
+import Image from "next/image"
 import * as React from "react"
+import { NavMain } from '@/components/nav-main'
+import { NavUser } from '@/components/nav-user'
+import { NavDocuments } from '@/components/nav-documents'
+import { NavSecondary } from '@/components/nav-secondary'
+
 import {
   IconCamera,
   IconChartBar,
@@ -11,7 +18,6 @@ import {
   IconFileWord,
   IconFolder,
   IconHelp,
-  IconInnerShadowTop,
   IconListDetails,
   IconReport,
   IconSearch,
@@ -19,11 +25,7 @@ import {
   IconUsers,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from '@/components/nav-documents'
-import { NavMain } from '@/components/nav-main'
-import { NavSecondary } from '@/components/nav-secondary'
-import { NavUser } from '@/components/nav-user'
-import { ModeToggle } from '@/components/mode-toggle'
+
 import {
   Sidebar,
   SidebarContent,
@@ -34,6 +36,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
+
 const data = {
   user: {
     name: "shadcn",
@@ -43,27 +46,27 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: IconDashboard,
     },
     {
       title: "Lifecycle",
-      url: "#",
+      url: "/dashboard/lifecycle",
       icon: IconListDetails,
     },
     {
       title: "Analytics",
-      url: "#",
+      url: "/dashboard/analytics",
       icon: IconChartBar,
     },
     {
       title: "Projects",
-      url: "#",
+      url: "/dashboard/projects",
       icon: IconFolder,
     },
     {
       title: "Team",
-      url: "#",
+      url: "/dashboard/team",
       icon: IconUsers,
     },
   ],
@@ -151,7 +154,9 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ session, ...props }: React.ComponentProps<typeof Sidebar> & { session?: any }) {
+  const userData = session?.user || data.user
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -159,12 +164,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              size="lg"
+              className="data-[slot=sidebar-menu-button]:px-2.5 data-[slot=sidebar-menu-button]:py-3"
             >
-              <a href="#">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
-              </a>
+              <Link href="/dashboard" className="flex items-center gap-2 group">
+                <div className="flex items-center justify-center rounded-lg bg-white dark:bg-neutral-900 p-2 shadow-sm border border-border/50 group-hover:shadow-md transition-shadow">
+                  <Image
+                    src="/combilift-logo.webp"
+                    alt="Combilift"
+                    width={80}
+                    height={32}
+                    className="object-contain h-6 w-auto rounded-lg"
+                    priority
+                  />
+                </div>
+                <div className="grid flex-1 text-left leading-tight">
+                  <span className="truncate font-bold text-base tracking-tight">CombiSales</span>
+                  <span className="truncate text-[11px] text-muted-foreground font-medium">Combilift Company</span>
+                </div>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -175,10 +193,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <div className="p-2">
-          <ModeToggle />
-        </div>
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
   )
