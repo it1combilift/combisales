@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Label } from "../ui/label";
 import { motion } from "framer-motion";
 import { Spinner } from "../ui/spinner";
+import { signIn } from "next-auth/react";
 import { Checkbox } from "../ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,6 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { signIn } from "next-auth/react";
 
 export function LoginForm({
   className,
@@ -60,9 +60,10 @@ export function LoginForm({
         setAlert({
           variant: "destructive",
           title: "Error de autenticación",
-          description: result.error === "CredentialsSignin"
-            ? "Correo o contraseña inválidos. Por favor verifica e intenta de nuevo."
-            : result.error,
+          description:
+            result.error === "CredentialsSignin"
+              ? "Correo o contraseña inválidos. Por favor verifica e intenta de nuevo."
+              : result.error,
         });
         setIsLoading(false);
       } else if (result?.ok) {
