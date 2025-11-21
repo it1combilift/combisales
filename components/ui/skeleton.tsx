@@ -95,7 +95,7 @@ function TableContentSkeleton() {
 // Users Page Complete Skeleton
 function UsersPageSkeleton() {
   return (
-    <section className="flex flex-col gap-6 p-4 sm:p-6 mx-auto w-full">
+    <section className="flex flex-col gap-6 px-4 sm:px-6 mx-auto w-full">
       {/* Header Skeleton */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
@@ -105,17 +105,10 @@ function UsersPageSkeleton() {
         <Skeleton className="h-11 w-full sm:w-40" />
       </div>
 
-      {/* Stats Cards Skeleton */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatsCardSkeleton />
-        <StatsCardSkeleton />
-        <StatsCardSkeleton />
-      </div>
-
       {/* Main Card Skeleton */}
       <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
         {/* Card Header */}
-        <div className="p-6 pb-4">
+        <div className="pb-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-2">
               <Skeleton className="h-6 w-40" />
