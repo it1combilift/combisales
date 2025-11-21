@@ -8,9 +8,20 @@ import { useForm } from "react-hook-form";
 import { UserListItem } from "@/types/user";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { updateUserSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Mail, User, Shield, Lock } from "lucide-react";
+
+import {
+  Loader2,
+  Mail,
+  User,
+  Shield,
+  Lock,
+  Globe,
+  CheckCircle2,
+  Settings,
+} from "lucide-react";
 
 import {
   Form,
@@ -47,6 +58,8 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       name: user.name || "",
       email: user.email,
       role: user.role,
+      country: user.country || "",
+      isActive: user.isActive,
       password: "",
     },
   });
@@ -67,6 +80,12 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       }
       if (values.role && values.role !== user.role) {
         updateData.role = values.role;
+      }
+      if (values.country !== undefined && values.country !== user.country) {
+        updateData.country = values.country;
+      }
+      if (values.isActive !== undefined && values.isActive !== user.isActive) {
+        updateData.isActive = values.isActive;
       }
       if (values.password && values.password.trim().length > 0) {
         updateData.password = values.password;
@@ -108,136 +127,209 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {/* Name Field */}
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-semibold">
-                Nombre completo
-              </FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Ej: Juan Pérez García"
-                    className="pl-10 h-11 transition-all focus-visible:ring-2"
-                    disabled={isLoading}
-                    autoComplete="name"
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
-
-        {/* Email Field */}
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-semibold">
-                Correo electrónico
-              </FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <Input
-                    type="email"
-                    placeholder="usuario@combilift.es"
-                    className="pl-10 h-11 transition-all focus-visible:ring-2"
-                    disabled={isLoading}
-                    autoComplete="email"
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
-
-        {/* Password Field */}
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-semibold">
-                Nueva contraseña (opcional)
-              </FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <Input
-                    type="password"
-                    placeholder="Dejar vacío para no cambiar"
-                    className="pl-10 h-11 transition-all focus-visible:ring-2"
-                    disabled={isLoading}
-                    autoComplete="new-password"
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormDescription className="text-xs text-muted-foreground text-pretty">
-                Solo ingresa una contraseña si deseas cambiarla (mínimo 8
-                caracteres).
-              </FormDescription>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
-
-        {/* Role Field */}
-        <FormField
-          control={form.control}
-          name="role"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-semibold">
-                Rol del usuario
-              </FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                disabled={isLoading}
-              >
-                <FormControl>
-                  <SelectTrigger className="h-11 transition-all focus:ring-2">
-                    <div className="flex items-center gap-2">
-                      <Shield className="size-4 text-muted-foreground" />
-                      <SelectValue placeholder="Selecciona un rol" />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Personal Information Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b">
+            <User className="size-4 text-primary" />
+            <h3 className="text-sm font-semibold">Información Personal</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Name Field */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-semibold">
+                    Nombre completo
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Ej: Juan Pérez García"
+                        className="pl-10 h-11 transition-all focus-visible:ring-2"
+                        disabled={isLoading}
+                        autoComplete="name"
+                        {...field}
+                      />
                     </div>
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value={Role.ADMIN} className="cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <div className="size-2 rounded-full bg-blue-500" />
-                      <span className="font-medium">Administrador</span>
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            {/* Email Field */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-semibold">
+                    Correo electrónico
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <Input
+                        type="email"
+                        placeholder="usuario@combilift.es"
+                        className="pl-10 h-11 transition-all focus-visible:ring-2"
+                        disabled={isLoading}
+                        autoComplete="email"
+                        {...field}
+                      />
                     </div>
-                  </SelectItem>
-                  <SelectItem
-                    value={Role.SALESPERSON}
-                    className="cursor-pointer"
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Security Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b">
+            <Lock className="size-4 text-primary" />
+            <h3 className="text-sm font-semibold">Seguridad</h3>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            {/* Password Field */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-semibold">
+                    Nueva contraseña (opcional)
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <Input
+                        type="password"
+                        placeholder="Dejar vacío para no cambiar"
+                        className="pl-10 h-11 transition-all focus-visible:ring-2"
+                        disabled={isLoading}
+                        autoComplete="new-password"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Configuration Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b">
+            <Settings className="size-4 text-primary" />
+            <h3 className="text-sm font-semibold">Configuración</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Role Field */}
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-semibold">
+                    Rol del usuario
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={isLoading}
                   >
-                    <div className="flex items-center gap-2">
-                      <div className="size-2 rounded-full bg-emerald-500" />
-                      <span className="font-medium">Vendedor</span>
+                    <FormControl>
+                      <SelectTrigger className="h-11 transition-all focus:ring-2">
+                        <div className="flex items-center gap-2">
+                          <Shield className="size-4 text-muted-foreground" />
+                          <SelectValue placeholder="Selecciona un rol" />
+                        </div>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={Role.ADMIN} className="cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <div className="size-2 rounded-full bg-blue-500" />
+                          <span className="font-medium">Administrador</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem
+                        value={Role.SELLER}
+                        className="cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="size-2 rounded-full bg-emerald-500" />
+                          <span className="font-medium">Vendedor</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            {/* Country Field */}
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-semibold">
+                    País{" "}
+                    <span className="text-muted-foreground">(Opcional)</span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Ej: España"
+                        className="pl-10 h-11 transition-all focus-visible:ring-2"
+                        disabled={isLoading}
+                        autoComplete="country"
+                        {...field}
+                      />
                     </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription className="text-xs text-muted-foreground text-pretty">
-                Los administradores tienen acceso completo al sistema y pueden
-                gestionar usuarios.
-              </FormDescription>
-              <FormMessage className="text-xs" />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Status Section */}
+        {/* IsActive Field */}
+        <FormField
+          control={form.control}
+          name="isActive"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-sm font-semibold flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-muted-foreground" />
+                  Usuario activo
+                </FormLabel>
+                <FormDescription className="text-xs text-muted-foreground">
+                  Los usuarios inactivos no podrán iniciar sesión en el sistema.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={isLoading}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

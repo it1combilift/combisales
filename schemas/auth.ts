@@ -26,6 +26,12 @@ export const createUserSchema = z
     role: z.nativeEnum(Role, {
       errorMap: () => ({ message: "Rol inválido" }),
     }),
+    country: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val)),
+    isActive: z.boolean().default(true),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Las contraseñas no coinciden",
@@ -45,6 +51,12 @@ export const updateUserSchema = z.object({
       errorMap: () => ({ message: "Rol inválido" }),
     })
     .optional(),
+  country: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? undefined : val)),
+  isActive: z.boolean().optional(),
   password: z
     .string()
     .min(8, "La contraseña debe tener al menos 8 caracteres.")

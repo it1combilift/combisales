@@ -10,6 +10,8 @@ export interface User {
   password: string | null;
   image: string | null;
   role: Role;
+  country: string | null;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -26,6 +28,8 @@ export interface CreateUserInput {
   email: string;
   password: string;
   role: Role;
+  country?: string;
+  isActive?: boolean;
 }
 
 export interface UserListItem {
@@ -33,6 +37,8 @@ export interface UserListItem {
   name: string | null;
   email: string;
   role: Role;
+  country: string | null;
+  isActive: boolean;
   createdAt: Date;
   image: string | null;
 }

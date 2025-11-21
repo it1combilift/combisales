@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { UserListItem } from "@/types/user";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useEffect, useMemo } from "react";
@@ -19,7 +20,6 @@ import {
 
 import {
   UserPlus,
-
   Trash2,
   Search,
   RefreshCw,
@@ -31,6 +31,10 @@ import {
   ChevronRight,
   Trash,
   PencilLine,
+  CheckCircle2,
+  XCircle,
+  ShieldCheck,
+  Package,
 } from "lucide-react";
 
 import {
@@ -89,6 +93,7 @@ export default function UsersPage() {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [roleFilter, setRoleFilter] = useState<string>("todos");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
@@ -245,6 +250,11 @@ export default function UsersPage() {
   const filteredUsers = useMemo(() => {
     let filtered = users;
 
+    // Filter by role
+    if (roleFilter !== "todos") {
+      filtered = filtered.filter((user) => user.role === roleFilter);
+    }
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = users.filter(
@@ -277,7 +287,7 @@ export default function UsersPage() {
     });
 
     return filtered;
-  }, [users, searchQuery, sortField, sortOrder]);
+  }, [users, searchQuery, sortField, sortOrder, roleFilter]);
 
   const paginatedUsers = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -325,13 +335,12 @@ export default function UsersPage() {
   }
 
   return (
-    <section className="flex flex-col gap-6 px-4 sm:px-6 mx-auto w-full max-w-[1400px]">
+    <section className="flex flex-col gap-6 px-4 sm:px-6 mx-auto w-full">
       {/* Header Section */}
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          {/* Left: Title */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight wrap-break-word">
               Gestión de usuarios
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -347,13 +356,12 @@ export default function UsersPage() {
             </p>
           </div>
 
-          {/* Right: Actions */}
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-3 lg:min-w-[420px] lg:justify-end">
             {/* Search Input */}
-            <div className="relative w-full sm:w-auto sm:min-w-60">
+            <div className="relative w-full lg:w-64">
               <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Buscar por nombre o correo..."
+                placeholder="Buscar..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -364,39 +372,63 @@ export default function UsersPage() {
               />
             </div>
 
-            {/* Filter Dropdown */}
-            <Select defaultValue="todos">
-              <SelectTrigger className="h-10 w-full sm:w-[120px]">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="vendedor">Vendedor</SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Filter & Add User Row */}
+            <div className="flex items-center gap-2 justify-start lg:justify-end">
+              {/* Filter Dropdown */}
+              <Select
+                value={roleFilter}
+                onValueChange={(value) => {
+                  setRoleFilter(value);
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="h-10 w-fit min-w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">
+                    <div className="flex items-center gap-2">
+                      <Users className="size-4 text-muted-foreground" />
+                      <span>Todos</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="ADMIN">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="size-4 text-blue-600 dark:text-blue-400" />
+                      <span>Admin</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="SELLER">
+                    <div className="flex items-center gap-2">
+                      <Package className="size-4 text-green-600 dark:text-green-400" />
+                      <span>Seller</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
 
-            {/* Add User Button */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="default" className="gap-2 h-10 w-full sm:w-auto">
-                  <UserPlus className="size-4" />
-                  Agregar
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="text-left">
-                    Agregar usuario
-                  </DialogTitle>
-                  <DialogDescription className="text-left text-pretty text-muted-foreground">
-                    Completa el formulario para crear un nuevo usuario en la
-                    plataforma
-                  </DialogDescription>
-                </DialogHeader>
-                <CreateUserForm onSuccess={handleUserCreated} />
-              </DialogContent>
-            </Dialog>
+              {/* Add User Button */}
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="default" className="gap-2 h-10 shrink-0">
+                    <UserPlus className="size-4" />
+                    <span>Agregar</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="md:max-w-2xl max-h-[95vh] overflow-y-auto max-w-[95vw]">
+                  <DialogHeader>
+                    <DialogTitle className="text-left">
+                      Agregar usuario
+                    </DialogTitle>
+                    <DialogDescription className="text-left text-pretty text-muted-foreground">
+                      Completa el formulario para crear un nuevo usuario en la
+                      plataforma
+                    </DialogDescription>
+                  </DialogHeader>
+                  <CreateUserForm onSuccess={handleUserCreated} />
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
 
@@ -410,7 +442,7 @@ export default function UsersPage() {
               className="gap-2"
             >
               <Trash className="size-4" />
-              Eliminar seleccionados ({selectedUsers.size})
+              Eliminar ({selectedUsers.size})
             </Button>
           </div>
         )}
@@ -463,6 +495,12 @@ export default function UsersPage() {
                         <SortIcon field="role" />
                       </button>
                     </TableHead>
+                    <TableHead className="hidden lg:table-cell h-12 font-medium">
+                      País
+                    </TableHead>
+                    <TableHead className="hidden xl:table-cell h-12 font-medium">
+                      Estado
+                    </TableHead>
                     <TableHead className="text-right h-12 font-medium">
                       Acciones
                     </TableHead>
@@ -471,7 +509,7 @@ export default function UsersPage() {
                 <TableBody>
                   {paginatedUsers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-16">
+                      <TableCell colSpan={7} className="text-center py-16">
                         <div className="flex flex-col items-center justify-center">
                           <div className="size-20 rounded-full bg-muted/50 flex items-center justify-center mb-4">
                             <Users className="size-10 text-muted-foreground/50" />
@@ -531,6 +569,30 @@ export default function UsersPage() {
                         </TableCell>
                         <TableCell className="py-4">
                           {getRoleBadge(user.role)}
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell py-4">
+                          <span className="text-sm text-muted-foreground">
+                            {user.country || "No especificado"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="hidden xl:table-cell py-4">
+                          {user.isActive ? (
+                            <Badge
+                              variant="outline"
+                              className="gap-1.5 border-2 border-green-600 dark:border-green-400 text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950 font-medium px-2.5 py-1"
+                            >
+                              <CheckCircle2 className="size-3.5" />
+                              Activo
+                            </Badge>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="gap-1.5 border-2 border-red-600 dark:border-red-400 text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950 font-medium px-2.5 py-1"
+                            >
+                              <XCircle className="size-3.5" />
+                              Inactivo
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell className="py-4">
                           <div className="flex items-center justify-end gap-2">
@@ -624,8 +686,10 @@ export default function UsersPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground text-pretty">
+            <AlertDialogTitle className="text-left">
+              ¿Estás seguro?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground text-pretty text-left">
               Esta acción no se puede deshacer. Se eliminará permanentemente el
               usuario{" "}
               <span className="font-semibold">
@@ -653,10 +717,10 @@ export default function UsersPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
+            <AlertDialogTitle className="text-left">
               ¿Eliminar {selectedUsers.size} usuarios?
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-left text-pretty text-muted-foreground">
               Esta acción no se puede deshacer. Se eliminarán permanentemente{" "}
               <span className="font-semibold">{selectedUsers.size}</span>{" "}
               {selectedUsers.size === 1 ? "usuario" : "usuarios"} de la
@@ -677,7 +741,7 @@ export default function UsersPage() {
 
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="md:max-w-2xl max-h-[95vh] overflow-y-auto max-w-[95vw]">
           <DialogHeader>
             <DialogTitle className="text-left">Editar usuario</DialogTitle>
             <DialogDescription className="text-left text-pretty text-muted-foreground">

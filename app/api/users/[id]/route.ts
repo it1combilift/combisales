@@ -38,6 +38,8 @@ export async function GET(
         email: true,
         role: true,
         image: true,
+        country: true,
+        isActive: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -104,7 +106,8 @@ export async function PATCH(
       );
     }
 
-    const { id, name, email, role, password } = validation.data;
+    const { id, name, email, role, country, isActive, password } =
+      validation.data;
 
     const userToUpdate = await prisma.user.findUnique({
       where: { id },
@@ -134,6 +137,8 @@ export async function PATCH(
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;
     if (role !== undefined) updateData.role = role;
+    if (country !== undefined) updateData.country = country;
+    if (isActive !== undefined) updateData.isActive = isActive;
     if (password) {
       updateData.password = await hash(password, 12);
     }
@@ -147,6 +152,8 @@ export async function PATCH(
         email: true,
         role: true,
         image: true,
+        country: true,
+        isActive: true,
         createdAt: true,
         updatedAt: true,
       },

@@ -13,7 +13,7 @@ export function proxy(request: NextRequest) {
       request.cookies.get("__Secure-next-auth.session-token");
 
     if (!token) {
-      const loginUrl = new URL("/auth/login", request.url);
+      const loginUrl = new URL("/", request.url);
       return NextResponse.redirect(loginUrl);
     }
   }

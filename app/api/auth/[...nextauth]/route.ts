@@ -144,7 +144,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/auth/login",
+    signIn: "/",
     error: "/auth/error",
   },
   session: {
