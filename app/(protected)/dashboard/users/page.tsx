@@ -456,7 +456,7 @@ export default function UsersPage() {
           <div className="rounded-lg border overflow-hidden bg-card">
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-muted/50">
                   <TableRow className="hover:bg-transparent border-b">
                     <TableHead className="w-12 h-12">
                       <Checkbox
@@ -579,7 +579,7 @@ export default function UsersPage() {
                           {user.isActive ? (
                             <Badge
                               variant="outline"
-                              className="gap-1.5 border-2 border-green-600 dark:border-green-400 text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950 font-medium px-2.5 py-1"
+                              className="gap-1.5 border-2 border-green-600 dark:border-green-900/45 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/45 font-medium px-2.5 py-1"
                             >
                               <CheckCircle2 className="size-3.5" />
                               Activo
@@ -587,7 +587,7 @@ export default function UsersPage() {
                           ) : (
                             <Badge
                               variant="outline"
-                              className="gap-1.5 border-2 border-red-600 dark:border-red-400 text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950 font-medium px-2.5 py-1"
+                              className="gap-1.5 border-2 border-red-600 dark:border-red-900/45 text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/45 font-medium px-2.5 py-1"
                             >
                               <XCircle className="size-3.5" />
                               Inactivo

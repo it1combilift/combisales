@@ -23,20 +23,20 @@ export const getRoleBadge = (role: Role) => {
     return (
       <Badge
         variant="outline"
-        className="gap-1.5 border-2 border-blue-600 dark:border-blue-400 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950 font-medium px-2.5 py-1"
+        className="gap-1.5 border-2 border-blue-600 dark:border-blue-900/45 text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/45 font-medium px-2.5 py-1"
       >
         <ShieldCheckIcon className="size-3.5" />
-        ADMIN
+        Admin
       </Badge>
     );
   }
   return (
     <Badge
       variant="outline"
-      className="gap-1.5 border-2 border-green-600 dark:border-green-400 text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950 font-medium px-2.5 py-1"
+      className="gap-1.5 border-2 border-green-600 dark:border-green-900/45 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/45 font-medium px-2.5 py-1"
     >
       <PackageCheck className="size-3.5" />
-      VENDEDOR
+      Vendedor
     </Badge>
   );
 };
