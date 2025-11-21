@@ -19,8 +19,7 @@ import {
 
 import {
   UserPlus,
-  MoreHorizontal,
-  Pencil,
+
   Trash2,
   Search,
   RefreshCw,
@@ -31,6 +30,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Trash,
+  PencilLine,
 } from "lucide-react";
 
 import {
@@ -50,15 +50,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 import {
   AlertDialog,
@@ -334,59 +325,63 @@ export default function UsersPage() {
   }
 
   return (
-    <section className="flex flex-col gap-6 px-4 sm:px-6 mx-auto w-full">
+    <section className="flex flex-col gap-6 px-4 sm:px-6 mx-auto w-full max-w-[1400px]">
+      {/* Header Section */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="space-y-1 shrink-0">
-            <h1 className="text-xl  lg:text-2xl font-bold tracking-tight">
-              Usuarios
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          {/* Left: Title */}
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight">
+              Gestión de usuarios
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
-              Gestiona y administra los usuarios de la plataforma
+            <p className="text-sm text-muted-foreground">
+              Mostrando{" "}
+              <span className="font-medium text-foreground">
+                {filteredUsers.length}
+              </span>{" "}
+              de{" "}
+              <span className="font-medium text-foreground">
+                {filteredUsers.length}
+              </span>{" "}
+              usuarios
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
             {/* Search Input */}
-            <div className="relative w-full sm:w-48 md:w-64 lg:w-80">
+            <div className="relative w-full sm:w-auto sm:min-w-60">
               <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Buscar..."
+                placeholder="Buscar por nombre o correo..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="pl-10 h-10 shadow-sm w-full text-sm"
+                className="pl-10 h-10 w-full"
                 disabled={isRefreshing}
               />
             </div>
 
-            {/* Refresh Button */}
-            <Button
-              variant="outline"
-              size="default"
-              onClick={handleRefresh}
-              className="gap-2 shadow-sm h-10 px-3"
-              disabled={isRefreshing}
-              title="Actualizar lista de usuarios"
-            >
-              <RefreshCw
-                className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}
-              />
-              <span className="hidden lg:inline">Actualizar</span>
-            </Button>
+            {/* Filter Dropdown */}
+            <Select defaultValue="todos">
+              <SelectTrigger className="h-10 w-full sm:w-[120px]">
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="vendedor">Vendedor</SelectItem>
+              </SelectContent>
+            </Select>
 
             {/* Add User Button */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button
-                  size="default"
-                  className="gap-2 shadow-sm h-10 px-3"
-                  title="Agregar nuevo usuario"
-                >
+                <Button size="default" className="gap-2 h-10 w-full sm:w-auto">
                   <UserPlus className="size-4" />
-                  <span className="hidden md:inline">Agregar</span>
+                  Agregar
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
@@ -405,38 +400,33 @@ export default function UsersPage() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <p className="text-sm text-muted-foreground">
-            {filteredUsers.length}{" "}
-            {filteredUsers.length === 1
-              ? "usuario encontrado"
-              : "usuarios encontrados"}
-          </p>
-
-          {selectedUsers.size > 0 && (
+        {/* Delete Multiple Users Badge */}
+        {selectedUsers.size > 0 && (
+          <div className="flex items-center gap-2">
             <Button
               variant="destructive"
               size="sm"
               onClick={() => setIsDeleteMultipleDialogOpen(true)}
-              className="gap-2 w-full sm:w-auto"
+              className="gap-2"
             >
               <Trash className="size-4" />
               Eliminar seleccionados ({selectedUsers.size})
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+      {/* Table Section */}
       <div className="space-y-4 w-full">
-        {/* Table */}
         {isRefreshing ? (
           <TableContentSkeleton />
         ) : (
-          <div className="rounded-lg border border-border/50 overflow-hidden bg-card shadow-sm">
+          <div className="rounded-lg border overflow-hidden bg-card">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-muted/50 hover:bg-muted/50">
-                    <TableHead className="w-12">
+                  <TableRow className="hover:bg-transparent border-b">
+                    <TableHead className="w-12 h-12">
                       <Checkbox
                         checked={
                           selectedUsers.size === filteredUsers.length &&
@@ -446,43 +436,34 @@ export default function UsersPage() {
                         aria-label="Seleccionar todos"
                       />
                     </TableHead>
-                    <TableHead>
+                    <TableHead className="h-12">
                       <button
                         onClick={() => handleSort("name")}
-                        className="flex items-center gap-2 font-semibold hover:text-primary transition-colors"
+                        className="flex items-center gap-2 font-medium hover:text-foreground transition-colors"
                       >
                         Usuario
                         <SortIcon field="name" />
                       </button>
                     </TableHead>
-                    <TableHead className="hidden md:table-cell">
+                    <TableHead className="hidden md:table-cell h-12">
                       <button
-                        onClick={() => handleSort("email")}
-                        className="flex items-center gap-2 font-semibold hover:text-primary transition-colors"
+                        onClick={() => handleSort("createdAt")}
+                        className="flex items-center gap-2 font-medium hover:text-foreground transition-colors"
                       >
-                        Email
-                        <SortIcon field="email" />
+                        Fecha de creación
+                        <SortIcon field="createdAt" />
                       </button>
                     </TableHead>
-                    <TableHead className="text-center">
+                    <TableHead className="h-12">
                       <button
                         onClick={() => handleSort("role")}
-                        className="flex items-center gap-2 font-semibold hover:text-primary transition-colors mx-auto"
+                        className="flex items-center gap-2 font-medium hover:text-foreground transition-colors"
                       >
                         Rol
                         <SortIcon field="role" />
                       </button>
                     </TableHead>
-                    <TableHead className="hidden lg:table-cell text-center">
-                      <button
-                        onClick={() => handleSort("createdAt")}
-                        className="flex items-center gap-2 font-semibold hover:text-primary transition-colors mx-auto"
-                      >
-                        Fecha de registro
-                        <SortIcon field="createdAt" />
-                      </button>
-                    </TableHead>
-                    <TableHead className="text-right font-semibold">
+                    <TableHead className="text-right h-12 font-medium">
                       Acciones
                     </TableHead>
                   </TableRow>
@@ -490,12 +471,12 @@ export default function UsersPage() {
                 <TableBody>
                   {paginatedUsers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-16">
+                      <TableCell colSpan={5} className="text-center py-16">
                         <div className="flex flex-col items-center justify-center">
-                          <div className="size-20 rounded-full bg-muted/50 flex items-center justify-center mb-4 ring-8 ring-muted/20">
+                          <div className="size-20 rounded-full bg-muted/50 flex items-center justify-center mb-4">
                             <Users className="size-10 text-muted-foreground/50" />
                           </div>
-                          <p className="text-muted-foreground font-medium mb-2 text-lg">
+                          <p className="text-muted-foreground font-medium mb-2">
                             {searchQuery
                               ? "No se encontraron usuarios"
                               : "No hay usuarios registrados"}
@@ -512,11 +493,11 @@ export default function UsersPage() {
                     paginatedUsers.map((user) => (
                       <TableRow
                         key={user.id}
-                        className="hover:bg-muted/30 transition-colors group"
+                        className="hover:bg-muted/50 transition-colors"
                         onMouseEnter={() => setHoveredRow(user.id)}
                         onMouseLeave={() => setHoveredRow(null)}
                       >
-                        <TableCell>
+                        <TableCell className="py-4">
                           <Checkbox
                             checked={selectedUsers.has(user.id)}
                             onCheckedChange={() => toggleSelectUser(user.id)}
@@ -525,74 +506,52 @@ export default function UsersPage() {
                             }`}
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-4">
                           <div className="flex items-center gap-3">
-                            <Avatar className="size-10 border-2 border-background shadow-sm ring-2 ring-primary/10">
+                            <Avatar className="size-10">
                               <AvatarImage src={user.image || undefined} />
                               <AvatarFallback className="text-sm font-semibold bg-linear-to-br from-primary/20 to-primary/5">
                                 {getInitials(user.name)}
                               </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
-                              <p className="font-medium truncate">
+                              <p className="font-medium text-sm">
                                 {user.name || "Sin nombre"}
                               </p>
-                              <p className="text-sm text-muted-foreground truncate md:hidden">
+                              <p className="text-xs text-muted-foreground truncate">
                                 {user.email}
                               </p>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          <span className="text-sm text-muted-foreground">
-                            {user.email}
+                        <TableCell className="hidden md:table-cell py-4">
+                          <span className="text-sm">
+                            {formatDate(user.createdAt)}
                           </span>
                         </TableCell>
-                        <TableCell className="text-center">
+                        <TableCell className="py-4">
                           {getRoleBadge(user.role)}
                         </TableCell>
-                        <TableCell className="hidden lg:table-cell text-muted-foreground text-sm text-center">
-                          {formatDate(user.createdAt)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div
-                            className={`transition-opacity ${
-                              hoveredRow === user.id ? "opacity-100" : ""
-                            }`}
-                          >
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="size-8 hover:bg-muted"
-                                >
-                                  <MoreHorizontal className="size-4" />
-                                  <span className="sr-only">Abrir menú</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="gap-2 cursor-pointer"
-                                  onClick={() => openEditDialog(user)}
-                                  title="Editar usuario"
-                                >
-                                  <Pencil className="size-4" />
-                                  Editar
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  title="Eliminar usuario"
-                                  className="gap-2 text-destructive focus:text-destructive hover:bg-destructive/10 cursor-pointer"
-                                  onClick={() => openDeleteDialog(user)}
-                                >
-                                  <Trash2 className="size-4 text-destructive" />
-                                  Eliminar
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                        <TableCell className="py-4">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-8 hover:bg-muted"
+                              onClick={() => openEditDialog(user)}
+                              title="Editar usuario"
+                            >
+                              <PencilLine className="size-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-8 hover:bg-destructive/10 hover:text-destructive"
+                              onClick={() => openDeleteDialog(user)}
+                              title="Eliminar usuario"
+                            >
+                              <Trash2 className="size-4" />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
