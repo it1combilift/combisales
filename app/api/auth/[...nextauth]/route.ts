@@ -1,7 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-// Lazy load Prisma and bcryptjs to avoid build-time issues
 const getPrisma = async () => {
   const { prisma } = await import("@/lib/prisma");
   return prisma;
@@ -114,7 +113,6 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
       }
 
-      // Fetch role from database if not present in token
       if (!token.role && token.email) {
         const prisma = await getPrisma();
         const dbUser = await prisma.user.findUnique({

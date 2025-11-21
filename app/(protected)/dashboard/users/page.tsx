@@ -1,10 +1,12 @@
 "use client";
 
+import { toast } from "sonner";
 import { UserListItem } from "@/types/user";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useEffect, useMemo } from "react";
+import { EditUserForm } from "@/components/edit-user-form";
 import { CreateUserForm } from "@/components/create-user-form";
 import { formatDate, getInitials, getRoleBadge } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,7 +19,6 @@ import {
 import {
   UserPlus,
   MoreHorizontal,
-  Eye,
   Pencil,
   Trash2,
   Search,
@@ -85,10 +86,13 @@ export default function UsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserListItem | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleteMultipleDialogOpen, setIsDeleteMultipleDialogOpen] =
+    useState(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
@@ -133,20 +137,84 @@ export default function UsersPage() {
     fetchUsers(true);
   };
 
+  const handleUserUpdated = () => {
+    setIsEditDialogOpen(false);
+    setSelectedUser(null);
+    fetchUsers(true);
+  };
+
   const handleRefresh = () => {
     fetchUsers(true);
   };
 
-  const handleDeleteUser = async () => {
+  const handleDeleteSelectedUser = async () => {
     if (!selectedUser) return;
-    console.log("Deleting user:", selectedUser.id);
-    setIsDeleteDialogOpen(false);
-    setSelectedUser(null);
+
+    try {
+      const response = await fetch(`/api/users/${selectedUser.id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al eliminar usuario");
+      }
+
+      toast.success("Usuario eliminado exitosamente");
+      setIsDeleteDialogOpen(false);
+      setSelectedUser(null);
+      fetchUsers(true);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Hubo un problema al eliminar el usuario."
+      );
+    }
   };
 
-  const handleDeleteSelected = async () => {
-    console.log("Deleting users:", Array.from(selectedUsers));
-    setSelectedUsers(new Set());
+  const handleDeleteSelectedUsers = async () => {
+    if (selectedUsers.size === 0) return;
+
+    try {
+      const response = await fetch("/api/users/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ids: Array.from(selectedUsers),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al eliminar usuarios");
+      }
+
+      toast.success(data.message);
+      setSelectedUsers(new Set());
+      setIsDeleteMultipleDialogOpen(false);
+      fetchUsers(true);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Hubo un problema al eliminar los usuarios."
+      );
+    }
+  };
+
+  const openEditDialog = (user: UserListItem) => {
+    setSelectedUser(user);
+    setIsEditDialogOpen(true);
+  };
+
+  const openDeleteDialog = (user: UserListItem) => {
+    setSelectedUser(user);
+    setIsDeleteDialogOpen(true);
   };
 
   const handleSort = (field: SortField) => {
@@ -343,7 +411,7 @@ export default function UsersPage() {
             <Button
               variant="destructive"
               size="sm"
-              onClick={handleDeleteSelected}
+              onClick={() => setIsDeleteMultipleDialogOpen(true)}
               className="gap-2 w-full sm:w-auto"
             >
               <Trash className="size-4" />
@@ -504,28 +572,19 @@ export default function UsersPage() {
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                   className="gap-2 cursor-pointer"
-                                  title="Ver detalles"
-                                >
-                                  <Eye className="size-4" />
-                                  Ver detalles
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="gap-2 cursor-pointer"
+                                  onClick={() => openEditDialog(user)}
                                   title="Editar usuario"
                                 >
                                   <Pencil className="size-4" />
-                                  Editar usuario
+                                  Editar
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                   title="Eliminar usuario"
                                   className="gap-2 text-destructive focus:text-destructive hover:bg-destructive/10 cursor-pointer"
-                                  onClick={() => {
-                                    setSelectedUser(user);
-                                    setIsDeleteDialogOpen(true);
-                                  }}
+                                  onClick={() => openDeleteDialog(user)}
                                 >
-                                  <Trash2 className="size-4" />
+                                  <Trash2 className="size-4 text-destructive" />
                                   Eliminar
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -603,7 +662,7 @@ export default function UsersPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-muted-foreground text-pretty">
               Esta acción no se puede deshacer. Se eliminará permanentemente el
               usuario{" "}
               <span className="font-semibold">
@@ -615,14 +674,61 @@ export default function UsersPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDeleteUser}
-              className="bg-destructive hover:bg-destructive/90"
+              onClick={handleDeleteSelectedUser}
+              className="bg-destructive hover:bg-destructive/90 text-white shadow-none hover:shadow-none"
             >
-              Eliminar usuario
+              Confirmar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Delete Multiple Users Dialog */}
+      <AlertDialog
+        open={isDeleteMultipleDialogOpen}
+        onOpenChange={setIsDeleteMultipleDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              ¿Eliminar {selectedUsers.size} usuarios?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminarán permanentemente{" "}
+              <span className="font-semibold">{selectedUsers.size}</span>{" "}
+              {selectedUsers.size === 1 ? "usuario" : "usuarios"} de la
+              plataforma.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteSelectedUsers}
+              className="bg-destructive hover:bg-destructive/90 text-white shadow-none hover:shadow-none"
+            >
+              Confirmar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit User Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-left">Editar usuario</DialogTitle>
+            <DialogDescription className="text-left text-pretty text-muted-foreground">
+              Actualiza la información del usuario{" "}
+              <span className="font-semibold">
+                {selectedUser?.name || selectedUser?.email}
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          {selectedUser && (
+            <EditUserForm user={selectedUser} onSuccess={handleUserUpdated} />
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

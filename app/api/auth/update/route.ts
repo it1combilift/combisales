@@ -2,7 +2,7 @@ import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { updateSchema } from "@/schemas/auth";
+import { updateCurrentUserSchema } from "@/schemas/auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function PATCH(request: Request) {
@@ -14,7 +14,7 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const validation = updateSchema.safeParse(body);
+    const validation = updateCurrentUserSchema.safeParse(body);
 
     if (!validation.success) {
       return NextResponse.json(

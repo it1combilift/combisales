@@ -4,16 +4,15 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
+// Get list of users (Admin only)
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    // Check authentication
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    // Check if user is ADMIN
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: { role: true },

@@ -6,12 +6,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push('@prisma/client');
-    }
-    return config;
-  },
+  // Empty turbopack config to silence the warning
+  turbopack: {},
 }
 
 export default nextConfig

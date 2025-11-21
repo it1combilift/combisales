@@ -32,8 +32,41 @@ export const createUserSchema = z
     path: ["confirmPassword"],
   });
 
-// Update schema
-export const updateSchema = z.object({
+// Update user schema (Admin only)
+export const updateUserSchema = z.object({
+  id: z.string().cuid("ID de usuario inválido"),
+  name: z
+    .string()
+    .min(2, "El nombre debe tener al menos 2 caracteres")
+    .optional(),
+  email: z.string().email("Por favor ingresa un correo válido.").optional(),
+  role: z
+    .nativeEnum(Role, {
+      errorMap: () => ({ message: "Rol inválido" }),
+    })
+    .optional(),
+  password: z
+    .string()
+    .min(8, "La contraseña debe tener al menos 8 caracteres.")
+    .optional()
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? undefined : val)),
+});
+
+// Delete user schema
+export const deleteUserSchema = z.object({
+  id: z.string().cuid("ID de usuario inválido"),
+});
+
+// Delete multiple users schema
+export const deleteMultipleUsersSchema = z.object({
+  ids: z
+    .array(z.string().cuid("ID de usuario inválido"))
+    .min(1, "Debe proporcionar al menos un ID"),
+});
+
+// Update current user schema
+export const updateCurrentUserSchema = z.object({
   name: z.string().min(2).optional(),
   image: z.string().url().optional(),
   currentPassword: z.string().optional(),

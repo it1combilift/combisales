@@ -1,15 +1,15 @@
 "use client";
 
 import { z } from "zod";
-import { toast } from "sonner";
 import { useState } from "react";
 import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createUserSchema } from "@/schemas/auth";
+import { updateUserSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Mail, User, Shield } from "lucide-react";
+import { Loader2, Mail, User, Shield, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -29,51 +29,81 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface CreateUserFormProps {
+interface UserData {
+  id: string;
+  name: string | null;
+  email: string;
+  role: Role;
+}
+
+interface EditUserFormProps {
+  user: UserData;
   onSuccess?: () => void;
   className?: string;
 }
 
-export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
+const formSchema = updateUserSchema.omit({ id: true });
+
+export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof createUserSchema>>({
-    resolver: zodResolver(createUserSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      name: user.name || "",
+      email: user.email,
+      role: user.role,
       password: "",
-      confirmPassword: "",
-      role: Role.SALESPERSON,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof createUserSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/users/create", {
-        method: "POST",
+      const updateData: Record<string, any> = {};
+
+      if (values.name && values.name !== user.name) {
+        updateData.name = values.name;
+      }
+      if (values.email && values.email !== user.email) {
+        updateData.email = values.email;
+      }
+      if (values.role && values.role !== user.role) {
+        updateData.role = values.role;
+      }
+      // Solo incluir password si realmente se proporcionó un valor
+      if (values.password && values.password.trim().length > 0) {
+        updateData.password = values.password;
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        toast.info("No hay cambios para actualizar");
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await fetch(`/api/users/${user.id}`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(updateData),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Error al crear usuario");
+        throw new Error(data.error || "Error al actualizar usuario");
       }
 
-      toast.success("Usuario creado exitosamente");
+      toast.success("Usuario actualizado exitosamente");
 
-      form.reset();
       onSuccess?.();
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Hubo un problema al crear el usuario. Por favor, intenta nuevamente."
+          : "Hubo un problema al actualizar el usuario. Por favor, intenta nuevamente."
       );
     } finally {
       setIsLoading(false);
@@ -143,14 +173,15 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-sm font-semibold">
-                Contraseña
+                Nueva contraseña (opcional)
               </FormLabel>
               <FormControl>
                 <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                   <Input
                     type="password"
-                    placeholder="**********"
-                    className="h-11 transition-all focus-visible:ring-2"
+                    placeholder="Dejar vacío para no cambiar"
+                    className="pl-10 h-11 transition-all focus-visible:ring-2"
                     disabled={isLoading}
                     autoComplete="new-password"
                     {...field}
@@ -158,34 +189,9 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 </div>
               </FormControl>
               <FormDescription className="text-xs text-muted-foreground text-pretty">
-                Usa una combinación segura de letras, números y símbolos.
+                Solo ingresa una contraseña si deseas cambiarla (mínimo 8
+                caracteres).
               </FormDescription>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
-
-        {/* Confirm Password Field */}
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-semibold">
-                Confirmar contraseña
-              </FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input
-                    type="password"
-                    placeholder="**********"
-                    className="h-11 transition-all focus-visible:ring-2"
-                    disabled={isLoading}
-                    autoComplete="new-password"
-                    {...field}
-                  />
-                </div>
-              </FormControl>
               <FormMessage className="text-xs" />
             </FormItem>
           )}
@@ -243,15 +249,6 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
         {/* Action Buttons */}
         <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t">
           <Button
-            type="button"
-            variant="outline"
-            onClick={() => form.reset()}
-            disabled={isLoading}
-            className="w-full sm:w-auto h-11"
-          >
-            Limpiar
-          </Button>
-          <Button
             type="submit"
             disabled={isLoading}
             variant="default"
@@ -262,7 +259,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 <Loader2 className="size-4 animate-spin" />
               </>
             ) : (
-              <>Confirmar</>
+              <>Guardar</>
             )}
           </Button>
         </div>

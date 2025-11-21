@@ -36,3 +36,8 @@ export interface UserListItem {
   createdAt: Date;
   image: string | null;
 }
+
+export interface UpdateUserInput
+  extends Partial<
+    Omit<User, "id" | "createdAt" | "updatedAt" | "emailVerified">
+  > {}

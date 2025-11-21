@@ -1,11 +1,11 @@
-import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { createUserSchema } from "@/schemas/auth";
+import { deleteMultipleUsersSchema } from "@/schemas/auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
+// Delete multiple users (Admin only)
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,19 +16,19 @@ export async function POST(request: Request) {
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true },
+      select: { role: true, id: true },
     });
 
     if (!currentUser || currentUser.role !== Role.ADMIN) {
       return NextResponse.json(
-        { error: "No tienes permisos para crear usuarios" },
+        { error: "No tienes permisos para eliminar usuarios" },
         { status: 403 }
       );
     }
 
     const body = await request.json();
+    const validation = deleteMultipleUsersSchema.safeParse(body);
 
-    const validation = createUserSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(
         {
@@ -39,49 +39,32 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, email, password, role } = validation.data;
+    const { ids } = validation.data;
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
+    if (ids.includes(currentUser.id)) {
       return NextResponse.json(
-        { error: "El email ya está registrado" },
-        { status: 409 }
+        { error: "No puedes eliminarte a ti mismo" },
+        { status: 400 }
       );
     }
 
-    const hashedPassword = await hash(password, 12);
-
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        role,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
+    const result = await prisma.user.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
       },
     });
 
-    return NextResponse.json(
-      {
-        message: "Usuario creado exitosamente",
-        user,
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({
+      message: `${result.count} usuario(s) eliminado(s) exitosamente`,
+      count: result.count,
+    });
   } catch (error) {
-    console.error("Error al crear usuario:", error);
+    console.error("Error al eliminar usuarios:", error);
     return NextResponse.json(
       {
-        error: "Error al crear el usuario",
+        error: "Error al eliminar los usuarios",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
