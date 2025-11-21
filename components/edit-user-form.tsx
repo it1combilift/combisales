@@ -1,15 +1,16 @@
 "use client";
 
 import { z } from "zod";
+import { toast } from "sonner";
 import { useState } from "react";
 import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
+import { UserListItem } from "@/types/user";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateUserSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Mail, User, Shield, Lock } from "lucide-react";
-import { toast } from "sonner";
 
 import {
   Form,
@@ -29,15 +30,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface UserData {
-  id: string;
-  name: string | null;
-  email: string;
-  role: Role;
-}
-
 interface EditUserFormProps {
-  user: UserData;
+  user: UserListItem;
   onSuccess?: () => void;
   className?: string;
 }
@@ -60,7 +54,10 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      const updateData: Record<string, any> = {};
+      const updateData: Record<
+        string,
+        z.infer<typeof formSchema>[keyof z.infer<typeof formSchema>]
+      > = {};
 
       if (values.name && values.name !== user.name) {
         updateData.name = values.name;
@@ -71,7 +68,6 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       if (values.role && values.role !== user.role) {
         updateData.role = values.role;
       }
-      // Solo incluir password si realmente se proporcionó un valor
       if (values.password && values.password.trim().length > 0) {
         updateData.password = values.password;
       }
@@ -250,7 +246,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t">
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !form.formState.isDirty}
             variant="default"
             className="w-full sm:w-auto h-11 gap-2 shadow-sm"
           >

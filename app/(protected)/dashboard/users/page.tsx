@@ -2,6 +2,7 @@
 
 import { toast } from "sonner";
 import { UserListItem } from "@/types/user";
+import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -82,6 +83,7 @@ type SortField = "name" | "email" | "role" | "createdAt";
 type SortOrder = "asc" | "desc";
 
 export default function UsersPage() {
+  const { data: session } = useSession();
   const [users, setUsers] = useState<UserListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -115,7 +117,11 @@ export default function UsersPage() {
         throw new Error(data.error || "Error al cargar usuarios");
       }
 
-      setUsers(data.users);
+      const filteredUsers = data.users.filter(
+        (user: UserListItem) => user.email !== session?.user?.email
+      );
+
+      setUsers(filteredUsers);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -551,9 +557,7 @@ export default function UsersPage() {
                         <TableCell className="text-right">
                           <div
                             className={`transition-opacity ${
-                              hoveredRow === user.id
-                                ? "opacity-100"
-                                : "opacity-0 group-hover:opacity-100"
+                              hoveredRow === user.id ? "opacity-100" : ""
                             }`}
                           >
                             <DropdownMenu>
