@@ -1,32 +1,30 @@
 import Link from "next/link";
 import type { z } from "zod";
+import { toast } from "sonner";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { Label } from "../ui/label";
 import { motion } from "framer-motion";
 import { Spinner } from "../ui/spinner";
 import { signIn } from "next-auth/react";
 import { Checkbox } from "../ui/checkbox";
+import { useState, useEffect } from "react";
+import { loginSchema } from "@/schemas/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { loginSchema } from "@/schemas/auth";
-import { AlertMessage } from "@/components/alert";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const [alert, setAlert] = useState<{
-    variant: "destructive" | "success";
-    title: string;
-    description?: string;
-  } | null>(null);
 
   type LoginValues = z.infer<typeof loginSchema>;
 
@@ -45,9 +43,18 @@ export function LoginForm({
     mode: "onTouched",
   });
 
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error === "AccountBlocked") {
+      toast.error("Tu cuenta ha sido bloqueada. Contacta al administrador.");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("error");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [searchParams]);
+
   async function onSubmit(values: LoginValues) {
     setIsLoading(true);
-    setAlert(null);
 
     try {
       const result = await signIn("credentials", {
@@ -57,31 +64,24 @@ export function LoginForm({
       });
 
       if (result?.error) {
-        setAlert({
-          variant: "destructive",
-          title: "Error de autenticación",
-          description:
-            result.error === "CredentialsSignin"
-              ? "Correo o contraseña inválidos. Por favor verifica e intenta de nuevo."
-              : result.error,
-        });
+        if (result.error === "ACCOUNT_BLOCKED") {
+          toast.error(
+            "Acceso denegado, tu cuenta ha sido bloqueada. Contacta al administrador.",
+            {
+              duration: 6000,
+            }
+          );
+        } else {
+          toast.error("Correo o contraseña incorrectos.");
+        }
         setIsLoading(false);
       } else if (result?.ok) {
-        setAlert({
-          variant: "success",
-          title: "Bienvenido",
-          description: "Has iniciado sesión correctamente.",
-        });
-        // Redirigir al dashboard
-        window.location.href = "/dashboard";
+        toast.success("Has iniciado sesión correctamente.");
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error("Error al autenticar:", error);
-      setAlert({
-        variant: "destructive",
-        title: "Error de autenticación",
-        description: "Ocurrió un error al intentar iniciar sesión.",
-      });
+      toast.error("Error de autenticación. Intenta nuevamente.");
       setIsLoading(false);
     }
   }
@@ -93,11 +93,7 @@ export function LoginForm({
       await signIn("zoho", { callbackUrl: "/dashboard" });
     } catch (error) {
       console.error("Error al autenticar con Zoho:", error);
-      setAlert({
-        variant: "destructive",
-        title: "Error de autenticación",
-        description: "No se pudo conectar con Zoho. Intenta nuevamente.",
-      });
+      toast.error("Error de autenticación con Zoho. Intenta nuevamente.");
       setIsLoading(false);
     }
   }
@@ -121,20 +117,6 @@ export function LoginForm({
                   Ingresa tus credenciales para acceder
                 </p>
               </div>
-
-              {alert && (
-                <div className="w-full max-w-md mx-auto">
-                  <AlertMessage
-                    variant={
-                      alert.variant === "destructive"
-                        ? "destructive"
-                        : "success"
-                    }
-                    title={alert.title}
-                    description={alert.description}
-                  />
-                </div>
-              )}
 
               <form
                 onSubmit={handleSubmit(onSubmit)}

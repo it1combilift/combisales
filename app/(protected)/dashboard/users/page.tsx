@@ -96,7 +96,6 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState<string>("todos");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
   const fetchUsers = async (isRefresh = false) => {
     try {
@@ -499,7 +498,7 @@ export default function UsersPage() {
                       País
                     </TableHead>
                     <TableHead className="hidden xl:table-cell h-12 font-medium">
-                      Estado
+                      Cuenta
                     </TableHead>
                     <TableHead className="text-right h-12 font-medium">
                       Acciones
@@ -532,8 +531,6 @@ export default function UsersPage() {
                       <TableRow
                         key={user.id}
                         className="hover:bg-muted/50 transition-colors"
-                        onMouseEnter={() => setHoveredRow(user.id)}
-                        onMouseLeave={() => setHoveredRow(null)}
                       >
                         <TableCell className="py-4">
                           <Checkbox
@@ -582,7 +579,7 @@ export default function UsersPage() {
                               className="gap-1.5 border-2 border-green-600 dark:border-green-900/45 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/45 font-medium px-2.5 py-1"
                             >
                               <CheckCircle2 className="size-3.5" />
-                              Activo
+                              Activa
                             </Badge>
                           ) : (
                             <Badge
@@ -590,7 +587,7 @@ export default function UsersPage() {
                               className="gap-1.5 border-2 border-red-600 dark:border-red-900/45 text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/45 font-medium px-2.5 py-1"
                             >
                               <XCircle className="size-3.5" />
-                              Inactivo
+                              Inactiva
                             </Badge>
                           )}
                         </TableCell>

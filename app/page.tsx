@@ -1,6 +1,8 @@
 "use client";
 
+import { Suspense } from "react";
 import { motion } from "framer-motion";
+import { Spinner } from "@/components/ui/spinner";
 import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
@@ -28,7 +30,9 @@ export default function LoginPage() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-sm md:max-w-4xl relative z-10"
       >
-        <LoginForm />
+        <Suspense fallback={<Spinner className="size-8 mx-auto" />}>
+          <LoginForm />
+        </Suspense>
       </motion.div>
     </div>
   );

@@ -47,15 +47,21 @@ export const authOptions: NextAuthOptions = {
           });
         }
 
+        if (!user.isActive) {
+          throw new Error("ACCOUNT_BLOCKED");
+        }
+
         return {
           id: user.id,
           name: user.name,
           email: user.email,
           image: user.image,
           role: user.role,
+          isActive: user.isActive,
         };
       },
     },
+
     // Provider de Credentials (email/password)
     CredentialsProvider({
       name: "Credentials",
@@ -88,12 +94,17 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Credenciales inválidas");
         }
 
+        if (!user.isActive) {
+          throw new Error("ACCOUNT_BLOCKED");
+        }
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           image: user.image,
           role: user.role,
+          isActive: user.isActive,
         };
       },
     }),
@@ -111,16 +122,18 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.image = user.image;
         token.role = user.role;
+        token.isActive = user.isActive;
       }
 
-      if (!token.role && token.email) {
+      if (token.email && (!token.role || token.isActive === undefined)) {
         const prisma = await getPrisma();
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email as string },
-          select: { role: true },
+          select: { role: true, isActive: true },
         });
         if (dbUser) {
           token.role = dbUser.role;
+          token.isActive = dbUser.isActive;
         }
       }
 
@@ -129,6 +142,20 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }) {
       if (token) {
+        if (token.email) {
+          const prisma = await getPrisma();
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email as string },
+            select: { isActive: true },
+          });
+
+          if (!dbUser || !dbUser.isActive) {
+            throw new Error(
+              "Tu cuenta ha sido bloqueada. Contacta al administrador."
+            );
+          }
+        }
+
         session.accessToken = token.accessToken as string;
         session.apiDomain = token.apiDomain as string;
         session.user = {
@@ -137,6 +164,7 @@ export const authOptions: NextAuthOptions = {
           name: token.name as string,
           image: (token.picture as string) || (token.image as string),
           role: token.role,
+          isActive: token.isActive as boolean,
         };
       }
 

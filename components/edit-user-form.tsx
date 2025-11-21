@@ -317,10 +317,10 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
               <div className="space-y-0.5">
                 <FormLabel className="text-sm font-semibold flex items-center gap-2">
                   <CheckCircle2 className="size-4 text-muted-foreground" />
-                  Usuario activo
+                  Cuenta
                 </FormLabel>
                 <FormDescription className="text-xs text-muted-foreground">
-                  Los usuarios inactivos no podrán iniciar sesión en el sistema.
+                  Los usuarios con cuenta inactiva no podrán acceder al sistema.
                 </FormDescription>
               </div>
               <FormControl>
