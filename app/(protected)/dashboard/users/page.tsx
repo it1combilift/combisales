@@ -546,9 +546,9 @@ export default function UsersPage() {
                         </TableCell>
                         <TableCell className="py-4">
                           <div className="flex items-center gap-3">
-                            <Avatar className="size-10">
+                            <Avatar className="size-10 rounded-md">
                               <AvatarImage src={user.image || undefined} />
-                              <AvatarFallback className="text-sm font-semibold bg-linear-to-br from-primary/20 to-primary/5">
+                              <AvatarFallback className="text-sm font-semibold bg-linear-to-br from-primary/20 to-primary/5 rounded-md">
                                 {getInitials(user.name)}
                               </AvatarFallback>
                             </Avatar>
