@@ -12,6 +12,7 @@ import { EditUserForm } from "@/components/edit-user-form";
 import { CreateUserForm } from "@/components/create-user-form";
 import { formatDate, getInitials, getRoleBadge } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
 
 import {
   UsersPageSkeleton,
@@ -96,6 +97,8 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState<string>("todos");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
 
   const fetchUsers = async (isRefresh = false) => {
     try {
@@ -138,10 +141,14 @@ export default function UsersPage() {
     fetchUsers(true);
   };
 
-  const handleUserUpdated = () => {
+  const handleUserUpdated = async () => {
+    if (selectedUser) {
+      setEditingUserId(selectedUser.id);
+    }
     setIsEditDialogOpen(false);
     setSelectedUser(null);
-    fetchUsers(true);
+    await fetchUsers(true);
+    setEditingUserId(null);
   };
 
   const handleRefresh = () => {
@@ -151,6 +158,7 @@ export default function UsersPage() {
   const handleDeleteSelectedUser = async () => {
     if (!selectedUser) return;
 
+    setDeletingUserId(selectedUser.id);
     try {
       const response = await fetch(`/api/users/${selectedUser.id}`, {
         method: "DELETE",
@@ -165,13 +173,15 @@ export default function UsersPage() {
       toast.success("Usuario eliminado exitosamente");
       setIsDeleteDialogOpen(false);
       setSelectedUser(null);
-      fetchUsers(true);
+      await fetchUsers(true);
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
           : "Hubo un problema al eliminar el usuario."
       );
+    } finally {
+      setDeletingUserId(null);
     }
   };
 
@@ -406,10 +416,33 @@ export default function UsersPage() {
                 </SelectContent>
               </Select>
 
+              {/* Refresh Button */}
+              <Button
+                size="default"
+                variant="secondary"
+                className="gap-2 h-10 shrink-0"
+                onClick={handleRefresh}
+                disabled={isRefreshing || deletingUserId !== null || editingUserId !== null}
+                title="Refrescar lista se usuarios"
+              >
+                <RefreshCw
+                  className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}
+                />
+                <span className="hidden sm:inline">Refrescar</span>
+              </Button>
+
               {/* Add User Button */}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button size="default" className="gap-2 h-10 shrink-0">
+                  <Button
+                    size="default"
+                    className="gap-2 h-10 shrink-0"
+                    disabled={
+                      isRefreshing ||
+                      deletingUserId !== null ||
+                      editingUserId !== null
+                    }
+                  >
                     <UserPlus className="size-4" />
                     <span>Agregar</span>
                   </Button>
@@ -599,8 +632,17 @@ export default function UsersPage() {
                               className="size-8 hover:bg-muted"
                               onClick={() => openEditDialog(user)}
                               title="Editar usuario"
+                              disabled={
+                                isRefreshing ||
+                                deletingUserId === user.id ||
+                                editingUserId === user.id
+                              }
                             >
-                              <PencilLine className="size-4" />
+                              {editingUserId === user.id ? (
+                                <Spinner className="size-4" />
+                              ) : (
+                                <PencilLine className="size-4" />
+                              )}
                             </Button>
                             <Button
                               variant="ghost"
@@ -608,8 +650,17 @@ export default function UsersPage() {
                               className="size-8 hover:bg-destructive/10 hover:text-destructive"
                               onClick={() => openDeleteDialog(user)}
                               title="Eliminar usuario"
+                              disabled={
+                                isRefreshing ||
+                                deletingUserId === user.id ||
+                                editingUserId === user.id
+                              }
                             >
-                              <Trash2 className="size-4" />
+                              {deletingUserId === user.id ? (
+                                <Spinner className="size-4" />
+                              ) : (
+                                <Trash2 className="size-4" />
+                              )}
                             </Button>
                           </div>
                         </TableCell>
