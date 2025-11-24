@@ -108,18 +108,47 @@ function TableContentSkeleton() {
 // Users Page Complete Skeleton
 function UsersPageSkeleton() {
   return (
-    <div className="container mx-auto px-4 space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-[250px]" />
-          <Skeleton className="h-4 w-[350px]" />
+    <div className="container mx-auto px-4 md:px-6 space-y-6 animate-in fade-in duration-300">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-2">
+        {/* Title and Description */}
+        <div className="space-y-2.5 flex-1">
+          <Skeleton className="h-9 w-72 max-w-full" />
+          <Skeleton className="h-4 w-full max-w-md" />
         </div>
-        <div className="flex gap-2">
-          <Skeleton className="h-10 w-[100px]" />
-          <Skeleton className="h-10 w-[100px]" />
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-28" />
+          <Skeleton className="h-10 w-24" />
         </div>
       </div>
-      <Skeleton className="h-[400px] w-full rounded-lg" />
+
+      {/* Controls/Filters Section */}
+      <div className="flex flex-col sm:flex-row gap-3 pb-1">
+        <Skeleton className="h-10 w-full sm:w-64" />
+        <Skeleton className="h-10 w-full sm:w-40" />
+        <Skeleton className="h-10 w-full sm:w-40" />
+        <div className="flex-1" />
+        <Skeleton className="h-10 w-32" />
+      </div>
+
+      {/* Main Content - Generic blocks with border */}
+      <div className="rounded-lg border overflow-hidden bg-card">
+        <div className="divide-y">
+          <Skeleton className="h-[50vh] w-full" />
+        </div>
+      </div>
+
+      {/* Footer/Pagination */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
+        <Skeleton className="h-4 w-56" />
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-9 w-24" />
+          <Skeleton className="h-9 w-32" />
+          <Skeleton className="h-9 w-24" />
+        </div>
+      </div>
     </div>
   );
 }

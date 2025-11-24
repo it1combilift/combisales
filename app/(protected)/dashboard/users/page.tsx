@@ -11,10 +11,11 @@ import { UserCard } from "@/components/users/user-card";
 import { Paragraph, H1 } from "@/components/fonts/fonts";
 import { DataTable } from "@/components/users/data-table";
 import { createColumns } from "@/components/users/columns";
+import { UserCardSkeleton } from "@/components/ui/skeleton";
 import { EditUserForm } from "@/components/users/edit-user-form";
 import { CreateUserForm } from "@/components/users/create-user-form";
 import { UserPlus, RefreshCw, Trash, UsersIcon } from "lucide-react";
-import { UsersPageSkeleton, UserCardSkeleton } from "@/components/ui/skeleton";
+import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 
 import {
   Dialog,
@@ -195,7 +196,7 @@ export default function UsersPage() {
   return (
     <>
       {isLoading ? (
-        <UsersPageSkeleton />
+        <DashboardPageSkeleton />
       ) : error ? (
         <div className="container mx-auto py-10 px-4">
           <EmptyCard

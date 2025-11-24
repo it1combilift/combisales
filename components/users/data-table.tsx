@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Filter, X } from "lucide-react";
 import { TableRowSkeleton } from "@/components/ui/skeleton";
+import { CheckCheck, ChevronDown, Filter, X } from "lucide-react";
 
 import {
   Users,
@@ -221,7 +221,7 @@ export function DataTable<TData, TValue>({
                 <SelectContent>
                   <SelectItem value="todos">
                     <div className="flex items-center gap-2">
-                      <Users className="size-4" />
+                      <CheckCheck className="size-4" />
                       <span>Todos</span>
                     </div>
                   </SelectItem>

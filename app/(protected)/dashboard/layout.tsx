@@ -3,10 +3,10 @@
 import { useSession } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
 import { AlertMessage } from "@/components/alert";
-import { Spinner } from "@/components/ui/spinner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 
 export default function DashboardLayout({
   children,
@@ -15,18 +15,12 @@ export default function DashboardLayout({
 }) {
   const { data: session, status } = useSession();
 
-  if (status === "loading") {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Spinner className="size-8" />
-      </div>
-    );
-  }
+  if (status === "loading") return <DashboardPageSkeleton />;
 
   if (!session) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <AlertMessage variant="destructive" title="No autenticado" />
+        <AlertMessage variant="destructive" title="Usuario no autenticado" />
       </div>
     );
   }
