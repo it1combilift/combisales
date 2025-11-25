@@ -12,58 +12,131 @@ enum Role {
   SELLER
 }
 
-// User model
+enum AuthProvider {
+  CREDENTIALS
+  ZOHO
+}
+
+// ==================== CORE USER MODEL ====================
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String    @unique
   emailVerified DateTime?
-  password      String?
-  image         String?
-  role          Role      @default(SELLER)
-  country       String?
-  isActive      Boolean   @default(true)
-  accounts      Account[]
-  sessions      Session[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+
+  // Solo para autenticación por credenciales
+  password String?
+
+  // Metadatos de usuario
+  image    String?
+  role     Role    @default(SELLER)
+  country  String?
+  isActive Boolean @default(true)
+
+  // Relaciones
+  accounts Account[]
+  sessions Session[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([isActive])
 }
 
-// Account model
+// ==================== OAUTH ACCOUNTS MODEL ====================
+// Almacena información de cuentas OAuth (Zoho, Google, etc.)
 model Account {
-  id                String  @id @default(cuid())
+  id                String @id @default(cuid())
   userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  api_domain        String?
+  type              String // "oauth" | "oidc" | "email"
+  provider          String // "zoho" | "credentials"
+  providerAccountId String // ID del usuario en el proveedor (ZUID de Zoho)
 
+  // OAuth Tokens
+  refresh_token String? @db.Text
+  access_token  String? @db.Text
+  expires_at    Int? // Unix timestamp
+  token_type    String?
+  scope         String?
+  id_token      String? @db.Text
+  session_state String?
+
+  // Zoho-specific metadata
+  api_domain  String? // accounts.zoho.com, accounts.zoho.eu, etc.
+  zoho_org_id String? // Organization ID de Zoho
+
+  // Token refresh metadata
+  token_refreshed_at DateTime? // Última vez que se refrescó el token
+  token_expires_in   Int? // Segundos hasta expiración desde refresh
+
+  // Relaciones
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@index([provider])
+  @@index([expires_at])
 }
 
-// Session model
+// ==================== SESSION MODEL ====================
+// Sesiones activas de usuarios (JWT sessions)
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Metadata de sesión
+  ipAddress String?
+  userAgent String?
+
+  // Relaciones
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([expires])
 }
 
-// Verification Token
+// ==================== VERIFICATION TOKEN MODEL ====================
+// Tokens para verificación de email, reset de contraseña, etc.
 model VerificationToken {
-  identifier String
+  identifier String // Email o user ID
   token      String   @unique
   expires    DateTime
+  type       String   @default("EMAIL_VERIFICATION") // EMAIL_VERIFICATION | PASSWORD_RESET
+
+  createdAt DateTime @default(now())
 
   @@unique([identifier, token])
+  @@index([expires])
+}
+
+// ==================== AUDIT LOG MODEL ====================
+// Registro de eventos de autenticación para seguridad y debugging
+model AuthAuditLog {
+  id        String  @id @default(cuid())
+  userId    String?
+  email     String?
+  event     String // LOGIN_SUCCESS | LOGIN_FAILED | TOKEN_REFRESH | LOGOUT | ACCOUNT_LINKED
+  provider  String? // zoho | credentials
+  ipAddress String?
+  userAgent String?
+  metadata  Json? // Datos adicionales en JSON
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([email])
+  @@index([event])
+  @@index([createdAt])
 }

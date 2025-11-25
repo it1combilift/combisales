@@ -50,6 +50,19 @@ export function LoginForm({
       const url = new URL(window.location.href);
       url.searchParams.delete("error");
       window.history.replaceState({}, "", url.toString());
+    } else if (error === "OAuthAccountNotLinked") {
+      toast.error(
+        "No se pudo vincular tu cuenta de Zoho. Contacta al administrador.",
+        { duration: 6000 }
+      );
+      const url = new URL(window.location.href);
+      url.searchParams.delete("error");
+      window.history.replaceState({}, "", url.toString());
+    } else if (error) {
+      toast.error(`Error de autenticación: ${error}`);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("error");
+      window.history.replaceState({}, "", url.toString());
     }
   }, [searchParams]);
 
