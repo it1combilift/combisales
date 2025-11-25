@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/types/user";
+import { User } from "@/interfaces/user";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,8 +12,8 @@ import {
   CheckCircle2,
   XCircle,
   MoreHorizontal,
-  Pencil,
   Trash,
+  PencilLine,
 } from "lucide-react";
 
 import {
@@ -87,15 +87,19 @@ export function UserCard({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onEdit(user)}>
-                <Pencil className="mr-2 size-4" />
+              <DropdownMenuItem
+                onClick={() => onEdit(user)}
+                className="text-xs sm:text-sm"
+              >
+                <PencilLine className="size-3.5" />
                 Editar
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(user)}
                 variant="destructive"
+                className="text-xs sm:text-sm"
               >
-                <Trash className="mr-2 size-4" />
+                <Trash className="size-3.5" />
                 Eliminar
               </DropdownMenuItem>
             </DropdownMenuContent>

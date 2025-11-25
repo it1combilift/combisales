@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { UpdateUserInput } from "@/types/user";
+import { UpdateUserInput } from "@/interfaces/user";
 import { updateUserSchema, deleteUserSchema } from "@/schemas/auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 

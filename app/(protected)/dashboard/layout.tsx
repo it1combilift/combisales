@@ -37,9 +37,9 @@ export default function DashboardLayout({
       <AppSidebar variant="inset" session={session} />
       <SidebarInset>
         <SiteHeader session={session} />
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col w-full">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <main className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+            <main className="flex flex-col gap-4 py-4 md:gap-6">
               {children}
               <Toaster position="bottom-right" richColors />
             </main>

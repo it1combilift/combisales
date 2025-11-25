@@ -1,17 +1,20 @@
 "use client";
 
+import axios from "axios";
 import { toast } from "sonner";
-import { User } from "@/types/user";
-import { useState, useEffect } from "react";
+import { User } from "@/interfaces/user";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
+import { useState, useEffect, useMemo } from "react";
 import { UserCard } from "@/components/users/user-card";
 import { Paragraph, H1 } from "@/components/fonts/fonts";
 import { DataTable } from "@/components/users/data-table";
 import { createColumns } from "@/components/users/columns";
 import { UserCardSkeleton } from "@/components/ui/skeleton";
+import { UsersFilters } from "@/components/users/users-filters";
+import type { ColumnFiltersState } from "@tanstack/react-table";
 import { EditUserForm } from "@/components/users/edit-user-form";
 import { CreateUserForm } from "@/components/users/create-user-form";
 import { UserPlus, RefreshCw, Trash, UsersIcon } from "lucide-react";
@@ -51,6 +54,8 @@ export default function UsersPage() {
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const isMobile = useIsMobile();
 
   // Fetch users
@@ -62,11 +67,11 @@ export default function UsersPage() {
         setIsLoading(true);
       }
 
-      const response = await fetch("/api/users/list");
+      const response = await axios.get("/api/users/list");
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(data.error || "Error al cargar usuarios");
       }
 
@@ -112,27 +117,27 @@ export default function UsersPage() {
   // Delete single user
   const handleDeleteUser = async (user: User) => {
     setDeletingUserId(user.id);
+
     try {
-      const response = await fetch(`/api/users/${user.id}`, {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Error al eliminar usuario");
-      }
+      await axios.delete(`/api/users/${user.id}`);
 
       toast.success("Usuario eliminado exitosamente");
       setIsDeleteDialogOpen(false);
       setSelectedUser(null);
       await fetchUsers(true);
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Hubo un problema al eliminar el usuario."
-      );
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.error ||
+            "Hubo un problema al eliminar el usuario."
+        );
+      } else {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Hubo un problema al eliminar el usuario."
+        );
+      }
     } finally {
       setDeletingUserId(null);
     }
@@ -145,32 +150,29 @@ export default function UsersPage() {
         (index) => users[parseInt(index)].id
       );
 
-      const response = await fetch("/api/users/delete-multiple", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ids: userIdsToDelete,
-        }),
+      const response = await axios.post("/api/users/delete-multiple", {
+        ids: userIdsToDelete,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Error al eliminar usuarios");
-      }
-
-      toast.success(data.message || "Usuarios eliminados exitosamente");
+      toast.success(
+        response.data.message || "Usuarios eliminados exitosamente"
+      );
       setRowSelection({});
       setIsDeleteMultipleDialogOpen(false);
       fetchUsers(true);
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Hubo un problema al eliminar los usuarios."
-      );
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.error ||
+            "Hubo un problema al eliminar los usuarios."
+        );
+      } else {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Hubo un problema al eliminar los usuarios."
+        );
+      }
     }
   };
 
@@ -193,6 +195,47 @@ export default function UsersPage() {
     (key) => rowSelection[key as keyof typeof rowSelection]
   );
 
+  // Filter users based on globalFilter and columnFilters
+  const filteredUsers = useMemo(() => {
+    let filtered = users;
+
+    // Apply global filter (search)
+    if (globalFilter) {
+      const searchLower = globalFilter.toLowerCase();
+      filtered = filtered.filter(
+        (user) =>
+          user.name?.toLowerCase().includes(searchLower) ||
+          user.email.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply role filter
+    const roleFilter = columnFilters.find((f) => f.id === "role");
+    if (
+      roleFilter &&
+      Array.isArray(roleFilter.value) &&
+      roleFilter.value.length > 0
+    ) {
+      filtered = filtered.filter((user) =>
+        (roleFilter.value as string[]).includes(user.role)
+      );
+    }
+
+    // Apply status filter
+    const statusFilter = columnFilters.find((f) => f.id === "isActive");
+    if (
+      statusFilter &&
+      Array.isArray(statusFilter.value) &&
+      statusFilter.value.length > 0
+    ) {
+      filtered = filtered.filter((user) =>
+        (statusFilter.value as boolean[]).includes(user.isActive)
+      );
+    }
+
+    return filtered;
+  }, [users, globalFilter, columnFilters]);
+
   return (
     <>
       {isLoading ? (
@@ -213,7 +256,7 @@ export default function UsersPage() {
           />
         </div>
       ) : (
-        <section className="container mx-auto px-4 space-y-6">
+        <section className="mx-auto px-4 space-y-6 w-full">
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
@@ -259,28 +302,43 @@ export default function UsersPage() {
                     Agregar
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Crear nuevo usuario</DialogTitle>
-                    <DialogDescription>
-                      Completa el formulario para agregar un nuevo usuario al
-                      sistema
+                <DialogContent className="max-w-[95vw] xs:max-w-3xl max-h-[85vh] p-0 gap-0">
+                  <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
+                    <DialogTitle className="text-left text-base sm:text-lg">
+                      Crear nuevo usuario
+                    </DialogTitle>
+                    <DialogDescription className="text-left text-xs sm:text-sm">
+                      Completa el formulario para agregar un nuevo usuario
                     </DialogDescription>
                   </DialogHeader>
-                  <CreateUserForm onSuccess={handleUserCreated} />
+                  <div className="overflow-y-auto px-4 sm:px-6 py-4">
+                    <CreateUserForm onSuccess={handleUserCreated} />
+                  </div>
                 </DialogContent>
               </Dialog>
             </div>
           </div>
 
+          {/* Filters - Always visible */}
+          <UsersFilters
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            columnFilters={columnFilters}
+            setColumnFilters={setColumnFilters}
+          />
+
           {/* Desktop Table View */}
           {!isMobile && (
             <DataTable
               columns={columns}
-              data={users}
+              data={filteredUsers}
               isLoading={isRefreshing}
               rowSelection={rowSelection}
               setRowSelection={setRowSelection}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              columnFilters={columnFilters}
+              setColumnFilters={setColumnFilters}
             />
           )}
 
@@ -291,30 +349,41 @@ export default function UsersPage() {
                 Array.from({ length: 5 }).map((_, index) => (
                   <UserCardSkeleton key={index} />
                 ))
-              ) : users.length === 0 ? (
+              ) : filteredUsers.length === 0 ? (
                 <EmptyCard
                   icon={<UsersIcon />}
                   title="No hay usuarios"
-                  description="No se encontraron usuarios en el sistema"
+                  description={
+                    globalFilter || columnFilters.length > 0
+                      ? "No se encontraron usuarios con los filtros aplicados"
+                      : "No se encontraron usuarios en el sistema"
+                  }
                 />
               ) : (
-                users.map((user, index) => (
-                  <UserCard
-                    key={user.id}
-                    user={user}
-                    isSelected={
-                      !!rowSelection[index as keyof typeof rowSelection]
-                    }
-                    onSelect={(checked) => {
-                      setRowSelection((prev) => ({
-                        ...prev,
-                        [index]: checked,
-                      }));
-                    }}
-                    onEdit={openEditDialog}
-                    onDelete={openDeleteDialog}
-                  />
-                ))
+                filteredUsers.map((user) => {
+                  const originalIndex = users.findIndex(
+                    (u) => u.id === user.id
+                  );
+                  return (
+                    <UserCard
+                      key={user.id}
+                      user={user}
+                      isSelected={
+                        !!rowSelection[
+                          originalIndex as keyof typeof rowSelection
+                        ]
+                      }
+                      onSelect={(checked) => {
+                        setRowSelection((prev) => ({
+                          ...prev,
+                          [originalIndex]: checked,
+                        }));
+                      }}
+                      onEdit={openEditDialog}
+                      onDelete={openDeleteDialog}
+                    />
+                  );
+                })
               )}
             </div>
           )}
@@ -382,19 +451,23 @@ export default function UsersPage() {
 
           {/* Edit User Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Editar usuario</DialogTitle>
-                <DialogDescription>
+            <DialogContent className="max-w-[95vw] xs:max-w-3xl max-h-[85vh] p-0 gap-0">
+              <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
+                <DialogTitle className="text-left text-base sm:text-lg">
+                  Editar usuario
+                </DialogTitle>
+                <DialogDescription className="text-left text-xs sm:text-sm">
                   Modifica la información del usuario seleccionado
                 </DialogDescription>
               </DialogHeader>
-              {selectedUser && (
-                <EditUserForm
-                  user={selectedUser}
-                  onSuccess={handleUserUpdated}
-                />
-              )}
+              <div className="overflow-y-auto px-4 sm:px-6 py-4">
+                {selectedUser && (
+                  <EditUserForm
+                    user={selectedUser}
+                    onSuccess={handleUserUpdated}
+                  />
+                )}
+              </div>
             </DialogContent>
           </Dialog>
         </section>

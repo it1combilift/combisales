@@ -47,3 +47,14 @@ export interface UpdateUserInput
   extends Partial<
     Omit<User, "id" | "createdAt" | "updatedAt" | "emailVerified">
   > {}
+
+export interface EditUserFormProps {
+  user: UserListItem;
+  onSuccess?: () => void;
+  className?: string;
+}
+
+export interface CreateUserFormProps {
+  onSuccess?: () => void;
+  className?: string;
+}

@@ -1,22 +1,20 @@
 "use client";
 
-import { Role, User } from "@/types/user";
 import { Badge } from "@/components/ui/badge";
+import { Role, User } from "@/interfaces/user";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getInitials, formatDate, getRoleBadge } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
+import { getInitials, formatDate, getRoleBadge } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
   ArrowUpDown,
   MoreHorizontal,
-  Pencil,
   Trash,
   CheckCircle2,
   XCircle,
-  ShieldCheck,
-  Package,
+  PencilLine,
 } from "lucide-react";
 
 import {
@@ -193,15 +191,19 @@ export const createColumns = ({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onEdit(user)}>
-                <Pencil className="mr-2 size-4" />
+              <DropdownMenuItem
+                onClick={() => onEdit(user)}
+                className="text-xs sm:text-sm"
+              >
+                <PencilLine className="size-3.5" />
                 Editar
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(user)}
                 variant="destructive"
+                className="text-xs sm:text-sm"
               >
-                <Trash className="mr-2 size-4" />
+                <Trash className="size-3.5" />
                 Eliminar
               </DropdownMenuItem>
             </DropdownMenuContent>
