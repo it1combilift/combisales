@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { Role } from "@prisma/client";
 import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 import {
   getAuthLogs,
   getUserAuthStats,
@@ -19,7 +21,6 @@ import {
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verificar autenticación
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -27,11 +28,9 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
 
-    // Solo admins pueden ver logs de sistema, usuarios pueden ver sus propios logs
-    const isAdmin = session.user.role === "ADMIN";
+    const isAdmin = session.user.role === Role.ADMIN;
     const requestedUserId = searchParams.get("userId");
 
-    // Si no es admin y intenta ver logs de otro usuario, denegar
     if (!isAdmin && requestedUserId && requestedUserId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

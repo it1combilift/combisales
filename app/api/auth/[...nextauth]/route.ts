@@ -67,8 +67,6 @@ export const authOptions: NextAuthOptions = {
           `${profile.First_Name || ""} ${profile.Last_Name || ""}`.trim() ||
           profile.Email;
 
-        // Retornar datos normalizados para que PrismaAdapter los maneje
-        // El adapter creará User y Account automáticamente
         return {
           id: profile.ZUID.toString(),
           name: fullName,
@@ -97,7 +95,6 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         });
 
-        // Usuario no existe
         if (!user || !user.password) {
           await logAuthEvent({
             email: credentials.email,
@@ -109,7 +106,6 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Credenciales inválidas");
         }
 
-        // Verificar contraseña
         const isPasswordValid = await compare(
           credentials.password,
           user.password
@@ -127,7 +123,6 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Credenciales inválidas");
         }
 
-        // Verificar estado de cuenta
         if (!user.isActive) {
           await logAuthEvent({
             userId: user.id,
@@ -139,7 +134,6 @@ export const authOptions: NextAuthOptions = {
           throw new Error("ACCOUNT_BLOCKED");
         }
 
-        // Log login exitoso
         await logAuthEvent({
           userId: user.id,
           email: user.email,
@@ -174,12 +168,9 @@ export const authOptions: NextAuthOptions = {
         });
         console.log("=== SIGNIN CALLBACK END ===");
 
-        // Solo guardar metadata de Zoho, la validación de isActive se hace en JWT callback
         if (account?.provider === "zoho" && profile) {
-          // Esperar un momento para asegurar que PrismaAdapter terminó
           await new Promise((resolve) => setTimeout(resolve, 500));
 
-          // Actualizar Account con metadata de Zoho
           const updated = await prisma.account.updateMany({
             where: {
               provider: "zoho",
@@ -194,7 +185,6 @@ export const authOptions: NextAuthOptions = {
 
           console.log("Account metadata updated:", updated);
 
-          // Log de login exitoso (la validación de isActive se hace en JWT)
           await logAuthEvent({
             userId: user.id,
             email: user.email!,
@@ -204,16 +194,14 @@ export const authOptions: NextAuthOptions = {
           });
         }
 
-        return true; // Siempre permitir en signIn, validación real en JWT callback
+        return true;
       } catch (error) {
         console.error("Error en signIn callback:", error);
-        // No fallar el login por errores de metadata, continuar
         return true;
       }
     },
 
     async jwt({ token, account, user, trigger }) {
-      // Primera vez que se crea el token
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
@@ -224,7 +212,6 @@ export const authOptions: NextAuthOptions = {
         token.provider = account.provider;
       }
 
-      // Guardar datos del usuario en el token
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -234,8 +221,6 @@ export const authOptions: NextAuthOptions = {
         token.isActive = (user as any).isActive;
       }
 
-      // VALIDACIÓN CRÍTICA: Verificar que el usuario esté activo
-      // Esta es la validación real de acceso, no en signIn callback
       if (token.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email as string },
@@ -248,7 +233,6 @@ export const authOptions: NextAuthOptions = {
           },
         });
 
-        // Si el usuario no existe o está inactivo, invalidar el token
         if (!dbUser || !dbUser.isActive) {
           console.error(
             "User blocked or not found in JWT callback:",
@@ -264,18 +248,15 @@ export const authOptions: NextAuthOptions = {
             });
           }
 
-          // Retornar token vacío para forzar logout
           return {};
         }
 
-        // Actualizar datos del token con la DB
         token.role = dbUser.role;
         token.isActive = dbUser.isActive;
         token.image = dbUser.image;
         token.name = dbUser.name;
       }
 
-      // Refrescar datos del usuario en cada request (actualización)
       if (trigger === "update" && token.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email as string },
@@ -295,10 +276,9 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      // Validar expiración del token de Zoho y refrescar si es necesario
       if (token.provider === "zoho" && token.expiresAt && token.refreshToken) {
         const now = Math.floor(Date.now() / 1000);
-        const shouldRefresh = (token.expiresAt as number) - now < 300; // 5 min antes
+        const shouldRefresh = (token.expiresAt as number) - now < 300;
 
         if (shouldRefresh) {
           try {
@@ -324,7 +304,6 @@ export const authOptions: NextAuthOptions = {
               token.accessToken = tokens.access_token;
               token.expiresAt = now + (tokens.expires_in || 3600);
 
-              // Actualizar en base de datos
               await prisma.account.updateMany({
                 where: {
                   provider: "zoho",
@@ -339,7 +318,6 @@ export const authOptions: NextAuthOptions = {
                 },
               });
 
-              // Log refresh exitoso
               await logAuthEvent({
                 userId: token.id as string,
                 email: token.email as string,
@@ -348,7 +326,6 @@ export const authOptions: NextAuthOptions = {
               });
             }
           } catch (error) {
-            // Log refresh fallido
             await logAuthEvent({
               userId: token.id as string,
               email: token.email as string,
@@ -365,7 +342,6 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }) {
       if (token) {
-        // Validar estado de la cuenta en tiempo real
         if (token.email) {
           const dbUser = await prisma.user.findUnique({
             where: { email: token.email as string },
@@ -379,7 +355,6 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
-        // Poblar session con datos del token
         session.accessToken = token.accessToken as string;
         session.apiDomain = token.apiDomain as string;
         session.provider = token.provider as string;

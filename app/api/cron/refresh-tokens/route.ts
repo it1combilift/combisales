@@ -3,9 +3,9 @@ import { prisma } from "@/lib/prisma";
 
 /**
  * Token Refresh Cron Job
- * Ejecutar cada 50 minutos para refrescar tokens próximos a expirar
+ * Execute every 50 minutes to refresh tokens about to expire
  *
- * Configuración en vercel.json:
+ * Configuration in vercel.json:
  * {
  *   "crons": [{
  *     "path": "/api/cron/refresh-tokens",
@@ -14,7 +14,6 @@ import { prisma } from "@/lib/prisma";
  * }
  */
 export async function GET(request: NextRequest) {
-  // Verificar autorización del cron job
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,8 +27,7 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    // Buscar tokens que expiran en los próximos 10 minutos
-    const expiringAt = Math.floor(Date.now() / 1000) + 600; // +10 minutos
+    const expiringAt = Math.floor(Date.now() / 1000) + 600; // +10 min
 
     const accounts = await prisma.account.findMany({
       where: {
@@ -50,15 +48,12 @@ export async function GET(request: NextRequest) {
 
     results.totalProcessed = accounts.length;
 
-    // Procesar cada cuenta
     for (const account of accounts) {
-      // Saltar usuarios inactivos
       if (!account.user.isActive) {
         continue;
       }
 
       try {
-        // Llamar a Zoho para refrescar el token
         const response = await fetch(
           "https://accounts.zoho.com/oauth/v2/token",
           {
@@ -85,7 +80,6 @@ export async function GET(request: NextRequest) {
           const newExpiresAt =
             Math.floor(Date.now() / 1000) + (tokens.expires_in || 3600);
 
-          // Actualizar Account con el nuevo token
           await prisma.account.update({
             where: {
               provider_providerAccountId: {
@@ -101,7 +95,6 @@ export async function GET(request: NextRequest) {
             },
           });
 
-          // Log del refresh exitoso
           await prisma.authAuditLog.create({
             data: {
               userId: account.userId,
@@ -124,7 +117,6 @@ export async function GET(request: NextRequest) {
           error: (error as Error).message,
         });
 
-        // Log del refresh fallido
         await prisma.authAuditLog.create({
           data: {
             userId: account.userId,
