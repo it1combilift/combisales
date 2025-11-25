@@ -72,7 +72,7 @@ export default function UsersPage() {
       const data = response.data;
 
       if (response.status !== 200) {
-        throw new Error(data.error || "Error al cargar usuarios");
+        throw new Error(data.error || "Error al obtener la lista de usuarios");
       }
 
       const filteredUsers = (data.users || []).filter(
