@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { toast } from "sonner";
-import { User } from "@/interfaces/user";
+import { UserListItem } from "@/interfaces/user";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -42,11 +42,11 @@ import {
 
 export default function UsersPage() {
   const { data: session } = useSession();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserListItem | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleteMultipleDialogOpen, setIsDeleteMultipleDialogOpen] =
     useState(false);
@@ -76,7 +76,7 @@ export default function UsersPage() {
       }
 
       const filteredUsers = (data.users || []).filter(
-        (user: User) => user.email !== session?.user?.email
+        (user: UserListItem) => user.email !== session?.user?.email
       );
       setUsers(filteredUsers);
       setError(null);
@@ -115,7 +115,7 @@ export default function UsersPage() {
   };
 
   // Delete single user
-  const handleDeleteUser = async (user: User) => {
+  const handleDeleteUser = async (user: UserListItem) => {
     setDeletingUserId(user.id);
 
     try {
@@ -176,30 +176,59 @@ export default function UsersPage() {
     }
   };
 
-  const openEditDialog = (user: User) => {
+  const openEditDialog = (user: UserListItem) => {
     setSelectedUser(user);
     setIsEditDialogOpen(true);
   };
 
-  const openDeleteDialog = (user: User) => {
+  const openDeleteDialog = (user: UserListItem) => {
     setSelectedUser(user);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleRevokeSession = async (user: UserListItem) => {
+    try {
+      const response = await fetch("/api/users/revoke-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: user.id }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al revocar sesión");
+      }
+
+      toast.success(data.message || "Sesión revocada exitosamente");
+
+      // Opcional: refrescar lista de usuarios
+      await fetchUsers(false);
+    } catch (error) {
+      console.error("Error al revocar sesión:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Error al revocar la sesión del usuario"
+      );
+    }
   };
 
   const columns = createColumns({
     onEdit: openEditDialog,
     onDelete: openDeleteDialog,
+    onRevokeSession: handleRevokeSession,
   });
 
   const selectedUserIds = Object.keys(rowSelection).filter(
     (key) => rowSelection[key as keyof typeof rowSelection]
   );
 
-  // Filter users based on globalFilter and columnFilters
   const filteredUsers = useMemo(() => {
     let filtered = users;
 
-    // Apply global filter (search)
     if (globalFilter) {
       const searchLower = globalFilter.toLowerCase();
       filtered = filtered.filter(
@@ -280,7 +309,7 @@ export default function UsersPage() {
               )}
 
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={handleRefresh}
                 disabled={isRefreshing}
@@ -297,7 +326,7 @@ export default function UsersPage() {
                 onOpenChange={setIsCreateDialogOpen}
               >
                 <DialogTrigger asChild>
-                  <Button size="sm" className="gap-2">
+                  <Button size="sm" className="gap-2" disabled={isRefreshing} variant="info">
                     <UserPlus className="size-4" />
                     Agregar
                   </Button>
@@ -381,6 +410,7 @@ export default function UsersPage() {
                       }}
                       onEdit={openEditDialog}
                       onDelete={openDeleteDialog}
+                      onRevokeSession={handleRevokeSession}
                     />
                   );
                 })

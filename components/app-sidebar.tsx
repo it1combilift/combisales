@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import Image from "next/image"
-import * as React from "react"
-import { NavMain } from '@/components/nav-main'
-import { NavUser } from '@/components/nav-user'
-import { NavDocuments } from '@/components/nav-documents'
-import { NavSecondary } from '@/components/nav-secondary'
+import Link from "next/link";
+import Image from "next/image";
+import * as React from "react";
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
+import { NavDocuments } from "@/components/nav-documents";
+import { NavSecondary } from "@/components/nav-secondary";
 
 import {
   IconCamera,
@@ -24,8 +24,7 @@ import {
   IconSettings,
   IconUsers,
   IconUserPlus,
-} from "@tabler/icons-react"
-
+} from "@tabler/icons-react";
 
 import {
   Sidebar,
@@ -35,8 +34,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar'
-
+} from "@/components/ui/sidebar";
 
 const data = {
   user: {
@@ -50,30 +48,30 @@ const data = {
       url: "/dashboard",
       icon: IconDashboard,
     },
+    // {
+    //   title: "Ciclo de vida",
+    //   url: "/dashboard/lifecycle",
+    //   icon: IconListDetails,
+    // },
+    // {
+    //   title: "Analítica",
+    //   url: "/dashboard/analytics",
+    //   icon: IconChartBar,
+    // },
     {
-      title: "Lifecycle",
-      url: "/dashboard/lifecycle",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "/dashboard/analytics",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
+      title: "Proyectos",
       url: "/dashboard/projects",
       icon: IconFolder,
     },
+    // {
+    //   title: "Equipo",
+    //   url: "/dashboard/team",
+    //   icon: IconUsers,
+    // },
     {
-      title: "Team",
-      url: "/dashboard/team",
-      icon: IconUsers,
-    },
-    {
-      title: "Users",
+      title: "Usuarios",
       url: "/dashboard/users",
-      icon: IconUserPlus,
+      icon: IconUsers,
     },
   ],
   navClouds: [
@@ -126,42 +124,45 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Settings",
+      title: "Configuración",
       url: "#",
       icon: IconSettings,
     },
     {
-      title: "Get Help",
+      title: "Obtener ayuda",
       url: "#",
       icon: IconHelp,
     },
     {
-      title: "Search",
+      title: "Buscar",
       url: "#",
       icon: IconSearch,
     },
   ],
   documents: [
     {
-      name: "Data Library",
+      name: "Documentos",
       url: "#",
       icon: IconDatabase,
     },
     {
-      name: "Reports",
+      name: "Informes",
       url: "#",
       icon: IconReport,
     },
     {
-      name: "Word Assistant",
+      name: "Asistente",
       url: "#",
       icon: IconFileWord,
     },
   ],
-}
+};
 
-export function AppSidebar({ session, ...props }: React.ComponentProps<typeof Sidebar> & { session?: any }) {
-  const userData = session?.user || data.user
+export function AppSidebar({
+  session,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { session?: any }) {
+  const userData = session?.user || data.user;
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -185,8 +186,12 @@ export function AppSidebar({ session, ...props }: React.ComponentProps<typeof Si
                   />
                 </div>
                 <div className="grid flex-1 text-left leading-tight">
-                  <span className="truncate font-bold text-base tracking-tight">CombiSales</span>
-                  <span className="truncate text-[11px] text-muted-foreground font-medium">Combilift Company</span>
+                  <span className="truncate font-bold text-base tracking-tight">
+                    CombiSales
+                  </span>
+                  <span className="truncate text-[11px] text-muted-foreground font-medium">
+                    Combilift Company
+                  </span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -202,5 +207,5 @@ export function AppSidebar({ session, ...props }: React.ComponentProps<typeof Si
         <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

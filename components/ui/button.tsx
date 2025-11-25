@@ -9,19 +9,19 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md transition-all duration-300",
+          "cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200",
 
         destructive:
           "cursor-pointer bg-destructive text-white hover:bg-destructive/90 shadow-md shadow-destructive/20 hover:shadow-lg hover:shadow-destructive/30 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/80 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200",
 
         outline:
-          "cursor-pointer border-2 border-border bg-background shadow-sm hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20 dark:bg-background/50 dark:border-border dark:hover:bg-accent/50 dark:hover:border-accent-foreground/30 transition-all duration-200",
+          "cursor-pointer border-2 border-border bg-background shadow-sm hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20 dark:bg-background/50 dark:border-border dark:hover:bg-accent/50 dark:hover:border-accent-foreground/30 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0",
 
         secondary:
-          "cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0",
+          "cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200",
 
         ghost:
-          "cursor-pointer hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 transition-colors duration-200",
+          "cursor-pointer hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 transition-colors duration-200 hover:-translate-y-0.5 active:translate-y-0",
 
         link: "cursor-pointer text-primary underline-offset-4 hover:underline hover:text-primary/80 transition-colors duration-200",
 

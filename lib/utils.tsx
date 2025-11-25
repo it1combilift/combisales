@@ -20,15 +20,39 @@ export function getInitials(name: string | null): string {
 
 export function formatDate(date: string | Date): string {
   const d = new Date(date);
-  return d.toLocaleDateString("es-ES", {
+  return d.toLocaleDateString("es-PA", {
     year: "numeric",
-    month: "long",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+export function formatDateShort(date: string | Date): string {
+  const d = new Date(date);
+  return d.toLocaleDateString("es-PA", {
+    year: "numeric",
+    month: "short",
     day: "numeric",
   });
 }
 
+export function formatDateTime(date: string | Date): string {
+  const d = new Date(date);
+  return d.toLocaleString("es-PA", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
 export function getRoleBadge(role: Role) {
-  if (role === "ADMIN") {
+  if (role === Role.ADMIN) {
     return (
       <Badge
         variant="outline"

@@ -354,7 +354,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
           <Button
             type="submit"
             disabled={isLoading}
-            variant="default"
+            variant="info"
             className="w-full sm:w-auto h-10 sm:h-11 gap-2 shadow-sm"
           >
             {isLoading ? (

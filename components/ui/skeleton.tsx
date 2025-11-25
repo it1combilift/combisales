@@ -61,6 +61,14 @@ function TableRowSkeleton() {
       <TableCell>
         <Skeleton className="h-6 w-20 rounded-full" />
       </TableCell>
+      {/* Auth */}
+      <TableCell>
+        <Skeleton className="h-6 w-20 rounded-full" />
+      </TableCell>
+      {/* Last Login */}
+      <TableCell>
+        <Skeleton className="h-6 w-20 rounded-full" />
+      </TableCell>
       {/* Actions */}
       <TableCell className="w-12">
         <div className="flex justify-end">

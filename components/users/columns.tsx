@@ -1,10 +1,10 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Role, User } from "@/interfaces/user";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ColumnDef } from "@tanstack/react-table";
+import { Role, UserListItem } from "@/interfaces/user";
 import { getInitials, formatDate, getRoleBadge } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -15,6 +15,8 @@ import {
   CheckCircle2,
   XCircle,
   PencilLine,
+  ShieldOff,
+  KeyRound,
 } from "lucide-react";
 
 import {
@@ -27,14 +29,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface ColumnsConfig {
-  onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
+  onEdit: (user: UserListItem) => void;
+  onDelete: (user: UserListItem) => void;
+  onRevokeSession: (user: UserListItem) => void;
 }
 
 export const createColumns = ({
   onEdit,
   onDelete,
-}: ColumnsConfig): ColumnDef<User>[] => [
+  onRevokeSession,
+}: ColumnsConfig): ColumnDef<UserListItem>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -124,14 +128,16 @@ export const createColumns = ({
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-4 h-auto py-2"
         >
-          Fecha de creación
+          Creación
           <ArrowUpDown className="ml-2 size-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
       return (
-        <div className="text-sm">{formatDate(row.getValue("createdAt"))}</div>
+        <div className="text-sm text-muted-foreground">
+          {formatDate(row.getValue("createdAt"))}
+        </div>
       );
     },
   },
@@ -174,6 +180,75 @@ export const createColumns = ({
     },
   },
   {
+    accessorKey: "authMethods",
+    header: "Auth",
+    cell: ({ row }) => {
+      const methods = row.getValue("authMethods") as string[];
+      if (!methods || methods.length === 0) {
+        return <span className="text-xs text-muted-foreground">-</span>;
+      }
+
+      return (
+        <div className="flex flex-wrap gap-1">
+          {methods.map((method) => (
+            <Badge
+              key={method}
+              variant="secondary"
+              className="text-xs capitalize"
+            >
+              {method === "zoho" ? (
+                <>
+                  <KeyRound className="size-3 mr-1" />
+                  Zoho
+                </>
+              ) : (
+                <>
+                  <ShieldOff className="size-3 mr-1" />
+                  Email
+                </>
+              )}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "lastLoginAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="-ml-4 h-auto py-2"
+        >
+          Últ. Login
+          <ArrowUpDown className="ml-2 size-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const lastLogin = row.getValue("lastLoginAt") as Date | null;
+      return (
+        <div className="text-sm text-muted-foreground">
+          {lastLogin ? formatDate(lastLogin) : "Nunca"}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "zohoId",
+    header: "Zoho ID",
+    cell: ({ row }) => {
+      const zohoId = row.getValue("zohoId") as string | null;
+      return (
+        <div className="text-xs font-mono max-w-[120px] truncate bg-muted px-2 py-1 rounded w-fit">
+          {zohoId || "-"}
+        </div>
+      );
+    },
+  },
+  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
@@ -193,7 +268,7 @@ export const createColumns = ({
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => onEdit(user)}
-                className="text-xs sm:text-sm"
+                className="text-xs sm:text-sm cursor-pointer"
               >
                 <PencilLine className="size-3.5" />
                 Editar
@@ -201,10 +276,17 @@ export const createColumns = ({
               <DropdownMenuItem
                 onClick={() => onDelete(user)}
                 variant="destructive"
-                className="text-xs sm:text-sm"
+                className="text-xs sm:text-sm cursor-pointer"
               >
                 <Trash className="size-3.5" />
                 Eliminar
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onRevokeSession(user)}
+                className="text-xs sm:text-sm text-orange-600 dark:text-orange-400 cursor-pointer"
+              >
+                <ShieldOff className="size-3.5 text-orange-600 dark:text-orange-400" />
+                Revocar sesión
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

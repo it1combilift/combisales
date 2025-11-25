@@ -41,6 +41,10 @@ export interface UserListItem {
   isActive: boolean;
   createdAt: Date;
   image: string | null;
+  authMethods: string[]; // ["zoho", "credentials"]
+  lastLoginAt: Date | null;
+  zohoId: string | null; // ZUID
+  hasActiveSession: boolean;
 }
 
 export interface UpdateUserInput

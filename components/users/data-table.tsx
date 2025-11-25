@@ -1,22 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Role } from "@prisma/client";
+import { Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { TableRowSkeleton } from "@/components/ui/skeleton";
-import { CheckCheck, ChevronDown, Filter, X } from "lucide-react";
-
-import {
-  Users,
-  Search,
-  ShieldCheck,
-  Package,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react";
 
 import {
   type ColumnDef,
@@ -32,15 +20,6 @@ import {
 } from "@tanstack/react-table";
 
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import {
   Table,
   TableBody,
   TableCell,
@@ -48,14 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import {
   Empty,
@@ -132,30 +103,8 @@ export function DataTable<TData, TValue>({
   const statusFilter =
     (columnFilters.find((f) => f.id === "isActive")?.value as boolean[]) || [];
 
-  const setRoleFilter = (value: string) => {
-    if (value === "todos") {
-      table.getColumn("role")?.setFilterValue(undefined);
-    } else {
-      table.getColumn("role")?.setFilterValue([value]);
-    }
-  };
-
-  const setStatusFilter = (value: string) => {
-    if (value === "todos") {
-      table.getColumn("isActive")?.setFilterValue(undefined);
-    } else {
-      table.getColumn("isActive")?.setFilterValue([value === "active"]);
-    }
-  };
-
   const hasActiveFilters =
     globalFilter || roleFilter.length > 0 || statusFilter.length > 0;
-
-  const clearAllFilters = () => {
-    setGlobalFilter("");
-    table.getColumn("role")?.setFilterValue(undefined);
-    table.getColumn("isActive")?.setFilterValue(undefined);
-  };
 
   return (
     <section className="w-full space-y-4">

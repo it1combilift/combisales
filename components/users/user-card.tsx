@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/interfaces/user";
+import { UserListItem } from "@/interfaces/user";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,6 +14,8 @@ import {
   MoreHorizontal,
   Trash,
   PencilLine,
+  ShieldOff,
+  KeyRound,
 } from "lucide-react";
 
 import {
@@ -34,11 +36,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface UserCardProps {
-  user: User;
+  user: UserListItem;
   isSelected: boolean;
   onSelect: (checked: boolean) => void;
-  onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
+  onEdit: (user: UserListItem) => void;
+  onDelete: (user: UserListItem) => void;
+  onRevokeSession: (user: UserListItem) => void;
 }
 
 export function UserCard({
@@ -47,6 +50,7 @@ export function UserCard({
   onSelect,
   onEdit,
   onDelete,
+  onRevokeSession,
 }: UserCardProps) {
   return (
     <Card className="relative">
@@ -95,6 +99,13 @@ export function UserCard({
                 Editar
               </DropdownMenuItem>
               <DropdownMenuItem
+                onClick={() => onRevokeSession(user)}
+                className="text-xs sm:text-sm text-orange-600 dark:text-orange-400"
+              >
+                <ShieldOff className="size-3.5" />
+                Revocar Sesión
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={() => onDelete(user)}
                 variant="destructive"
                 className="text-xs sm:text-sm"
@@ -134,6 +145,40 @@ export function UserCard({
             )}
           </div>
           <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">Auth</p>
+            <div className="flex flex-wrap gap-1">
+              {user.authMethods && user.authMethods.length > 0 ? (
+                user.authMethods.map((method) => (
+                  <Badge
+                    key={method}
+                    variant="secondary"
+                    className="text-xs capitalize"
+                  >
+                    {method === "zoho" ? (
+                      <>
+                        <KeyRound className="size-3 mr-1" />
+                        Zoho
+                      </>
+                    ) : (
+                      <>
+                        <ShieldOff className="size-3 mr-1" />
+                        Email
+                      </>
+                    )}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-sm text-muted-foreground">-</span>
+              )}
+            </div>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">Últ. Login</p>
+            <p className="text-sm font-medium">
+              {user.lastLoginAt ? formatDate(user.lastLoginAt) : "Nunca"}
+            </p>
+          </div>
+          <div className="space-y-1">
             <p className="text-xs text-muted-foreground">País</p>
             <p className="text-sm font-medium">
               {user.country || "No especificado"}
@@ -143,6 +188,14 @@ export function UserCard({
             <p className="text-xs text-muted-foreground">Creado</p>
             <p className="text-sm font-medium">{formatDate(user.createdAt)}</p>
           </div>
+          {user.zohoId && (
+            <div className="space-y-1 col-span-2">
+              <p className="text-xs text-muted-foreground">Zoho ID (ZUID)</p>
+              <p className="text-xs font-mono bg-muted px-2 py-1 rounded w-fit">
+                {user.zohoId}
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
