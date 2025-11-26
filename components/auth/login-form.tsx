@@ -66,6 +66,7 @@ export function LoginForm({
     }
   }, [searchParams]);
 
+  // Function to handle credentials login
   async function onSubmit(values: LoginValues) {
     setIsLoading(true);
 

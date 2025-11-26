@@ -1,8 +1,8 @@
+import { prisma } from "@/lib/prisma";
+import type { Adapter } from "next-auth/adapters";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { Adapter } from "next-auth/adapters";
-import { prisma } from "@/lib/prisma";
 
 const getCompare = async () => {
   const { compare } = await import("bcryptjs");
@@ -155,9 +155,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Permite redirects a URLs del mismo dominio
       if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Permite callback URLs del mismo dominio
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },

@@ -292,6 +292,7 @@ export default function UsersPage() {
               <H1>Gestión de usuarios</H1>
               <Paragraph>Administra los usuarios del sistema</Paragraph>
             </div>
+            
             <div className="flex gap-2">
               {/* Bulk Actions */}
               {selectedUserIds.length > 0 && (
