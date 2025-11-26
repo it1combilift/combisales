@@ -326,7 +326,7 @@ export default function UsersPage() {
                 onOpenChange={setIsCreateDialogOpen}
               >
                 <DialogTrigger asChild>
-                  <Button size="sm" className="gap-2" disabled={isRefreshing} variant="info">
+                  <Button size="sm" className="gap-2" disabled={isRefreshing} variant="success">
                     <UserPlus className="size-4" />
                     Agregar
                   </Button>
