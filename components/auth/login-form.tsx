@@ -235,8 +235,10 @@ export function LoginForm({
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-2">
-                      <Spinner className="size-4" />
-                      Accediendo...
+                      <Spinner
+                        className="size-4 md:size-5"
+                        variant="ellipsis"
+                      />
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
