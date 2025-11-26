@@ -1,0 +1,66 @@
+import { Role } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { createZohoCRMService } from "@/service/ZohoCRMService";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+/**
+ * GET /api/zoho/contacts/[id]
+ * Get a specific Zoho CRM contact by ID
+ * - ADMIN users: Can see any contact
+ * - SELLER users: Can only see contacts from their accounts (Owner email must match)
+ */
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    }
+
+    if (session.user.role !== Role.ADMIN && session.user.role !== Role.SELLER) {
+      return NextResponse.json({ error: "No autorizado." }, { status: 403 });
+    }
+
+    const contactId = params.id;
+
+    const zohoService = await createZohoCRMService(session.user.id);
+    if (!zohoService) {
+      return NextResponse.json(
+        {
+          error:
+            "No se pudo conectar con Zoho CRM. Verifica tu conexión con Zoho.",
+        },
+        { status: 503 }
+      );
+    }
+
+    const contact = await zohoService.getContactById(contactId);
+
+    if (session.user.role === Role.SELLER) {
+      const userEmail = session.user.email?.toLowerCase();
+      const ownerEmail = contact.Owner?.email?.toLowerCase();
+
+      if (ownerEmail !== userEmail) {
+        return NextResponse.json(
+          { error: "No tienes permiso para ver este contacto." },
+          { status: 403 }
+        );
+      }
+    }
+
+    return NextResponse.json({ contact });
+  } catch (error) {
+    console.error("Error fetching Zoho contact:", error);
+    return NextResponse.json(
+      {
+        error: "Error al obtener contacto de Zoho CRM",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
+  }
+}

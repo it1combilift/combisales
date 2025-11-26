@@ -37,7 +37,8 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         url: "https://accounts.zoho.com/oauth/v2/auth",
         params: {
-          scope: "AaaServer.profile.Read",
+          scope:
+            "AaaServer.profile.Read,ZohoCRM.modules.ALL,ZohoCRM.settings.ALL",
           access_type: "offline",
           prompt: "consent",
           response_type: "code",

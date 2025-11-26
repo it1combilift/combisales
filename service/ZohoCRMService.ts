@@ -1,0 +1,202 @@
+import axios, { AxiosInstance } from "axios";
+import { getValidZohoTokens } from "../lib/zoho-tokens";
+
+import {
+  ZohoAccount,
+  ZohoContact,
+  ZohoCRMResponse,
+  ZohoTokens,
+} from "@/interfaces/zoho";
+
+/**
+ * Zoho CRM Service
+ * Service class to interact with Zoho CRM API
+ */
+export class ZohoCRMService {
+  private tokens: ZohoTokens;
+  private baseUrl: string;
+  private axiosInstance: AxiosInstance;
+
+  constructor(tokens: ZohoTokens) {
+    this.tokens = tokens;
+    this.baseUrl = `${tokens.api_domain}/crm/v2`;
+
+    this.axiosInstance = axios.create({
+      baseURL: this.baseUrl,
+      headers: {
+        Authorization: `Zoho-oauthtoken ${this.tokens.access_token}`,
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
+  /**
+   * Make a GET request to the Zoho CRM API
+   */
+  private async request<T>(
+    endpoint: string,
+    params?: Record<string, any>
+  ): Promise<T> {
+    try {
+      const response = await this.axiosInstance.get<T>(endpoint, {
+        params,
+      });
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorData = error.response?.data;
+        console.error("Zoho CRM API error:", errorData);
+        throw new Error(
+          `Zoho CRM API error: ${errorData?.message || error.message}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Get list of accounts from Zoho CRM
+   */
+  async getAccounts(options?: {
+    page?: number;
+    per_page?: number;
+    sort_order?: "asc" | "desc";
+    sort_by?: string;
+    fields?: string[];
+  }): Promise<ZohoCRMResponse<ZohoAccount>> {
+    const params: Record<string, any> = {
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    if (options?.sort_order) params.sort_order = options.sort_order;
+    if (options?.sort_by) params.sort_by = options.sort_by;
+    if (options?.fields) params.fields = options.fields.join(",");
+
+    return this.request<ZohoCRMResponse<ZohoAccount>>("/Accounts", params);
+  }
+
+  /**
+   * Get a specific account by ID
+   */
+  async getAccountById(accountId: string): Promise<ZohoAccount> {
+    const response = await this.request<ZohoCRMResponse<ZohoAccount>>(
+      `/Accounts/${accountId}`
+    );
+    return response.data[0];
+  }
+
+  /**
+   * Search accounts by name
+   */
+  async searchAccounts(
+    searchText: string,
+    options?: {
+      page?: number;
+      per_page?: number;
+    }
+  ): Promise<ZohoCRMResponse<ZohoAccount>> {
+    const params: Record<string, any> = {
+      criteria: `(Account_Name:starts_with:${searchText})`,
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    return this.request<ZohoCRMResponse<ZohoAccount>>(
+      "/Accounts/search",
+      params
+    );
+  }
+
+  /**
+   * Get list of contacts from Zoho CRM
+   */
+  async getContacts(options?: {
+    page?: number;
+    per_page?: number;
+    sort_order?: "asc" | "desc";
+    sort_by?: string;
+    fields?: string[];
+  }): Promise<ZohoCRMResponse<ZohoContact>> {
+    const params: Record<string, any> = {
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    if (options?.sort_order) params.sort_order = options.sort_order;
+    if (options?.sort_by) params.sort_by = options.sort_by;
+    if (options?.fields) params.fields = options.fields.join(",");
+
+    return this.request<ZohoCRMResponse<ZohoContact>>("/Contacts", params);
+  }
+
+  /**
+   * Get a specific contact by ID
+   */
+  async getContactById(contactId: string): Promise<ZohoContact> {
+    const response = await this.request<ZohoCRMResponse<ZohoContact>>(
+      `/Contacts/${contactId}`
+    );
+    return response.data[0];
+  }
+
+  /**
+   * Get contacts from a specific account
+   */
+  async getContactsByAccountId(
+    accountId: string,
+    options?: {
+      page?: number;
+      per_page?: number;
+    }
+  ): Promise<ZohoCRMResponse<ZohoContact>> {
+    const params: Record<string, any> = {
+      criteria: `(Account_Name:equals:${accountId})`,
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    return this.request<ZohoCRMResponse<ZohoContact>>(
+      "/Contacts/search",
+      params
+    );
+  }
+
+  /**
+   * Search contacts by email
+   */
+  async searchContactsByEmail(
+    email: string
+  ): Promise<ZohoCRMResponse<ZohoContact>> {
+    const params = {
+      criteria: `(Email:equals:${email})`,
+      per_page: 200,
+    };
+
+    return this.request<ZohoCRMResponse<ZohoContact>>(
+      "/Contacts/search",
+      params
+    );
+  }
+}
+
+/**
+ * Factory function to create an instance of the Zoho CRM service
+ */
+export async function createZohoCRMService(
+  userId: string
+): Promise<ZohoCRMService | null> {
+  try {
+    const tokens = await getValidZohoTokens(userId);
+    if (!tokens) {
+      console.error("Could not get valid Zoho tokens for user:", userId);
+      return null;
+    }
+
+    return new ZohoCRMService(tokens);
+  } catch (error) {
+    console.error("Error creating Zoho CRM service:", error);
+    return null;
+  }
+}

@@ -347,7 +347,6 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
           <Button
             type="submit"
             disabled={isLoading || !form.formState.isDirty}
-            variant="success"
             className="w-full sm:w-auto h-10 sm:h-11 gap-2 shadow-sm"
           >
             {isLoading ? (
