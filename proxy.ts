@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  const protectedPaths = ["/dashboard", "/(protected)"];
+  const protectedPaths = ["/dashboard"];
   const isProtectedPath = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path.replace("/(protected)", ""))
+    request.nextUrl.pathname.startsWith(path)
   );
 
   if (isProtectedPath) {
@@ -14,14 +14,21 @@ export async function proxy(request: NextRequest) {
       secret: process.env.NEXTAUTH_SECRET,
     });
 
+    console.log("=== MIDDLEWARE CHECK ===");
+    console.log("Path:", request.nextUrl.pathname);
+    console.log("Token exists:", !!token);
+    console.log("Token isActive:", token?.isActive);
+
     if (!token) {
       const loginUrl = new URL("/", request.url);
+      console.log("Redirecting to login: no token");
       return NextResponse.redirect(loginUrl);
     }
 
     if (token.isActive === false) {
       const loginUrl = new URL("/", request.url);
       loginUrl.searchParams.set("error", "AccountBlocked");
+      console.log("Redirecting to login: account blocked");
       return NextResponse.redirect(loginUrl);
     }
   }
@@ -30,5 +37,14 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/(protected)/:path*"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api/auth (auth endpoints)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api/auth|_next/static|_next/image|favicon.ico).*)",
+  ],
 };

@@ -154,6 +154,13 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Permite redirects a URLs del mismo dominio
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Permite callback URLs del mismo dominio
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
     async signIn({ user, account, profile }) {
       try {
         console.log("=== SIGNIN CALLBACK START ===");

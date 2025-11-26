@@ -70,11 +70,18 @@ export function LoginForm({
     setIsLoading(true);
 
     try {
+      console.log("=== CLIENT LOGIN ATTEMPT ===");
+      console.log("Email:", values.email);
+      console.log("Environment:", process.env.NODE_ENV);
+
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
         redirect: false,
       });
+
+      console.log("=== CLIENT SIGNIN RESULT ===");
+      console.log("Result:", JSON.stringify(result, null, 2));
 
       if (result?.error) {
         if (result.error === "ACCOUNT_BLOCKED") {
@@ -90,10 +97,18 @@ export function LoginForm({
         setIsLoading(false);
       } else if (result?.ok) {
         toast.success("Has iniciado sesión correctamente.");
+        // Dar tiempo para que la sesión se establezca
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        console.log("Redirecting to /dashboard");
         router.push("/dashboard");
+        router.refresh();
+      } else {
+        console.error("Unexpected result:", result);
+        toast.error("Error inesperado al iniciar sesión.");
+        setIsLoading(false);
       }
     } catch (error) {
-      console.error("Error al autenticar:", error);
+      console.error("=== CLIENT LOGIN CATCH ERROR ===", error);
       toast.error("Error de autenticación. Intenta nuevamente.");
       setIsLoading(false);
     }
@@ -103,9 +118,10 @@ export function LoginForm({
   async function handleZohoLogin() {
     setIsLoading(true);
     try {
+      console.log("=== CLIENT ZOHO LOGIN ATTEMPT ===");
       await signIn("zoho", { callbackUrl: "/dashboard" });
     } catch (error) {
-      console.error("Error al autenticar con Zoho:", error);
+      console.error("=== CLIENT ZOHO LOGIN ERROR ===", error);
       toast.error("Error de autenticación con Zoho. Intenta nuevamente.");
       setIsLoading(false);
     }
