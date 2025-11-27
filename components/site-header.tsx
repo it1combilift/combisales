@@ -24,7 +24,7 @@ export function SiteHeader({ session }: { session?: any }) {
   const userEmail = session?.user?.email || ''
 
   return (
-    <header className="flex shrink-0 items-center gap-2 rounded-t-2xl border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+    <header className="flex shrink-0 items-center gap-2 rounded-t-2xl bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6 py-1">
         <SidebarTrigger className="-ml-1" />
         <Separator

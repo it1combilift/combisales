@@ -1,11 +1,12 @@
 "use client";
 
+import { Building2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { formatDateShort } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ZohoAccount } from "@/interfaces/zoho";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowUpRight, Building2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -26,6 +27,10 @@ import {
 } from "@tabler/icons-react";
 
 export function createColumns(): ColumnDef<ZohoAccount>[] {
+  const router = useRouter();
+  const ACCOUNT_ID_URL = (accountId: string) =>
+    `/dashboard/projects/visits/${accountId}`;
+
   return [
     {
       id: "select",
@@ -208,21 +213,19 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 className="cursor-pointer"
                 onClick={() => navigator.clipboard.writeText(account.id)}
               >
                 <IconCopy className="size-4" />
                 Copiar ID
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <ArrowUpRight className="size-4" />
-                Detalles
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => router.push(ACCOUNT_ID_URL(account.id))}
+                className="cursor-pointer">
                 <Building2 className="size-4" />
-                Crear visita
+                Visitas
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive">

@@ -103,8 +103,9 @@ export default function ProjectsPage() {
       const link = document.createElement("a");
 
       link.href = url;
-      link.download = `cuentas_zoho_${new Date().toISOString().split("T")[0]
-        }.csv`;
+      link.download = `cuentas_zoho_${
+        new Date().toISOString().split("T")[0]
+      }.csv`;
       link.click();
 
       URL.revokeObjectURL(url);
@@ -120,92 +121,88 @@ export default function ProjectsPage() {
 
   return (
     <section className="mx-auto px-4 space-y-6 w-full h-full">
-      {
-        showLoader ? (
-          <DashboardProjectsPageSkeleton />
-        )
-          :
-          error ? (
-            <EmptyCard
-              title="Error al cargar las cuentas"
-              description={error}
-              icon={<AlertCircle className="h-12 w-12" />}
-              actions={
-                <Button onClick={() => fetchAccounts()} variant="outline">
-                  <RefreshCw className="h-4 w-4" /> Reintentar
-                </Button>
-              }
-            />)
-            : !hasData ? (
-              <EmptyCard
-                title="No se encontraron cuentas"
-                description="No hay cuentas de clientes disponibles en Zoho CRM"
-                icon={<Building2 className="h-12 w-12 text-muted-foreground" />}
-                actions={
-                  <Button onClick={() => fetchAccounts(true)} variant="outline">
-                    <RefreshCw className="h-4 w-4" /> Recargar
-                  </Button>
-                }
-              />
-            ) : (
-              <>
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
-                  <div className="space-y-1">
-                    <H1>Gestión de proyectos</H1>
-                    <div className="flex flex-col justify-start gap-2">
-                      <Paragraph>
-                        Administra las cuentas y proyectos de tus clientes
-                      </Paragraph>
+      {showLoader ? (
+        <DashboardProjectsPageSkeleton />
+      ) : error ? (
+        <EmptyCard
+          title="Error al cargar las cuentas"
+          description={error}
+          icon={<AlertCircle className="h-12 w-12" />}
+          actions={
+            <Button onClick={() => fetchAccounts()} variant="outline">
+              <RefreshCw className="h-4 w-4" /> Reintentar
+            </Button>
+          }
+        />
+      ) : !hasData ? (
+        <EmptyCard
+          title="No se encontraron cuentas"
+          description="No hay cuentas de clientes disponibles en Zoho CRM"
+          icon={<Building2 className="h-12 w-12 text-muted-foreground" />}
+          actions={
+            <Button onClick={() => fetchAccounts(true)} variant="outline">
+              <RefreshCw className="h-4 w-4" /> Recargar
+            </Button>
+          }
+        />
+      ) : (
+        <>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
+            <div className="space-y-1">
+              <H1>Gestión de proyectos</H1>
+              <div className="flex flex-col justify-start gap-2">
+                <Paragraph>
+                  Administra las cuentas y proyectos de tus clientes
+                </Paragraph>
 
-                      {!isLoading && !error && hasData && (
-                        <span className="w-fit hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground text-left">
-                          {accounts.length} cuentas encontradas
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                {!isLoading && !error && hasData && (
+                  <span className="w-fit hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground text-left">
+                    {accounts.length} cuentas encontradas
+                  </span>
+                )}
+              </div>
+            </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleExport}
-                      variant="outline"
-                      disabled={!hasData || showLoader || !!error || isRefreshing}
-                      title="Exportar a CSV"
-                    >
-                      <FileSpreadsheet className="h-4 w-4" />
-                      <span className="hidden md:inline">Exportar</span>
-                    </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleExport}
+                variant="outline"
+                disabled={!hasData || showLoader || !!error || isRefreshing}
+                title="Exportar a CSV"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                <span className="hidden md:inline">Exportar</span>
+              </Button>
 
-                    <Button
-                      onClick={() => fetchAccounts(true)}
-                      variant="outline"
-                      disabled={isRefreshing || showLoader}
-                      title="Actualizar datos"
-                    >
-                      <RefreshCw
-                        className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
-                      />
-                      <span className="hidden md:inline">Actualizar</span>
-                    </Button>
-                  </div>
-                </div>
+              <Button
+                onClick={() => fetchAccounts(true)}
+                variant="outline"
+                disabled={isRefreshing || showLoader}
+                title="Actualizar datos"
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+                />
+                <span className="hidden md:inline">Actualizar</span>
+              </Button>
+            </div>
+          </div>
 
-                <div className="min-h-[400px]">
-                  <AccountsTable
-                    columns={columns}
-                    data={accounts}
-                    isLoading={isRefreshing}
-                    rowSelection={rowSelection}
-                    setRowSelection={setRowSelection}
-                    globalFilter={globalFilter}
-                    setGlobalFilter={setGlobalFilter}
-                    columnFilters={columnFilters}
-                    setColumnFilters={setColumnFilters}
-                  />
-                </div>
-              </>
-            )
-      }
+          <div className="min-h-[400px]">
+            <AccountsTable
+              columns={columns}
+              data={accounts}
+              isLoading={isRefreshing}
+              rowSelection={rowSelection}
+              setRowSelection={setRowSelection}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              columnFilters={columnFilters}
+              setColumnFilters={setColumnFilters}
+            />
+          </div>
+        </>
+      )}
     </section>
   );
 }
