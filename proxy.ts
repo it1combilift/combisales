@@ -1,9 +1,12 @@
+import { Role } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
   const protectedPaths = ["/dashboard"];
+  const adminOnlyPaths = ["/dashboard/users"];
+
   const isProtectedPath = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
@@ -18,6 +21,7 @@ export async function proxy(request: NextRequest) {
     console.log("Path:", request.nextUrl.pathname);
     console.log("Token exists:", !!token);
     console.log("Token isActive:", token?.isActive);
+    console.log("Token role:", token?.role);
 
     if (!token) {
       const loginUrl = new URL("/", request.url);
@@ -30,6 +34,16 @@ export async function proxy(request: NextRequest) {
       loginUrl.searchParams.set("error", "AccountBlocked");
       console.log("Redirecting to login: account blocked");
       return NextResponse.redirect(loginUrl);
+    }
+
+    const isAdminOnlyPath = adminOnlyPaths.some((path) =>
+      request.nextUrl.pathname.startsWith(path)
+    );
+
+    if (isAdminOnlyPath && token.role !== Role.ADMIN) {
+      console.log("Access denied: ADMIN role required");
+      const forbiddenUrl = new URL("/dashboard", request.url);
+      return NextResponse.redirect(forbiddenUrl);
     }
   }
 

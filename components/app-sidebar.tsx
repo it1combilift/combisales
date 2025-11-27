@@ -3,6 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import * as React from "react";
+import { Session } from "next-auth";
+import { Role } from "@prisma/client";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { NavDocuments } from "@/components/nav-documents";
@@ -10,7 +12,6 @@ import { NavSecondary } from "@/components/nav-secondary";
 
 import {
   IconCamera,
-  IconChartBar,
   IconDashboard,
   IconDatabase,
   IconFileAi,
@@ -18,12 +19,10 @@ import {
   IconFileWord,
   IconFolder,
   IconHelp,
-  IconListDetails,
   IconReport,
   IconSearch,
   IconSettings,
   IconUsers,
-  IconUserPlus,
 } from "@tabler/icons-react";
 
 import {
@@ -48,26 +47,13 @@ const data = {
       url: "/dashboard",
       icon: IconDashboard,
     },
-    // {
-    //   title: "Ciclo de vida",
-    //   url: "/dashboard/lifecycle",
-    //   icon: IconListDetails,
-    // },
-    // {
-    //   title: "Analítica",
-    //   url: "/dashboard/analytics",
-    //   icon: IconChartBar,
-    // },
+
     {
       title: "Proyectos",
       url: "/dashboard/projects",
       icon: IconFolder,
     },
-    // {
-    //   title: "Equipo",
-    //   url: "/dashboard/team",
-    //   icon: IconUsers,
-    // },
+
     {
       title: "Usuarios",
       url: "/dashboard/users",
@@ -161,8 +147,16 @@ const data = {
 export function AppSidebar({
   session,
   ...props
-}: React.ComponentProps<typeof Sidebar> & { session?: any }) {
+}: React.ComponentProps<typeof Sidebar> & { session?: Session }) {
   const userData = session?.user || data.user;
+  const userRole = session?.user?.role || Role.SELLER;
+
+  const filteredNavMain = data.navMain.filter((item) => {
+    if (item.url === "/dashboard/users") {
+      return userRole === Role.ADMIN;
+    }
+    return true;
+  });
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -199,7 +193,7 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={filteredNavMain} />
         <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
