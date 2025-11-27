@@ -2,9 +2,9 @@
 
 import axios from "axios";
 import { toast } from "sonner";
-import { UserListItem } from "@/interfaces/user";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { UserListItem } from "@/interfaces/user";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
 import { useState, useEffect, useMemo } from "react";
@@ -18,7 +18,7 @@ import type { ColumnFiltersState } from "@tanstack/react-table";
 import { EditUserForm } from "@/components/users/edit-user-form";
 import { CreateUserForm } from "@/components/users/create-user-form";
 import { UserPlus, RefreshCw, Trash, UsersIcon } from "lucide-react";
-import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
+import { DashboardUsersPageSkeleton } from "@/components/dashboard-skeleton";
 
 import {
   Dialog,
@@ -129,7 +129,7 @@ export default function UsersPage() {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.error ||
-            "Hubo un problema al eliminar el usuario."
+          "Hubo un problema al eliminar el usuario."
         );
       } else {
         toast.error(
@@ -164,7 +164,7 @@ export default function UsersPage() {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.error ||
-            "Hubo un problema al eliminar los usuarios."
+          "Hubo un problema al eliminar los usuarios."
         );
       } else {
         toast.error(
@@ -186,6 +186,7 @@ export default function UsersPage() {
     setIsDeleteDialogOpen(true);
   };
 
+  // Revoke user session
   const handleRevokeSession = async (user: UserListItem) => {
     try {
       const response = await fetch("/api/users/revoke-session", {
@@ -204,7 +205,6 @@ export default function UsersPage() {
 
       toast.success(data.message || "Sesión revocada exitosamente");
 
-      // Opcional: refrescar lista de usuarios
       await fetchUsers(false);
     } catch (error) {
       console.error("Error al revocar sesión:", error);
@@ -268,7 +268,9 @@ export default function UsersPage() {
   return (
     <>
       {isLoading ? (
-        <DashboardPageSkeleton />
+        <div className="px-4">
+          <DashboardUsersPageSkeleton />
+        </div>
       ) : error ? (
         <div className="container mx-auto py-10 px-4">
           <EmptyCard
@@ -292,9 +294,8 @@ export default function UsersPage() {
               <H1>Gestión de usuarios</H1>
               <Paragraph>Administra los usuarios del sistema</Paragraph>
             </div>
-            
+
             <div className="flex gap-2">
-              {/* Bulk Actions */}
               {selectedUserIds.length > 0 && (
                 <div className="flex items-center gap-2">
                   <Button
@@ -349,7 +350,6 @@ export default function UsersPage() {
             </div>
           </div>
 
-          {/* Filters - Always visible */}
           <UsersFilters
             globalFilter={globalFilter}
             setGlobalFilter={setGlobalFilter}
@@ -400,7 +400,7 @@ export default function UsersPage() {
                       user={user}
                       isSelected={
                         !!rowSelection[
-                          originalIndex as keyof typeof rowSelection
+                        originalIndex as keyof typeof rowSelection
                         ]
                       }
                       onSelect={(checked) => {

@@ -6,7 +6,7 @@ import { AlertMessage } from "@/components/alert";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
+import { DashboardLayoutSkeleton} from "@/components/dashboard-skeleton";
 
 export default function DashboardLayout({
   children,
@@ -15,7 +15,7 @@ export default function DashboardLayout({
 }) {
   const { data: session, status } = useSession();
 
-  if (status === "loading") return <DashboardPageSkeleton />;
+  if (status === "loading") return <DashboardLayoutSkeleton />;
 
   if (!session) {
     return (
