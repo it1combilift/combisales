@@ -1,12 +1,11 @@
 "use client";
 
 import { formatDateShort } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ZohoAccount } from "@/interfaces/zoho";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowUpRight, Building2, PencilLine } from "lucide-react";
+import { ArrowUpRight, Building2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -76,13 +75,9 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
       cell: ({ row }) => {
         const industry = row.getValue("Industry") as string | undefined;
         return industry ? (
-          <Badge
-            variant="outline"
-            className="gap-1.5 border-blue-200 dark:border-blue-900/50 text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 font-medium"
-          >
-            <Building2 className="h-3.5 w-3.5" />
-            {industry}
-          </Badge>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm text-muted-foreground">{industry}</span>
+          </div>
         ) : (
           <span className="text-xs text-muted-foreground italic">N/A</span>
         );
@@ -109,7 +104,7 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
             )}
 
             {!country && !city && (
-                <span className="text-xs text-muted-foreground italic">N/A</span>
+              <span className="text-xs text-muted-foreground italic">N/A</span>
             )}
           </div>
         );
@@ -226,8 +221,8 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
                 Detalles
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">
-                <PencilLine className="size-4" />
-                Editar
+                <Building2 className="size-4" />
+                Crear visita
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive">

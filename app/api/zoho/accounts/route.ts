@@ -77,10 +77,26 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error fetching Zoho accounts:", error);
+
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    if (errorMessage.includes("ZOHO_NO_PERMISSION")) {
+      return NextResponse.json(
+        {
+          error: "Permisos de API no habilitados en Zoho CRM",
+          details:
+            "Tu usuario de Zoho no tiene permisos para acceder a la API. Contacta al administrador de Zoho CRM para habilitar 'API Access' en tu perfil de usuario.",
+          helpUrl:
+            "https://help.zoho.com/portal/en/kb/crm/developer-guide/api/articles/api-access-control",
+        },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json(
       {
         error: "Error al obtener cuentas de Zoho CRM",
-        details: error instanceof Error ? error.message : String(error),
+        details: errorMessage,
       },
       { status: 500 }
     );

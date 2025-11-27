@@ -12,7 +12,7 @@ import { Skeleton } from "./ui/skeleton";
  */
 export function DashboardPageSkeleton() {
   return (
-    <div className="container mx-auto px-4 md:px-6 space-y-6 animate-in fade-in duration-300">
+    <div className="mx-auto space-y-6 animate-in fade-in duration-300">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-2">
         {/* Title and Description */}
@@ -38,10 +38,8 @@ export function DashboardPageSkeleton() {
       </div>
 
       {/* Main Content - Generic blocks with border */}
-      <div className="rounded-lg border overflow-hidden bg-card">
-        <div className="divide-y">
-          <Skeleton className="h-[60vh] w-full" />
-        </div>
+      <div className="rounded-lg overflow-hidden">
+        <Skeleton className="h-[50vh] w-full" />
       </div>
 
       {/* Footer/Pagination */}
