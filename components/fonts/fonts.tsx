@@ -1,7 +1,7 @@
 // Header Font Component
 export function H1({ children }: { children: React.ReactNode }) {
   return (
-    <h1 className="scroll-m-20 text-left text-xl sm:text-2xl font-extrabold tracking-tight text-balance leading-tight">
+    <h1 className="scroll-m-20 text-left text-xl sm:text-2xl font-extrabold tracking-tight text-balance leading-tight drop-shadow-md">
       {children}
     </h1>
   );

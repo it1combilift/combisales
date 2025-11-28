@@ -69,13 +69,13 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex flex-col gap-1 min-w-0 flex-1">
                   <H1>{account?.Account_Name || "Sin nombre"}</H1>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex flex-col md:flex-row gap-2 text-sm text-muted-foreground items-start md:items-center">
                     <span className="font-mono text-xs">
                       ID: #{account?.id || "N/A"}
                     </span>
                     {account?.Website && (
                       <>
-                        <span>•</span>
+                        <span className="hidden md:inline">•</span>
                         <a
                           href={account.Website}
                           target="_blank"
@@ -99,7 +99,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 <div className="flex items-center gap-2 shrink-0">
                   <Button
                     onClick={() => router.back()}
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     className="h-9 gap-2"
                   >
@@ -119,97 +119,99 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 </div>
               </div>
 
-              {/* Info Badges Row */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-sm">
-                {/* Owner & Date Section */}
+              {/* Info Badges Section  */}
+              <div className="flex flex-col lg:flex-row lg:items-center flex-wrap gap-2 lg:gap-3">
+                {/* Owner & Date Group */}
                 {(account.Owner || account.Modified_Time) && (
-                  <div className="flex flex-wrap items-center gap-2">
-                    {account.Owner && (
-                      <Badge
-                        variant="secondary"
-                        className="h-7 gap-1.5 font-normal"
-                      >
-                        <User className="size-3.5" />
-                        <span>{account.Owner.name}</span>
-                      </Badge>
-                    )}
+                  <>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {account.Owner && (
+                        <Badge
+                          variant="secondary"
+                          className="h-7 gap-1.5 font-normal"
+                        >
+                          <User className="size-3.5" />
+                          <span>{account.Owner.name}</span>
+                        </Badge>
+                      )}
 
-                    {account.Modified_Time && (
-                      <Badge
-                        variant="outline"
-                        className="h-7 gap-1.5 font-normal"
-                      >
-                        <Calendar className="size-3.5" />
-                        <time dateTime={account.Modified_Time}>
-                          {formatDateShort(account.Modified_Time)}
-                        </time>
-                      </Badge>
+                      {account.Modified_Time && (
+                        <Badge
+                          variant="secondary"
+                          className="h-7 gap-1.5 font-normal"
+                        >
+                          <Calendar className="size-3.5" />
+                          <time dateTime={account.Modified_Time}>
+                            {formatDateShort(account.Modified_Time)}
+                          </time>
+                        </Badge>
+                      )}
+                    </div>
+
+                    {/* Separator - visible only on desktop */}
+                    {(account.Account_Type ||
+                      account.Industry ||
+                      account.Billing_City ||
+                      account.Billing_Country ||
+                      account.Phone ||
+                      account.Email) && (
+                      <Separator
+                        orientation="vertical"
+                        className="h-5 hidden lg:block"
+                      />
                     )}
-                  </div>
+                  </>
                 )}
 
-                {/* Separator */}
-                {(account.Owner || account.Modified_Time) &&
-                  (account.Account_Type ||
-                    account.Industry ||
-                    account.Billing_City ||
-                    account.Phone ||
-                    account.Email) && (
-                    <Separator
-                      orientation="vertical"
-                      className="h-5 hidden sm:block"
-                    />
-                  )}
-
-                {/* Business Info Section */}
+                {/* Business Info Group */}
                 {(account.Account_Type ||
                   account.Industry ||
-                  account.Billing_City) && (
-                  <div className="flex flex-wrap items-center gap-2">
-                    {account.Account_Type && (
-                      <Badge
-                        variant="secondary"
-                        className="h-7 gap-1.5 font-normal"
-                      >
-                        <Briefcase className="size-3.5" />
-                        <span>{account.Account_Type}</span>
-                      </Badge>
-                    )}
+                  account.Billing_City ||
+                  account.Billing_Country) && (
+                  <>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {account.Account_Type && (
+                        <Badge
+                          variant="secondary"
+                          className="h-7 gap-1.5 font-normal"
+                        >
+                          <Briefcase className="size-3.5" />
+                          <span>{account.Account_Type}</span>
+                        </Badge>
+                      )}
 
-                    {account.Industry && (
-                      <Badge variant="outline" className="h-7 font-normal">
-                        {account.Industry}
-                      </Badge>
-                    )}
+                      {account.Industry && (
+                        <Badge variant="secondary" className="h-7 font-normal">
+                          {account.Industry}
+                        </Badge>
+                      )}
 
-                    {(account.Billing_City || account.Billing_Country) && (
-                      <Badge
-                        variant="secondary"
-                        className="h-7 gap-1.5 font-normal"
-                      >
-                        <MapPin className="size-3.5" />
-                        <span>
-                          {[account.Billing_City, account.Billing_Country]
-                            .filter(Boolean)
-                            .join(", ")}
-                        </span>
-                      </Badge>
+                      {(account.Billing_City || account.Billing_Country) && (
+                        <Badge
+                          variant="secondary"
+                          className="h-7 gap-1.5 font-normal"
+                        >
+                          <MapPin className="size-3.5" />
+                          <span>
+                            {[account.Billing_City, account.Billing_Country]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </span>
+                        </Badge>
+                      )}
+                    </div>
+
+                    {/* Separator - visible only on desktop */}
+                    {(account.Phone || account.Email) && (
+                      <Separator
+                        orientation="vertical"
+                        className="h-5 hidden lg:block"
+                      />
                     )}
-                  </div>
+                  </>
                 )}
 
-                {/* Separator */}
-                {(account.Account_Type ||
-                  account.Industry ||
-                  account.Billing_City) &&
-                  (account.Phone || account.Email) && (
-                    <Separator
-                      orientation="vertical"
-                      className="h-5 hidden sm:block"
-                    />
-                  )}
-
-                {/* Contact Info Section */}
+                {/* Contact Info Group */}
                 {(account.Phone || account.Email) && (
                   <div className="flex flex-wrap items-center gap-2">
                     {account.Phone && (
@@ -219,7 +221,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                         aria-label={`Llamar a ${account.Phone}`}
                       >
                         <Badge
-                          variant="outline"
+                          variant="secondary"
                           className="h-7 gap-1.5 font-normal hover:bg-green-500/10 hover:text-green-600 hover:border-green-500/50 transition-all cursor-pointer"
                         >
                           <Phone className="size-3.5" />
@@ -235,14 +237,13 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                         aria-label={`Enviar email a ${account.Email}`}
                       >
                         <Badge
-                          variant="outline"
+                          variant="secondary"
                           className="h-7 gap-1.5 font-normal hover:bg-blue-500/10 hover:text-blue-600 hover:border-blue-500/50 transition-all cursor-pointer"
                         >
                           <Mail className="size-3.5" />
-                          <span className="hidden sm:inline">
+                          <span className="truncate max-w-[180px] sm:max-w-none">
                             {account.Email}
                           </span>
-                          <span className="sm:hidden">Email</span>
                         </Badge>
                       </a>
                     )}
