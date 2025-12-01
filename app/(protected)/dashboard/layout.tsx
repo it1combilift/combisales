@@ -3,10 +3,11 @@
 import { useSession } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
 import { AlertMessage } from "@/components/alert";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { DashboardLayoutSkeleton} from "@/components/dashboard-skeleton";
+import { DashboardLayoutSkeleton } from "@/components/dashboard-skeleton";
 
 export default function DashboardLayout({
   children,
@@ -40,7 +41,7 @@ export default function DashboardLayout({
         <div className="flex flex-1 flex-col w-full">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <main className="flex flex-col gap-4 py-4 md:gap-6">
-              {children}
+              <NuqsAdapter>{children}</NuqsAdapter>
               <Toaster position="bottom-right" richColors />
             </main>
           </div>

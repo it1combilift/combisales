@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AccountsTableProps } from "@/interfaces/zoho";
 import { useIsMobile } from "@/components/ui/use-mobile";
+import { AccountsCardsPageSkeleton } from "../dashboard-skeleton";
+import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 
 import {
   ColumnFiltersState,
@@ -61,26 +63,62 @@ export function AccountsTable({
   isLoading = false,
   rowSelection: externalRowSelection,
   setRowSelection: setExternalRowSelection,
-  globalFilter: externalGlobalFilter,
-  setGlobalFilter: setExternalGlobalFilter,
   columnFilters: externalColumnFilters,
   setColumnFilters: setExternalColumnFilters,
 }: AccountsTableProps) {
   const isMobile = useIsMobile();
+
+  const [searchQuery, setSearchQuery] = useQueryState(
+    "search",
+    parseAsString.withDefault("")
+  );
+  const [pageIndex, setPageIndex] = useQueryState(
+    "page",
+    parseAsInteger.withDefault(1)
+  );
+  const [pageSize, setPageSize] = useQueryState(
+    "pageSize",
+    parseAsInteger.withDefault(10)
+  );
+  const [sortBy, setSortBy] = useQueryState(
+    "sortBy",
+    parseAsString.withDefault("")
+  );
+  const [sortOrder, setSortOrder] = useQueryState(
+    "sortOrder",
+    parseAsString.withDefault("")
+  );
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [internalColumnFilters, setInternalColumnFilters] =
     React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [internalRowSelection, setInternalRowSelection] = React.useState({});
-  const [internalGlobalFilter, setInternalGlobalFilter] = React.useState("");
 
   const rowSelection = externalRowSelection ?? internalRowSelection;
   const setRowSelection = setExternalRowSelection ?? setInternalRowSelection;
-  const globalFilter = externalGlobalFilter ?? internalGlobalFilter;
-  const setGlobalFilter = setExternalGlobalFilter ?? setInternalGlobalFilter;
+  // Always use searchQuery from nuqs for global filter
+  const globalFilter = searchQuery;
+  const setGlobalFilter = setSearchQuery;
   const columnFilters = externalColumnFilters ?? internalColumnFilters;
   const setColumnFilters = setExternalColumnFilters ?? setInternalColumnFilters;
+
+  React.useEffect(() => {
+    if (sortBy && sortOrder) {
+      setSorting([{ id: sortBy, desc: sortOrder === "desc" }]);
+    }
+  }, [sortBy, sortOrder]);
+
+  React.useEffect(() => {
+    if (sorting.length > 0) {
+      setSortBy(sorting[0].id);
+      setSortOrder(sorting[0].desc ? "desc" : "asc");
+    } else {
+      setSortBy(null);
+      setSortOrder(null);
+    }
+  }, [sorting, setSortBy, setSortOrder]);
 
   const table = useReactTable({
     data,
@@ -101,8 +139,25 @@ export function AccountsTable({
       columnVisibility,
       rowSelection,
       globalFilter,
+      pagination: {
+        pageIndex: pageIndex - 1,
+        pageSize,
+      },
     },
+    manualPagination: false,
+    pageCount: Math.ceil(data.length / pageSize),
   });
+
+  React.useEffect(() => {
+    const tablePagination = table.getState().pagination;
+    const internalPageIndex = pageIndex - 1;
+    if (tablePagination.pageIndex !== internalPageIndex) {
+      table.setPageIndex(internalPageIndex);
+    }
+    if (tablePagination.pageSize !== pageSize) {
+      table.setPageSize(pageSize);
+    }
+  }, [pageIndex, pageSize, table]);
 
   return (
     <div className="w-full space-y-4">
@@ -112,18 +167,26 @@ export function AccountsTable({
             <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Buscar cuentas..."
-              value={globalFilter ?? ""}
-              onChange={(event) => setGlobalFilter(event.target.value)}
-              className="pl-9 h-10"
+              value={searchQuery}
+              onChange={(event) => {
+                const value = event.target.value;
+                setSearchQuery(value);
+                // Reset to page 1 when searching
+                setPageIndex(1);
+              }}
+              className="pl-9 h-10 text-xs sm:text-sm"
             />
           </div>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-auto h-10">
+            <Button
+              variant="outline"
+              className="w-auto h-10 text-xs sm:text-sm"
+            >
               <IconLayoutColumns className="h-4 w-4" />
               <span className="sm:hidden md:inline">Columnas</span>
-              <IconChevronDown className="ml-2 h-4 w-4" />
+              <IconChevronDown className="ml-2 size-3.5 sm:size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
@@ -134,13 +197,31 @@ export function AccountsTable({
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className="capitalize"
+                    className="capitalize text-xs sm:text-sm"
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) =>
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {column.id === "Account_Name"
+                      ? "Cuenta"
+                      : column.id === "Account_Owner"
+                      ? "Propietario"
+                      : column.id === "Created_Time"
+                      ? "Fecha de creación"
+                      : column.id === "Modified_Time"
+                      ? "Últ. modificación"
+                      : column.id === "Account_Type"
+                      ? "Tipo de cuenta"
+                      : column.id === "Industry"
+                      ? "Industria"
+                      : column.id === "Billing_Country"
+                      ? "País"
+                      : column.id === "Phone"
+                      ? "Contacto"
+                      : column.id === "Owner"
+                      ? "Propietario"
+                      : column.id.replaceAll("_", " ")}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -157,17 +238,7 @@ export function AccountsTable({
                 key={index}
                 className="rounded-lg border bg-card p-4 space-y-3"
               >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2 flex-1">
-                    <div className="h-5 bg-muted animate-pulse rounded w-3/4"></div>
-                    <div className="h-4 bg-muted animate-pulse rounded w-1/2"></div>
-                  </div>
-                  <div className="h-8 w-8 bg-muted animate-pulse rounded"></div>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-4 bg-muted animate-pulse rounded w-full"></div>
-                  <div className="h-4 bg-muted animate-pulse rounded w-5/6"></div>
-                </div>
+                <AccountsCardsPageSkeleton />
               </div>
             ))
           ) : table.getRowModel().rows?.length ? (
@@ -269,32 +340,36 @@ export function AccountsTable({
               Filas por página
             </p>
             <Select
-              value={table.getState().pagination.pageSize.toString()}
+              value={pageSize.toString()}
               onValueChange={(value) => {
-                table.setPageSize(Number(value));
+                const newPageSize = Number(value);
+                setPageSize(newPageSize);
+                table.setPageSize(newPageSize);
+                setPageIndex(1);
               }}
             >
               <SelectTrigger className="h-8 w-[70px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={pageSize.toString()}>
-                    {pageSize}
+                {[10, 20, 30, 40, 50].map((size) => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium text-primary whitespace-nowrap">
-            Página {table.getState().pagination.pageIndex + 1} de{" "}
-            {table.getPageCount()}
+            Página {pageIndex} de {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(0)}
+              onClick={() => {
+                setPageIndex(1);
+              }}
               disabled={!table.getCanPreviousPage()}
             >
               <span className="sr-only">Ir a la primera página</span>
@@ -303,7 +378,9 @@ export function AccountsTable({
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => table.previousPage()}
+              onClick={() => {
+                setPageIndex(pageIndex - 1);
+              }}
               disabled={!table.getCanPreviousPage()}
             >
               <span className="sr-only">Ir a la página anterior</span>
@@ -312,7 +389,9 @@ export function AccountsTable({
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => table.nextPage()}
+              onClick={() => {
+                setPageIndex(pageIndex + 1);
+              }}
               disabled={!table.getCanNextPage()}
             >
               <span className="sr-only">Ir a la página siguiente</span>
@@ -321,7 +400,9 @@ export function AccountsTable({
             <Button
               variant="outline"
               className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              onClick={() => {
+                setPageIndex(table.getPageCount());
+              }}
               disabled={!table.getCanNextPage()}
             >
               <span className="sr-only">Ir a la última página</span>

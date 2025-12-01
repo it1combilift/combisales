@@ -22,6 +22,7 @@ import {
   Calendar,
   ArrowLeft,
   Plus,
+  SaveAllIcon,
 } from "lucide-react";
 
 const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -71,7 +72,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   <H1>{account?.Account_Name || "Sin nombre"}</H1>
                   <div className="flex flex-col md:flex-row gap-2 text-sm text-muted-foreground items-start md:items-center">
                     <span className="font-mono text-xs">
-                      ID: #{account?.id || "N/A"}
+                      #{account?.id || "N/A"}
                     </span>
                     {account?.Website && (
                       <>
@@ -111,10 +112,21 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                     onClick={() => {}}
                     size="sm"
                     className="h-9 gap-2"
+                    variant="secondary"
+                    aria-label="Guardar cliente"
+                  >
+                    <SaveAllIcon className="size-4" />
+                    <span>Guardar</span>
+                  </Button>
+
+                  <Button
+                    onClick={() => {}}
+                    size="sm"
+                    className="h-9 gap-2"
                     aria-label="Crear visita para el cliente"
                   >
                     <Plus className="size-4" />
-                    <span>Nueva visita</span>
+                    <span>Crear</span>
                   </Button>
                 </div>
               </div>

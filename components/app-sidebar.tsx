@@ -49,7 +49,7 @@ const data = {
     },
 
     {
-      title: "Proyectos",
+      title: "Clientes",
       url: "/dashboard/projects",
       icon: IconFolder,
     },

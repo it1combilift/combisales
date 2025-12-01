@@ -139,7 +139,8 @@ export function DashboardUsersPageSkeleton() {
         {/* Title and Description */}
         <div className="space-y-2.5 flex-1">
           <Skeleton className="h-8 w-56" /> {/* Gestión de usuarios */}
-          <Skeleton className="h-4 w-64 max-w-full" /> {/* Administra los usuarios del sistema */}
+          <Skeleton className="h-4 w-64 max-w-full" />{" "}
+          {/* Administra los usuarios del sistema */}
         </div>
 
         {/* Action Buttons */}
@@ -194,7 +195,8 @@ export function DashboardUsersPageSkeleton() {
             <Skeleton className="h-4 w-32 hidden lg:block" /> {/* Creación */}
             <Skeleton className="h-4 w-28 hidden xl:block" /> {/* País */}
             <div className="hidden xl:block">
-              <Skeleton className="h-6 w-20 rounded-full" /> {/* Cuenta badge */}
+              <Skeleton className="h-6 w-20 rounded-full" />{" "}
+              {/* Cuenta badge */}
             </div>
             <div className="hidden 2xl:flex items-center gap-2">
               <Skeleton className="h-4 w-4" /> {/* Auth icon */}
@@ -383,7 +385,10 @@ export function DashboardLayoutSkeleton() {
                 </div>
               </div>
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="p-4 border-b last:border-b-0 flex items-center gap-6">
+                <div
+                  key={i}
+                  className="p-4 border-b last:border-b-0 flex items-center gap-6"
+                >
                   <Skeleton className="h-4 w-24" />
                   <Skeleton className="h-4 w-28" />
                   <Skeleton className="h-4 w-16" />
@@ -397,5 +402,23 @@ export function DashboardLayoutSkeleton() {
         </main>
       </div>
     </div>
+  );
+}
+
+export function AccountsCardsPageSkeleton() {
+  return (
+    <>
+      <div className="flex items-start justify-between">
+        <div className="space-y-2 flex-1">
+          <div className="h-5 bg-muted animate-pulse rounded w-3/4"></div>
+          <div className="h-4 bg-muted animate-pulse rounded w-1/2"></div>
+        </div>
+        <div className="h-8 w-8 bg-muted animate-pulse rounded"></div>
+      </div>
+      <div className="space-y-2">
+        <div className="h-4 bg-muted animate-pulse rounded w-full"></div>
+        <div className="h-4 bg-muted animate-pulse rounded w-5/6"></div>
+      </div>
+    </>
   );
 }
