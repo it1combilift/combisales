@@ -166,12 +166,11 @@ export function AccountsTable({
           <div className="relative flex-1 max-w-full sm:max-w-sm">
             <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Buscar cuentas..."
+              placeholder="Buscar clientes..."
               value={searchQuery}
               onChange={(event) => {
                 const value = event.target.value;
                 setSearchQuery(value);
-                // Reset to page 1 when searching
                 setPageIndex(1);
               }}
               className="pl-9 h-10 text-xs sm:text-sm"
@@ -204,7 +203,7 @@ export function AccountsTable({
                     }
                   >
                     {column.id === "Account_Name"
-                      ? "Cuenta"
+                      ? "Cliente"
                       : column.id === "Account_Owner"
                       ? "Propietario"
                       : column.id === "Created_Time"

@@ -23,7 +23,6 @@ import {
   IconWorld,
   IconMail,
   IconPhone,
-  IconCopy,
 } from "@tabler/icons-react";
 
 export function createColumns(): ColumnDef<ZohoAccount>[] {
@@ -56,7 +55,7 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
     },
     {
       accessorKey: "Account_Name",
-      header: "Cuenta",
+      header: "Cliente",
       cell: ({ row }) => {
         const name = row.getValue("Account_Name") as string;
         const accountType = row.original.Account_Type;
