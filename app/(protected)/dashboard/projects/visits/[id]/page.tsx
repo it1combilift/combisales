@@ -10,19 +10,20 @@ import { Badge } from "@/components/ui/badge";
 import { ZohoAccount } from "@/interfaces/zoho";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import AnimatedTabsComponent from "@/components/accounts/tabs";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 
 import {
   MapPin,
   Mail,
   Phone,
-  Globe,
   User,
   Briefcase,
   Calendar,
   ArrowLeft,
   Plus,
   SaveAllIcon,
+  Link,
 } from "lucide-react";
 
 const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -60,6 +61,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
         <DashboardPageSkeleton />
       ) : account ? (
         <>
+          {/* Header Content */}
           <header
             className="sticky top-0 z-20 -mx-4 px-4 pb-4 bg-background/95 backdrop-blur-md border-b border-border/50"
             role="banner"
@@ -84,7 +86,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                           className="inline-flex items-center gap-1.5 hover:text-primary transition-colors hover:underline"
                           aria-label={`Visitar sitio web: ${account.Website}`}
                         >
-                          <Globe className="size-3.5 shrink-0" />
+                          <Link className="size-3.5 shrink-0" />
                           <span className="truncate max-w-[200px] sm:max-w-none">
                             {account.Website.replace(
                               /^https?:\/\//,
@@ -116,7 +118,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                     aria-label="Guardar cliente"
                   >
                     <SaveAllIcon className="size-4" />
-                    <span>Guardar</span>
+                    <span className="hidden sm:inline">Guardar</span>
                   </Button>
 
                   <Button
@@ -126,7 +128,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                     aria-label="Crear visita para el cliente"
                   >
                     <Plus className="size-4" />
-                    <span>Crear</span>
+                    <span className="hidden sm:inline">Crear</span>
                   </Button>
                 </div>
               </div>
@@ -160,7 +162,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       )}
                     </div>
 
-                    {/* Separator - visible only on desktop */}
+                    {/* Separator */}
                     {(account.Account_Type ||
                       account.Industry ||
                       account.Billing_City ||
@@ -213,7 +215,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       )}
                     </div>
 
-                    {/* Separator - visible only on desktop */}
+                    {/* Separator */}
                     {(account.Phone || account.Email) && (
                       <Separator
                         orientation="vertical"
@@ -264,6 +266,9 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </div>
           </header>
+
+          {/* Page Content */}
+          <AnimatedTabsComponent />
         </>
       ) : null}
     </section>

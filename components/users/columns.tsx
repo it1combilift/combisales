@@ -158,18 +158,12 @@ export const createColumns = ({
     cell: ({ row }) => {
       const isActive = row.getValue("isActive") as boolean;
       return isActive ? (
-        <Badge
-          variant="outline"
-          className="gap-1.5 border-green-200 dark:border-green-900/50 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/50 font-medium"
-        >
+        <Badge variant="success">
           <CheckCircle2 className="size-3.5" />
           Activa
         </Badge>
       ) : (
-        <Badge
-          variant="outline"
-          className="gap-1.5 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/50 font-medium"
-        >
+        <Badge variant="destructive">
           <XCircle className="size-3.5" />
           Inactiva
         </Badge>

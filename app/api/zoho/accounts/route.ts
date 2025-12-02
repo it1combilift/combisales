@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        error: "Error al obtener cuentas de Zoho CRM",
+        error: "Error al obtener clientes de Zoho CRM",
         details: errorMessage,
       },
       { status: 500 }

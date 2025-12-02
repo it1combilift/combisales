@@ -37,16 +37,20 @@ export default function ProjectsPage() {
       });
 
       if (response.status !== 200) {
-        throw new Error(response.data.error || "Error al obtener las cuentas");
+        throw new Error(response.data.error || "Error al obtener los clientes");
       }
 
       setAccounts(response.data.accounts || []);
-      if (isRefresh) toast.success("Cuentas actualizadas correctamente");
+      if (isRefresh) toast.success("Clientes actualizados correctamente", {
+        closeButton: true,
+      });
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.error || err.message || "Error desconocido";
       setError(errorMessage);
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        closeButton: true,
+      });
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -67,7 +71,7 @@ export default function ProjectsPage() {
         <DashboardProjectsPageSkeleton />
       ) : error ? (
         <EmptyCard
-          title="Error al cargar las cuentas"
+          title="Error al cargar los clientes"
           description={error}
           icon={<AlertCircle className="h-12 w-12" />}
           actions={
@@ -78,8 +82,8 @@ export default function ProjectsPage() {
         />
       ) : !hasData ? (
         <EmptyCard
-          title="No se encontraron cuentas"
-          description="No hay cuentas de clientes disponibles en Zoho CRM"
+          title="No se encontraron clientes"
+          description="No hay clientes disponibles en Zoho CRM"
           icon={<Building2 className="h-12 w-12 text-muted-foreground" />}
           actions={
             <Button onClick={() => fetchAccounts(true)} variant="outline">

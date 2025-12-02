@@ -98,7 +98,6 @@ export function AccountsTable({
 
   const rowSelection = externalRowSelection ?? internalRowSelection;
   const setRowSelection = setExternalRowSelection ?? setInternalRowSelection;
-  // Always use searchQuery from nuqs for global filter
   const globalFilter = searchQuery;
   const setGlobalFilter = setSearchQuery;
   const columnFilters = externalColumnFilters ?? internalColumnFilters;

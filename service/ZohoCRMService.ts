@@ -48,7 +48,6 @@ export class ZohoCRMService {
         const errorData = error.response?.data;
         console.error("Zoho CRM API error:", errorData);
 
-        // Detectar error específico de permisos
         if (errorData?.code === "NO_PERMISSION") {
           throw new Error(
             "ZOHO_NO_PERMISSION: El usuario no tiene permisos de API habilitados en Zoho CRM. " +
