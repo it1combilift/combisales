@@ -94,7 +94,7 @@ export default function ProjectsPage() {
       ) : (
         <>
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
-            <div className="space-y-1">
+            <div>
               <H1>Gestión de clientes</H1>
               <div className="flex flex-col justify-start gap-2">
                 <Paragraph>Administra las visitas de tus clientes</Paragraph>

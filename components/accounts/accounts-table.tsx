@@ -252,8 +252,8 @@ export function AccountsTable({
               ))
           ) : (
             <EmptyCard
-              title="No se encontraron cuentas."
-              description="No hay cuentas disponibles para mostrar."
+              title="No se encontraron clientes."
+              description="No hay clientes disponibles para mostrar."
               icon={<Building2 className="h-12 w-12" />}
             />
           )}
@@ -315,8 +315,8 @@ export function AccountsTable({
                     className="h-24 text-center"
                   >
                     <EmptyCard
-                      title="No se encontraron cuentas."
-                      description="No hay cuentas disponibles para mostrar."
+                      title="No se encontraron clientes."
+                      description="No hay clientes disponibles para mostrar."
                       icon={<Building2 className="h-12 w-12" />}
                     />
                   </TableCell>

@@ -87,7 +87,7 @@ export default function VisitFormDialog({
           <div className="flex flex-col h-full max-h-[90vh]">
             {/* HEADER */}
             <div className="px-4 sm:px-6 py-4 border-b border-border">
-              <DialogHeader className="text-left">
+              <DialogHeader className="text-left ">
                 <DialogTitle className="text-base font-semibold leading-tight tracking-tight text-pretty">
                   Registrar visita
                 </DialogTitle>

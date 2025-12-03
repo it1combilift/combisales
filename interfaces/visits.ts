@@ -226,6 +226,7 @@ export interface CreateCustomerData {
 export interface CreateVisitData {
   customerId: string;
   formType: VisitFormType;
+  status?: VisitStatus;
   visitDate?: Date;
 }
 

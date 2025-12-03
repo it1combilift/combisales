@@ -4,13 +4,12 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { H1 } from "@/components/fonts/fonts";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ZohoAccount } from "@/interfaces/zoho";
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/empty-card";
 import { Customer, Visit } from "@/interfaces/visits";
+import { H1, MonoText } from "@/components/fonts/fonts";
 import { ColumnFiltersState } from "@tanstack/react-table";
 import { createColumns } from "@/components/visits/columns";
 import AnimatedTabsComponent from "@/components/accounts/tabs";
@@ -32,7 +31,6 @@ import {
 import {
   MapPin,
   User,
-  Briefcase,
   ArrowLeft,
   Plus,
   Link,
@@ -57,63 +55,53 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const router = useRouter();
 
-  // Function to save customer automatically with complete Zoho data
+  // Function to save customer automatically
   const saveCustomerAutomatically = async (accountData: ZohoAccount) => {
     try {
       const response = await axios.post("/api/customers", {
         zohoAccountId: accountData.id,
 
-        // Información principal
         accountName: accountData.Account_Name,
         razonSocial: accountData.Razon_Social,
         accountNumber: accountData.Account_Number,
         cif: accountData.CIF,
         codigoCliente: accountData.C_digo_Cliente,
 
-        // Clasificación
         accountType: accountData.Account_Type,
         industry: accountData.Industry,
         subSector: accountData.Sub_Sector,
 
-        // Contacto
         phone: accountData.Phone,
         fax: accountData.Fax,
         email: accountData.Correo_electr_nico || accountData.Email,
         website: accountData.Website,
 
-        // Dirección de facturación
         billingStreet: accountData.Billing_Street,
         billingCity: accountData.Billing_City,
         billingState: accountData.Billing_State,
         billingCode: accountData.Billing_Code,
         billingCountry: accountData.Billing_Country,
 
-        // Dirección de envío
         shippingStreet: accountData.Shipping_Street,
         shippingCity: accountData.Shipping_City,
         shippingState: accountData.Shipping_State,
         shippingCode: accountData.Shipping_Code,
         shippingCountry: accountData.Shipping_Country,
 
-        // Geolocalización
         latitude: accountData.dealsingooglemaps__Latitude,
         longitude: accountData.dealsingooglemaps__Longitude,
 
-        // Propietario de la cuenta en Zoho
         zohoOwnerId: accountData.Owner?.id,
         zohoOwnerName: accountData.Owner?.name,
         zohoOwnerEmail: accountData.Owner?.email,
 
-        // Creador de la cuenta en Zoho
         zohoCreatedById: accountData.Created_By?.id,
         zohoCreatedByName: accountData.Created_By?.name,
         zohoCreatedByEmail: accountData.Created_By?.email,
 
-        // Cuenta padre
         parentAccountId: accountData.Parent_Account?.id,
         parentAccountName: accountData.Parent_Account?.name,
 
-        // Estados y flags booleanos
         clienteConEquipo: accountData.Cliente_con_Equipo ?? false,
         cuentaNacional: accountData.Cuenta_Nacional ?? false,
         clienteBooks: accountData.Cliente_Books ?? false,
@@ -122,13 +110,11 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
         revisado: accountData.Revisado ?? false,
         localizacionesMultiples: accountData.Localizaciones_multiples ?? false,
 
-        // Otros campos
         description: accountData.Description,
         comunidadAutonoma: accountData.Comunidad_Aut_noma,
         tipoPedido: accountData.Tipo_de_pedido,
         estadoCuenta: accountData.Estado_de_la_Cuenta,
 
-        // Metadatos de Zoho
         zohoCreatedAt: accountData.Created_Time
           ? new Date(accountData.Created_Time)
           : undefined,
@@ -360,33 +346,33 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           >
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1 space-y-1">
-                <H1 className="text-base sm:text-xl truncate">
-                  {account?.Account_Name || "Sin nombre"}
-                </H1>
+                <H1>{account?.Account_Name || "Sin nombre"}</H1>
 
-                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <span className="font-mono truncate max-w-20 sm:max-w-24 md:max-w-full">
+                <div className="flex flex-wrap items-center gap-2">
+                  <MonoText>
                     <Hash className="size-3 inline-block" />
                     {account?.id || "N/A"}
-                  </span>
+                  </MonoText>
 
                   {account?.Website && (
-                    <a
-                      href={account.Website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="
-              inline-flex items-center gap-1.5 
-              hover:text-primary hover:underline 
-              transition-colors truncate max-w-[140px]
-            "
-                    >
-                      <Link className="size-3" />
-                      {account.Website.replace(/^https?:\/\//, "").replace(
-                        /\/$/,
-                        ""
-                      )}
-                    </a>
+                    <MonoText>
+                      <Link className="size-3 inline-block mr-1" />
+                      <a
+                        href={
+                          account.Website.startsWith("http")
+                            ? account.Website
+                            : `http://${account.Website}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-primary hover:underline transition-colors"
+                      >
+                        {account.Website.replace(/^https?:\/\//, "").replace(
+                          /\/$/,
+                          ""
+                        )}
+                      </a>
+                    </MonoText>
                   )}
                 </div>
               </div>
@@ -413,7 +399,6 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </div>
 
-            {/* BADGES (NO SCROLL, SIEMPRE ORGANIZADO) */}
             <div
               className="
       mt-2 
@@ -423,32 +408,31 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
     "
             >
               {account.Owner && (
-                <Badge variant="secondary" className="h-6 gap-1.5 font-normal">
-                  <User className="size-3" />
+                <MonoText>
+                  <User className="size-3 inline mr-1" />
                   {account.Owner.name}
-                </Badge>
+                </MonoText>
               )}
 
               {account.Account_Type && (
-                <Badge variant="secondary" className="h-6 gap-1.5 font-normal">
-                  <Briefcase className="size-3" />
+                <MonoText>
                   {account.Account_Type}
-                </Badge>
+                </MonoText>
               )}
 
               {account.Industry && (
-                <Badge variant="secondary" className="h-6 font-normal">
+                <MonoText>
                   {account.Industry}
-                </Badge>
+                </MonoText>
               )}
 
               {(account.Billing_City || account.Billing_Country) && (
-                <Badge variant="secondary" className="h-6 gap-1.5 font-normal">
-                  <MapPin className="size-3" />
+                <MonoText>
+                  <MapPin className="size-3 inline mr-1" />
                   {[account.Billing_City, account.Billing_Country]
                     .filter(Boolean)
                     .join(", ")}
-                </Badge>
+                </MonoText>
               )}
             </div>
           </header>

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { VisitFormType } from "@prisma/client";
+import { VisitFormType, VisitStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { CreateVisitData, CreateFormularioCSSData } from "@/interfaces/visits";
@@ -107,6 +107,7 @@ export async function POST(req: NextRequest) {
         customerId: visitData.customerId,
         userId: session.user.id,
         formType: visitData.formType,
+        status: visitData.status || VisitStatus.COMPLETADA,
         visitDate: visitData.visitDate || new Date(),
         ...(visitData.formType === VisitFormType.ANALISIS_CSS && formularioData
           ? {

@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 // Header Font Component
 export function H1({
   children,
@@ -8,20 +10,15 @@ export function H1({
 }) {
   return (
     <h1
-      className={`
-        scroll-m-20 
-        text-left 
-        text-xl sm:text-2xl
-        font-extrabold 
-        tracking-tight 
-        text-balance 
-        leading-tight 
-        bg-linear-to-r from-foreground to-foreground/80 
-        bg-clip-text 
-        transition-colors 
-        duration-200
-        ${className}
-      `}
+      className={cn(
+        "text-lg xs:text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-primary",
+        "drop-shadow-sm",
+        "transition-all duration-200",
+        "hover:text-primary/90 hover:scale-[1.02]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+        "min-w-0 shrink truncate"
+      )}
+      {...(className && { className })}
     >
       {children}
     </h1>
@@ -67,7 +64,7 @@ export function MonoText({
     <code
       className={`
         font-mono 
-        text-xs sm:text-sm
+        text-xs
         wrap-break-word 
         px-2 py-1 
         rounded-md 
@@ -79,6 +76,7 @@ export function MonoText({
         duration-200 
         hover:bg-muted/70 
         dark:hover:bg-muted/50
+        flex items-center gap-1
         ${className}
       `}
     >
