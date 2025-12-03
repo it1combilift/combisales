@@ -1,0 +1,104 @@
+{
+    "accounts": [
+        {
+            "Owner": {
+                "name": "Rodolfo Tuñón Marciaga",
+                "id": "1627275000047983001",
+                "email": "ventas1@combilift.es"
+            },
+            "$currency_symbol": "€",
+            "Propietario_Original": null,
+            "$field_states": null,
+            "Account_Type": "Cliente Final",
+            "forced_currency": null,
+            "Last_Activity_Time": "2025-12-02T09:50:32-05:00",
+            "Cliente_con_Equipo": true,
+            "Industry": "Construcción",
+            "$state": "save",
+            "$process_flow": false,
+            "Billing_Country": "Panamá",
+            "$locked_for_me": false,
+            "id": "1627275000002085003",
+            "Razon_Social": "Hopsa Panamá",
+            "Sub_Sector": "Almacenes Mat. Constr.",
+            "Tipo_de_pedido": null,
+            "$approved": true,
+            "CIF": null,
+            "$approval": {
+                "delegate": false,
+                "takeover": false,
+                "approve": false,
+                "reject": false,
+                "resubmit": false
+            },
+            "Billing_Street": "Vía Transistmica a un costado de Rodelag",
+            "Created_Time": "2016-08-23T15:06:22-05:00",
+            "$editable": true,
+            "Billing_Code": null,
+            "dealsingooglemaps__Last_Call_ID": null,
+            "dealsingooglemaps__Last_Call_Date": null,
+            "Billing_City": "Panamá",
+            "dealsingooglemaps__Latitude": "9.0000768",
+            "Divisi_n_de_M_xico": null,
+            "Created_By": {
+                "name": "Yessica Moreno Morales",
+                "id": "1627275000000181077",
+                "email": "ventas2@combilift.es"
+            },
+            "$zia_owner_assignment": null,
+            "$is_duplicate": false,
+            "dealsingooglemaps__Longitude": "-79.5250981",
+            "Localizaciones_multiples": false,
+            "dealsingooglemaps__Last_Event_Date": null,
+            "Description": null,
+            "dealsingooglemaps__Last_Task_ID": null,
+            "$review_process": {
+                "approve": false,
+                "reject": false,
+                "resubmit": false
+            },
+            "Website": "http://www.hopsa.com",
+            "Correo_electr_nico": "Info@hopsa.com",
+            "$layout_id": {
+                "display_label": "Estándar",
+                "name": "Estándar",
+                "id": "1627275000000504027"
+            },
+            "Record_Image": null,
+            "Revisado": false,
+            "Comunidad_Aut_noma": null,
+            "Modified_By": {
+                "name": "info MATRIZ",
+                "id": "1627275000000085003",
+                "email": "info@combilift.es"
+            },
+            "$review": null,
+            "Cuenta_Nacional": false,
+            "Phone": "+507 303 3907",
+            "Account_Name": "HOPSA",
+            "dealsingooglemaps__Last_Event_ID": null,
+            "Cliente_Books": false,
+            "Condiciones_Especiales": false,
+            "Modified_Time": "2025-12-02T09:50:32-05:00",
+            "Estado_de_la_Cuenta": null,
+            "Proyecto_abierto": true,
+            "Territories": null,
+            "C_digo_Cliente": "X-2273",
+            "$orchestration": false,
+            "Parent_Account": null,
+            "Layout": {
+                "display_label": "Estándar",
+                "name": "Estándar",
+                "id": "1627275000000504027"
+            },
+            "dealsingooglemaps__Last_Task_Date": null,
+            "$in_merge": false,
+            "Fuente_de_Importaci_n": null,
+            "Locked__s": false,
+            "Billing_State": "Panamá",
+            "Tag": [],
+            "Fax": null,
+            "$approval_state": "approved"
+        }
+    ]
+}

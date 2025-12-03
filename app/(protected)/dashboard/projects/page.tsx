@@ -18,7 +18,6 @@ export default function ProjectsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -41,9 +40,10 @@ export default function ProjectsPage() {
       }
 
       setAccounts(response.data.accounts || []);
-      if (isRefresh) toast.success("Clientes actualizados correctamente", {
-        closeButton: true,
-      });
+      if (isRefresh)
+        toast.success("Clientes actualizados correctamente", {
+          closeButton: true,
+        });
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.error || err.message || "Error desconocido";
@@ -97,9 +97,7 @@ export default function ProjectsPage() {
             <div className="space-y-1">
               <H1>Gestión de clientes</H1>
               <div className="flex flex-col justify-start gap-2">
-                <Paragraph>
-                  Administra las visitas de las visitas de tus clientes
-                </Paragraph>
+                <Paragraph>Administra las visitas de tus clientes</Paragraph>
 
                 {!isLoading && !error && hasData && (
                   <span className="w-fit hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground text-left">

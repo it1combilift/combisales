@@ -1,0 +1,227 @@
+"use client";
+
+import * as React from "react";
+import { History } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { TableRowSkeleton } from "@/components/ui/skeleton";
+
+import {
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  isLoading?: boolean;
+  rowSelection?: Record<string, boolean>;
+  setRowSelection?: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
+  globalFilter?: string;
+  setGlobalFilter?: (value: string) => void;
+  columnFilters?: ColumnFiltersState;
+  setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
+}
+
+export function VisitsDataTable<TData, TValue>({
+  columns,
+  data,
+  isLoading = false,
+  rowSelection: externalRowSelection,
+  setRowSelection: setExternalRowSelection,
+  globalFilter: externalGlobalFilter,
+  setGlobalFilter: setExternalGlobalFilter,
+  columnFilters: externalColumnFilters,
+  setColumnFilters: setExternalColumnFilters,
+}: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [internalColumnFilters, setInternalColumnFilters] =
+    React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [internalRowSelection, setInternalRowSelection] = React.useState({});
+  const [internalGlobalFilter, setInternalGlobalFilter] = React.useState("");
+
+  const rowSelection = externalRowSelection ?? internalRowSelection;
+  const setRowSelection = setExternalRowSelection ?? setInternalRowSelection;
+  const globalFilter = externalGlobalFilter ?? internalGlobalFilter;
+  const setGlobalFilter = setExternalGlobalFilter ?? setInternalGlobalFilter;
+  const columnFilters = externalColumnFilters ?? internalColumnFilters;
+  const setColumnFilters = setExternalColumnFilters ?? setInternalColumnFilters;
+
+  const table = useReactTable({
+    data,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: "includesString",
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+      globalFilter,
+    },
+  });
+
+  const formTypeFilter =
+    (columnFilters.find((f) => f.id === "formType")?.value as string[]) || [];
+  const statusFilter =
+    (columnFilters.find((f) => f.id === "status")?.value as string[]) || [];
+
+  const hasActiveFilters =
+    globalFilter || formTypeFilter.length > 0 || statusFilter.length > 0;
+
+  return (
+    <section className="w-full space-y-4">
+      {table.getFilteredSelectedRowModel().rows.length > 0 && (
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary" className="gap-2">
+            {table.getFilteredSelectedRowModel().rows.length} de{" "}
+            {table.getFilteredRowModel().rows.length} fila(s) seleccionadas
+          </Badge>
+        </div>
+      )}
+
+      {/* Table */}
+      <div className="rounded-lg border bg-card">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRowSkeleton key={i} />
+              ))
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-[400px] text-center"
+                >
+                  <Empty className="border-0">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <History />
+                      </EmptyMedia>
+                      <EmptyTitle>No se encontraron visitas</EmptyTitle>
+                      <EmptyDescription>
+                        {hasActiveFilters
+                          ? "Intenta ajustar tus filtros de búsqueda"
+                          : "No hay visitas registradas para este cliente"}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-sm text-muted-foreground">
+          Mostrando{" "}
+          <span className="font-medium text-foreground">
+            {table.getFilteredRowModel().rows.length}
+          </span>{" "}
+          de <span className="font-medium text-foreground">{data.length}</span>{" "}
+          visita(s)
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Anterior
+          </Button>
+          <div className="flex items-center gap-1 text-sm">
+            <span className="text-muted-foreground">Página</span>
+            <span className="font-medium">
+              {table.getState().pagination.pageIndex + 1}
+            </span>
+            <span className="text-muted-foreground">de</span>
+            <span className="font-medium">{table.getPageCount()}</span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Siguiente
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}

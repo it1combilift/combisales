@@ -36,6 +36,7 @@ model User {
   // Relaciones
   accounts Account[]
   sessions Session[]
+  visits   Visit[] // Visitas realizadas por el vendedor
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -139,4 +140,195 @@ model AuthAuditLog {
   @@index([email])
   @@index([event])
   @@index([createdAt])
+}
+
+// ==================== CUSTOMER MODEL ====================
+// Clientes sincronizados desde Zoho CRM
+// Basado en la estructura completa de accounts-example.json
+model Customer {
+  id            String @id @default(cuid())
+  zohoAccountId String @unique // ID de la cuenta en Zoho CRM
+
+  // Información principal
+  accountName   String // Account_Name
+  razonSocial   String? // Razon_Social (nombre fiscal)
+  accountNumber String? // Account_Number
+  cif           String? // CIF/NIF (número identificación fiscal)
+  codigoCliente String? // C_digo_Cliente (código interno)
+
+  // Clasificación
+  accountType String? // Account_Type (Cliente Final, Distribuidor, etc.)
+  industry    String? // Industry (Construcción, Logística, etc.)
+  subSector   String? // Sub_Sector
+
+  // Contacto
+  phone   String?
+  fax     String?
+  email   String? // Correo_electr_nico
+  website String?
+
+  // Dirección de facturación
+  billingStreet  String?
+  billingCity    String?
+  billingState   String?
+  billingCode    String?
+  billingCountry String?
+
+  // Dirección de envío
+  shippingStreet  String?
+  shippingCity    String?
+  shippingState   String?
+  shippingCode    String?
+  shippingCountry String?
+
+  // Geolocalización
+  latitude  String? // dealsingooglemaps__Latitude
+  longitude String? // dealsingooglemaps__Longitude
+
+  // Propietario de la cuenta en Zoho
+  zohoOwnerId    String?
+  zohoOwnerName  String?
+  zohoOwnerEmail String?
+
+  // Creador de la cuenta en Zoho
+  zohoCreatedById    String?
+  zohoCreatedByName  String?
+  zohoCreatedByEmail String?
+
+  // Cuenta padre (si es subcuenta)
+  parentAccountId   String?
+  parentAccountName String?
+
+  // Estados y flags booleanos
+  clienteConEquipo        Boolean @default(false)
+  cuentaNacional          Boolean @default(false)
+  clienteBooks            Boolean @default(false)
+  condicionesEspeciales   Boolean @default(false)
+  proyectoAbierto         Boolean @default(false)
+  revisado                Boolean @default(false)
+  localizacionesMultiples Boolean @default(false)
+
+  // Otros campos
+  description       String? @db.Text
+  comunidadAutonoma String?
+  tipoPedido        String?
+  estadoCuenta      String?
+
+  // Metadatos de Zoho
+  zohoCreatedAt    DateTime?
+  zohoModifiedAt   DateTime?
+  lastActivityTime DateTime?
+
+  // Relaciones
+  visits Visit[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([zohoAccountId])
+  @@index([accountName])
+  @@index([razonSocial])
+  @@index([codigoCliente])
+  @@index([createdAt])
+}
+
+// ==================== VISIT MODEL ====================
+// Visitas realizadas por vendedores a clientes
+enum VisitFormType {
+  ANALISIS_CSS
+  ANALISIS_INDUSTRIAL
+  ANALISIS_LOGISTICA
+  ANALISIS_STRADDLE_CARRIER
+}
+
+enum VisitStatus {
+  BORRADOR
+  COMPLETADA
+  ENVIADA
+  APROBADA
+  RECHAZADA
+}
+
+model Visit {
+  id         String        @id @default(cuid())
+  customerId String
+  userId     String // Vendedor que realizó la visita
+  formType   VisitFormType
+  status     VisitStatus   @default(BORRADOR)
+  visitDate  DateTime      @default(now())
+
+  // Relaciones
+  customer              Customer               @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  formularioCSSAnalisis FormularioCSSAnalisis?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([userId])
+  @@index([visitDate])
+  @@index([status])
+  @@index([formType])
+}
+
+// ==================== FORMULARIO CSS ANALYSIS MODEL ====================
+// Formulario específico de Análisis CSS
+enum ContenedorTipo {
+  SOBRE_CAMION
+  EN_SUELO
+  INTERIOR
+  EXTERIOR
+}
+
+enum ContenedorMedida {
+  VEINTE_PIES
+  TREINTA_PIES
+  CUARENTA_PIES
+  OTRO
+}
+
+model FormularioCSSAnalisis {
+  id      String @id @default(cuid())
+  visitId String @unique
+
+  // 1. Datos del cliente
+  datosClienteUsuarioFinal   String?
+  razonSocial                String
+  personaContacto            String
+  email                      String
+  direccion                  String
+  localidad                  String
+  provinciaEstado            String
+  pais                       String
+  codigoPostal               String?
+  website                    String?
+  numeroIdentificacionFiscal String?
+  distribuidor               String?
+  contactoDistribuidor       String?
+  fechaCierre                DateTime?
+
+  // 2. Descripción del producto
+  descripcionProducto String   @db.Text
+  fotosVideosUrls     String[] // Array de URLs de archivos adjuntos
+
+  // 3. Datos del contenedor
+  contenedorTipos       ContenedorTipo[] // Múltiples opciones posibles
+  contenedoresPorSemana Int?
+  condicionesSuelo      String?
+
+  // 4. Medidas del contenedor
+  contenedorMedida     ContenedorMedida
+  contenedorMedidaOtro String? // Si selecciona "OTRO"
+
+  // Relaciones
+  visit Visit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([visitId])
 }

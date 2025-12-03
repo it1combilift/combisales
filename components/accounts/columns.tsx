@@ -212,13 +212,6 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-              {/* <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => navigator.clipboard.writeText(account.id)}
-              >
-                <IconCopy className="size-4" />
-                Copiar ID
-              </DropdownMenuItem> */}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => router.push(ACCOUNT_ID_URL(account.id))}

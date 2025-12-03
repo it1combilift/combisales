@@ -24,12 +24,26 @@ export function EmptyCard({
 }: EmptyCardProps) {
   return (
     <Empty className={className}>
-      <EmptyHeader>
-        <EmptyMedia variant="icon">{icon}</EmptyMedia>
-        <EmptyTitle>{title}</EmptyTitle>
-        <EmptyDescription>{description}</EmptyDescription>
+      <EmptyHeader className="space-y-0">
+        <EmptyMedia
+          variant="icon"
+          aria-hidden="true"
+          className="mx-auto scale-90 sm:scale-100 transition-transform"
+        >
+          {icon}
+        </EmptyMedia>
+        <EmptyTitle className="text-sm sm:text-base px-4 text-center text-pretty">
+          {title}
+        </EmptyTitle>
+        <EmptyDescription className="text-xs sm:text-sm max-w-2xl mx-auto text-center leading-relaxed text-pretty">
+          {description}
+        </EmptyDescription>
       </EmptyHeader>
-      {actions && <EmptyContent>{actions}</EmptyContent>}
+      {actions && (
+        <EmptyContent className="mt-0 w-full max-w-md mx-auto">
+          {actions}
+        </EmptyContent>
+      )}
     </Empty>
   );
 }
