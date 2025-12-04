@@ -1,8 +1,14 @@
 import React from "react";
-import { AlertCircleIcon, CheckCircle2Icon, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-type AlertVariant = "default" | "destructive" | "success" | "info";
+import {
+  AlertCircleIcon,
+  CheckCircle2Icon,
+  Info,
+  TriangleAlert,
+} from "lucide-react";
+
+type AlertVariant = "default" | "destructive" | "success" | "info" | "warning";
 
 interface AlertMessageProps {
   title?: string;
@@ -22,6 +28,10 @@ export function AlertMessage({
       ? AlertCircleIcon
       : variant === "success"
       ? CheckCircle2Icon
+      : variant === "info"
+      ? Info
+      : variant === "warning"
+      ? TriangleAlert
       : Info;
 
   const alertVariant = variant as any;
@@ -34,6 +44,8 @@ export function AlertMessage({
         ? "bg-green-50/90 dark:bg-green-900/18 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-900"
         : variant === "info"
         ? "bg-blue-50/90 dark:bg-blue-900/18 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-900"
+        : variant === "warning"
+        ? "bg-amber-50/90 dark:bg-amber-900/18 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-900"
         : "text-gray-700 dark:text-gray-900"
     }`;
 
@@ -44,6 +56,8 @@ export function AlertMessage({
       ? "text-green-700 dark:text-green-900"
       : variant === "info"
       ? "text-blue-700 dark:text-blue-900"
+      : variant === "warning"
+      ? "text-amber-700 dark:text-amber-900"
       : "text-gray-700 dark:text-gray-900";
 
   const ariaLive = variant === "destructive" ? "assertive" : "polite";
@@ -54,17 +68,19 @@ export function AlertMessage({
       className={classForAlert}
       aria-live={ariaLive}
     >
-      <Icon className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
+      <Icon className={`size-4 shrink-0 ${iconColorClass}`} />
       {title && (
         <AlertTitle
           className={
-            "text-sm font-medium " +
+            "text-xs font-medium" +
             (variant === "destructive"
               ? "text-red-800 dark:text-red-200"
               : variant === "success"
               ? "text-green-800 dark:text-green-200"
               : variant === "info"
               ? "text-blue-800 dark:text-blue-200"
+              : variant === "warning"
+              ? "text-amber-800 dark:text-amber-200"
               : "text-card-foreground dark:text-card-foreground")
           }
         >
@@ -74,13 +90,15 @@ export function AlertMessage({
       {description && (
         <AlertDescription
           className={
-            "text-sm " +
+            "text-xs text-pretty" +
             (variant === "destructive"
               ? "text-red-600/95 dark:text-red-300/90"
               : variant === "success"
               ? "text-green-700/95 dark:text-green-200/90"
               : variant === "info"
               ? "text-blue-700/95 dark:text-blue-200/90"
+              : variant === "warning"
+              ? "text-amber-700/95 dark:text-amber-200/90"
               : "text-muted-foreground")
           }
         >

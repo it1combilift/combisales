@@ -422,3 +422,27 @@ export function AccountsCardsPageSkeleton() {
     </>
   );
 }
+
+export function VisitCardSkeleton() {
+  return (
+    <>
+      <div className="flex items-start justify-between">
+        <div className="flex items-start gap-3 flex-1">
+          <div className="h-4 w-4 rounded bg-muted" />
+          <div className="space-y-2 flex-1">
+            <div className="h-5 w-24 rounded bg-muted" />
+            <div className="h-4 w-16 rounded bg-muted" />
+          </div>
+        </div>
+        <div className="h-8 w-8 rounded bg-muted" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="h-11 rounded bg-muted" />
+        <div className="h-11 rounded bg-muted" />
+      </div>
+      <div className="pt-3 border-t">
+        <div className="h-11 rounded bg-muted" />
+      </div>
+    </>
+  );
+}

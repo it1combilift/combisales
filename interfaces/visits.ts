@@ -1,5 +1,6 @@
 import { ClipboardList, Factory, Forklift, Ship } from "lucide-react";
 import { FormularioCSSSchema, ArchivoSubido } from "@/schemas/visits";
+import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 
 import {
   VisitFormType,
@@ -339,3 +340,20 @@ export const FORM_OPTIONS = [
     available: false,
   },
 ];
+
+export interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  isLoading?: boolean;
+  rowSelection?: Record<string, boolean>;
+  setRowSelection?: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
+  globalFilter?: string;
+  setGlobalFilter?: (value: string) => void;
+  columnFilters?: ColumnFiltersState;
+  setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
+  onView?: (visit: Visit) => void;
+  onDelete?: (visit: Visit) => void;
+  customerName?: string;
+}

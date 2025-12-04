@@ -2,6 +2,7 @@ import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
+import { useRouter } from "next/navigation";
 import { formatDateShort } from "@/lib/utils";
 import { ZohoAccount } from "@/interfaces/zoho";
 
@@ -17,7 +18,6 @@ import {
 import {
   ArrowUpRight,
   Briefcase,
-  Building2,
   Calendar,
   Copy,
   Globe,
@@ -38,6 +38,10 @@ export const AccountCard = ({
   onSelect: (selected: boolean) => void;
   isSelected: boolean;
 }) => {
+  const router = useRouter();
+  const ACCOUNT_ID_URL = (accountId: string) =>
+    `/dashboard/projects/visits/${accountId}`;
+
   return (
     <Card className="p-4 hover:shadow-lg transition-all duration-200 active:scale-[0.98] border-l-4 border-l-primary/20">
       <div className="space-y-4">
@@ -80,16 +84,15 @@ export const AccountCard = ({
                 <Copy className="h-4 w-4" />
                 Copiar ID
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => router.push(ACCOUNT_ID_URL(account.id))}
+              >
                 <ArrowUpRight className="h-4 w-4" />
                 Detalles
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <Building2 className="h-4 w-4" />
-                Crear visita
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
+
               <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive">
                 <Trash2 className="h-4 w-4 text-destructive" />
                 Eliminar

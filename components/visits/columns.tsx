@@ -46,11 +46,11 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
           >
             Tipo de Formulario
             {column.getIsSorted() === "asc" ? (
-              <ArrowUp className="ml-2 size-4" />
+              <ArrowUp className="size-3" />
             ) : column.getIsSorted() === "desc" ? (
-              <ArrowDown className="ml-2 size-4" />
+              <ArrowDown className="size-3" />
             ) : (
-              <ArrowUpDown className="ml-2 size-4" />
+              <ArrowUpDown className="size-3" />
             )}
           </Button>
         );
@@ -60,9 +60,9 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
           "formType"
         ) as keyof typeof FORM_TYPE_LABELS;
         return (
-          <Badge variant="info" className="font-normal">
+          <span className="text-xs sm:text-sm leading-relaxed text-primary">
             {FORM_TYPE_LABELS[formType]}
-          </Badge>
+          </span>
         );
       },
     },
@@ -77,20 +77,20 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
           >
             Fecha
             {column.getIsSorted() === "asc" ? (
-              <ArrowUp className="ml-2 size-4" />
+              <ArrowUp className="size-3" />
             ) : column.getIsSorted() === "desc" ? (
-              <ArrowDown className="ml-2 size-4" />
+              <ArrowDown className="size-3" />
             ) : (
-              <ArrowUpDown className="ml-2 size-4" />
+              <ArrowUpDown className="size-3" />
             )}
           </Button>
         );
       },
       cell: ({ row }) => {
         return (
-          <div className="font-medium">
+          <span className="text-xs sm:text-sm leading-relaxed text-primary">
             {formatDate(row.getValue("visitDate"))}
-          </div>
+          </span>
         );
       },
     },
@@ -106,11 +106,11 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
           >
             Estado
             {column.getIsSorted() === "asc" ? (
-              <ArrowUp className="ml-2 size-4" />
+              <ArrowUp className="size-3" />
             ) : column.getIsSorted() === "desc" ? (
-              <ArrowDown className="ml-2 size-4" />
+              <ArrowDown className="size-3" />
             ) : (
-              <ArrowUpDown className="ml-2 size-4" />
+              <ArrowUpDown className="size-3" />
             )}
           </Button>
         );
@@ -145,18 +145,22 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
           >
             Vendedor
             {column.getIsSorted() === "asc" ? (
-              <ArrowUp className="ml-2 size-4" />
+              <ArrowUp className="size-3" />
             ) : column.getIsSorted() === "desc" ? (
-              <ArrowDown className="ml-2 size-4" />
+              <ArrowDown className="size-3" />
             ) : (
-              <ArrowUpDown className="ml-2 size-4" />
+              <ArrowUpDown className="size-3" />
             )}
           </Button>
         );
       },
       cell: ({ row }) => {
         const user = row.original.user;
-        return <div className="text-sm">{user?.name || user?.email}</div>;
+        return (
+          <span className="text-xs sm:text-sm leading-relaxed text-primary">
+            {user?.name || user?.email}
+          </span>
+        );
       },
       sortingFn: (rowA, rowB) => {
         const nameA =

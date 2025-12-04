@@ -93,7 +93,7 @@ export default function ProjectsPage() {
         />
       ) : (
         <>
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
+          <div className="flex gap-4 flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
             <div>
               <H1>Gestión de clientes</H1>
               <div className="flex flex-col justify-start gap-2">
@@ -113,6 +113,7 @@ export default function ProjectsPage() {
                 variant="outline"
                 disabled={isRefreshing || showLoader}
                 title="Actualizar datos"
+                size="sm"
               >
                 <RefreshCw
                   className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}

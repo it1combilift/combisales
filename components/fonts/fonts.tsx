@@ -63,8 +63,9 @@ export function MonoText({
   return (
     <code
       className={`
-        font-mono 
-        text-xs
+        font-mono
+        text-[10px]
+        sm:text-xs
         wrap-break-word 
         px-2 py-1 
         rounded-md 

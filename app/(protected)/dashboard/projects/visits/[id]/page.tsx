@@ -4,13 +4,12 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
 import { ZohoAccount } from "@/interfaces/zoho";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
 import { Customer, Visit } from "@/interfaces/visits";
 import { H1, MonoText } from "@/components/fonts/fonts";
-import { ColumnFiltersState } from "@tanstack/react-table";
 import { createColumns } from "@/components/visits/columns";
 import AnimatedTabsComponent from "@/components/accounts/tabs";
 import { VisitsDataTable } from "@/components/visits/data-table";
@@ -37,8 +36,6 @@ import {
   FileText,
   FolderKanban,
   History,
-  Loader2,
-  Search,
   Hash,
 } from "lucide-react";
 
@@ -51,9 +48,8 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const [isLoadingVisits, setIsLoadingVisits] = useState(false);
   const [isVisitDialogOpen, setIsVisitDialogOpen] = useState(false);
   const [visitToDelete, setVisitToDelete] = useState<Visit | null>(null);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   // Function to save customer automatically
   const saveCustomerAutomatically = async (accountData: ZohoAccount) => {
@@ -229,26 +225,8 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   });
 
   const visitsTabContent = (
-    <div className="w-full space-y-4">
-      {/* Search Bar */}
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Buscar visitas..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-9 text-xs sm:text-sm"
-          />
-        </div>
-      </div>
-
-      {/* Data Table */}
-      {isLoadingVisits ? (
-        <div className="flex items-center justify-center py-12 border rounded-lg">
-          <Loader2 className="size-8 animate-spin text-muted-foreground" />
-        </div>
-      ) : visits.length === 0 && !globalFilter ? (
+    <div className="w-full pt-4 m-0">
+      {!isLoadingVisits && visits.length === 0 ? (
         <EmptyCard
           icon={<History className="text-muted-foreground" />}
           title="No hay visitas registradas"
@@ -265,10 +243,9 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           columns={columns}
           data={visits}
           isLoading={isLoadingVisits}
-          globalFilter={globalFilter}
-          setGlobalFilter={setGlobalFilter}
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
+          onView={handleViewVisit}
+          onDelete={(visit) => setVisitToDelete(visit)}
+          customerName={account?.Account_Name}
         />
       )}
     </div>
@@ -336,15 +313,15 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           {/* Header Content */}
           <header
             className="
-    sticky top-0 z-20 
-    -mx-4 px-4 pb-2
-    bg-background/95 backdrop-blur-md 
-    border-b border-border/50
+              sticky top-0 z-20 
+              -mx-4 px-4 pb-2
+              bg-background/95 backdrop-blur-md 
+              border-b border-border/50
   "
             role="banner"
             aria-label="Información del cliente"
           >
-            <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start justify-between flex-wrap gap-2">
               <div className="min-w-0 flex-1 space-y-1">
                 <H1>{account?.Account_Name || "Sin nombre"}</H1>
 
@@ -407,14 +384,14 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
       text-xs
     "
             >
-              {account.Owner && (
+              {!isMobile && account.Owner && (
                 <MonoText>
                   <User className="size-3 inline mr-1" />
                   {account.Owner.name}
                 </MonoText>
               )}
 
-              {account.Account_Type && (
+              {!isMobile && account.Account_Type && (
                 <MonoText>{account.Account_Type}</MonoText>
               )}
 

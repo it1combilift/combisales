@@ -1,13 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { History } from "lucide-react";
+import { History, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { TableRowSkeleton } from "@/components/ui/skeleton";
+import { EmptyCard } from "@/components/empty-card";
+import { useIsMobile } from "@/components/ui/use-mobile";
+import { VisitCardSkeleton } from "../dashboard-skeleton";
+import { VisitCard } from "@/components/visits/visit-card";
+import { VisitFormType, VisitStatus } from "@prisma/client";
+import { Visit, DataTableProps } from "@/interfaces/visits";
+import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
+import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
 
 import {
-  type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
   type VisibilityState,
@@ -29,52 +36,129 @@ import {
 } from "@/components/ui/table";
 
 import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  isLoading?: boolean;
-  rowSelection?: Record<string, boolean>;
-  setRowSelection?: React.Dispatch<
-    React.SetStateAction<Record<string, boolean>>
-  >;
-  globalFilter?: string;
-  setGlobalFilter?: (value: string) => void;
-  columnFilters?: ColumnFiltersState;
-  setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
-}
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-export function VisitsDataTable<TData, TValue>({
+import {
+  IconChevronDown,
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronsLeft,
+  IconChevronsRight,
+  IconFilter,
+  IconLayoutColumns,
+  IconSearch,
+} from "@tabler/icons-react";
+
+// ==================== COLUMN LABELS ====================
+const COLUMN_LABELS: Record<string, string> = {
+  formType: "Tipo de formulario",
+  visitDate: "Fecha",
+  status: "Estado",
+  user: "Vendedor",
+  actions: "Acciones",
+};
+
+export function VisitsDataTable<TData extends Visit, TValue>({
   columns,
   data,
   isLoading = false,
   rowSelection: externalRowSelection,
   setRowSelection: setExternalRowSelection,
-  globalFilter: externalGlobalFilter,
-  setGlobalFilter: setExternalGlobalFilter,
   columnFilters: externalColumnFilters,
   setColumnFilters: setExternalColumnFilters,
+  onView,
+  onDelete,
 }: DataTableProps<TData, TValue>) {
+  const isMobile = useIsMobile();
+
+  // URL state management with nuqs
+  const [searchQuery, setSearchQuery] = useQueryState(
+    "search",
+    parseAsString.withDefault("")
+  );
+  const [pageIndex, setPageIndex] = useQueryState(
+    "page",
+    parseAsInteger.withDefault(1)
+  );
+  const [pageSize, setPageSize] = useQueryState(
+    "pageSize",
+    parseAsInteger.withDefault(10)
+  );
+  const [sortBy, setSortBy] = useQueryState(
+    "sortBy",
+    parseAsString.withDefault("")
+  );
+  const [sortOrder, setSortOrder] = useQueryState(
+    "sortOrder",
+    parseAsString.withDefault("")
+  );
+  const [statusFilter, setStatusFilter] = useQueryState(
+    "status",
+    parseAsString.withDefault("")
+  );
+  const [formTypeFilter, setFormTypeFilter] = useQueryState(
+    "formType",
+    parseAsString.withDefault("")
+  );
+
+  // Local state
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [internalColumnFilters, setInternalColumnFilters] =
     React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [internalRowSelection, setInternalRowSelection] = React.useState({});
-  const [internalGlobalFilter, setInternalGlobalFilter] = React.useState("");
 
+  // Use external state if provided, otherwise use internal
   const rowSelection = externalRowSelection ?? internalRowSelection;
   const setRowSelection = setExternalRowSelection ?? setInternalRowSelection;
-  const globalFilter = externalGlobalFilter ?? internalGlobalFilter;
-  const setGlobalFilter = setExternalGlobalFilter ?? setInternalGlobalFilter;
+  const globalFilter = searchQuery;
+  const setGlobalFilter = setSearchQuery;
   const columnFilters = externalColumnFilters ?? internalColumnFilters;
   const setColumnFilters = setExternalColumnFilters ?? setInternalColumnFilters;
+
+  // Sync sorting with URL
+  React.useEffect(() => {
+    if (sortBy && sortOrder) {
+      setSorting([{ id: sortBy, desc: sortOrder === "desc" }]);
+    }
+  }, [sortBy, sortOrder]);
+
+  React.useEffect(() => {
+    if (sorting.length > 0) {
+      setSortBy(sorting[0].id);
+      setSortOrder(sorting[0].desc ? "desc" : "asc");
+    } else {
+      setSortBy(null);
+      setSortOrder(null);
+    }
+  }, [sorting, setSortBy, setSortOrder]);
+
+  // Sync column filters with URL
+  React.useEffect(() => {
+    const newFilters: ColumnFiltersState = [];
+    if (statusFilter) {
+      newFilters.push({ id: "status", value: [statusFilter] });
+    }
+    if (formTypeFilter) {
+      newFilters.push({ id: "formType", value: [formTypeFilter] });
+    }
+    setColumnFilters(newFilters);
+  }, [statusFilter, formTypeFilter, setColumnFilters]);
 
   const table = useReactTable({
     data,
@@ -95,37 +179,227 @@ export function VisitsDataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       globalFilter,
+      pagination: {
+        pageIndex: pageIndex - 1,
+        pageSize,
+      },
     },
+    manualPagination: false,
+    pageCount: Math.ceil(data.length / pageSize),
   });
 
-  const formTypeFilter =
-    (columnFilters.find((f) => f.id === "formType")?.value as string[]) || [];
-  const statusFilter =
-    (columnFilters.find((f) => f.id === "status")?.value as string[]) || [];
+  // Sync pagination with URL
+  React.useEffect(() => {
+    const tablePagination = table.getState().pagination;
+    const internalPageIndex = pageIndex - 1;
+    if (tablePagination.pageIndex !== internalPageIndex) {
+      table.setPageIndex(internalPageIndex);
+    }
+    if (tablePagination.pageSize !== pageSize) {
+      table.setPageSize(pageSize);
+    }
+  }, [pageIndex, pageSize, table]);
 
-  const hasActiveFilters =
-    globalFilter || formTypeFilter.length > 0 || statusFilter.length > 0;
+  const hasActiveFilters = globalFilter || statusFilter || formTypeFilter;
+
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setStatusFilter(null);
+    setFormTypeFilter(null);
+    setPageIndex(1);
+  };
 
   return (
-    <section className="w-full space-y-4">
-      {table.getFilteredSelectedRowModel().rows.length > 0 && (
+    <div className="w-full space-y-4">
+      {/* Search and Filters Bar */}
+      <div className="flex gap-3 flex-row items-center justify-between">
+        <div className="flex flex-1 items-center gap-2">
+          {/* Search Input */}
+          <div className="relative flex-1 max-w-full sm:max-w-sm">
+            <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Buscar visitas..."
+              value={searchQuery}
+              onChange={(event) => {
+                const value = event.target.value;
+                setSearchQuery(value);
+                setPageIndex(1);
+              }}
+              className="pl-9 h-10 text-xs sm:text-sm"
+            />
+          </div>
+        </div>
+
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="gap-2">
-            {table.getFilteredSelectedRowModel().rows.length} de{" "}
-            {table.getFilteredRowModel().rows.length} fila(s) seleccionadas
-          </Badge>
+          {/* Status Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="h-10 text-xs sm:text-sm"
+                size="sm"
+              >
+                <IconFilter className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1">Estado</span>
+                {statusFilter && (
+                  <Badge variant="secondary" className="ml-1 px-1.5 text-xs">
+                    1
+                  </Badge>
+                )}
+                <IconChevronDown className="ml-1 size-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[180px]">
+              <DropdownMenuLabel>Filtrar por estado</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={!statusFilter}
+                onCheckedChange={() => {
+                  setStatusFilter(null);
+                  setPageIndex(1);
+                }}
+              >
+                Todos
+              </DropdownMenuCheckboxItem>
+              {Object.entries(VISIT_STATUS_LABELS).map(([key, label]) => (
+                <DropdownMenuCheckboxItem
+                  key={key}
+                  checked={statusFilter === key}
+                  onCheckedChange={() => {
+                    setStatusFilter(statusFilter === key ? null : key);
+                    setPageIndex(1);
+                  }}
+                >
+                  {label}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {!isMobile && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="h-10 text-xs sm:text-sm"
+                  size="sm"
+                >
+                  <IconLayoutColumns className="h-4 w-4" />
+                  <span className="hidden md:inline ml-1">Columnas</span>
+                  <IconChevronDown className="ml-1 size-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[200px]">
+                <DropdownMenuLabel>Mostrar columnas</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize text-xs sm:text-sm"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {COLUMN_LABELS[column.id] || column.id}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      </div>
+
+      {/* Active Filters Indicator */}
+      {hasActiveFilters && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-muted-foreground">
+            Filtros activos:
+          </span>
+          {searchQuery && (
+            <Badge variant="secondary" className="text-xs">
+              Búsqueda: "{searchQuery}"
+            </Badge>
+          )}
+          {statusFilter && (
+            <Badge variant="secondary" className="text-xs">
+              Estado: {VISIT_STATUS_LABELS[statusFilter as VisitStatus]}
+            </Badge>
+          )}
+          {formTypeFilter && (
+            <Badge variant="secondary" className="text-xs">
+              Tipo: {FORM_TYPE_LABELS[formTypeFilter as VisitFormType]}
+            </Badge>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-6 px-2 text-xs"
+            onClick={clearAllFilters}
+          >
+            <X className="size-3" />
+            Limpiar
+          </Button>
         </div>
       )}
 
-      {/* Table */}
-      <div className="rounded-lg border bg-card">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
+      {/* Mobile View - Cards */}
+      {isMobile ? (
+        <div className="space-y-3">
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <div
+                key={index}
+                className="rounded-lg border bg-card p-4 space-y-3 animate-pulse"
+              >
+                <VisitCardSkeleton />
+              </div>
+            ))
+          ) : table.getRowModel().rows?.length ? (
+            table
+              .getRowModel()
+              .rows.map((row) => (
+                <VisitCard
+                  key={row.id}
+                  visit={row.original}
+                  isSelected={row.getIsSelected()}
+                  onSelect={(selected) => row.toggleSelected(selected)}
+                  onView={onView}
+                  onDelete={onDelete}
+                />
+              ))
+          ) : (
+            <EmptyCard
+              title="No se encontraron visitas"
+              description={
+                hasActiveFilters
+                  ? "Intenta ajustar tus filtros de búsqueda"
+                  : "No hay visitas registradas"
+              }
+              icon={<History className="h-12 w-12" />}
+              actions={
+                hasActiveFilters && (
+                  <Button variant="outline" onClick={clearAllFilters}>
+                    <X className="size-4" />
+                    Limpiar filtros
+                  </Button>
+                )
+              }
+            />
+          )}
+        </div>
+      ) : (
+        /* Desktop View - Table */
+        <div className="rounded-md border bg-card">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className="pl-3">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -133,95 +407,144 @@ export function VisitsDataTable<TData, TValue>({
                             header.getContext()
                           )}
                     </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <TableRowSkeleton key={i} />
-              ))
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-[400px] text-center"
-                >
-                  <Empty className="border-0">
-                    <EmptyHeader>
-                      <EmptyMedia variant="icon">
-                        <History />
-                      </EmptyMedia>
-                      <EmptyTitle>No se encontraron visitas</EmptyTitle>
-                      <EmptyDescription>
-                        {hasActiveFilters
+              ))}
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                Array.from({ length: 10 }).map((_, index) => (
+                  <TableRow key={index}>
+                    {columns.map((_, colIndex) => (
+                      <TableCell key={colIndex}>
+                        <div className="h-4 bg-muted animate-pulse rounded" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <EmptyCard
+                      title="No se encontraron visitas"
+                      description={
+                        hasActiveFilters
                           ? "Intenta ajustar tus filtros de búsqueda"
-                          : "No hay visitas registradas para este cliente"}
-                      </EmptyDescription>
-                    </EmptyHeader>
-                  </Empty>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                          : "No hay visitas registradas"
+                      }
+                      icon={<History className="h-12 w-12" />}
+                    />
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Pagination */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-sm text-muted-foreground">
-          Mostrando{" "}
-          <span className="font-medium text-foreground">
-            {table.getFilteredRowModel().rows.length}
-          </span>{" "}
-          de <span className="font-medium text-foreground">{data.length}</span>{" "}
-          visita(s)
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-2">
+        <div className="flex-1 text-sm text-muted-foreground order-2 sm:order-1">
+          {table.getFilteredSelectedRowModel().rows.length > 0 && (
+            <>
+              {table.getFilteredSelectedRowModel().rows.length} de{" "}
+              {table.getFilteredRowModel().rows.length} fila(s) seleccionada(s).
+            </>
+          )}
+          {table.getFilteredSelectedRowModel().rows.length === 0 && (
+            <>
+              {table.getFilteredRowModel().rows.length} visita(s) encontrada(s).
+            </>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior
-          </Button>
-          <div className="flex items-center gap-1 text-sm">
-            <span className="text-muted-foreground">Página</span>
-            <span className="font-medium">
-              {table.getState().pagination.pageIndex + 1}
-            </span>
-            <span className="text-muted-foreground">de</span>
-            <span className="font-medium">{table.getPageCount()}</span>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:space-x-6 lg:space-x-8 order-1 sm:order-2">
+          <div className="flex items-center justify-between sm:justify-start space-x-2">
+            <p className="text-sm font-medium whitespace-nowrap">
+              Filas por página
+            </p>
+            <Select
+              value={pageSize.toString()}
+              onValueChange={(value) => {
+                const newPageSize = Number(value);
+                setPageSize(newPageSize);
+                table.setPageSize(newPageSize);
+                setPageIndex(1);
+              }}
+            >
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[5, 10, 20, 30, 50].map((size) => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Siguiente
-          </Button>
+          <div className="flex w-fit items-center justify-center text-sm font-medium text-primary whitespace-nowrap">
+            Página {pageIndex} de {table.getPageCount() || 1}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              className="hidden h-8 w-8 p-0 lg:flex"
+              onClick={() => setPageIndex(1)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">Ir a la primera página</span>
+              <IconChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="h-8 w-8 p-0"
+              onClick={() => setPageIndex(pageIndex - 1)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">Ir a la página anterior</span>
+              <IconChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="h-8 w-8 p-0"
+              onClick={() => setPageIndex(pageIndex + 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">Ir a la página siguiente</span>
+              <IconChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="hidden h-8 w-8 p-0 lg:flex"
+              onClick={() => setPageIndex(table.getPageCount())}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">Ir a la última página</span>
+              <IconChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
