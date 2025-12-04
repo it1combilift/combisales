@@ -4,6 +4,19 @@ import { VisitFormType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { UpdateVisitData, CreateFormularioCSSData } from "@/interfaces/visits";
+import {
+  HTTP_STATUS,
+  API_SUCCESS,
+  unauthorizedResponse,
+  notFoundResponse,
+  serverErrorResponse,
+  createSuccessResponse,
+} from "@/lib/api-response";
+import {
+  VISIT_INCLUDE,
+  transformFormularioCSSData,
+  buildFormularioUpsert,
+} from "@/lib/visits";
 
 /**
  * GET /api/visits/[id]
@@ -15,45 +28,24 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session || !session.user) {
-      return NextResponse.json(
-        { error: "No autorizado. Debe iniciar sesión." },
-        { status: 401 }
-      );
+      return unauthorizedResponse();
     }
 
     const { id } = await params;
 
     const visit = await prisma.visit.findUnique({
       where: { id },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        customer: true,
-        formularioCSSAnalisis: true,
-      },
+      include: VISIT_INCLUDE,
     });
 
     if (!visit) {
-      return NextResponse.json(
-        { error: "Visita no encontrada" },
-        { status: 404 }
-      );
+      return notFoundResponse("VISIT");
     }
 
-    return NextResponse.json({ visit }, { status: 200 });
+    return createSuccessResponse({ visit });
   } catch (error) {
-    console.error("Error fetching visit:", error);
-    return NextResponse.json(
-      { error: "Error al obtener la visita" },
-      { status: 500 }
-    );
+    return serverErrorResponse("FETCH_VISIT", error);
   }
 }
 
@@ -67,12 +59,8 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session || !session.user) {
-      return NextResponse.json(
-        { error: "No autorizado. Debe iniciar sesión." },
-        { status: 401 }
-      );
+      return unauthorizedResponse();
     }
 
     const { id } = await params;
@@ -88,10 +76,7 @@ export async function PUT(
     });
 
     if (!existingVisit) {
-      return NextResponse.json(
-        { error: "Visita no encontrada" },
-        { status: 404 }
-      );
+      return notFoundResponse("VISIT");
     }
 
     const visit = await prisma.visit.update({
@@ -103,91 +88,20 @@ export async function PUT(
         formularioData
           ? {
               formularioCSSAnalisis: {
-                upsert: {
-                  create: {
-                    razonSocial: formularioData.razonSocial,
-                    personaContacto: formularioData.personaContacto,
-                    email: formularioData.email,
-                    direccion: formularioData.direccion,
-                    localidad: formularioData.localidad,
-                    provinciaEstado: formularioData.provinciaEstado,
-                    pais: formularioData.pais,
-                    codigoPostal: formularioData.codigoPostal || null,
-                    website: formularioData.website || null,
-                    numeroIdentificacionFiscal:
-                      formularioData.numeroIdentificacionFiscal || null,
-                    distribuidor: formularioData.distribuidor || null,
-                    contactoDistribuidor:
-                      formularioData.contactoDistribuidor || null,
-                    fechaCierre: formularioData.fechaCierre || null,
-                    datosClienteUsuarioFinal:
-                      formularioData.datosClienteUsuarioFinal || null,
-                    descripcionProducto: formularioData.descripcionProducto,
-                    fotosVideosUrls: formularioData.fotosVideosUrls || [],
-                    contenedorTipos: formularioData.contenedorTipos,
-                    contenedoresPorSemana:
-                      formularioData.contenedoresPorSemana || null,
-                    condicionesSuelo: formularioData.condicionesSuelo || null,
-                    contenedorMedida: formularioData.contenedorMedida,
-                    contenedorMedidaOtro:
-                      formularioData.contenedorMedidaOtro || null,
-                  },
-                  update: {
-                    razonSocial: formularioData.razonSocial,
-                    personaContacto: formularioData.personaContacto,
-                    email: formularioData.email,
-                    direccion: formularioData.direccion,
-                    localidad: formularioData.localidad,
-                    provinciaEstado: formularioData.provinciaEstado,
-                    pais: formularioData.pais,
-                    codigoPostal: formularioData.codigoPostal || null,
-                    website: formularioData.website || null,
-                    numeroIdentificacionFiscal:
-                      formularioData.numeroIdentificacionFiscal || null,
-                    distribuidor: formularioData.distribuidor || null,
-                    contactoDistribuidor:
-                      formularioData.contactoDistribuidor || null,
-                    fechaCierre: formularioData.fechaCierre || null,
-                    datosClienteUsuarioFinal:
-                      formularioData.datosClienteUsuarioFinal || null,
-                    descripcionProducto: formularioData.descripcionProducto,
-                    fotosVideosUrls: formularioData.fotosVideosUrls || [],
-                    contenedorTipos: formularioData.contenedorTipos,
-                    contenedoresPorSemana:
-                      formularioData.contenedoresPorSemana || null,
-                    condicionesSuelo: formularioData.condicionesSuelo || null,
-                    contenedorMedida: formularioData.contenedorMedida,
-                    contenedorMedidaOtro:
-                      formularioData.contenedorMedidaOtro || null,
-                  },
-                },
+                upsert: buildFormularioUpsert(formularioData),
               },
             }
           : {}),
       },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        customer: true,
-        formularioCSSAnalisis: true,
-      },
+      include: VISIT_INCLUDE,
     });
 
-    return NextResponse.json(
-      { message: "Visita actualizada exitosamente", visit },
-      { status: 200 }
-    );
+    return createSuccessResponse({
+      message: API_SUCCESS.VISIT_UPDATED,
+      visit,
+    });
   } catch (error) {
-    console.error("Error updating visit:", error);
-    return NextResponse.json(
-      { error: "Error al actualizar la visita" },
-      { status: 500 }
-    );
+    return serverErrorResponse("UPDATE_VISIT", error);
   }
 }
 
@@ -201,12 +115,8 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session || !session.user) {
-      return NextResponse.json(
-        { error: "No autorizado. Debe iniciar sesión." },
-        { status: 401 }
-      );
+      return unauthorizedResponse();
     }
 
     const { id } = await params;
@@ -216,25 +126,15 @@ export async function DELETE(
     });
 
     if (!visit) {
-      return NextResponse.json(
-        { error: "Visita no encontrada" },
-        { status: 404 }
-      );
+      return notFoundResponse("VISIT");
     }
 
     await prisma.visit.delete({
       where: { id },
     });
 
-    return NextResponse.json(
-      { message: "Visita eliminada exitosamente" },
-      { status: 200 }
-    );
+    return createSuccessResponse({ message: API_SUCCESS.VISIT_DELETED });
   } catch (error) {
-    console.error("Error deleting visit:", error);
-    return NextResponse.json(
-      { error: "Error al eliminar la visita" },
-      { status: 500 }
-    );
+    return serverErrorResponse("DELETE_VISIT", error);
   }
 }

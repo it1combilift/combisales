@@ -4,6 +4,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { VisitFormType, VisitStatus } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { CreateVisitData, CreateFormularioCSSData } from "@/interfaces/visits";
+import {
+  HTTP_STATUS,
+  API_SUCCESS,
+  unauthorizedResponse,
+  badRequestResponse,
+  notFoundResponse,
+  serverErrorResponse,
+  createSuccessResponse,
+} from "@/lib/api-response";
+import { VISIT_INCLUDE, buildFormularioCreate } from "@/lib/visits";
 
 /**
  * GET /api/visits?customerId=xxx
@@ -12,47 +22,26 @@ import { CreateVisitData, CreateFormularioCSSData } from "@/interfaces/visits";
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session || !session.user) {
-      return NextResponse.json(
-        { error: "No autorizado. Debe iniciar sesión." },
-        { status: 401 }
-      );
+      return unauthorizedResponse();
     }
 
     const { searchParams } = new URL(req.url);
     const customerId = searchParams.get("customerId");
 
     if (!customerId) {
-      return NextResponse.json(
-        { error: "customerId es requerido" },
-        { status: 400 }
-      );
+      return badRequestResponse("CUSTOMER_ID");
     }
 
     const visits = await prisma.visit.findMany({
       where: { customerId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        customer: true,
-        formularioCSSAnalisis: true,
-      },
+      include: VISIT_INCLUDE,
       orderBy: { visitDate: "desc" },
     });
 
-    return NextResponse.json({ visits }, { status: 200 });
+    return createSuccessResponse({ visits });
   } catch (error) {
-    console.error("Error fetching visits:", error);
-    return NextResponse.json(
-      { error: "Error al obtener las visitas" },
-      { status: 500 }
-    );
+    return serverErrorResponse("FETCH_VISITS", error);
   }
 }
 
@@ -63,12 +52,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session || !session.user?.id) {
-      return NextResponse.json(
-        { error: "No autorizado. Debe iniciar sesión." },
-        { status: 401 }
-      );
+      return unauthorizedResponse();
     }
 
     const body = await req.json();
@@ -78,10 +63,7 @@ export async function POST(req: NextRequest) {
     };
 
     if (!visitData.customerId || !visitData.formType) {
-      return NextResponse.json(
-        { error: "customerId y formType son requeridos" },
-        { status: 400 }
-      );
+      return badRequestResponse("FORM_TYPE");
     }
 
     const customer = await prisma.customer.findUnique({
@@ -89,17 +71,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (!customer) {
-      return NextResponse.json(
-        { error: "Cliente no encontrado" },
-        { status: 404 }
-      );
+      return notFoundResponse("CUSTOMER");
     }
 
     if (visitData.formType === VisitFormType.ANALISIS_CSS && !formularioData) {
-      return NextResponse.json(
-        { error: "Datos del formulario CSS son requeridos" },
-        { status: 400 }
-      );
+      return badRequestResponse("CSS_FORM_DATA");
     }
 
     const visit = await prisma.visit.create({
@@ -112,60 +88,19 @@ export async function POST(req: NextRequest) {
         ...(visitData.formType === VisitFormType.ANALISIS_CSS && formularioData
           ? {
               formularioCSSAnalisis: {
-                create: {
-                  razonSocial: formularioData.razonSocial,
-                  personaContacto: formularioData.personaContacto,
-                  email: formularioData.email,
-                  direccion: formularioData.direccion,
-                  localidad: formularioData.localidad,
-                  provinciaEstado: formularioData.provinciaEstado,
-                  pais: formularioData.pais,
-                  codigoPostal: formularioData.codigoPostal || null,
-                  website: formularioData.website || null,
-                  numeroIdentificacionFiscal:
-                    formularioData.numeroIdentificacionFiscal || null,
-                  distribuidor: formularioData.distribuidor || null,
-                  contactoDistribuidor:
-                    formularioData.contactoDistribuidor || null,
-                  fechaCierre: formularioData.fechaCierre || null,
-                  datosClienteUsuarioFinal:
-                    formularioData.datosClienteUsuarioFinal || null,
-                  descripcionProducto: formularioData.descripcionProducto,
-                  fotosVideosUrls: formularioData.fotosVideosUrls || [],
-                  contenedorTipos: formularioData.contenedorTipos,
-                  contenedoresPorSemana:
-                    formularioData.contenedoresPorSemana || null,
-                  condicionesSuelo: formularioData.condicionesSuelo || null,
-                  contenedorMedida: formularioData.contenedorMedida,
-                  contenedorMedidaOtro:
-                    formularioData.contenedorMedidaOtro || null,
-                },
+                create: buildFormularioCreate(formularioData),
               },
             }
           : {}),
       },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        customer: true,
-        formularioCSSAnalisis: true,
-      },
+      include: VISIT_INCLUDE,
     });
 
-    return NextResponse.json(
-      { message: "Visita creada exitosamente", visit },
-      { status: 201 }
+    return createSuccessResponse(
+      { message: API_SUCCESS.VISIT_CREATED, visit },
+      HTTP_STATUS.CREATED
     );
   } catch (error) {
-    console.error("Error creating visit:", error);
-    return NextResponse.json(
-      { error: "Error al crear la visita" },
-      { status: 500 }
-    );
+    return serverErrorResponse("CREATE_VISIT", error);
   }
 }

@@ -253,7 +253,7 @@ enum VisitStatus {
 model Visit {
   id         String        @id @default(cuid())
   customerId String
-  userId     String // Vendedor que realizó la visita
+  userId     String
   formType   VisitFormType
   status     VisitStatus   @default(BORRADOR)
   visitDate  DateTime      @default(now())
@@ -290,6 +290,13 @@ enum ContenedorMedida {
   OTRO
 }
 
+// Tipos de archivo permitidos en el formulario
+enum TipoArchivo {
+  IMAGEN
+  VIDEO
+  DOCUMENTO
+}
+
 model FormularioCSSAnalisis {
   id      String @id @default(cuid())
   visitId String @unique
@@ -311,24 +318,55 @@ model FormularioCSSAnalisis {
   fechaCierre                DateTime?
 
   // 2. Descripción del producto
-  descripcionProducto String   @db.Text
-  fotosVideosUrls     String[] // Array de URLs de archivos adjuntos
+  descripcionProducto String @db.Text
 
   // 3. Datos del contenedor
-  contenedorTipos       ContenedorTipo[] // Múltiples opciones posibles
+  contenedorTipos       ContenedorTipo[]
   contenedoresPorSemana Int?
   condicionesSuelo      String?
 
   // 4. Medidas del contenedor
   contenedorMedida     ContenedorMedida
-  contenedorMedidaOtro String? // Si selecciona "OTRO"
+  contenedorMedidaOtro String?
 
-  // Relaciones
+  // 5. Archivos adjuntos (relación con FormularioArchivo)
+  archivos FormularioArchivo[]
+
   visit Visit @relation(fields: [visitId], references: [id], onDelete: Cascade)
 
-  // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([visitId])
+}
+
+// ==================== ARCHIVOS DEL FORMULARIO ====================
+// Modelo para almacenar metadatos de archivos subidos a Cloudinary
+model FormularioArchivo {
+  id           String @id @default(cuid())
+  formularioId String
+
+  // Información del archivo
+  nombre      String // Nombre original del archivo
+  tipoArchivo TipoArchivo
+  mimeType    String // application/pdf, image/jpeg, video/mp4, etc.
+  tamanio     Int // Tamaño en bytes
+
+  // Datos de Cloudinary
+  cloudinaryId   String @unique // public_id de Cloudinary
+  cloudinaryUrl  String // URL segura del archivo
+  cloudinaryType String // image, video, raw (para documentos)
+
+  // Metadatos adicionales
+  ancho    Int? // Solo para imágenes/videos
+  alto     Int? // Solo para imágenes/videos
+  duracion Float? // Solo para videos (en segundos)
+  formato  String // jpg, png, pdf, mp4, etc.
+
+  formulario FormularioCSSAnalisis @relation(fields: [formularioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([formularioId])
+  @@index([tipoArchivo])
 }

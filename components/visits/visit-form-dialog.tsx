@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { VisitFormType } from "@prisma/client";
-import { Customer } from "@/interfaces/visits";
 import { FORM_TYPE_LABELS } from "@/interfaces/visits";
 import FormularioCSSAnalisis from "./formulario-css-analisis";
+import { FORM_OPTIONS, VisitFormDialogProps } from "@/interfaces/visits";
 
 import {
   Dialog,
@@ -14,48 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-import {
-  ArrowRight,
-  ClipboardList,
-  Factory,
-  Forklift,
-  Ship,
-} from "lucide-react";
-
-interface VisitFormDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  customer: Customer;
-  onSuccess: () => void;
-}
-
-const FORM_OPTIONS = [
-  {
-    type: VisitFormType.ANALISIS_CSS,
-    icon: ClipboardList,
-    description: "Análisis de Combi CSS para manejo de contenedores.",
-    available: true,
-  },
-  {
-    type: VisitFormType.ANALISIS_INDUSTRIAL,
-    icon: Factory,
-    description: "Análisis de soluciones industriales y logística interna.",
-    available: false,
-  },
-  {
-    type: VisitFormType.ANALISIS_LOGISTICA,
-    icon: Forklift,
-    description: "Análisis de operaciones logísticas y almacenamiento.",
-    available: false,
-  },
-  {
-    type: VisitFormType.ANALISIS_STRADDLE_CARRIER,
-    icon: Ship,
-    description: "Análisis de Straddle Carrier para terminales portuarias.",
-    available: false,
-  },
-];
 
 export default function VisitFormDialog({
   open,

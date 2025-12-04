@@ -1,4 +1,5 @@
-import { FormularioCSSSchema } from "@/schemas/visits";
+import { ClipboardList, Factory, Forklift, Ship } from "lucide-react";
+import { FormularioCSSSchema, ArchivoSubido } from "@/schemas/visits";
 
 import {
   VisitFormType,
@@ -247,12 +248,12 @@ export interface CreateFormularioCSSData {
   fechaCierre?: Date;
   datosClienteUsuarioFinal?: string;
   descripcionProducto: string;
-  fotosVideosUrls?: string[];
   contenedorTipos: ContenedorTipo[];
   contenedoresPorSemana?: number;
   condicionesSuelo?: string;
   contenedorMedida: ContenedorMedida;
   contenedorMedidaOtro?: string;
+  archivos?: ArchivoSubido[];
 }
 
 export interface UpdateVisitData {
@@ -304,3 +305,37 @@ export interface StepConfig {
   color: string;
   fields: (keyof FormularioCSSSchema)[];
 }
+
+export interface VisitFormDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  customer: Customer;
+  onSuccess: () => void;
+}
+
+export const FORM_OPTIONS = [
+  {
+    type: VisitFormType.ANALISIS_CSS,
+    icon: ClipboardList,
+    description: "Análisis de Combi CSS para manejo de contenedores.",
+    available: true,
+  },
+  {
+    type: VisitFormType.ANALISIS_INDUSTRIAL,
+    icon: Factory,
+    description: "Análisis de soluciones industriales y logística interna.",
+    available: false,
+  },
+  {
+    type: VisitFormType.ANALISIS_LOGISTICA,
+    icon: Forklift,
+    description: "Análisis de operaciones logísticas y almacenamiento.",
+    available: false,
+  },
+  {
+    type: VisitFormType.ANALISIS_STRADDLE_CARRIER,
+    icon: Ship,
+    description: "Análisis de Straddle Carrier para terminales portuarias.",
+    available: false,
+  },
+];

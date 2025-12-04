@@ -1,9 +1,28 @@
 import { z } from "zod";
-import { ContenedorTipo, ContenedorMedida } from "@prisma/client";
+import { ContenedorTipo, ContenedorMedida, TipoArchivo } from "@prisma/client";
 
-// Schema para el formulario CSS Análisis
+// Schema para archivos subidos
+export const archivoSubidoSchema = z.object({
+  nombre: z.string(),
+  tipoArchivo: z.enum([
+    TipoArchivo.IMAGEN,
+    TipoArchivo.VIDEO,
+    TipoArchivo.DOCUMENTO,
+  ]),
+  mimeType: z.string(),
+  tamanio: z.number(),
+  cloudinaryId: z.string(),
+  cloudinaryUrl: z.string().url(),
+  cloudinaryType: z.string(),
+  ancho: z.number().optional(),
+  alto: z.number().optional(),
+  duracion: z.number().optional(),
+  formato: z.string(),
+});
+
+export type ArchivoSubido = z.infer<typeof archivoSubidoSchema>;
+
 export const formularioCSSSchema = z.object({
-  // Datos del cliente
   razonSocial: z.string().min(2, "La razón social es requerida"),
   personaContacto: z.string().min(2, "La persona de contacto es requerida"),
   email: z.string().email("Email inválido"),
@@ -18,23 +37,19 @@ export const formularioCSSSchema = z.object({
   contactoDistribuidor: z.string().optional(),
   fechaCierre: z.date().optional(),
   datosClienteUsuarioFinal: z.string().optional(),
-
-  // Descripción del producto
   descripcionProducto: z
     .string()
     .min(10, "Debe proporcionar una descripción detallada"),
-  fotosVideosUrls: z.array(z.string().url()).optional(),
 
-  // Datos del contenedor
   contenedorTipos: z
     .array(z.nativeEnum(ContenedorTipo))
     .min(1, "Selecciona al menos un tipo"),
   contenedoresPorSemana: z.coerce.number().int().positive().optional(),
   condicionesSuelo: z.string().optional(),
-
-  // Medidas del contenedor
   contenedorMedida: z.nativeEnum(ContenedorMedida),
   contenedorMedidaOtro: z.string().optional(),
+
+  archivos: z.array(archivoSubidoSchema).optional().default([]),
 });
 
 export type FormularioCSSSchema = z.infer<typeof formularioCSSSchema>;

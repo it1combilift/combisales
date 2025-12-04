@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import Image from "next/image";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -9,15 +10,28 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { formatFileSize } from "@/lib/file-utils";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { DialogTitle } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
+import { ALL_ALLOWED_TYPES, MAX_FILES } from "@/constants/constants";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { formularioCSSSchema, FormularioCSSSchema } from "@/schemas/visits";
+
+import {
+  formularioCSSSchema,
+  FormularioCSSSchema,
+  ArchivoSubido,
+} from "@/schemas/visits";
+
+import {
+  FORM_STEPS,
+  CONTENEDOR_TIPO_ICONS,
+  getStepColorClasses,
+} from "@/constants/visits";
 
 import {
   Form,
@@ -40,7 +54,6 @@ import {
   Ruler,
   MapPin,
   Users,
-  Globe,
   Check,
   Mail,
   User,
@@ -53,11 +66,19 @@ import {
   Briefcase,
   Phone,
   CalendarDays,
-  BoxSelect,
-  Layers,
   HardHat,
   Sparkles,
   FileDown,
+  Upload,
+  Paperclip,
+  ImageIcon,
+  Video,
+  FileIcon,
+  X,
+  AlertCircle,
+  Camera,
+  Images,
+  VideoIcon,
 } from "lucide-react";
 
 import {
@@ -65,12 +86,12 @@ import {
   VisitStatus,
   ContenedorTipo,
   ContenedorMedida,
+  TipoArchivo,
 } from "@prisma/client";
 
 import {
   CONTENEDOR_TIPO_LABELS,
   CONTENEDOR_MEDIDA_LABELS,
-  StepConfig,
   FormularioCSSAnalisisProps,
 } from "@/interfaces/visits";
 
@@ -79,81 +100,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-const CONTENEDOR_TIPO_ICONS: Record<ContenedorTipo, React.ElementType> = {
-  SOBRE_CAMION: Layers,
-  EN_SUELO: BoxSelect,
-  INTERIOR: Home,
-  EXTERIOR: Globe,
-};
-
-const STEPS: StepConfig[] = [
-  {
-    id: 1,
-    name: "Empresa",
-    description: "Datos de la empresa",
-    icon: Building2,
-    color: "primary",
-    fields: [
-      "razonSocial",
-      "personaContacto",
-      "email",
-      "numeroIdentificacionFiscal",
-      "website",
-    ],
-  },
-  {
-    id: 2,
-    name: "Ubicación",
-    description: "Dirección y localización",
-    icon: MapPin,
-    color: "blue",
-    fields: [
-      "direccion",
-      "localidad",
-      "codigoPostal",
-      "provinciaEstado",
-      "pais",
-    ],
-  },
-  {
-    id: 3,
-    name: "Comercial",
-    description: "Información de ventas",
-    icon: Users,
-    color: "amber",
-    fields: [
-      "distribuidor",
-      "contactoDistribuidor",
-      "fechaCierre",
-      "datosClienteUsuarioFinal",
-    ],
-  },
-  {
-    id: 4,
-    name: "Producto",
-    description: "Descripción del proyecto",
-    icon: FileText,
-    color: "violet",
-    fields: ["descripcionProducto"],
-  },
-  {
-    id: 5,
-    name: "Contenedor",
-    description: "Tipo y operación",
-    icon: Package,
-    color: "emerald",
-    fields: ["contenedorTipos", "contenedoresPorSemana", "condicionesSuelo"],
-  },
-  {
-    id: 6,
-    name: "Medidas",
-    description: "Dimensiones del contenedor",
-    icon: Ruler,
-    color: "rose",
-    fields: ["contenedorMedida", "contenedorMedidaOtro"],
-  },
-];
 
 export default function FormularioCSSAnalisis({
   customer,
@@ -192,27 +138,36 @@ export default function FormularioCSSAnalisis({
       contactoDistribuidor: customer.zohoOwnerEmail || "",
       datosClienteUsuarioFinal: "",
 
-      // Step 4-6: Empty fields
+      // Step 4-7: Empty fields
       descripcionProducto: "",
-      fotosVideosUrls: [],
       contenedorTipos: [],
       condicionesSuelo: "",
       contenedorMedida: ContenedorMedida.VEINTE_PIES,
       contenedorMedidaOtro: "",
+      archivos: [],
     },
   });
 
+  const [uploadingFiles, setUploadingFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+    {}
+  );
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraPhotoRef = useRef<HTMLInputElement>(null);
+  const cameraVideoRef = useRef<HTMLInputElement>(null);
+
   const progress = useMemo(
-    () => Math.round((currentStep / STEPS.length) * 100),
+    () => Math.round((currentStep / FORM_STEPS.length) * 100),
     [currentStep]
   );
 
   const handleNextStep = useCallback(async () => {
-    const currentStepConfig = STEPS[currentStep - 1];
+    const currentStepConfig = FORM_STEPS[currentStep - 1];
     const isValid = await form.trigger(currentStepConfig.fields);
     if (isValid) {
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
-      if (currentStep < STEPS.length) setCurrentStep((prev) => prev + 1);
+      if (currentStep < FORM_STEPS.length) setCurrentStep((prev) => prev + 1);
     }
   }, [currentStep, form]);
 
@@ -282,47 +237,10 @@ export default function FormularioCSSAnalisis({
     await saveVisit(data, VisitStatus.BORRADOR);
   };
 
-  const currentStepConfig = STEPS[currentStep - 1];
+  const currentStepConfig = FORM_STEPS[currentStep - 1];
   const isFirstStep = currentStep === 1;
-  const isLastStep = currentStep === STEPS.length;
+  const isLastStep = currentStep === FORM_STEPS.length;
   const StepIcon = currentStepConfig.icon;
-
-  const getStepColorClasses = (color: string) => {
-    const colors: Record<string, { bg: string; text: string; border: string }> =
-      {
-        primary: {
-          bg: "bg-primary/10",
-          text: "text-primary",
-          border: "border-primary",
-        },
-        blue: {
-          bg: "bg-blue-500/10",
-          text: "text-blue-600 dark:text-blue-400",
-          border: "border-blue-500",
-        },
-        amber: {
-          bg: "bg-amber-500/10",
-          text: "text-amber-600 dark:text-amber-400",
-          border: "border-amber-500",
-        },
-        violet: {
-          bg: "bg-violet-500/10",
-          text: "text-violet-600 dark:text-violet-400",
-          border: "border-violet-500",
-        },
-        emerald: {
-          bg: "bg-emerald-500/10",
-          text: "text-emerald-600 dark:text-emerald-400",
-          border: "border-emerald-500",
-        },
-        rose: {
-          bg: "bg-rose-500/10",
-          text: "text-rose-600 dark:text-rose-400",
-          border: "border-rose-500",
-        },
-      };
-    return colors[color] || colors.primary;
-  };
 
   const currentColors = getStepColorClasses(currentStepConfig.color);
 
@@ -452,7 +370,7 @@ export default function FormularioCSSAnalisis({
             name="numeroIdentificacionFiscal"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   NIF/CIF
                 </FormLabel>
                 <FormControl>
@@ -474,7 +392,7 @@ export default function FormularioCSSAnalisis({
             name="website"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   Sitio web
                 </FormLabel>
                 <FormControl>
@@ -567,7 +485,7 @@ export default function FormularioCSSAnalisis({
             name="codigoPostal"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   C.P.
                 </FormLabel>
                 <FormControl>
@@ -661,7 +579,7 @@ export default function FormularioCSSAnalisis({
             name="distribuidor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   Distribuidor
                 </FormLabel>
                 <FormControl>
@@ -683,7 +601,7 @@ export default function FormularioCSSAnalisis({
             name="contactoDistribuidor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   Contacto distribuidor
                 </FormLabel>
                 <FormControl>
@@ -706,8 +624,7 @@ export default function FormularioCSSAnalisis({
         name="fechaCierre"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-              <CalendarDays className="size-4" />
+            <FormLabel className="text-xs font-medium flex items-center gap-1.5">
               Fecha de cierre estimada
             </FormLabel>
             <Popover>
@@ -716,11 +633,11 @@ export default function FormularioCSSAnalisis({
                   <Button
                     variant="outline"
                     className={cn(
-                      "h-12 w-full justify-start text-left font-normal text-sm",
+                      "h-12 w-full justify-start text-left font-normal text-xs",
                       !field.value && "text-muted-foreground"
                     )}
                   >
-                    <CalendarDays className="size-4" />
+                    <CalendarDays className="size-3.5" />
                     {field.value
                       ? format(field.value, "PPP", { locale: es })
                       : "Seleccionar fecha"}
@@ -750,7 +667,7 @@ export default function FormularioCSSAnalisis({
           name="datosClienteUsuarioFinal"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium text-muted-foreground">
+              <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                 Notas del usuario final
               </FormLabel>
               <FormControl>
@@ -802,7 +719,7 @@ export default function FormularioCSSAnalisis({
                 {...field}
               />
             </FormControl>
-            <FormDescription className="text-xs text-muted-foreground flex items-start gap-2 mt-3 p-3 bg-muted/50 rounded-lg border">
+            <FormDescription className="text-xs text-muted-foreground flex items-start gap-2 mt-3 p-3 bg-muted/50 rounded-lg border text-pretty">
               <Sparkles className="size-4 shrink-0 mt-0.5 text-primary" />
               <span>
                 Incluya toda la información relevante: capacidades, dimensiones,
@@ -844,7 +761,7 @@ export default function FormularioCSSAnalisis({
               Tipo de contenedor
               <span className="text-destructive">*</span>
             </FormLabel>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-1.5">
               {Object.entries(CONTENEDOR_TIPO_LABELS).map(([key, label]) => {
                 const isChecked = field.value?.includes(key as ContenedorTipo);
                 const Icon = CONTENEDOR_TIPO_ICONS[key as ContenedorTipo];
@@ -852,7 +769,7 @@ export default function FormularioCSSAnalisis({
                   <Label
                     key={key}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl border-2 p-4 cursor-pointer transition-all select-none group",
+                      "flex items-center gap-3 rounded-xl border-2 p-1.5 cursor-pointer transition-all select-none group",
                       isChecked
                         ? "border-primary bg-primary/5 shadow-sm"
                         : "border-input hover:border-primary/50 hover:bg-accent/50"
@@ -860,16 +777,16 @@ export default function FormularioCSSAnalisis({
                   >
                     <div
                       className={cn(
-                        "p-2 rounded-lg transition-colors",
+                        "p-1 rounded-lg transition-colors",
                         isChecked
                           ? "bg-primary/10 text-primary"
                           : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                       )}
                     >
-                      <Icon className="size-5" />
+                      <Icon className="size-3.5" />
                     </div>
                     <div className="flex-1">
-                      <span className="text-xs font-medium block text-balance">
+                      <span className="text-[10px] sm:text-xs font-medium block text-balance">
                         {label}
                       </span>
                     </div>
@@ -898,19 +815,14 @@ export default function FormularioCSSAnalisis({
       />
 
       {/* Sección de operación */}
-      <div className="pt-4 border-t space-y-4">
-        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-          <HardHat className="size-4" />
-          <span>Datos de operación</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="pt-2 border-t scroll-py-1 md:space-y-3">
+        <div className="grid grid-cols-2 gap-1.5">
           <FormField
             control={form.control}
             name="contenedoresPorSemana"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   Contenedores por semana
                 </FormLabel>
                 <FormControl>
@@ -937,7 +849,7 @@ export default function FormularioCSSAnalisis({
             name="condicionesSuelo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   Condiciones del suelo
                 </FormLabel>
                 <FormControl>
@@ -979,7 +891,7 @@ export default function FormularioCSSAnalisis({
         name="contenedorMedida"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-medium flex items-center gap-1.5 mb-3">
+            <FormLabel className="text-xs font-medium flex items-center gap-1.5">
               Medida del contenedor
               <span className="text-destructive">*</span>
             </FormLabel>
@@ -987,25 +899,25 @@ export default function FormularioCSSAnalisis({
               <RadioGroup
                 onValueChange={field.onChange}
                 value={field.value}
-                className="grid grid-cols-2 gap-3"
+                className="grid grid-cols-2 gap-1.5"
               >
                 {Object.entries(CONTENEDOR_MEDIDA_LABELS).map(
                   ([key, label]) => (
                     <Label
                       key={key}
                       className={cn(
-                        "flex items-center justify-between rounded-xl border-2 p-4 cursor-pointer transition-all select-none",
+                        "flex items-center justify-between rounded-xl border-2 p-1.5 cursor-pointer transition-all select-none",
                         field.value === key
                           ? "border-primary bg-primary/5 shadow-sm"
                           : "border-input hover:border-primary/50 hover:bg-accent/50"
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <RadioGroupItem value={key} className="size-5" />
-                        <span className="text-sm font-medium">{label}</span>
+                        <RadioGroupItem value={key} className="size-3.5" />
+                        <span className="text-xs font-medium">{label}</span>
                       </div>
                       {field.value === key && (
-                        <Check className="size-5 text-primary" />
+                        <Check className="size-3.5 text-primary" />
                       )}
                     </Label>
                   )
@@ -1045,6 +957,416 @@ export default function FormularioCSSAnalisis({
     </div>
   );
 
+  // ==================== FILE HANDLING FUNCTIONS ====================
+  const handleFileSelect = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      const currentArchivos = form.getValues("archivos") || [];
+      const remainingSlots = MAX_FILES - currentArchivos.length;
+
+      if (files.length > remainingSlots) {
+        toast.error(`Solo puedes subir ${remainingSlots} archivo(s) más`);
+        return;
+      }
+
+      const validFiles: File[] = [];
+      for (const file of Array.from(files)) {
+        if (!ALL_ALLOWED_TYPES.includes(file.type)) {
+          toast.error(`${file.name}: Tipo de archivo no permitido`);
+          continue;
+        }
+        validFiles.push(file);
+      }
+
+      if (validFiles.length === 0) return;
+
+      setIsUploading(true);
+      setUploadingFiles(validFiles);
+
+      try {
+        const formData = new FormData();
+        validFiles.forEach((file) => formData.append("files", file));
+        formData.append("folder", `combisales/visitas/${customer.id}`);
+
+        const response = await axios.post("/api/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const progress = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setUploadProgress((prev) => ({ ...prev, total: progress }));
+            }
+          },
+        });
+
+        if (response.data.files && response.data.files.length > 0) {
+          const newArchivos = [...currentArchivos, ...response.data.files];
+          form.setValue("archivos", newArchivos, { shouldValidate: true });
+          toast.success(response.data.message);
+        }
+
+        if (response.data.errors && response.data.errors.length > 0) {
+          response.data.errors.forEach((error: string) => toast.error(error));
+        }
+      } catch (error: any) {
+        console.error("Error uploading files:", error);
+        toast.error(
+          error.response?.data?.error || "Error al subir los archivos"
+        );
+      } finally {
+        setIsUploading(false);
+        setUploadingFiles([]);
+        setUploadProgress({});
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
+    },
+    [form, customer.id]
+  );
+
+  const handleRemoveFile = useCallback(
+    async (archivo: ArchivoSubido) => {
+      try {
+        await axios.delete(
+          `/api/upload/${encodeURIComponent(archivo.cloudinaryId)}?type=${
+            archivo.cloudinaryType
+          }`
+        );
+
+        const currentArchivos = form.getValues("archivos") || [];
+        const newArchivos = currentArchivos.filter(
+          (a) => a.cloudinaryId !== archivo.cloudinaryId
+        );
+        form.setValue("archivos", newArchivos, { shouldValidate: true });
+        toast.success("Archivo eliminado");
+      } catch (error) {
+        console.error("Error removing file:", error);
+        toast.error("Error al eliminar el archivo");
+      }
+    },
+    [form]
+  );
+
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const files = event.dataTransfer.files;
+      if (files && files.length > 0 && fileInputRef.current) {
+        const dataTransfer = new DataTransfer();
+        Array.from(files).forEach((file) => dataTransfer.items.add(file));
+        fileInputRef.current.files = dataTransfer.files;
+        handleFileSelect({
+          target: { files: dataTransfer.files },
+        } as React.ChangeEvent<HTMLInputElement>);
+      }
+    },
+    [handleFileSelect]
+  );
+
+  const getFileIcon = (tipoArchivo: TipoArchivo) => {
+    switch (tipoArchivo) {
+      case TipoArchivo.IMAGEN:
+        return ImageIcon;
+      case TipoArchivo.VIDEO:
+        return VideoIcon;
+      default:
+        return FileIcon;
+    }
+  };
+
+  // ==================== STEP 7: ARCHIVOS ====================
+  const archivos = form.watch("archivos") || [];
+
+  const Step7Content = (
+    <div className="space-y-3">
+      {/* Header del paso */}
+      <div className="flex items-center gap-3 pb-2 border-b">
+        <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
+          <Paperclip className={cn("size-4", currentColors.text)} />
+        </div>
+        <div>
+          <h3 className="font-semibold text-foreground text-xs">
+            Archivos adjuntos
+          </h3>
+          <p className="text-xs text-muted-foreground text-pretty">
+            Sube fotos, videos y documentos relevantes
+          </p>
+        </div>
+      </div>
+
+      {/* Inputs ocultos para captura desde cámara */}
+      <input
+        ref={cameraPhotoRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleFileSelect}
+        className="hidden"
+        disabled={isUploading || archivos.length >= MAX_FILES}
+      />
+      <input
+        ref={cameraVideoRef}
+        type="file"
+        accept="video/*"
+        capture="environment"
+        onChange={handleFileSelect}
+        className="hidden"
+        disabled={isUploading || archivos.length >= MAX_FILES}
+      />
+
+      {/* Botones de acción rápida para móvil */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2">
+        {/* Tomar foto */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            "flex flex-row items-center justify-center gap-1",
+            "transition-all"
+          )}
+          onClick={() => cameraPhotoRef.current?.click()}
+          disabled={isUploading || archivos.length >= MAX_FILES}
+        >
+          <Camera className="size-3.5" />
+          <span className="text-xs">Tomar foto</span>
+        </Button>
+
+        {/* Grabar video */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            "flex flex-row items-center justify-center gap-1",
+            "transition-all"
+          )}
+          onClick={() => cameraVideoRef.current?.click()}
+          disabled={isUploading || archivos.length >= MAX_FILES}
+        >
+          <Video className="size-3.5" />
+          <span className="text-xs">Grabar video</span>
+        </Button>
+
+        {/* Seleccionar archivos */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            "flex flex-row items-center justify-center gap-1",
+            "transition-all"
+          )}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading || archivos.length >= MAX_FILES}
+        >
+          <Images className="size-3.5" />
+          <span className="text-xs">Galería</span>
+        </Button>
+      </div>
+
+      {/* Input oculto para selección de archivos */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept={ALL_ALLOWED_TYPES.join(",")}
+        onChange={handleFileSelect}
+        className="hidden"
+        disabled={isUploading || archivos.length >= MAX_FILES}
+      />
+
+      {/* Dropzone para arrastrar archivos (desktop) */}
+      <div
+        className={cn(
+          "relative border-2 border-dashed rounded-xl p-4 transition-all hidden sm:block",
+          "hover:border-primary/50 hover:bg-primary/5",
+          isUploading && "pointer-events-none opacity-60",
+          archivos.length >= MAX_FILES && "opacity-50 pointer-events-none"
+        )}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        <div className="flex flex-col items-center justify-center gap-2 text-center cursor-pointer">
+          {isUploading ? (
+            <>
+              <Loader2 className="size-3 text-primary animate-spin" />
+              <div className="space-y-1">
+                <p className="text-xs font-medium">Subiendo archivos...</p>
+                <p className="text-xs text-muted-foreground">
+                  {uploadProgress.total || 0}% completado
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={cn("p-2.5 rounded-full", currentColors.bg)}>
+                <Upload className={cn("size-5", currentColors.text)} />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-xs font-medium">
+                  Arrastra archivos aquí o haz clic
+                </p>
+                <p className="text-[10px] text-muted-foreground">
+                  Máximo {MAX_FILES} archivos
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Indicador de progreso en móvil */}
+      {isUploading && (
+        <div className="sm:hidden flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+          <Loader2 className="size-5 text-primary animate-spin shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium">Subiendo archivos...</p>
+            <Progress
+              value={uploadProgress.total || 0}
+              className="h-1.5 mt-1"
+            />
+          </div>
+          <span className="text-xs font-medium text-primary">
+            {uploadProgress.total || 0}%
+          </span>
+        </div>
+      )}
+
+      {/* Tipos de archivo permitidos */}
+      <div className="flex flex-wrap gap-1.5 justify-center">
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] bg-blue-500/10 text-blue-600">
+          <ImageIcon className="size-2.5" /> Imágenes (10MB)
+        </span>
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] bg-violet-500/10 text-violet-600">
+          <Video className="size-2.5" /> Videos (100MB)
+        </span>
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] bg-amber-500/10 text-amber-600">
+          <FileIcon className="size-2.5" /> Docs (25MB)
+        </span>
+      </div>
+
+      {/* Lista de archivos subidos */}
+      {archivos.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium text-muted-foreground">
+              Archivos subidos ({archivos.length}/{MAX_FILES})
+            </p>
+          </div>
+          <div className="grid gap-2">
+            {archivos.map((archivo) => {
+              const IconComponent = getFileIcon(archivo.tipoArchivo);
+              return (
+                <div
+                  key={archivo.cloudinaryId}
+                  className="flex items-center gap-3 p-1.5 rounded-lg border bg-card hover:bg-accent/50 transition-colors group"
+                >
+                  {/* Preview o icono */}
+                  {archivo.tipoArchivo === TipoArchivo.IMAGEN ? (
+                    <div className="size-12 rounded-md overflow-hidden bg-muted shrink-0">
+                      <Image
+                        src={archivo.cloudinaryUrl}
+                        alt={archivo.nombre}
+                        className="w-full h-full object-cover"
+                        width={48}
+                        height={48}
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className={cn(
+                        "size-12 rounded-md flex items-center justify-center shrink-0",
+                        archivo.tipoArchivo === "VIDEO"
+                          ? "bg-violet-500/10"
+                          : "bg-amber-500/10"
+                      )}
+                    >
+                      <IconComponent
+                        className={cn(
+                          "size-5",
+                          archivo.tipoArchivo === TipoArchivo.VIDEO
+                            ? "text-violet-600"
+                            : "text-amber-600"
+                        )}
+                      />
+                    </div>
+                  )}
+
+                  {/* Info del archivo */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate">
+                      {archivo.nombre}
+                    </p>
+                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                      <span>{formatFileSize(archivo.tamanio)}</span>
+                      <span>•</span>
+                      <span className="uppercase">{archivo.formato}</span>
+                      {archivo.ancho && archivo.alto && (
+                        <>
+                          <span>•</span>
+                          <span>
+                            {archivo.ancho}x{archivo.alto}
+                          </span>
+                        </>
+                      )}
+                      {archivo.duracion && (
+                        <>
+                          <span>•</span>
+                          <span>{Math.round(archivo.duracion)}s</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Acciones */}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() =>
+                        window.open(archivo.cloudinaryUrl, "_blank")
+                      }
+                    >
+                      <Check className="size-4 text-green-600" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleRemoveFile(archivo)}
+                    >
+                      <X className="size-4" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Nota informativa */}
+      <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 border border-muted/90">
+        <AlertCircle className="size-3.5 text-muted-foreground mt-0.5 shrink-0" />
+        <p className="text-[10px] text-muted-foreground leading-relaxed text-pretty">
+          Los archivos se subirán automáticamente al seleccionarlos. Puedes
+          adjuntar fotos del sitio, videos de operación, planos,
+          especificaciones técnicas y cualquier documento relevante para el
+          análisis.
+        </p>
+      </div>
+    </div>
+  );
+
   const renderStepContent = () => {
     return (
       <>
@@ -1054,12 +1376,13 @@ export default function FormularioCSSAnalisis({
         <div className={cn(currentStep !== 4 && "hidden")}>{Step4Content}</div>
         <div className={cn(currentStep !== 5 && "hidden")}>{Step5Content}</div>
         <div className={cn(currentStep !== 6 && "hidden")}>{Step6Content}</div>
+        <div className={cn(currentStep !== 7 && "hidden")}>{Step7Content}</div>
       </>
     );
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[90vh] bg-background">
+    <div className="flex flex-col h-full max-h-[90vh] bg-background w-full">
       {/* ==================== HEADER ==================== */}
       <header className="shrink-0 px-4 pt-2 pb-2 bg-linear-to-b from-muted/40 to-background">
         {/* Title Row */}
@@ -1077,7 +1400,7 @@ export default function FormularioCSSAnalisis({
               <DialogTitle className="text-sm font-bold text-foreground">
                 {currentStepConfig.name}
               </DialogTitle>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {currentStepConfig.description}
               </p>
             </div>
@@ -1085,11 +1408,11 @@ export default function FormularioCSSAnalisis({
         </div>
 
         {/* Progress bar */}
-        <Progress value={progress} className="h-2 mb-4" />
+        <Progress value={progress} className="h-2 mb-2 md:mb-4" />
 
         {/* Step Indicators */}
         <div className="flex items-center justify-between gap-1">
-          {STEPS.map((step, index) => {
+          {FORM_STEPS.map((step, index) => {
             const isCompleted = completedSteps.has(step.id);
             const isCurrent = currentStep === step.id;
             const isAccessible =
@@ -1144,7 +1467,7 @@ export default function FormularioCSSAnalisis({
                 </button>
 
                 {/* Connector line */}
-                {index < STEPS.length - 1 && (
+                {index < FORM_STEPS.length - 1 && (
                   <div
                     className={cn(
                       "flex-1 h-0.5 mx-1 sm:mx-2 rounded-full transition-all duration-500",
@@ -1162,10 +1485,10 @@ export default function FormularioCSSAnalisis({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col flex-1 min-h-0"
+          className="flex flex-col flex-1 min-h-0 w-full"
         >
           <main className="flex-1 overflow-y-auto">
-            <div className="p-4 sm:p-6 max-w-2xl mx-auto">
+            <div className="p-4 sm:p-6 md:max-w-2xl mx-auto">
               <div className="animate-in fade-in-50 slide-in-from-right-4 duration-300">
                 {renderStepContent()}
               </div>
@@ -1173,7 +1496,7 @@ export default function FormularioCSSAnalisis({
           </main>
 
           {/* ==================== FOOTER ==================== */}
-          <footer className="shrink-0 px-4 sm:px-6 py-4 border-t bg-muted/20 backdrop-blur-sm">
+          <footer className="shrink-0 px-2 py-3 border-t bg-muted/20 backdrop-blur-sm">
             <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
               {/* Back button */}
               <Button
@@ -1184,20 +1507,20 @@ export default function FormularioCSSAnalisis({
                 disabled={isSubmitting || isSavingDraft}
                 className="gap-2 text-muted-foreground hover:text-foreground"
               >
-                <ArrowLeft className="size-4" />
-                <span className="hidden sm:inline">
+                <ArrowLeft className="size-3" />
+                <span className="hidden sm:inline text-xs">
                   {isFirstStep ? "Salir" : "Atrás"}
                 </span>
               </Button>
 
               {/* Step counter */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50">
-                <span className="text-sm font-semibold text-foreground">
+              <div className="flex items-center gap-2 p-1.5 rounded-full bg-muted/50">
+                <span className="text-xs font-semibold text-foreground">
                   {currentStep}
                 </span>
-                <span className="text-muted-foreground">/</span>
-                <span className="text-sm text-muted-foreground">
-                  {STEPS.length}
+                <span className="text-muted-foreground text-xs">/</span>
+                <span className="text-xs text-muted-foreground">
+                  {FORM_STEPS.length}
                 </span>
               </div>
 
@@ -1214,11 +1537,11 @@ export default function FormularioCSSAnalisis({
                       className="gap-2"
                     >
                       {isSavingDraft ? (
-                        <Loader2 className="size-4 animate-spin" />
+                        <Loader2 className="size-3.5 animate-spin" />
                       ) : (
-                        <FileDown className="size-4" />
+                        <FileDown className="size-3.5" />
                       )}
-                      <span className="hidden sm:inline">Borrador</span>
+                      <span className="hidden sm:inline">Guardar borrador</span>
                     </Button>
 
                     <Button
@@ -1228,10 +1551,10 @@ export default function FormularioCSSAnalisis({
                       className="gap-2 shadow-lg shadow-primary/25"
                     >
                       {isSubmitting ? (
-                        <Loader2 className="size-4 animate-spin" />
+                        <Loader2 className="size-3.5 animate-spin" />
                       ) : (
                         <>
-                          <Save className="size-4" />
+                          <Save className="size-3.5" />
                           <span>Guardar y enviar</span>
                         </>
                       )}
@@ -1246,7 +1569,7 @@ export default function FormularioCSSAnalisis({
                     className="gap-2"
                   >
                     <span className="hidden sm:inline">Siguiente</span>
-                    <ArrowRight className="size-4" />
+                    <ArrowRight className="size-3.5" />
                   </Button>
                 )}
               </div>
