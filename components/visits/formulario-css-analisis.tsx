@@ -66,7 +66,6 @@ import {
   Briefcase,
   Phone,
   CalendarDays,
-  HardHat,
   Sparkles,
   FileDown,
   Upload,
@@ -77,8 +76,8 @@ import {
   X,
   AlertCircle,
   Camera,
-  Images,
   VideoIcon,
+  FolderOpen,
 } from "lucide-react";
 
 import {
@@ -1119,21 +1118,21 @@ export default function FormularioCSSAnalisis({
       />
 
       {/* Botones de acción rápida para móvil */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2">
+      <div className="flex flex-wrap gap-2 justify-center">
         {/* Tomar foto */}
         <Button
           type="button"
           variant="outline"
           size="sm"
           className={cn(
-            "flex flex-row items-center justify-center gap-1",
+            "flex flex-row items-center justify-center gap-1 w-fit",
             "transition-all"
           )}
           onClick={() => cameraPhotoRef.current?.click()}
           disabled={isUploading || archivos.length >= MAX_FILES}
         >
           <Camera className="size-3.5" />
-          <span className="text-xs">Tomar foto</span>
+          <span className="text-xs hidden sm:inline">Tomar foto</span>
         </Button>
 
         {/* Grabar video */}
@@ -1142,14 +1141,14 @@ export default function FormularioCSSAnalisis({
           variant="outline"
           size="sm"
           className={cn(
-            "flex flex-row items-center justify-center gap-1",
+            "flex flex-row items-center justify-center gap-1 w-fit",
             "transition-all"
           )}
           onClick={() => cameraVideoRef.current?.click()}
           disabled={isUploading || archivos.length >= MAX_FILES}
         >
           <Video className="size-3.5" />
-          <span className="text-xs">Grabar video</span>
+          <span className="text-xs hidden sm:inline">Grabar video</span>
         </Button>
 
         {/* Seleccionar archivos */}
@@ -1158,14 +1157,14 @@ export default function FormularioCSSAnalisis({
           variant="outline"
           size="sm"
           className={cn(
-            "flex flex-row items-center justify-center gap-1",
+            "flex flex-row items-center justify-center gap-1 w-fit",
             "transition-all"
           )}
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading || archivos.length >= MAX_FILES}
         >
-          <Images className="size-3.5" />
-          <span className="text-xs">Galería</span>
+          <FolderOpen className="size-3.5" />
+          <span className="text-xs hidden sm:inline">Archivos</span>
         </Button>
       </div>
 
