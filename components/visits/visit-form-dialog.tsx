@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { VisitFormType } from "@prisma/client";
@@ -21,17 +21,36 @@ export default function VisitFormDialog({
   onOpenChange,
   customer,
   onSuccess,
+  existingVisit,
 }: VisitFormDialogProps) {
   const [selectedFormType, setSelectedFormType] =
     useState<VisitFormType | null>(null);
 
-  const handleBack = () => setSelectedFormType(null);
+  // If editing an existing visit, set the form type automatically
+  useEffect(() => {
+    if (existingVisit && open) {
+      setSelectedFormType(existingVisit.formType as VisitFormType);
+    } else if (!open) {
+      setSelectedFormType(null);
+    }
+  }, [existingVisit, open]);
+
+  const handleBack = () => {
+    // If editing, close the dialog instead of going back to form selection
+    if (existingVisit) {
+      onOpenChange(false);
+    } else {
+      setSelectedFormType(null);
+    }
+  };
 
   const handleSuccess = () => {
     setSelectedFormType(null);
     onSuccess();
     onOpenChange(false);
   };
+
+  const isEditing = !!existingVisit;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -42,7 +61,8 @@ export default function VisitFormDialog({
           p-0 overflow-hidden
         "
       >
-        {!selectedFormType ? (
+        {/* Show form selector only for new visits */}
+        {!selectedFormType && !isEditing ? (
           <div className="flex flex-col h-full max-h-[90vh]">
             {/* HEADER */}
             <div className="px-4 sm:px-6 py-4 border-b border-border">
@@ -145,6 +165,7 @@ export default function VisitFormDialog({
                 customer={customer}
                 onBack={handleBack}
                 onSuccess={handleSuccess}
+                existingVisit={existingVisit}
               />
             )}
           </>

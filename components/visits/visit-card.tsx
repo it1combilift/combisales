@@ -24,6 +24,7 @@ import {
   ClipboardList,
   Copy,
   MoreVertical,
+  PencilLine,
   Trash2,
   User,
 } from "lucide-react";
@@ -53,6 +54,7 @@ interface VisitCardProps {
   onSelect: (selected: boolean) => void;
   isSelected: boolean;
   onView?: (visit: Visit) => void;
+  onEdit?: (visit: Visit) => void;
   onDelete?: (visit: Visit) => void;
 }
 
@@ -61,6 +63,7 @@ export const VisitCard = ({
   onSelect,
   isSelected,
   onView,
+  onEdit,
   onDelete,
 }: VisitCardProps) => {
   const status = visit.status as VisitStatus;
@@ -110,13 +113,22 @@ export const VisitCard = ({
                 Copiar ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              {onEdit && (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => onEdit(visit)}
+                >
+                  <PencilLine className="size-4" />
+                  Editar
+                </DropdownMenuItem>
+              )}
               {onView && (
                 <DropdownMenuItem
                   className="cursor-pointer"
                   onClick={() => onView(visit)}
                 >
                   <ArrowUpRight className="size-4" />
-                  Ver detalles
+                  Ver detalle
                 </DropdownMenuItem>
               )}
               {onDelete && (

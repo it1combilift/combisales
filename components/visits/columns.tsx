@@ -15,6 +15,7 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpRight,
+  PencilLine,
 } from "lucide-react";
 
 import {
@@ -28,11 +29,12 @@ import {
 
 interface ColumnsConfig {
   onView?: (visit: Visit) => void;
+  onEdit?: (visit: Visit) => void;
   onDelete?: (visit: Visit) => void;
 }
 
 export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
-  const { onView, onDelete } = config || {};
+  const { onView, onEdit, onDelete } = config || {};
 
   return [
     {
@@ -187,12 +189,21 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
               <DropdownMenuSeparator />
+
+              {onEdit && (
+                <DropdownMenuItem onClick={() => onEdit(visit)}>
+                  <PencilLine className="size-4" />
+                  Editar
+                </DropdownMenuItem>
+              )}
+
               {onView && (
                 <DropdownMenuItem onClick={() => onView(visit)}>
                   <ArrowUpRight className="size-4" />
-                  Detalle
+                  Ver detalle
                 </DropdownMenuItem>
               )}
+
               {onDelete && (
                 <DropdownMenuItem
                   onClick={() => onDelete(visit)}

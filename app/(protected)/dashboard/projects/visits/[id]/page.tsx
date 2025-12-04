@@ -48,6 +48,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const [isLoadingVisits, setIsLoadingVisits] = useState(false);
   const [isVisitDialogOpen, setIsVisitDialogOpen] = useState(false);
   const [visitToDelete, setVisitToDelete] = useState<Visit | null>(null);
+  const [visitToEdit, setVisitToEdit] = useState<Visit | null>(null);
   const router = useRouter();
   const isMobile = useIsMobile();
 
@@ -189,12 +190,30 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
       toast.error("El cliente aún se está sincronizando, intenta de nuevo");
       return;
     }
+    setVisitToEdit(null); // Clear any existing edit
+    setIsVisitDialogOpen(true);
+  };
+
+  const handleEditVisit = (visit: Visit) => {
+    if (!customer) {
+      toast.error("El cliente aún se está sincronizando, intenta de nuevo");
+      return;
+    }
+    setVisitToEdit(visit);
     setIsVisitDialogOpen(true);
   };
 
   const handleVisitSuccess = () => {
+    setVisitToEdit(null);
     if (customer) {
       fetchVisits(customer.id);
+    }
+  };
+
+  const handleDialogClose = (open: boolean) => {
+    setIsVisitDialogOpen(open);
+    if (!open) {
+      setVisitToEdit(null);
     }
   };
 
@@ -221,6 +240,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const columns = createColumns({
     onView: handleViewVisit,
+    onEdit: handleEditVisit,
     onDelete: (visit) => setVisitToDelete(visit),
   });
 
@@ -244,6 +264,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           data={visits}
           isLoading={isLoadingVisits}
           onView={handleViewVisit}
+          onEdit={handleEditVisit}
           onDelete={(visit) => setVisitToDelete(visit)}
           customerName={account?.Account_Name}
         />
@@ -415,9 +436,10 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           {customer && (
             <VisitFormDialog
               open={isVisitDialogOpen}
-              onOpenChange={setIsVisitDialogOpen}
+              onOpenChange={handleDialogClose}
               customer={customer}
               onSuccess={handleVisitSuccess}
+              existingVisit={visitToEdit || undefined}
             />
           )}
 

@@ -118,6 +118,22 @@ export interface VisitWithDetails extends Visit {
 }
 
 // ==================== FORMULARIO CSS ANALYSIS INTERFACES ====================
+export interface FormularioArchivo {
+  id: string;
+  nombre: string;
+  tipoArchivo: string;
+  mimeType: string;
+  tamanio: number;
+  cloudinaryId: string;
+  cloudinaryUrl: string;
+  cloudinaryType: string;
+  ancho?: number | null;
+  alto?: number | null;
+  duracion?: number | null;
+  formato: string;
+  createdAt: Date;
+}
+
 export interface FormularioCSSAnalisis {
   id: string;
   visitId: string;
@@ -146,6 +162,8 @@ export interface FormularioCSSAnalisis {
   // Medidas del contenedor
   contenedorMedida: ContenedorMedida;
   contenedorMedidaOtro?: string | null;
+  // Archivos adjuntos
+  archivos?: FormularioArchivo[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -296,6 +314,7 @@ export interface FormularioCSSAnalisisProps {
   customer: Customer;
   onBack: () => void;
   onSuccess: () => void;
+  existingVisit?: Visit; // For editing existing visits
 }
 
 export interface StepConfig {
@@ -312,6 +331,7 @@ export interface VisitFormDialogProps {
   onOpenChange: (open: boolean) => void;
   customer: Customer;
   onSuccess: () => void;
+  existingVisit?: Visit; // For editing existing visits
 }
 
 export const FORM_OPTIONS = [
@@ -354,6 +374,7 @@ export interface DataTableProps<TData, TValue> {
   columnFilters?: ColumnFiltersState;
   setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
   onView?: (visit: Visit) => void;
+  onEdit?: (visit: Visit) => void;
   onDelete?: (visit: Visit) => void;
   customerName?: string;
 }

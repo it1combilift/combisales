@@ -104,16 +104,77 @@ export default function FormularioCSSAnalisis({
   customer,
   onBack,
   onSuccess,
+  existingVisit,
 }: FormularioCSSAnalisisProps) {
+  const isEditing = !!existingVisit;
+  const formulario = existingVisit?.formularioCSSAnalisis;
+
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(
+    isEditing ? new Set([1, 2, 3, 4, 5, 6, 7]) : new Set()
+  );
 
-  const form = useForm<FormularioCSSSchema>({
-    resolver: zodResolver(formularioCSSSchema),
-    mode: "onChange",
-    defaultValues: {
+  const getDefaultValues = (): FormularioCSSSchema => {
+    if (formulario) {
+      return {
+        // Step 1: Company
+        razonSocial: formulario.razonSocial || "",
+        personaContacto: formulario.personaContacto || "",
+        email: formulario.email || "",
+        numeroIdentificacionFiscal: formulario.numeroIdentificacionFiscal || "",
+        website: formulario.website || "",
+
+        // Step 2: Address
+        direccion: formulario.direccion || "",
+        localidad: formulario.localidad || "",
+        provinciaEstado: formulario.provinciaEstado || "",
+        pais: formulario.pais || "",
+        codigoPostal: formulario.codigoPostal || "",
+
+        // Step 3: Commercial
+        distribuidor: formulario.distribuidor || "",
+        contactoDistribuidor: formulario.contactoDistribuidor || "",
+        datosClienteUsuarioFinal: formulario.datosClienteUsuarioFinal || "",
+        fechaCierre: formulario.fechaCierre
+          ? new Date(formulario.fechaCierre)
+          : undefined,
+
+        // Step 4: Product description
+        descripcionProducto: formulario.descripcionProducto || "",
+
+        // Step 5: Container types
+        contenedorTipos: (formulario.contenedorTipos as ContenedorTipo[]) || [],
+        contenedoresPorSemana: formulario.contenedoresPorSemana || undefined,
+        condicionesSuelo: formulario.condicionesSuelo || "",
+
+        // Step 6: Container measurements
+        contenedorMedida:
+          (formulario.contenedorMedida as ContenedorMedida) ||
+          ContenedorMedida.VEINTE_PIES,
+        contenedorMedidaOtro: formulario.contenedorMedidaOtro || "",
+
+        // Step 7: Files - transform existing files to ArchivoSubido format
+        archivos:
+          formulario.archivos?.map((archivo) => ({
+            nombre: archivo.nombre,
+            tipoArchivo: archivo.tipoArchivo as TipoArchivo,
+            mimeType: archivo.mimeType,
+            tamanio: archivo.tamanio,
+            cloudinaryId: archivo.cloudinaryId,
+            cloudinaryUrl: archivo.cloudinaryUrl,
+            cloudinaryType: archivo.cloudinaryType,
+            ancho: archivo.ancho || undefined,
+            alto: archivo.alto || undefined,
+            duracion: archivo.duracion || undefined,
+            formato: archivo.formato,
+          })) || [],
+      };
+    }
+
+    // Default values for new visit
+    return {
       // Step 1: Company
       razonSocial: customer.razonSocial || customer.accountName || "",
       personaContacto: customer.zohoOwnerName || "",
@@ -144,7 +205,13 @@ export default function FormularioCSSAnalisis({
       contenedorMedida: ContenedorMedida.VEINTE_PIES,
       contenedorMedidaOtro: "",
       archivos: [],
-    },
+    };
+  };
+
+  const form = useForm<FormularioCSSSchema>({
+    resolver: zodResolver(formularioCSSSchema),
+    mode: "onChange",
+    defaultValues: getDefaultValues(),
   });
 
   const [uploadingFiles, setUploadingFiles] = useState<File[]>([]);
@@ -196,22 +263,45 @@ export default function FormularioCSSAnalisis({
     }
 
     try {
-      const response = await axios.post("/api/visits", {
-        visitData: {
-          customerId: customer.id,
-          formType: VisitFormType.ANALISIS_CSS,
-          visitDate: new Date(),
-          status: status,
-        },
-        formularioData: data,
-      });
-      if (response.status === 201) {
-        toast.success(
-          isCompletada
-            ? "Visita guardada exitosamente"
-            : "Borrador guardado exitosamente"
-        );
-        onSuccess();
+      let response;
+
+      if (isEditing && existingVisit) {
+        // UPDATE existing visit
+        response = await axios.put(`/api/visits/${existingVisit.id}`, {
+          visitData: {
+            status: status,
+          },
+          formularioData: data,
+        });
+
+        if (response.status === 200) {
+          toast.success(
+            isCompletada
+              ? "Visita actualizada exitosamente"
+              : "Borrador actualizado exitosamente"
+          );
+          onSuccess();
+        }
+      } else {
+        // CREATE new visit
+        response = await axios.post("/api/visits", {
+          visitData: {
+            customerId: customer.id,
+            formType: VisitFormType.ANALISIS_CSS,
+            visitDate: new Date(),
+            status: status,
+          },
+          formularioData: data,
+        });
+
+        if (response.status === 201) {
+          toast.success(
+            isCompletada
+              ? "Visita guardada exitosamente"
+              : "Borrador guardado exitosamente"
+          );
+          onSuccess();
+        }
       }
     } catch (error: any) {
       console.error("Error saving visit:", error);

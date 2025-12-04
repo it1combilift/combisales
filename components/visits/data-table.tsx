@@ -81,6 +81,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   columnFilters: externalColumnFilters,
   setColumnFilters: setExternalColumnFilters,
   onView,
+  onEdit,
   onDelete,
 }: DataTableProps<TData, TValue>) {
   const isMobile = useIsMobile();
@@ -368,6 +369,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                   isSelected={row.getIsSelected()}
                   onSelect={(selected) => row.toggleSelected(selected)}
                   onView={onView}
+                  onEdit={onEdit}
                   onDelete={onDelete}
                 />
               ))
