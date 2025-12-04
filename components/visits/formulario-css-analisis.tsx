@@ -869,7 +869,9 @@ export default function FormularioCSSAnalisis({
                       <Icon className="size-5" />
                     </div>
                     <div className="flex-1">
-                      <span className="text-xs font-medium block text-balance">{label}</span>
+                      <span className="text-xs font-medium block text-balance">
+                        {label}
+                      </span>
                     </div>
                     <Checkbox
                       checked={isChecked}
@@ -918,6 +920,11 @@ export default function FormularioCSSAnalisis({
                     min={1}
                     className="h-12 text-xs bg-background/50"
                     {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === "" ? undefined : Number(value));
+                    }}
                   />
                 </FormControl>
                 <FormMessage className="text-xs" />
