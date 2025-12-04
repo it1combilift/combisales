@@ -415,16 +415,10 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
               )}
 
               {account.Account_Type && (
-                <MonoText>
-                  {account.Account_Type}
-                </MonoText>
+                <MonoText>{account.Account_Type}</MonoText>
               )}
 
-              {account.Industry && (
-                <MonoText>
-                  {account.Industry}
-                </MonoText>
-              )}
+              {account.Industry && <MonoText>{account.Industry}</MonoText>}
 
               {(account.Billing_City || account.Billing_Country) && (
                 <MonoText>

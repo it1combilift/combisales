@@ -1,3 +1,5 @@
+import { FormularioCSSSchema } from "@/schemas/visits";
+
 import {
   VisitFormType,
   VisitStatus,
@@ -6,7 +8,6 @@ import {
 } from "@prisma/client";
 
 // ==================== CUSTOMER INTERFACES ====================
-// Sincronizado con schema.prisma Customer model
 export interface Customer {
   id: string;
   zohoAccountId: string;
@@ -288,3 +289,18 @@ export const CONTENEDOR_MEDIDA_LABELS: Record<ContenedorMedida, string> = {
   CUARENTA_PIES: "40 pies",
   OTRO: "Otro",
 };
+
+export interface FormularioCSSAnalisisProps {
+  customer: Customer;
+  onBack: () => void;
+  onSuccess: () => void;
+}
+
+export interface StepConfig {
+  id: number;
+  name: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
+  fields: (keyof FormularioCSSSchema)[];
+}

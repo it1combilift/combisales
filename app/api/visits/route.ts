@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { VisitFormType, VisitStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { VisitFormType, VisitStatus } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { CreateVisitData, CreateFormularioCSSData } from "@/interfaces/visits";
 

@@ -70,7 +70,8 @@ import {
 import {
   CONTENEDOR_TIPO_LABELS,
   CONTENEDOR_MEDIDA_LABELS,
-  Customer,
+  StepConfig,
+  FormularioCSSAnalisisProps,
 } from "@/interfaces/visits";
 
 import {
@@ -79,22 +80,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-interface FormularioCSSAnalisisProps {
-  customer: Customer;
-  onBack: () => void;
-  onSuccess: () => void;
-}
-
-interface StepConfig {
-  id: number;
-  name: string;
-  description: string;
-  icon: React.ElementType;
-  color: string;
-  fields: (keyof FormularioCSSSchema)[];
-}
-
-// ==================== ICON MAPPING FOR CONTAINER TYPES ====================
 const CONTENEDOR_TIPO_ICONS: Record<ContenedorTipo, React.ElementType> = {
   SOBRE_CAMION: Layers,
   EN_SUELO: BoxSelect,
@@ -184,14 +169,14 @@ export default function FormularioCSSAnalisis({
     resolver: zodResolver(formularioCSSSchema),
     mode: "onChange",
     defaultValues: {
-      // Paso 1: Empresa
+      // Step 1: Company
       razonSocial: customer.razonSocial || customer.accountName || "",
       personaContacto: customer.zohoOwnerName || "",
       email: customer.email || "",
       numeroIdentificacionFiscal: customer.cif || "",
       website: customer.website || "",
 
-      // Paso 2: Dirección
+      // Step 2: Address
       direccion: customer.billingStreet || customer.shippingStreet || "",
       localidad: customer.billingCity || customer.shippingCity || "",
       provinciaEstado:
@@ -202,12 +187,12 @@ export default function FormularioCSSAnalisis({
       pais: customer.billingCountry || customer.shippingCountry || "",
       codigoPostal: customer.billingCode || customer.shippingCode || "",
 
-      // Paso 3: Comercial
+      // Step 3: Commercial
       distribuidor: customer.zohoOwnerName || "",
       contactoDistribuidor: customer.zohoOwnerEmail || "",
       datosClienteUsuarioFinal: "",
 
-      // Paso 4-6: Campos vacíos
+      // Step 4-6: Empty fields
       descripcionProducto: "",
       fotosVideosUrls: [],
       contenedorTipos: [],
@@ -286,12 +271,12 @@ export default function FormularioCSSAnalisis({
     }
   };
 
-  // Submit como COMPLETADA
+  // Submit and save as COMPLETED
   const onSubmit = async (data: FormularioCSSSchema) => {
     await saveVisit(data, VisitStatus.COMPLETADA);
   };
 
-  // Guardar como BORRADOR
+  // Save as DRAFT
   const onSaveDraft = async () => {
     const data = form.getValues();
     await saveVisit(data, VisitStatus.BORRADOR);
@@ -302,7 +287,6 @@ export default function FormularioCSSAnalisis({
   const isLastStep = currentStep === STEPS.length;
   const StepIcon = currentStepConfig.icon;
 
-  // Helper para obtener el color del paso actual
   const getStepColorClasses = (color: string) => {
     const colors: Record<string, { bg: string; text: string; border: string }> =
       {
@@ -343,7 +327,6 @@ export default function FormularioCSSAnalisis({
   const currentColors = getStepColorClasses(currentStepConfig.color);
 
   // ==================== FIELD WRAPPER COMPONENT ====================
-  // Posiciona el icono centrado verticalmente dentro del input usando selectores CSS
   const FieldWrapper = ({
     children,
     icon: Icon,
@@ -362,7 +345,7 @@ export default function FormularioCSSAnalisis({
     >
       {children}
       {Icon && (
-        <Icon className="absolute left-3 top-11 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors pointer-events-none z-10" />
+        <Icon className="absolute left-3 top-10 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors pointer-events-none z-10" />
       )}
     </div>
   );
@@ -394,14 +377,14 @@ export default function FormularioCSSAnalisis({
           name="razonSocial"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+              <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                 Razón social
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Nombre legal de la empresa"
-                  className="h-12 text-sm bg-background/50 border-input focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="h-12 text-xs bg-background/50 border-input focus:ring-2 focus:ring-primary/20 transition-all"
                   {...field}
                 />
               </FormControl>
@@ -419,14 +402,14 @@ export default function FormularioCSSAnalisis({
             name="personaContacto"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   Persona de contacto
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Nombre completo"
-                    className="h-12 text-sm bg-background/50"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -442,7 +425,7 @@ export default function FormularioCSSAnalisis({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   Email
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -450,7 +433,7 @@ export default function FormularioCSSAnalisis({
                   <Input
                     type="email"
                     placeholder="correo@empresa.com"
-                    className="h-12 text-sm bg-background/50"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -469,13 +452,13 @@ export default function FormularioCSSAnalisis({
             name="numeroIdentificacionFiscal"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium text-muted-foreground">
                   NIF/CIF
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Identificación fiscal"
-                    className="h-12 text-sm bg-background/50"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -491,14 +474,14 @@ export default function FormularioCSSAnalisis({
             name="website"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium text-muted-foreground">
                   Sitio web
                 </FormLabel>
                 <FormControl>
                   <Input
                     type="url"
                     placeholder="https://www.ejemplo.com"
-                    className="h-12 text-sm bg-background/50"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -534,14 +517,14 @@ export default function FormularioCSSAnalisis({
           name="direccion"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+              <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                 Dirección
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Calle, número, piso, puerta..."
-                  className="h-12 text-sm bg-background/50"
+                  className="h-12 text-xs bg-background/50"
                   {...field}
                 />
               </FormControl>
@@ -560,14 +543,14 @@ export default function FormularioCSSAnalisis({
               name="localidad"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+                  <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                     Localidad
                     <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ciudad"
-                      className="h-12 text-sm bg-background/50"
+                      className="h-12 text-xs bg-background/50"
                       {...field}
                     />
                   </FormControl>
@@ -584,13 +567,13 @@ export default function FormularioCSSAnalisis({
             name="codigoPostal"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium text-muted-foreground">
                   C.P.
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="00000"
-                    className="h-12 text-sm bg-background/50"
+                    placeholder="12345"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -609,14 +592,14 @@ export default function FormularioCSSAnalisis({
             name="provinciaEstado"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   Provincia/Estado
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Provincia o Estado"
-                    className="h-12 text-sm bg-background/50"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -632,14 +615,14 @@ export default function FormularioCSSAnalisis({
             name="pais"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                   País
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="País"
-                    className="h-12 text-sm bg-background/50"
+                    placeholder="Ej: España"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -678,13 +661,13 @@ export default function FormularioCSSAnalisis({
             name="distribuidor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium text-muted-foreground">
                   Distribuidor
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Nombre del distribuidor"
-                    className="h-12 text-sm bg-background/50"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -700,13 +683,13 @@ export default function FormularioCSSAnalisis({
             name="contactoDistribuidor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium text-muted-foreground">
                   Contacto distribuidor
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Email o teléfono"
-                    className="h-12 text-sm bg-background/50"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -723,7 +706,7 @@ export default function FormularioCSSAnalisis({
         name="fechaCierre"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+            <FormLabel className="text-xs font-medium text-muted-foreground flex items-center gap-2">
               <CalendarDays className="size-4" />
               Fecha de cierre estimada
             </FormLabel>
@@ -767,13 +750,13 @@ export default function FormularioCSSAnalisis({
           name="datosClienteUsuarioFinal"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-muted-foreground">
+              <FormLabel className="text-xs font-medium text-muted-foreground">
                 Notas del usuario final
               </FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Información adicional sobre el cliente o proyecto..."
-                  className="min-h-[120px] text-sm bg-background/50 resize-none"
+                  className="min-h-[120px] text-xs bg-background/50 resize-none"
                   {...field}
                 />
               </FormControl>
@@ -808,14 +791,14 @@ export default function FormularioCSSAnalisis({
         name="descripcionProducto"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+            <FormLabel className="text-xs font-medium flex items-center gap-1.5">
               Descripción detallada
               <span className="text-destructive">*</span>
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Describa detalladamente el producto, necesidades específicas, aplicación, condiciones de trabajo, capacidades requeridas, dimensiones, frecuencia de uso y cualquier requisito especial..."
-                className="min-h-[220px] text-sm bg-background/50 resize-none leading-relaxed"
+                placeholder="Describa detalladamente el producto..."
+                className="min-h-[220px] text-xs bg-background/50 resize-none leading-relaxed"
                 {...field}
               />
             </FormControl>
@@ -857,7 +840,7 @@ export default function FormularioCSSAnalisis({
         name="contenedorTipos"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-sm font-medium flex items-center gap-1.5 mb-3">
+            <FormLabel className="text-xs font-medium flex items-center gap-1.5 mb-3">
               Tipo de contenedor
               <span className="text-destructive">*</span>
             </FormLabel>
@@ -886,7 +869,7 @@ export default function FormularioCSSAnalisis({
                       <Icon className="size-5" />
                     </div>
                     <div className="flex-1">
-                      <span className="text-sm font-medium block">{label}</span>
+                      <span className="text-xs font-medium block text-balance">{label}</span>
                     </div>
                     <Checkbox
                       checked={isChecked}
@@ -901,7 +884,7 @@ export default function FormularioCSSAnalisis({
                           );
                         }
                       }}
-                      className="size-5 border-2"
+                      className="size-4 border-2"
                     />
                   </Label>
                 );
@@ -914,7 +897,7 @@ export default function FormularioCSSAnalisis({
 
       {/* Sección de operación */}
       <div className="pt-4 border-t space-y-4">
-        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
           <HardHat className="size-4" />
           <span>Datos de operación</span>
         </div>
@@ -925,15 +908,15 @@ export default function FormularioCSSAnalisis({
             name="contenedoresPorSemana"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium text-muted-foreground">
                   Contenedores por semana
                 </FormLabel>
                 <FormControl>
                   <Input
                     type="number"
-                    placeholder="Cantidad estimada"
+                    placeholder="Ej: 5"
                     min={1}
-                    className="h-12 text-sm bg-background/50"
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -947,13 +930,13 @@ export default function FormularioCSSAnalisis({
             name="condicionesSuelo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-muted-foreground">
+                <FormLabel className="text-xs font-medium text-muted-foreground">
                   Condiciones del suelo
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Tipo de superficie, nivelación..."
-                    className="h-12 text-sm bg-background/50"
+                    placeholder="Ej: Compactado, rocoso..."
+                    className="h-12 text-xs bg-background/50"
                     {...field}
                   />
                 </FormControl>
@@ -989,7 +972,7 @@ export default function FormularioCSSAnalisis({
         name="contenedorMedida"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-sm font-medium flex items-center gap-1.5 mb-3">
+            <FormLabel className="text-xs font-medium flex items-center gap-1.5 mb-3">
               Medida del contenedor
               <span className="text-destructive">*</span>
             </FormLabel>
@@ -1033,14 +1016,14 @@ export default function FormularioCSSAnalisis({
           name="contenedorMedidaOtro"
           render={({ field }) => (
             <FormItem className="animate-in fade-in-50 slide-in-from-top-2 duration-300">
-              <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+              <FormLabel className="text-xs font-medium flex items-center gap-1.5">
                 Especificar medida
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Ej: 45 pies, 12m x 2.5m x 2.9m..."
-                  className="h-12 text-sm bg-background/50"
+                  className="h-12 text-xs bg-background/50"
                   {...field}
                 />
               </FormControl>
@@ -1092,16 +1075,6 @@ export default function FormularioCSSAnalisis({
               </p>
             </div>
           </div>
-
-          {/* Progress indicator */}
-          <div className="hidden sm:flex flex-col items-end gap-1">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-foreground">
-                {progress}%
-              </span>
-            </div>
-            <span className="text-xs text-muted-foreground">completado</span>
-          </div>
         </div>
 
         {/* Progress bar */}
@@ -1130,7 +1103,6 @@ export default function FormularioCSSAnalisis({
                   )}
                   title={step.name}
                 >
-                  {/* Step circle */}
                   <div
                     className={cn(
                       "size-10 sm:size-11 rounded-xl flex items-center justify-center transition-all duration-300 border-2",
@@ -1150,7 +1122,6 @@ export default function FormularioCSSAnalisis({
                     )}
                   </div>
 
-                  {/* Step name - only on larger screens */}
                   <span
                     className={cn(
                       "hidden md:block text-[10px] mt-1.5 font-medium transition-colors",
@@ -1227,7 +1198,6 @@ export default function FormularioCSSAnalisis({
               <div className="flex items-center gap-2">
                 {isLastStep ? (
                   <>
-                    {/* Guardar como borrador - solo en el último paso */}
                     <Button
                       type="button"
                       variant="outline"
@@ -1244,7 +1214,6 @@ export default function FormularioCSSAnalisis({
                       <span className="hidden sm:inline">Borrador</span>
                     </Button>
 
-                    {/* Guardar - solo en el último paso */}
                     <Button
                       type="submit"
                       size="sm"

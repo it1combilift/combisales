@@ -1,7 +1,6 @@
 import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 
 // ==================== ZOHO ACCOUNT INTERFACE ====================
-// Basado en accounts-example.json - contiene TODOS los campos de ZOHO CRM
 export interface ZohoAccount {
   // Identificación
   id: string;
@@ -9,7 +8,7 @@ export interface ZohoAccount {
   Account_Number?: string;
   Razon_Social?: string;
   CIF?: string;
-  C_digo_Cliente?: string; // Código de cliente interno
+  C_digo_Cliente?: string;
 
   // Clasificación
   Account_Type?: string;
@@ -20,8 +19,8 @@ export interface ZohoAccount {
   Phone?: string;
   Fax?: string;
   Website?: string;
-  Correo_electr_nico?: string; // Email en español (campo personalizado ZOHO)
-  Email?: string; // Campo estándar
+  Correo_electr_nico?: string;
+  Email?: string;
 
   // Dirección de facturación
   Billing_Street?: string;
