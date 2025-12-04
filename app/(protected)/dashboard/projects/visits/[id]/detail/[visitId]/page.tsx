@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertMessage } from "@/components/alert";
 import { EmptyCard } from "@/components/empty-card";
-import { Separator } from "@/components/ui/separator";
+import { H1, Paragraph } from "@/components/fonts/fonts";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 
 import {
@@ -54,7 +54,6 @@ import {
   Video,
   File,
 } from "lucide-react";
-import { H1, Paragraph } from "@/components/fonts/fonts";
 
 interface VisitDetailPageProps {
   params: Promise<{ id: string; visitId: string }>;
@@ -71,7 +70,6 @@ const STATUS_VARIANTS: Record<
   RECHAZADA: "destructive",
 };
 
-// Componente reutilizable para campos de información
 const InfoField = ({
   label,
   value,
@@ -110,7 +108,6 @@ const InfoField = ({
   );
 };
 
-// Componente para secciones de información
 const InfoSection = ({
   title,
   description,
@@ -168,7 +165,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
 
   const formulario = visit?.formularioCSSAnalisis;
 
-  // Función para obtener icono según extensión de archivo
   const getFileIcon = (url: string) => {
     const extension = url.split(".").pop()?.toLowerCase();
     if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension || ""))
@@ -197,10 +193,9 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
         </div>
       ) : (
         <div className="space-y-6 px-4 pb-8">
-          {/* Header mejorado */}
+          {/* Header */}
           <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
-              {/* Título con Badge alineado */}
               <div className="flex flex-wrap items-center gap-3">
                 <H1>{visit.customer?.accountName || "Detalle de visita"}</H1>
                 <Badge
@@ -211,12 +206,10 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 </Badge>
               </div>
 
-              {/* Descripción */}
               <Paragraph>
                 Información completa de la visita realizada al cliente.
               </Paragraph>
 
-              {/* Alerta de borrador */}
               {visit.status === VisitStatus.BORRADOR && (
                 <AlertMessage
                   variant="warning"
@@ -252,9 +245,7 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
             </div>
           </header>
 
-          {/* Grid principal de información */}
           <div className="grid gap-4 lg:grid-cols-2">
-            {/* Información General */}
             <InfoSection title="Información general" icon={FileText}>
               <dl className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
@@ -287,7 +278,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
               </dl>
             </InfoSection>
 
-            {/* Datos del Cliente */}
             <InfoSection title="Datos del cliente" icon={Building2}>
               <dl className="grid gap-4">
                 <div className="space-y-1.5">
@@ -326,7 +316,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
             </InfoSection>
           </div>
 
-          {/* Detalles del Formulario CSS */}
           {formulario && (
             <>
               <div className="space-y-3">
@@ -335,7 +324,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                   Detalles del formulario CSS
                 </h2>
 
-                {/* Información del Cliente del Formulario */}
                 <InfoSection title="Datos del cliente" icon={Contact}>
                   <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <InfoField
@@ -407,7 +395,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                   )}
                 </InfoSection>
 
-                {/* Descripción del Producto */}
                 <InfoSection title="Descripción del producto" icon={FileText}>
                   <div className="space-y-4">
                     <div className="bg-muted/50 rounded-lg p-4">
@@ -451,9 +438,7 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                   </div>
                 </InfoSection>
 
-                {/* Contenedores - Grid de 2 columnas */}
                 <div className="grid gap-6 lg:grid-cols-2">
-                  {/* Tipo de Contenedor */}
                   <InfoSection title="Tipo de contenedor" icon={Package}>
                     <div className="space-y-4">
                       <div className="flex flex-wrap gap-2">
@@ -493,7 +478,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                     </div>
                   </InfoSection>
 
-                  {/* Medidas del Contenedor */}
                   <InfoSection title="Medidas del contenedor" icon={Ruler}>
                     <div className="space-y-4">
                       <Badge variant="outline-warning" className="py-1.5">
