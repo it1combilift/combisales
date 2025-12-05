@@ -49,11 +49,6 @@ import {
   Save,
   Loader2,
   Building2,
-  FileText,
-  Package,
-  Ruler,
-  MapPin,
-  Users,
   Check,
   Mail,
   User,
@@ -69,7 +64,6 @@ import {
   Sparkles,
   FileDown,
   Upload,
-  Paperclip,
   ImageIcon,
   Video,
   FileIcon,
@@ -359,20 +353,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 1: EMPRESA ====================
   const Step1Content = (
     <div className="space-y-3">
-      <div className="flex items-center gap-3 pb-2 border-b">
-        <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
-          <Building2 className={cn("size-4", currentColors.text)} />
-        </div>
-        <div>
-          <h3 className="font-semibold text-foreground text-xs">
-            Información de la empresa
-          </h3>
-          <p className="text-xs text-muted-foreground text-pretty">
-            Datos principales del cliente
-          </p>
-        </div>
-      </div>
-
       <FieldWrapper icon={Building2}>
         <FormField
           control={form.control}
@@ -497,18 +477,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 2: UBICACIÓN ====================
   const Step2Content = (
     <div className="space-y-3">
-      <div className="flex items-center gap-3 pb-2 border-b">
-        <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
-          <MapPin className={cn("size-4", currentColors.text)} />
-        </div>
-        <div>
-          <h3 className="font-semibold text-foreground text-xs">Ubicación</h3>
-          <p className="text-xs text-muted-foreground text-pretty">
-            Dirección completa del cliente
-          </p>
-        </div>
-      </div>
-
       <FieldWrapper icon={Home}>
         <FormField
           control={form.control}
@@ -634,20 +602,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 3: COMERCIAL ====================
   const Step3Content = (
     <div className="space-y-3">
-      <div className="flex items-center gap-3 pb-2 border-b">
-        <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
-          <Users className={cn("size-4", currentColors.text)} />
-        </div>
-        <div>
-          <h3 className="font-semibold text-foreground text-xs">
-            Información comercial
-          </h3>
-          <p className="text-xs text-muted-foreground text-pretty">
-            Datos de distribución y ventas
-          </p>
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldWrapper icon={Briefcase}>
           <FormField
@@ -762,20 +716,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 4: PRODUCTO ====================
   const Step4Content = (
     <div className="space-y-3">
-      <div className="flex items-center gap-3 pb-2 border-b">
-        <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
-          <FileText className={cn("size-4", currentColors.text)} />
-        </div>
-        <div>
-          <h3 className="font-semibold text-foreground text-xs">
-            Descripción del producto
-          </h3>
-          <p className="text-xs text-muted-foreground text-pretty">
-            Detalle las necesidades del proyecto
-          </p>
-        </div>
-      </div>
-
       <FormField
         control={form.control}
         name="descripcionProducto"
@@ -810,20 +750,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 5: CONTENEDOR ====================
   const Step5Content = (
     <div className="space-y-3">
-      <div className="flex items-center gap-3 pb-2 border-b">
-        <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
-          <Package className={cn("size-4", currentColors.text)} />
-        </div>
-        <div>
-          <h3 className="font-semibold text-foreground text-xs">
-            Tipo de contenedor
-          </h3>
-          <p className="text-xs text-muted-foreground text-pretty">
-            Seleccione las opciones aplicables
-          </p>
-        </div>
-      </div>
-
       <FormField
         control={form.control}
         name="contenedorTipos"
@@ -942,20 +868,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 6: MEDIDAS ====================
   const Step6Content = (
     <div className="space-y-3">
-      <div className="flex items-center gap-3 pb-2 border-b">
-        <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
-          <Ruler className={cn("size-4", currentColors.text)} />
-        </div>
-        <div>
-          <h3 className="font-semibold text-foreground text-xs">
-            Medidas del contenedor
-          </h3>
-          <p className="text-xs text-muted-foreground text-pretty">
-            Seleccione el tamaño requerido
-          </p>
-        </div>
-      </div>
-
       <FormField
         control={form.control}
         name="contenedorMedida"
@@ -1153,20 +1065,6 @@ export default function FormularioCSSAnalisis({
 
   const Step7Content = (
     <div className="space-y-3">
-      <div className="flex items-center gap-3 pb-2 border-b">
-        <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
-          <Paperclip className={cn("size-4", currentColors.text)} />
-        </div>
-        <div>
-          <h3 className="font-semibold text-foreground text-xs">
-            Archivos adjuntos
-          </h3>
-          <p className="text-xs text-muted-foreground text-pretty">
-            Sube fotos, videos y documentos relevantes
-          </p>
-        </div>
-      </div>
-
       <input
         ref={cameraPhotoRef}
         type="file"
@@ -1441,9 +1339,9 @@ export default function FormularioCSSAnalisis({
   return (
     <div className="flex flex-col h-full max-h-[90vh] bg-background w-full">
       {/* ==================== HEADER ==================== */}
-      <header className="shrink-0 px-4 pt-2 pb-2 bg-linear-to-b from-muted/40 to-background">
+      <header className="shrink-0 px-4 pt-2 bg-linear-to-b from-muted/40 to-background">
         {/* Title Row */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between pb-2.5">
           <div className="flex items-center gap-3">
             <div
               className={cn(
@@ -1457,7 +1355,7 @@ export default function FormularioCSSAnalisis({
               <DialogTitle className="text-sm font-bold text-foreground">
                 {currentStepConfig.name}
               </DialogTitle>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed text-pretty">
                 {currentStepConfig.description}
               </p>
             </div>
@@ -1477,20 +1375,23 @@ export default function FormularioCSSAnalisis({
             const Icon = step.icon;
 
             return (
-              <div key={step.id} className="flex items-center flex-1">
+              <div
+                key={step.id}
+                className="flex items-center justify-center flex-1"
+              >
                 <button
                   type="button"
                   onClick={() => goToStep(step.id)}
                   disabled={!isAccessible}
                   className={cn(
                     "relative flex flex-col items-center justify-center transition-all duration-300 cursor-pointer",
-                    "group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl"
+                    "group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   )}
                   title={step.name}
                 >
                   <div
                     className={cn(
-                      "size-10 sm:size-11 rounded-xl flex items-center justify-center transition-all duration-300 border-2",
+                      "size-8 rounded-sm flex items-center justify-center transition-all duration-300 border-2",
                       isCurrent
                         ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-110"
                         : isCompleted
@@ -1501,9 +1402,9 @@ export default function FormularioCSSAnalisis({
                     )}
                   >
                     {isCompleted && !isCurrent ? (
-                      <Check className="size-5" strokeWidth={2.5} />
+                      <Check className="size-4" strokeWidth={2.5} />
                     ) : (
-                      <Icon className="size-4 sm:size-5" />
+                      <Icon className="size-4" />
                     )}
                   </div>
 
@@ -1520,15 +1421,6 @@ export default function FormularioCSSAnalisis({
                     {step.name}
                   </span>
                 </button>
-
-                {index < FORM_STEPS.length - 1 && (
-                  <div
-                    className={cn(
-                      "flex-1 h-0.5 mx-1 sm:mx-2 rounded-full transition-all duration-500",
-                      completedSteps.has(step.id) ? "bg-primary" : "bg-border"
-                    )}
-                  />
-                )}
               </div>
             );
           })}

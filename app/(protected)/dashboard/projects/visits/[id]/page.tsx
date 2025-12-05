@@ -190,7 +190,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
       toast.error("El cliente aún se está sincronizando, intenta de nuevo");
       return;
     }
-    setVisitToEdit(null); // Clear any existing edit
+    setVisitToEdit(null);
     setIsVisitDialogOpen(true);
   };
 
