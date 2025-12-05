@@ -239,12 +239,10 @@ export default function FormularioCSSAnalisis({
 
   const goToStep = useCallback(
     (stepId: number) => {
-      // In edit mode, allow navigation to any step
       if (isEditing) {
         setCurrentStep(stepId);
         return;
       }
-      // In create mode, check accessibility
       if (
         stepId < currentStep ||
         completedSteps.has(stepId - 1) ||
