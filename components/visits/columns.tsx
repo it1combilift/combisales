@@ -1,11 +1,11 @@
 "use client";
 
 import { formatDate } from "@/lib/utils";
-import { Visit } from "@/interfaces/visits";
 import { VisitStatus } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
+import { ColumnsConfig, Visit } from "@/interfaces/visits";
 import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
 
 import {
@@ -26,12 +26,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-interface ColumnsConfig {
-  onView?: (visit: Visit) => void;
-  onEdit?: (visit: Visit) => void;
-  onDelete?: (visit: Visit) => void;
-}
 
 export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
   const { onView, onEdit, onDelete } = config || {};
@@ -181,7 +175,11 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button
+                variant="ghost"
+                className="size-8 p-0"
+                aria-label="Abrir menú"
+              >
                 <span className="sr-only">Abrir menú</span>
                 <MoreHorizontal className="size-4" />
               </Button>
@@ -191,23 +189,31 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
               <DropdownMenuSeparator />
 
               {onEdit && (
-                <DropdownMenuItem onClick={() => onEdit(visit)}>
+                <DropdownMenuItem
+                  onClick={() => onEdit(visit)}
+                  className="cursor-pointer"
+                >
                   <PencilLine className="size-4" />
                   Editar
                 </DropdownMenuItem>
               )}
 
               {onView && (
-                <DropdownMenuItem onClick={() => onView(visit)}>
+                <DropdownMenuItem
+                  onClick={() => onView(visit)}
+                  className="cursor-pointer"
+                >
                   <ArrowUpRight className="size-4" />
-                  Ver detalle
+                  Detalles
                 </DropdownMenuItem>
               )}
+
+              <DropdownMenuSeparator />
 
               {onDelete && (
                 <DropdownMenuItem
                   onClick={() => onDelete(visit)}
-                  className="text-destructive focus:text-destructive"
+                  className="text-destructive focus:text-destructive cursor-pointer"
                 >
                   <Trash2 className="size-4 text-destructive" />
                   Eliminar

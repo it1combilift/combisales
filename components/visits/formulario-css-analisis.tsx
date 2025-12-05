@@ -72,6 +72,7 @@ import {
   Camera,
   VideoIcon,
   FolderOpen,
+  Send,
 } from "lucide-react";
 
 import {
@@ -106,6 +107,7 @@ export default function FormularioCSSAnalisis({
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
     isEditing ? new Set([1, 2, 3, 4, 5, 6, 7]) : new Set()
   );
@@ -236,6 +238,12 @@ export default function FormularioCSSAnalisis({
 
   const goToStep = useCallback(
     (stepId: number) => {
+      // In edit mode, allow navigation to any step
+      if (isEditing) {
+        setCurrentStep(stepId);
+        return;
+      }
+      // In create mode, check accessibility
       if (
         stepId < currentStep ||
         completedSteps.has(stepId - 1) ||
@@ -244,15 +252,21 @@ export default function FormularioCSSAnalisis({
         setCurrentStep(stepId);
       }
     },
-    [currentStep, completedSteps]
+    [currentStep, completedSteps, isEditing]
   );
 
-  const saveVisit = async (data: FormularioCSSSchema, status: VisitStatus) => {
-    const isCompletada = status === VisitStatus.COMPLETADA;
-    if (isCompletada) {
+  const saveVisit = async (
+    data: FormularioCSSSchema,
+    status: VisitStatus,
+    saveType: "submit" | "draft" | "changes" = "submit"
+  ) => {
+    // Set the appropriate loading state
+    if (saveType === "submit") {
       setIsSubmitting(true);
-    } else {
+    } else if (saveType === "draft") {
       setIsSavingDraft(true);
+    } else {
+      setIsSavingChanges(true);
     }
 
     try {
@@ -267,11 +281,12 @@ export default function FormularioCSSAnalisis({
         });
 
         if (response.status === 200) {
-          toast.success(
-            isCompletada
-              ? "Visita actualizada exitosamente"
-              : "Borrador actualizado exitosamente"
-          );
+          const messages = {
+            submit: "Visita actualizada y enviada exitosamente",
+            draft: "Borrador actualizado exitosamente",
+            changes: "Cambios guardados exitosamente",
+          };
+          toast.success(messages[saveType]);
           onSuccess();
         }
       } else {
@@ -287,7 +302,7 @@ export default function FormularioCSSAnalisis({
 
         if (response.status === 201) {
           toast.success(
-            isCompletada
+            saveType === "submit"
               ? "Visita guardada exitosamente"
               : "Borrador guardado exitosamente"
           );
@@ -298,23 +313,32 @@ export default function FormularioCSSAnalisis({
       console.error("Error saving visit:", error);
       toast.error(error.response?.data?.error || "Error al guardar la visita");
     } finally {
-      if (isCompletada) {
+      if (saveType === "submit") {
         setIsSubmitting(false);
-      } else {
+      } else if (saveType === "draft") {
         setIsSavingDraft(false);
+      } else {
+        setIsSavingChanges(false);
       }
     }
   };
 
   // Submit and save as COMPLETED
   const onSubmit = async (data: FormularioCSSSchema) => {
-    await saveVisit(data, VisitStatus.COMPLETADA);
+    await saveVisit(data, VisitStatus.COMPLETADA, "submit");
   };
 
-  // Save as DRAFT
+  // Save as DRAFT (for new visits)
   const onSaveDraft = async () => {
     const data = form.getValues();
-    await saveVisit(data, VisitStatus.BORRADOR);
+    await saveVisit(data, VisitStatus.BORRADOR, "draft");
+  };
+
+  // Save changes keeping current status (only for editing mode)
+  const onSaveChanges = async () => {
+    const data = form.getValues();
+    const currentStatus = existingVisit?.status || VisitStatus.BORRADOR;
+    await saveVisit(data, currentStatus, "changes");
   };
 
   const currentStepConfig = FORM_STEPS[currentStep - 1];
@@ -1181,7 +1205,6 @@ export default function FormularioCSSAnalisis({
         </div>
       </div>
 
-      {/* Indicador de progreso en móvil */}
       {isUploading && (
         <div className="sm:hidden flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
           <Loader2 className="size-5 text-primary animate-spin shrink-0" />
@@ -1365,13 +1388,14 @@ export default function FormularioCSSAnalisis({
         <Progress value={progress} className="h-2 mb-2 md:mb-4" />
 
         <div className="flex items-center justify-between gap-1">
-          {FORM_STEPS.map((step, index) => {
+          {FORM_STEPS.map((step) => {
             const isCompleted = completedSteps.has(step.id);
             const isCurrent = currentStep === step.id;
-            const isAccessible =
-              step.id < currentStep ||
-              completedSteps.has(step.id - 1) ||
-              step.id === 1;
+            const isAccessible = isEditing
+              ? true
+              : step.id < currentStep ||
+                completedSteps.has(step.id - 1) ||
+                step.id === 1;
             const Icon = step.icon;
 
             return (
@@ -1385,7 +1409,7 @@ export default function FormularioCSSAnalisis({
                   disabled={!isAccessible}
                   className={cn(
                     "relative flex flex-col items-center justify-center transition-all duration-300 cursor-pointer",
-                    "group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    "group focus:outline-none focus-visible:border-none focus-visible:ring-primary focus-visible:ring-offset-0"
                   )}
                   title={step.name}
                 >
@@ -1395,7 +1419,7 @@ export default function FormularioCSSAnalisis({
                       isCurrent
                         ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-110"
                         : isCompleted
-                        ? "border-primary bg-primary/10 text-primary"
+                        ? "border-primary/20 bg-primary/10 text-primary"
                         : isAccessible
                         ? "border-muted-foreground/30 bg-background text-muted-foreground hover:border-muted-foreground/50 hover:bg-muted/50"
                         : "border-muted/50 bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
@@ -1449,7 +1473,7 @@ export default function FormularioCSSAnalisis({
                 variant="ghost"
                 size="sm"
                 onClick={isFirstStep ? onBack : handlePrevStep}
-                disabled={isSubmitting || isSavingDraft}
+                disabled={isSubmitting || isSavingDraft || isSavingChanges}
                 className="gap-2 text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="size-3" />
@@ -1471,44 +1495,94 @@ export default function FormularioCSSAnalisis({
               <div className="flex items-center gap-2">
                 {isLastStep ? (
                   <>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={onSaveDraft}
-                      disabled={isSubmitting || isSavingDraft}
-                      className="gap-2"
-                    >
-                      {isSavingDraft ? (
-                        <Loader2 className="size-3.5 animate-spin" />
-                      ) : (
-                        <FileDown className="size-3.5" />
-                      )}
-                      <span className="hidden sm:inline">Guardar borrador</span>
-                    </Button>
+                    {isEditing ? (
+                      <>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={onSaveChanges}
+                          disabled={
+                            isSubmitting || isSavingDraft || isSavingChanges
+                          }
+                          className="gap-2"
+                        >
+                          {isSavingChanges ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : (
+                            <Save className="size-3.5" />
+                          )}
+                          <span className="hidden sm:inline">
+                            Guardar cambios
+                          </span>
+                        </Button>
 
-                    <Button
-                      type="submit"
-                      size="sm"
-                      disabled={isSubmitting || isSavingDraft}
-                      className="gap-2 shadow-lg shadow-primary/25"
-                    >
-                      {isSubmitting ? (
-                        <Loader2 className="size-3.5 animate-spin" />
-                      ) : (
-                        <>
-                          <Save className="size-3.5" />
-                          <span>Guardar y enviar</span>
-                        </>
-                      )}
-                    </Button>
+                        <Button
+                          type="submit"
+                          size="sm"
+                          disabled={
+                            isSubmitting || isSavingDraft || isSavingChanges
+                          }
+                          className="gap-2 shadow-lg shadow-primary/25"
+                        >
+                          {isSubmitting ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : (
+                            <>
+                              <Send className="size-3.5" />
+                              <span>Guardar y enviar</span>
+                            </>
+                          )}
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={onSaveDraft}
+                          disabled={
+                            isSubmitting || isSavingDraft || isSavingChanges
+                          }
+                          className="gap-2"
+                        >
+                          {isSavingDraft ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : (
+                            <FileDown className="size-3.5" />
+                          )}
+                          <span className="hidden sm:inline">
+                            Guardar borrador
+                          </span>
+                        </Button>
+
+                        <Button
+                          type="submit"
+                          size="sm"
+                          disabled={
+                            isSubmitting || isSavingDraft || isSavingChanges
+                          }
+                          className="gap-2 shadow-lg shadow-primary/25"
+                        >
+                          {isSubmitting ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : (
+                            <>
+                              <Save className="size-3.5" />
+                              <span>Guardar y enviar</span>
+                            </>
+                          )}
+                        </Button>
+                      </>
+                    )}
                   </>
                 ) : (
                   <Button
                     type="button"
                     size="sm"
                     onClick={handleNextStep}
-                    disabled={isSubmitting || isSavingDraft}
+                    disabled={isSubmitting || isSavingDraft || isSavingChanges}
                     className="gap-2"
                   >
                     <span className="hidden sm:inline">Siguiente</span>

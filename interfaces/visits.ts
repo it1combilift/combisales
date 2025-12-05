@@ -314,7 +314,7 @@ export interface FormularioCSSAnalisisProps {
   customer: Customer;
   onBack: () => void;
   onSuccess: () => void;
-  existingVisit?: Visit; // For editing existing visits
+  existingVisit?: Visit;
 }
 
 export interface StepConfig {
@@ -331,7 +331,7 @@ export interface VisitFormDialogProps {
   onOpenChange: (open: boolean) => void;
   customer: Customer;
   onSuccess: () => void;
-  existingVisit?: Visit; // For editing existing visits
+  existingVisit?: Visit;
 }
 
 export const FORM_OPTIONS = [
@@ -377,4 +377,10 @@ export interface DataTableProps<TData, TValue> {
   onEdit?: (visit: Visit) => void;
   onDelete?: (visit: Visit) => void;
   customerName?: string;
+}
+
+export interface ColumnsConfig {
+  onView?: (visit: Visit) => void;
+  onEdit?: (visit: Visit) => void;
+  onDelete?: (visit: Visit) => void;
 }

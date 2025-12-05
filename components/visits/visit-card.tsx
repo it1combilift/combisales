@@ -128,7 +128,7 @@ export const VisitCard = ({
                   onClick={() => onView(visit)}
                 >
                   <ArrowUpRight className="size-4" />
-                  Ver detalle
+                  Detalles
                 </DropdownMenuItem>
               )}
               {onDelete && (
