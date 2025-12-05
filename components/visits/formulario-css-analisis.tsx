@@ -155,7 +155,7 @@ export default function FormularioCSSAnalisis({
           ContenedorMedida.VEINTE_PIES,
         contenedorMedidaOtro: formulario.contenedorMedidaOtro || "",
 
-        // Step 7: Files - transform existing files to ArchivoSubido format
+        // Step 7: Files
         archivos:
           formulario.archivos?.map((archivo) => ({
             nombre: archivo.nombre,
@@ -173,7 +173,6 @@ export default function FormularioCSSAnalisis({
       };
     }
 
-    // Default values for new visit
     return {
       // Step 1: Company
       razonSocial: customer.razonSocial || customer.accountName || "",
@@ -266,7 +265,6 @@ export default function FormularioCSSAnalisis({
       let response;
 
       if (isEditing && existingVisit) {
-        // UPDATE existing visit
         response = await axios.put(`/api/visits/${existingVisit.id}`, {
           visitData: {
             status: status,
@@ -283,7 +281,6 @@ export default function FormularioCSSAnalisis({
           onSuccess();
         }
       } else {
-        // CREATE new visit
         response = await axios.post("/api/visits", {
           visitData: {
             customerId: customer.id,
@@ -362,7 +359,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 1: EMPRESA ====================
   const Step1Content = (
     <div className="space-y-3">
-      {/* Header del paso */}
       <div className="flex items-center gap-3 pb-2 border-b">
         <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
           <Building2 className={cn("size-4", currentColors.text)} />
@@ -377,7 +373,6 @@ export default function FormularioCSSAnalisis({
         </div>
       </div>
 
-      {/* Razón social - campo principal destacado */}
       <FieldWrapper icon={Building2}>
         <FormField
           control={form.control}
@@ -401,7 +396,6 @@ export default function FormularioCSSAnalisis({
         />
       </FieldWrapper>
 
-      {/* Grid de 2 columnas para contacto y email */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldWrapper icon={User}>
           <FormField
@@ -451,7 +445,6 @@ export default function FormularioCSSAnalisis({
         </FieldWrapper>
       </div>
 
-      {/* Grid para NIF y Website */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldWrapper icon={Hash}>
           <FormField
@@ -504,7 +497,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 2: UBICACIÓN ====================
   const Step2Content = (
     <div className="space-y-3">
-      {/* Header del paso */}
       <div className="flex items-center gap-3 pb-2 border-b">
         <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
           <MapPin className={cn("size-4", currentColors.text)} />
@@ -517,7 +509,6 @@ export default function FormularioCSSAnalisis({
         </div>
       </div>
 
-      {/* Dirección completa */}
       <FieldWrapper icon={Home}>
         <FormField
           control={form.control}
@@ -541,7 +532,6 @@ export default function FormularioCSSAnalisis({
         />
       </FieldWrapper>
 
-      {/* Grid para localidad y CP */}
       <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2">
           <FieldWrapper icon={Navigation}>
@@ -591,7 +581,6 @@ export default function FormularioCSSAnalisis({
         </FieldWrapper>
       </div>
 
-      {/* Grid para provincia y país */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldWrapper icon={MapPinned}>
           <FormField
@@ -645,7 +634,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 3: COMERCIAL ====================
   const Step3Content = (
     <div className="space-y-3">
-      {/* Header del paso */}
       <div className="flex items-center gap-3 pb-2 border-b">
         <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
           <Users className={cn("size-4", currentColors.text)} />
@@ -660,7 +648,6 @@ export default function FormularioCSSAnalisis({
         </div>
       </div>
 
-      {/* Grid para distribuidor y contacto */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldWrapper icon={Briefcase}>
           <FormField
@@ -707,7 +694,6 @@ export default function FormularioCSSAnalisis({
         </FieldWrapper>
       </div>
 
-      {/* Fecha de cierre */}
       <FormField
         control={form.control}
         name="fechaCierre"
@@ -749,7 +735,6 @@ export default function FormularioCSSAnalisis({
         )}
       />
 
-      {/* Notas adicionales */}
       <FieldWrapper>
         <FormField
           control={form.control}
@@ -777,7 +762,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 4: PRODUCTO ====================
   const Step4Content = (
     <div className="space-y-3">
-      {/* Header del paso */}
       <div className="flex items-center gap-3 pb-2 border-b">
         <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
           <FileText className={cn("size-4", currentColors.text)} />
@@ -826,7 +810,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 5: CONTENEDOR ====================
   const Step5Content = (
     <div className="space-y-3">
-      {/* Header del paso */}
       <div className="flex items-center gap-3 pb-2 border-b">
         <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
           <Package className={cn("size-4", currentColors.text)} />
@@ -903,7 +886,6 @@ export default function FormularioCSSAnalisis({
         )}
       />
 
-      {/* Sección de operación */}
       <div className="pt-2 border-t scroll-py-1 md:space-y-3">
         <div className="grid grid-cols-2 gap-1.5">
           <FormField
@@ -960,7 +942,6 @@ export default function FormularioCSSAnalisis({
   // ==================== STEP 6: MEDIDAS ====================
   const Step6Content = (
     <div className="space-y-3">
-      {/* Header del paso */}
       <div className="flex items-center gap-3 pb-2 border-b">
         <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
           <Ruler className={cn("size-4", currentColors.text)} />
@@ -1172,7 +1153,6 @@ export default function FormularioCSSAnalisis({
 
   const Step7Content = (
     <div className="space-y-3">
-      {/* Header del paso */}
       <div className="flex items-center gap-3 pb-2 border-b">
         <div className={cn("p-2.5 rounded-xl", currentColors.bg)}>
           <Paperclip className={cn("size-4", currentColors.text)} />
@@ -1187,7 +1167,6 @@ export default function FormularioCSSAnalisis({
         </div>
       </div>
 
-      {/* Inputs ocultos para captura desde cámara */}
       <input
         ref={cameraPhotoRef}
         type="file"
@@ -1207,9 +1186,7 @@ export default function FormularioCSSAnalisis({
         disabled={isUploading || archivos.length >= MAX_FILES}
       />
 
-      {/* Botones de acción rápida para móvil */}
       <div className="flex flex-wrap gap-2 justify-center">
-        {/* Tomar foto */}
         <Button
           type="button"
           variant="outline"
@@ -1225,7 +1202,6 @@ export default function FormularioCSSAnalisis({
           <span className="text-xs hidden sm:inline">Tomar foto</span>
         </Button>
 
-        {/* Grabar video */}
         <Button
           type="button"
           variant="outline"
@@ -1241,7 +1217,6 @@ export default function FormularioCSSAnalisis({
           <span className="text-xs hidden sm:inline">Grabar video</span>
         </Button>
 
-        {/* Seleccionar archivos */}
         <Button
           type="button"
           variant="outline"
@@ -1258,7 +1233,6 @@ export default function FormularioCSSAnalisis({
         </Button>
       </div>
 
-      {/* Input oculto para selección de archivos */}
       <input
         ref={fileInputRef}
         type="file"
@@ -1269,7 +1243,6 @@ export default function FormularioCSSAnalisis({
         disabled={isUploading || archivos.length >= MAX_FILES}
       />
 
-      {/* Dropzone para arrastrar archivos (desktop) */}
       <div
         className={cn(
           "relative border-2 border-dashed rounded-xl p-4 transition-all hidden sm:block",
@@ -1327,7 +1300,6 @@ export default function FormularioCSSAnalisis({
         </div>
       )}
 
-      {/* Tipos de archivo permitidos */}
       <div className="flex flex-wrap gap-1.5 justify-center">
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] bg-blue-500/10 text-blue-600">
           <ImageIcon className="size-2.5" /> Imágenes (10MB)
@@ -1340,7 +1312,6 @@ export default function FormularioCSSAnalisis({
         </span>
       </div>
 
-      {/* Lista de archivos subidos */}
       {archivos.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -1387,7 +1358,6 @@ export default function FormularioCSSAnalisis({
                     </div>
                   )}
 
-                  {/* Info del archivo */}
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate">
                       {archivo.nombre}
@@ -1413,7 +1383,6 @@ export default function FormularioCSSAnalisis({
                     </div>
                   </div>
 
-                  {/* Acciones */}
                   <div className="flex items-center gap-1">
                     <Button
                       type="button"
@@ -1443,7 +1412,6 @@ export default function FormularioCSSAnalisis({
         </div>
       )}
 
-      {/* Nota informativa */}
       <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 border border-muted/90">
         <AlertCircle className="size-3.5 text-muted-foreground mt-0.5 shrink-0" />
         <p className="text-[10px] text-muted-foreground leading-relaxed text-pretty">
@@ -1496,10 +1464,8 @@ export default function FormularioCSSAnalisis({
           </div>
         </div>
 
-        {/* Progress bar */}
         <Progress value={progress} className="h-2 mb-2 md:mb-4" />
 
-        {/* Step Indicators */}
         <div className="flex items-center justify-between gap-1">
           {FORM_STEPS.map((step, index) => {
             const isCompleted = completedSteps.has(step.id);
@@ -1555,7 +1521,6 @@ export default function FormularioCSSAnalisis({
                   </span>
                 </button>
 
-                {/* Connector line */}
                 {index < FORM_STEPS.length - 1 && (
                   <div
                     className={cn(
@@ -1587,7 +1552,6 @@ export default function FormularioCSSAnalisis({
           {/* ==================== FOOTER ==================== */}
           <footer className="shrink-0 px-2 py-3 border-t bg-muted/20 backdrop-blur-sm">
             <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
-              {/* Back button */}
               <Button
                 type="button"
                 variant="ghost"
@@ -1602,7 +1566,6 @@ export default function FormularioCSSAnalisis({
                 </span>
               </Button>
 
-              {/* Step counter */}
               <div className="flex items-center gap-2 p-1.5 rounded-full bg-muted/50">
                 <span className="text-xs font-semibold text-foreground">
                   {currentStep}
@@ -1613,7 +1576,6 @@ export default function FormularioCSSAnalisis({
                 </span>
               </div>
 
-              {/* Action buttons */}
               <div className="flex items-center gap-2">
                 {isLastStep ? (
                   <>
