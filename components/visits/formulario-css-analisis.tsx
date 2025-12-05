@@ -73,6 +73,8 @@ import {
   VideoIcon,
   FolderOpen,
   Send,
+  EyeIcon,
+  Trash2,
 } from "lucide-react";
 
 import {
@@ -108,6 +110,7 @@ export default function FormularioCSSAnalisis({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
+  const [isDeletingFile, setIsDeletingFile] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
     isEditing ? new Set([1, 2, 3, 4, 5, 6, 7]) : new Set()
   );
@@ -260,7 +263,6 @@ export default function FormularioCSSAnalisis({
     status: VisitStatus,
     saveType: "submit" | "draft" | "changes" = "submit"
   ) => {
-    // Set the appropriate loading state
     if (saveType === "submit") {
       setIsSubmitting(true);
     } else if (saveType === "draft") {
@@ -1034,8 +1036,10 @@ export default function FormularioCSSAnalisis({
     [form, customer.id]
   );
 
+  // Remove file handler
   const handleRemoveFile = useCallback(
     async (archivo: ArchivoSubido) => {
+      setIsDeletingFile(true);
       try {
         await axios.delete(
           `/api/upload/${encodeURIComponent(archivo.cloudinaryId)}?type=${
@@ -1049,6 +1053,7 @@ export default function FormularioCSSAnalisis({
         );
         form.setValue("archivos", newArchivos, { shouldValidate: true });
         toast.success("Archivo eliminado");
+        setIsDeletingFile(false);
       } catch (error) {
         console.error("Error removing file:", error);
         toast.error("Error al eliminar el archivo");
@@ -1254,9 +1259,12 @@ export default function FormularioCSSAnalisis({
                       <Image
                         src={archivo.cloudinaryUrl}
                         alt={archivo.nombre}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover cursor-pointer"
                         width={48}
                         height={48}
+                        onClick={() =>
+                          window.open(archivo.cloudinaryUrl, "_blank")
+                        }
                       />
                     </div>
                   ) : (
@@ -1280,7 +1288,10 @@ export default function FormularioCSSAnalisis({
                   )}
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate">
+                    <p
+                      className="text-xs font-medium truncate"
+                      title={archivo.nombre}
+                    >
                       {archivo.nombre}
                     </p>
                     <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
@@ -1310,20 +1321,38 @@ export default function FormularioCSSAnalisis({
                       variant="ghost"
                       size="icon"
                       className="size-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Ver archivo"
+                      disabled={
+                        isUploading ||
+                        isSavingChanges ||
+                        isSubmitting ||
+                        isDeletingFile
+                      }
                       onClick={() =>
                         window.open(archivo.cloudinaryUrl, "_blank")
                       }
                     >
-                      <Check className="size-4 text-green-600" />
+                      <EyeIcon className="size-4 text-green-600" />
                     </Button>
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
                       className="size-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Eliminar archivo"
                       onClick={() => handleRemoveFile(archivo)}
+                      disabled={
+                        isUploading ||
+                        isSavingChanges ||
+                        isSubmitting ||
+                        isDeletingFile
+                      }
                     >
-                      <X className="size-4" />
+                      {isDeletingFile ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="size-4" />
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -1473,7 +1502,13 @@ export default function FormularioCSSAnalisis({
                 variant="ghost"
                 size="sm"
                 onClick={isFirstStep ? onBack : handlePrevStep}
-                disabled={isSubmitting || isSavingDraft || isSavingChanges}
+                disabled={
+                  isSubmitting ||
+                  isSavingDraft ||
+                  isSavingChanges ||
+                  isDeletingFile ||
+                  isUploading
+                }
                 className="gap-2 text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="size-3" />
@@ -1503,7 +1538,11 @@ export default function FormularioCSSAnalisis({
                           size="sm"
                           onClick={onSaveChanges}
                           disabled={
-                            isSubmitting || isSavingDraft || isSavingChanges
+                            isSubmitting ||
+                            isSavingDraft ||
+                            isSavingChanges ||
+                            isDeletingFile ||
+                            isUploading
                           }
                           className="gap-2"
                         >
@@ -1521,7 +1560,11 @@ export default function FormularioCSSAnalisis({
                           type="submit"
                           size="sm"
                           disabled={
-                            isSubmitting || isSavingDraft || isSavingChanges
+                            isSubmitting ||
+                            isSavingDraft ||
+                            isSavingChanges ||
+                            isDeletingFile ||
+                            isUploading
                           }
                           className="gap-2 shadow-lg shadow-primary/25"
                         >
@@ -1543,7 +1586,11 @@ export default function FormularioCSSAnalisis({
                           size="sm"
                           onClick={onSaveDraft}
                           disabled={
-                            isSubmitting || isSavingDraft || isSavingChanges
+                            isSubmitting ||
+                            isSavingDraft ||
+                            isSavingChanges ||
+                            isDeletingFile ||
+                            isUploading
                           }
                           className="gap-2"
                         >
@@ -1561,7 +1608,11 @@ export default function FormularioCSSAnalisis({
                           type="submit"
                           size="sm"
                           disabled={
-                            isSubmitting || isSavingDraft || isSavingChanges
+                            isSubmitting ||
+                            isSavingDraft ||
+                            isSavingChanges ||
+                            isDeletingFile ||
+                            isUploading
                           }
                           className="gap-2 shadow-lg shadow-primary/25"
                         >
@@ -1582,7 +1633,13 @@ export default function FormularioCSSAnalisis({
                     type="button"
                     size="sm"
                     onClick={handleNextStep}
-                    disabled={isSubmitting || isSavingDraft || isSavingChanges}
+                    disabled={
+                      isSubmitting ||
+                      isSavingDraft ||
+                      isSavingChanges ||
+                      isDeletingFile ||
+                      isUploading
+                    }
                     className="gap-2"
                   >
                     <span className="hidden sm:inline">Siguiente</span>
