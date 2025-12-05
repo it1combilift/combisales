@@ -4,6 +4,7 @@ import { VisitFormType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { UpdateVisitData, CreateFormularioCSSData } from "@/interfaces/visits";
+
 import {
   HTTP_STATUS,
   API_SUCCESS,
@@ -12,6 +13,7 @@ import {
   serverErrorResponse,
   createSuccessResponse,
 } from "@/lib/api-response";
+
 import {
   VISIT_INCLUDE,
   transformFormularioCSSData,

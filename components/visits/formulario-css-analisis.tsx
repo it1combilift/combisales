@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { Spinner } from "../ui/spinner";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,7 +48,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Save,
-  Loader2,
   Building2,
   Check,
   Mail,
@@ -67,8 +67,6 @@ import {
   ImageIcon,
   Video,
   FileIcon,
-  X,
-  AlertCircle,
   Camera,
   VideoIcon,
   FolderOpen,
@@ -110,7 +108,7 @@ export default function FormularioCSSAnalisis({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
-  const [isDeletingFile, setIsDeletingFile] = useState(false);
+  const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
     isEditing ? new Set([1, 2, 3, 4, 5, 6, 7]) : new Set()
   );
@@ -164,11 +162,11 @@ export default function FormularioCSSAnalisis({
             cloudinaryId: archivo.cloudinaryId,
             cloudinaryUrl: archivo.cloudinaryUrl,
             cloudinaryType: archivo.cloudinaryType,
-            ancho: archivo.ancho || undefined,
-            alto: archivo.alto || undefined,
-            duracion: archivo.duracion || undefined,
+            ancho: archivo.ancho ?? undefined,
+            alto: archivo.alto ?? undefined,
+            duracion: archivo.duracion ?? undefined,
             formato: archivo.formato,
-          })) || [],
+          })) ?? [],
       };
     }
 
@@ -363,13 +361,15 @@ export default function FormularioCSSAnalisis({
     <div
       className={cn(
         "group relative",
-        Icon && "[&_input]:pl-10 [&_textarea]:pl-10",
+        Icon && "[&_input]:pl-11 [&_textarea]:pl-11",
         className
       )}
     >
       {children}
       {Icon && (
-        <Icon className="absolute left-3 top-10 size-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors pointer-events-none z-10" />
+        <div className="absolute left-3 top-11 size-4 flex items-center justify-center pointer-events-none z-10">
+          <Icon className="size-3 text-muted-foreground/60 group-focus-within:text-primary transition-colors duration-200" />
+        </div>
       )}
     </div>
   );
@@ -378,21 +378,21 @@ export default function FormularioCSSAnalisis({
 
   // ==================== STEP 1: EMPRESA ====================
   const Step1Content = (
-    <div className="space-y-3">
+    <div className="space-y-4 sm:space-y-5">
       <FieldWrapper icon={Building2}>
         <FormField
           control={form.control}
           name="razonSocial"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+              <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                 Razón social
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Nombre legal de la empresa"
-                  className="h-12 text-xs bg-background/50 border-input focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
                   {...field}
                 />
               </FormControl>
@@ -402,21 +402,21 @@ export default function FormularioCSSAnalisis({
         />
       </FieldWrapper>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         <FieldWrapper icon={User}>
           <FormField
             control={form.control}
             name="personaContacto"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   Persona de contacto
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Nombre completo"
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -432,7 +432,7 @@ export default function FormularioCSSAnalisis({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   Email
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -440,7 +440,7 @@ export default function FormularioCSSAnalisis({
                   <Input
                     type="email"
                     placeholder="correo@empresa.com"
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -451,20 +451,20 @@ export default function FormularioCSSAnalisis({
         </FieldWrapper>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         <FieldWrapper icon={Hash}>
           <FormField
             control={form.control}
             name="numeroIdentificacionFiscal"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   NIF/CIF
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Identificación fiscal"
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -480,14 +480,14 @@ export default function FormularioCSSAnalisis({
             name="website"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   Sitio web
                 </FormLabel>
                 <FormControl>
                   <Input
                     type="url"
                     placeholder="https://www.ejemplo.com"
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -502,21 +502,21 @@ export default function FormularioCSSAnalisis({
 
   // ==================== STEP 2: UBICACIÓN ====================
   const Step2Content = (
-    <div className="space-y-3">
+    <div className="space-y-4 sm:space-y-5">
       <FieldWrapper icon={Home}>
         <FormField
           control={form.control}
           name="direccion"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+              <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                 Dirección
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Calle, número, piso, puerta..."
-                  className="h-12 text-xs bg-background/50"
+                  className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                   {...field}
                 />
               </FormControl>
@@ -526,22 +526,22 @@ export default function FormularioCSSAnalisis({
         />
       </FieldWrapper>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        <div className="sm:col-span-2">
           <FieldWrapper icon={Navigation}>
             <FormField
               control={form.control}
               name="localidad"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                  <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                     Localidad
                     <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ciudad"
-                      className="h-12 text-xs bg-background/50"
+                      className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                       {...field}
                     />
                   </FormControl>
@@ -558,13 +558,13 @@ export default function FormularioCSSAnalisis({
             name="codigoPostal"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   C.P.
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="12345"
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -575,21 +575,21 @@ export default function FormularioCSSAnalisis({
         </FieldWrapper>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         <FieldWrapper icon={MapPinned}>
           <FormField
             control={form.control}
             name="provinciaEstado"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   Provincia/Estado
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Provincia o Estado"
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -605,14 +605,14 @@ export default function FormularioCSSAnalisis({
             name="pais"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   País
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Ej: España"
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -627,21 +627,21 @@ export default function FormularioCSSAnalisis({
 
   // ==================== STEP 3: COMERCIAL ====================
   const Step3Content = (
-    <div className="space-y-3">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="space-y-4 sm:space-y-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         <FieldWrapper icon={Briefcase}>
           <FormField
             control={form.control}
             name="distribuidor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   Distribuidor
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Nombre del distribuidor"
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -657,13 +657,13 @@ export default function FormularioCSSAnalisis({
             name="contactoDistribuidor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   Contacto distribuidor
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Email o teléfono"
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -679,7 +679,7 @@ export default function FormularioCSSAnalisis({
         name="fechaCierre"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+            <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
               Fecha de cierre estimada
             </FormLabel>
             <Popover>
@@ -688,11 +688,11 @@ export default function FormularioCSSAnalisis({
                   <Button
                     variant="outline"
                     className={cn(
-                      "h-12 w-full justify-start text-left font-normal text-xs",
+                      "h-11 sm:h-12 w-full justify-start text-left font-normal text-sm rounded-lg border-input/80",
                       !field.value && "text-muted-foreground"
                     )}
                   >
-                    <CalendarDays className="size-3.5" />
+                    <CalendarDays className="size-4 mr-2" />
                     {field.value
                       ? format(field.value, "PPP", { locale: es })
                       : "Seleccionar fecha"}
@@ -721,13 +721,13 @@ export default function FormularioCSSAnalisis({
           name="datosClienteUsuarioFinal"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+              <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                 Notas del usuario final
               </FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Información adicional sobre el cliente o proyecto..."
-                  className="min-h-[120px] text-xs bg-background/50 resize-none"
+                  className="min-h-[100px] sm:min-h-[120px] text-sm bg-background/50 resize-none border-input/80 focus:border-primary rounded-lg leading-relaxed"
                   {...field}
                 />
               </FormControl>
@@ -741,26 +741,28 @@ export default function FormularioCSSAnalisis({
 
   // ==================== STEP 4: PRODUCTO ====================
   const Step4Content = (
-    <div className="space-y-3">
+    <div className="space-y-4 sm:space-y-5">
       <FormField
         control={form.control}
         name="descripcionProducto"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+            <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
               Descripción detallada
               <span className="text-destructive">*</span>
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Describa detalladamente el producto..."
-                className="min-h-[220px] text-xs bg-background/50 resize-none leading-relaxed"
+                placeholder="Describa detalladamente el producto, incluyendo capacidades, dimensiones, frecuencia de uso..."
+                className="min-h-[180px] sm:min-h-[220px] text-sm bg-background/50 resize-none leading-relaxed border-input/80 focus:border-primary rounded-lg"
                 {...field}
               />
             </FormControl>
-            <FormDescription className="text-xs text-muted-foreground flex items-start gap-2 mt-3 p-3 bg-muted/50 rounded-lg border text-pretty">
-              <Sparkles className="size-4 shrink-0 mt-0.5 text-primary" />
-              <span>
+            <FormDescription className="text-xs sm:text-sm text-muted-foreground flex items-start gap-3 mt-4 p-3 sm:p-4 bg-linear-to-br from-primary/5 to-primary/10 rounded-xl border border-primary/20">
+              <div className="size-8 sm:size-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Sparkles className="size-4 sm:size-5 text-primary" />
+              </div>
+              <span className="leading-relaxed">
                 Incluya toda la información relevante: capacidades, dimensiones,
                 frecuencia de uso, condiciones ambientales y requisitos
                 especiales del proyecto.
@@ -775,17 +777,17 @@ export default function FormularioCSSAnalisis({
 
   // ==================== STEP 5: CONTENEDOR ====================
   const Step5Content = (
-    <div className="space-y-3">
+    <div className="space-y-4 sm:space-y-5">
       <FormField
         control={form.control}
         name="contenedorTipos"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-medium flex items-center gap-1.5 mb-3">
+            <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
               Tipo de contenedor
               <span className="text-destructive">*</span>
             </FormLabel>
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-2 gap-2">
               {Object.entries(CONTENEDOR_TIPO_LABELS).map(([key, label]) => {
                 const isChecked = field.value?.includes(key as ContenedorTipo);
                 const Icon = CONTENEDOR_TIPO_ICONS[key as ContenedorTipo];
@@ -793,24 +795,24 @@ export default function FormularioCSSAnalisis({
                   <Label
                     key={key}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl border-2 p-1.5 cursor-pointer transition-all select-none group",
+                      "flex items-center gap-3 rounded-xl border-2 p-2 cursor-pointer transition-all duration-200 select-none group",
                       isChecked
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-input hover:border-primary/50 hover:bg-accent/50"
+                        ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
+                        : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
                     )}
                   >
                     <div
                       className={cn(
-                        "p-1 rounded-lg transition-colors",
+                        "size-8 rounded-xl flex items-center justify-center transition-all duration-200",
                         isChecked
-                          ? "bg-primary/10 text-primary"
+                          ? "bg-primary/15 text-primary"
                           : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                       )}
                     >
-                      <Icon className="size-3.5" />
+                      <Icon className="size-4" />
                     </div>
-                    <div className="flex-1">
-                      <span className="text-[10px] sm:text-xs font-medium block text-balance">
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-medium block text-balance">
                         {label}
                       </span>
                     </div>
@@ -827,7 +829,7 @@ export default function FormularioCSSAnalisis({
                           );
                         }
                       }}
-                      className="size-4 border-2"
+                      className="size-4 border-2 rounded-sm border-input/80 bg-background/50 focus:ring-2 focus:ring-primary transition-all duration-200"
                     />
                   </Label>
                 );
@@ -838,14 +840,14 @@ export default function FormularioCSSAnalisis({
         )}
       />
 
-      <div className="pt-2 border-t scroll-py-1 md:space-y-3">
-        <div className="grid grid-cols-2 gap-1.5">
+      <div className="pt-4 border-t border-border/60">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           <FormField
             control={form.control}
             name="contenedoresPorSemana"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   Contenedores por semana
                 </FormLabel>
                 <FormControl>
@@ -853,7 +855,7 @@ export default function FormularioCSSAnalisis({
                     type="number"
                     placeholder="Ej: 5"
                     min={1}
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                     value={field.value ?? ""}
                     onChange={(e) => {
@@ -872,13 +874,13 @@ export default function FormularioCSSAnalisis({
             name="condicionesSuelo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                   Condiciones del suelo
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Ej: Compactado, rocoso..."
-                    className="h-12 text-xs bg-background/50"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -893,13 +895,13 @@ export default function FormularioCSSAnalisis({
 
   // ==================== STEP 6: MEDIDAS ====================
   const Step6Content = (
-    <div className="space-y-3">
+    <div className="space-y-4 sm:space-y-5">
       <FormField
         control={form.control}
         name="contenedorMedida"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+            <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
               Medida del contenedor
               <span className="text-destructive">*</span>
             </FormLabel>
@@ -907,25 +909,27 @@ export default function FormularioCSSAnalisis({
               <RadioGroup
                 onValueChange={field.onChange}
                 value={field.value}
-                className="grid grid-cols-2 gap-1.5"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3"
               >
                 {Object.entries(CONTENEDOR_MEDIDA_LABELS).map(
                   ([key, label]) => (
                     <Label
                       key={key}
                       className={cn(
-                        "flex items-center justify-between rounded-xl border-2 p-1.5 cursor-pointer transition-all select-none",
+                        "flex items-center justify-between rounded-xl border-2 p-3 sm:p-4 cursor-pointer transition-all duration-200 select-none",
                         field.value === key
-                          ? "border-primary bg-primary/5 shadow-sm"
-                          : "border-input hover:border-primary/50 hover:bg-accent/50"
+                          ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
+                          : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <RadioGroupItem value={key} className="size-3.5" />
-                        <span className="text-xs font-medium">{label}</span>
+                        <RadioGroupItem value={key} className="size-4" />
+                        <span className="text-sm font-medium">{label}</span>
                       </div>
                       {field.value === key && (
-                        <Check className="size-3.5 text-primary" />
+                        <div className="size-6 rounded-full bg-primary/15 flex items-center justify-center">
+                          <Check className="size-3.5 text-primary" />
+                        </div>
                       )}
                     </Label>
                   )
@@ -942,19 +946,19 @@ export default function FormularioCSSAnalisis({
           control={form.control}
           name="contenedorMedidaOtro"
           render={({ field }) => (
-            <FormItem className="animate-in fade-in-50 slide-in-from-top-2 duration-300">
-              <FormLabel className="text-xs font-medium flex items-center gap-1.5">
+            <FormItem className="animate-in fade-in-50 slide-in-from-top-2 duration-300 p-4 bg-muted/30 rounded-xl border border-border/60">
+              <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                 Especificar medida
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Ej: 45 pies, 12m x 2.5m x 2.9m..."
-                  className="h-12 text-xs bg-background/50"
+                  className="h-11 sm:h-12 text-sm bg-background border-input/80 focus:border-primary rounded-lg"
                   {...field}
                 />
               </FormControl>
-              <FormDescription className="text-xs text-muted-foreground">
+              <FormDescription className="text-xs sm:text-sm text-muted-foreground">
                 Indique las dimensiones exactas (largo x ancho x alto)
               </FormDescription>
               <FormMessage className="text-xs" />
@@ -1039,7 +1043,7 @@ export default function FormularioCSSAnalisis({
   // Remove file handler
   const handleRemoveFile = useCallback(
     async (archivo: ArchivoSubido) => {
-      setIsDeletingFile(true);
+      setDeletingFileId(archivo.cloudinaryId);
       try {
         await axios.delete(
           `/api/upload/${encodeURIComponent(archivo.cloudinaryId)}?type=${
@@ -1053,10 +1057,11 @@ export default function FormularioCSSAnalisis({
         );
         form.setValue("archivos", newArchivos, { shouldValidate: true });
         toast.success("Archivo eliminado");
-        setIsDeletingFile(false);
       } catch (error) {
         console.error("Error removing file:", error);
         toast.error("Error al eliminar el archivo");
+      } finally {
+        setDeletingFileId(null);
       }
     },
     [form]
@@ -1091,9 +1096,11 @@ export default function FormularioCSSAnalisis({
 
   // ==================== STEP 7: ARCHIVOS ====================
   const archivos = form.watch("archivos") || [];
+  const [isDragging, setIsDragging] = useState(false);
 
   const Step7Content = (
-    <div className="space-y-3">
+    <div className="space-y-3 sm:space-y-4">
+      {/* Hidden inputs */}
       <input
         ref={cameraPhotoRef}
         type="file"
@@ -1112,54 +1119,6 @@ export default function FormularioCSSAnalisis({
         className="hidden"
         disabled={isUploading || archivos.length >= MAX_FILES}
       />
-
-      <div className="flex flex-wrap gap-2 justify-center">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn(
-            "flex flex-row items-center justify-center gap-1 w-fit",
-            "transition-all"
-          )}
-          onClick={() => cameraPhotoRef.current?.click()}
-          disabled={isUploading || archivos.length >= MAX_FILES}
-        >
-          <Camera className="size-3.5" />
-          <span className="text-xs hidden sm:inline">Tomar foto</span>
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn(
-            "flex flex-row items-center justify-center gap-1 w-fit",
-            "transition-all"
-          )}
-          onClick={() => cameraVideoRef.current?.click()}
-          disabled={isUploading || archivos.length >= MAX_FILES}
-        >
-          <Video className="size-3.5" />
-          <span className="text-xs hidden sm:inline">Grabar video</span>
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn(
-            "flex flex-row items-center justify-center gap-1 w-fit",
-            "transition-all"
-          )}
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading || archivos.length >= MAX_FILES}
-        >
-          <FolderOpen className="size-3.5" />
-          <span className="text-xs hidden sm:inline">Archivos</span>
-        </Button>
-      </div>
-
       <input
         ref={fileInputRef}
         type="file"
@@ -1170,115 +1129,216 @@ export default function FormularioCSSAnalisis({
         disabled={isUploading || archivos.length >= MAX_FILES}
       />
 
+      {/* Quick action buttons - visible on all devices */}
+      <div className="flex flex-wrap gap-2 justify-center">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            "flex items-center gap-2 h-10 px-4 rounded-xl border-2",
+            "transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/5",
+            "disabled:opacity-50 disabled:cursor-not-allowed"
+          )}
+          onClick={() => cameraPhotoRef.current?.click()}
+          disabled={isUploading || archivos.length >= MAX_FILES}
+        >
+          <div className="size-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+            <Camera className="size-4 text-blue-600" />
+          </div>
+          <span className="text-xs sm:text-sm font-medium">Foto</span>
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            "flex items-center gap-2 h-10 px-4 rounded-xl border-2",
+            "transition-all duration-200 hover:border-violet-500/50 hover:bg-violet-500/5",
+            "disabled:opacity-50 disabled:cursor-not-allowed"
+          )}
+          onClick={() => cameraVideoRef.current?.click()}
+          disabled={isUploading || archivos.length >= MAX_FILES}
+        >
+          <div className="size-7 rounded-lg bg-violet-500/10 flex items-center justify-center">
+            <Video className="size-4 text-violet-600" />
+          </div>
+          <span className="text-xs sm:text-sm font-medium">Video</span>
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            "flex items-center gap-2 h-10 px-4 rounded-xl border-2",
+            "transition-all duration-200 hover:border-amber-500/50 hover:bg-amber-500/5",
+            "disabled:opacity-50 disabled:cursor-not-allowed"
+          )}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading || archivos.length >= MAX_FILES}
+        >
+          <div className="size-7 rounded-lg bg-amber-500/10 flex items-center justify-center">
+            <FolderOpen className="size-4 text-amber-600" />
+          </div>
+          <span className="text-xs sm:text-sm font-medium">Archivos</span>
+        </Button>
+      </div>
+
+      {/* Modern Drop Zone - Desktop */}
       <div
         className={cn(
-          "relative border-2 border-dashed rounded-xl p-4 transition-all hidden sm:block",
-          "hover:border-primary/50 hover:bg-primary/5",
-          isUploading && "pointer-events-none opacity-60",
-          archivos.length >= MAX_FILES && "opacity-50 pointer-events-none"
+          "relative rounded-2xl transition-all duration-300 overflow-hidden",
+          "border-2 border-dashed",
+          isDragging
+            ? "border-primary bg-primary/10 scale-[1.02] shadow-lg shadow-primary/20"
+            : "border-muted-foreground/30 hover:border-primary/50 hover:bg-muted/30",
+          isUploading && "pointer-events-none",
+          archivos.length >= MAX_FILES &&
+            "opacity-50 pointer-events-none cursor-not-allowed"
         )}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+        }}
+        onDrop={(e) => {
+          setIsDragging(false);
+          handleDrop(e);
+        }}
+        onClick={() => !isUploading && fileInputRef.current?.click()}
       >
-        <div className="flex flex-col items-center justify-center gap-2 text-center cursor-pointer">
-          {isUploading ? (
-            <>
-              <Loader2 className="size-3 text-primary animate-spin" />
-              <div className="space-y-1">
-                <p className="text-xs font-medium">Subiendo archivos...</p>
-                <p className="text-xs text-muted-foreground">
-                  {uploadProgress.total || 0}% completado
-                </p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className={cn("p-2.5 rounded-full", currentColors.bg)}>
-                <Upload className={cn("size-5", currentColors.text)} />
-              </div>
-              <div className="space-y-0.5">
-                <p className="text-xs font-medium">
-                  Arrastra archivos aquí o haz clic
-                </p>
-                <p className="text-[10px] text-muted-foreground">
-                  Máximo {MAX_FILES} archivos
-                </p>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+        <div className="p-3 cursor-pointer">
+          <div className="flex flex-col items-center justify-center gap-4 text-center">
+            {isUploading ? (
+              <>
+                <div className="size-8 sm:size-12 rounded-2xl bg-primary/10 flex items-center justify-center animate-pulse">
+                  <Spinner variant="bars" size={14} />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs sm:text-sm font-semibold">
+                    Subiendo archivos...
+                  </p>
+                  <div className="w-48 sm:w-64 mx-auto">
+                    <Progress
+                      value={uploadProgress.total || 0}
+                      className="h-2"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {uploadProgress.total || 0}% completado
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div
+                  className={cn(
+                    "size-8 sm:size-12 rounded-2xl flex items-center justify-center transition-all duration-300",
+                    isDragging
+                      ? "bg-primary/20 scale-110"
+                      : "bg-linear-to-br from-primary/10 to-primary/5"
+                  )}
+                >
+                  <Upload
+                    className={cn(
+                      "size-4 sm:size-6 transition-all duration-300",
+                      isDragging ? "text-primary scale-110" : "text-primary/70"
+                    )}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <p className="text-xs sm:text-sm font-semibold text-foreground">
+                    {isDragging
+                      ? "¡Suelta aquí los archivos!"
+                      : "Arrastra y suelta archivos aquí"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    o haz clic para seleccionar desde tu dispositivo
+                  </p>
+                </div>
 
-      {isUploading && (
-        <div className="sm:hidden flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-          <Loader2 className="size-5 text-primary animate-spin shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium">Subiendo archivos...</p>
-            <Progress
-              value={uploadProgress.total || 0}
-              className="h-1.5 mt-1"
-            />
+                {/* File type badges */}
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                    <ImageIcon className="size-3.5" /> Imágenes hasta 10MB
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20">
+                    <Video className="size-3.5" /> Videos hasta 100MB
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                    <FileIcon className="size-3.5" /> Documentos hasta 25MB
+                  </span>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground/70">
+                  Máximo {MAX_FILES} archivos en total
+                </p>
+              </>
+            )}
           </div>
-          <span className="text-xs font-medium text-primary">
-            {uploadProgress.total || 0}%
-          </span>
         </div>
-      )}
-
-      <div className="flex flex-wrap gap-1.5 justify-center">
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] bg-blue-500/10 text-blue-600">
-          <ImageIcon className="size-2.5" /> Imágenes (10MB)
-        </span>
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] bg-violet-500/10 text-violet-600">
-          <Video className="size-2.5" /> Videos (100MB)
-        </span>
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] bg-amber-500/10 text-amber-600">
-          <FileIcon className="size-2.5" /> Docs (25MB)
-        </span>
       </div>
 
+      {/* Uploaded files list */}
       {archivos.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-muted-foreground">
-              Archivos subidos ({archivos.length}/{MAX_FILES})
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <p className="text-xs font-semibold text-foreground flex items-center gap-2">
+              <Check className="size-4 text-green-500" />
+              Archivos subidos
             </p>
+            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+              {archivos.length}/{MAX_FILES}
+            </span>
           </div>
+
           <div className="grid gap-2">
             {archivos.map((archivo) => {
               const IconComponent = getFileIcon(archivo.tipoArchivo);
               return (
                 <div
                   key={archivo.cloudinaryId}
-                  className="flex items-center gap-3 p-1.5 rounded-lg border bg-card hover:bg-accent/50 transition-colors group"
+                  className={cn(
+                    "flex items-center gap-3 p-1 sm:p-2 rounded-xl border-2 bg-card",
+                    "transition-all duration-200 group",
+                    "hover:border-primary/30 hover:shadow-md hover:shadow-primary/5"
+                  )}
                 >
-                  {/* Preview o icono */}
+                  {/* Preview or icon */}
                   {archivo.tipoArchivo === TipoArchivo.IMAGEN ? (
-                    <div className="size-12 rounded-md overflow-hidden bg-muted shrink-0">
+                    <div
+                      className="size-10 sm:size-12 rounded-xl overflow-hidden bg-muted shrink-0 cursor-pointer ring-2 ring-transparent hover:ring-primary/50 transition-all"
+                      onClick={() =>
+                        window.open(archivo.cloudinaryUrl, "_blank")
+                      }
+                    >
                       <Image
                         src={archivo.cloudinaryUrl}
                         alt={archivo.nombre}
-                        className="w-full h-full object-cover cursor-pointer"
-                        width={48}
-                        height={48}
-                        onClick={() =>
-                          window.open(archivo.cloudinaryUrl, "_blank")
-                        }
+                        className="w-full h-full object-cover"
+                        width={80}
+                        height={80}
+                        loading="lazy"
+                        unoptimized
                       />
                     </div>
                   ) : (
                     <div
                       className={cn(
-                        "size-12 rounded-md flex items-center justify-center shrink-0",
-                        archivo.tipoArchivo === "VIDEO"
-                          ? "bg-violet-500/10"
-                          : "bg-amber-500/10"
+                        "size-10 sm:size-12 rounded-xl flex items-center justify-center shrink-0",
+                        archivo.tipoArchivo === TipoArchivo.VIDEO
+                          ? "bg-linear-to-br from-violet-500/15 to-violet-500/5 border border-violet-500/20"
+                          : "bg-linear-to-br from-amber-500/15 to-amber-500/5 border border-amber-500/20"
                       )}
                     >
                       <IconComponent
                         className={cn(
-                          "size-5",
+                          "size-6",
                           archivo.tipoArchivo === TipoArchivo.VIDEO
                             ? "text-violet-600"
                             : "text-amber-600"
@@ -1287,69 +1347,89 @@ export default function FormularioCSSAnalisis({
                     </div>
                   )}
 
-                  <div className="flex-1 min-w-0">
+                  {/* File info */}
+                  <div className="flex-1 min-w-0 space-y-1">
                     <p
-                      className="text-xs font-medium truncate"
+                      className="text-xs font-medium truncate max-w-full"
                       title={archivo.nombre}
                     >
                       {archivo.nombre}
                     </p>
-                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                      <span>{formatFileSize(archivo.tamanio)}</span>
-                      <span>•</span>
-                      <span className="uppercase">{archivo.formato}</span>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] sm:text-xs text-muted-foreground">
+                      <span className="font-medium">
+                        {formatFileSize(archivo.tamanio)}
+                      </span>
+                      <span className="text-border">•</span>
+                      <span className="uppercase font-medium bg-muted px-1.5 py-0.5 rounded-sm">
+                        {archivo.formato}
+                      </span>
                       {archivo.ancho && archivo.alto && (
                         <>
-                          <span>•</span>
-                          <span>
-                            {archivo.ancho}x{archivo.alto}
+                          <span className="text-border hidden sm:inline">
+                            •
+                          </span>
+                          <span className="hidden sm:inline">
+                            {archivo.ancho}×{archivo.alto}px
                           </span>
                         </>
                       )}
                       {archivo.duracion && (
                         <>
-                          <span>•</span>
-                          <span>{Math.round(archivo.duracion)}s</span>
+                          <span className="text-border hidden sm:inline">
+                            •
+                          </span>
+                          <span className="hidden sm:inline">
+                            {Math.round(archivo.duracion)}s
+                          </span>
                         </>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1">
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-1 sm:gap-2 pr-1">
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="size-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className={cn(
+                        "size-8 rounded-xl",
+                        "opacity-60 sm:opacity-0 group-hover:opacity-100 transition-all duration-200",
+                        "hover:bg-green-500/10 hover:text-green-600"
+                      )}
                       title="Ver archivo"
                       disabled={
                         isUploading ||
                         isSavingChanges ||
                         isSubmitting ||
-                        isDeletingFile
+                        deletingFileId !== null
                       }
                       onClick={() =>
                         window.open(archivo.cloudinaryUrl, "_blank")
                       }
                     >
-                      <EyeIcon className="size-4 text-green-600" />
+                      <EyeIcon className="size-4" />
                     </Button>
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="size-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                      className={cn(
+                        "size-8 rounded-xl",
+                        "opacity-60 sm:opacity-0 group-hover:opacity-100 transition-all duration-200",
+                        "hover:bg-destructive/10 hover:text-destructive"
+                      )}
                       title="Eliminar archivo"
                       onClick={() => handleRemoveFile(archivo)}
                       disabled={
                         isUploading ||
                         isSavingChanges ||
                         isSubmitting ||
-                        isDeletingFile
+                        deletingFileId !== null
                       }
                     >
-                      {isDeletingFile ? (
-                        <Loader2 className="size-4 animate-spin" />
+                      {deletingFileId === archivo.cloudinaryId ? (
+                        <Spinner variant="ellipsis" />
                       ) : (
                         <Trash2 className="size-4" />
                       )}
@@ -1362,15 +1442,15 @@ export default function FormularioCSSAnalisis({
         </div>
       )}
 
-      <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 border border-muted/90">
-        <AlertCircle className="size-3.5 text-muted-foreground mt-0.5 shrink-0" />
-        <p className="text-[10px] text-muted-foreground leading-relaxed text-pretty">
-          Los archivos se subirán automáticamente al seleccionarlos. Puedes
-          adjuntar fotos del sitio, videos de operación, planos,
-          especificaciones técnicas y cualquier documento relevante para el
-          análisis.
-        </p>
-      </div>
+      {/* Empty state when no files */}
+      {archivos.length === 0 && !isUploading && (
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground text-balance">
+            Aún no has subido ningún archivo. Usa los botones de arriba o
+            arrastra archivos a la zona de carga.
+          </p>
+        </div>
+      )}
     </div>
   );
 
@@ -1391,32 +1471,39 @@ export default function FormularioCSSAnalisis({
   return (
     <div className="flex flex-col h-full max-h-[90vh] bg-background w-full">
       {/* ==================== HEADER ==================== */}
-      <header className="shrink-0 px-4 pt-2 bg-linear-to-b from-muted/40 to-background">
+      <header className="shrink-0 px-3 sm:px-4 pt-3 pb-0.5 bg-linear-to-b from-muted/30 to-background border-b border-border/50">
         {/* Title Row */}
-        <div className="flex items-center justify-between pb-2.5">
-          <div className="flex items-center gap-3">
-            <div
-              className={cn(
-                "size-8 rounded-2xl flex items-center justify-center shadow-sm transition-colors",
-                currentColors.bg
-              )}
-            >
-              <StepIcon className={cn("size-4", currentColors.text)} />
-            </div>
-            <div>
-              <DialogTitle className="text-sm font-bold text-foreground">
-                {currentStepConfig.name}
-              </DialogTitle>
-              <p className="text-xs text-muted-foreground leading-relaxed text-pretty">
-                {currentStepConfig.description}
-              </p>
-            </div>
+        <div className="flex items-center gap-3 sm:gap-4 mb-3">
+          <div
+            className={cn(
+              "size-8 rounded-xl flex items-center justify-center shadow-sm transition-all duration-300",
+              currentColors.bg,
+              currentColors.border.replace("border-", "ring-")
+            )}
+          >
+            <StepIcon className={cn("size-4", currentColors.text)} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <DialogTitle className="text-sm font-bold text-foreground truncate">
+              {currentStepConfig.name}
+            </DialogTitle>
+            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+              {currentStepConfig.description}
+            </p>
           </div>
         </div>
 
-        <Progress value={progress} className="h-2 mb-2 md:mb-4" />
+        {/* Progress bar */}
+        <div className="space-y-2 mb-3">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Progreso</span>
+            <span className="font-medium text-primary">{progress}%</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
 
-        <div className="flex items-center justify-between gap-1">
+        {/* Stepper */}
+        <div className="flex items-center justify-between gap-0.5 sm:gap-1">
           {FORM_STEPS.map((step) => {
             const isCompleted = completedSteps.has(step.id);
             const isCurrent = currentStep === step.id;
@@ -1438,20 +1525,20 @@ export default function FormularioCSSAnalisis({
                   disabled={!isAccessible}
                   className={cn(
                     "relative flex flex-col items-center justify-center transition-all duration-300 cursor-pointer",
-                    "group focus:outline-none focus-visible:border-none focus-visible:ring-primary focus-visible:ring-offset-0"
+                    "group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg p-1"
                   )}
                   title={step.name}
                 >
                   <div
                     className={cn(
-                      "size-8 rounded-sm flex items-center justify-center transition-all duration-300 border-2",
+                      "size-8 sm:size-9 rounded-lg flex items-center justify-center transition-all duration-300",
                       isCurrent
-                        ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-110"
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 scale-105"
                         : isCompleted
-                        ? "border-primary/20 bg-primary/10 text-primary"
+                        ? "bg-primary/15 text-primary border border-primary/30"
                         : isAccessible
-                        ? "border-muted-foreground/30 bg-background text-muted-foreground hover:border-muted-foreground/50 hover:bg-muted/50"
-                        : "border-muted/50 bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
+                        ? "bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        : "bg-muted/40 text-muted-foreground/40 cursor-not-allowed"
                     )}
                   >
                     {isCompleted && !isCurrent ? (
@@ -1463,7 +1550,7 @@ export default function FormularioCSSAnalisis({
 
                   <span
                     className={cn(
-                      "hidden md:block text-[10px] mt-1.5 font-medium transition-colors",
+                      "hidden lg:block text-[10px] mt-1.5 font-medium transition-colors max-w-[60px] truncate",
                       isCurrent
                         ? "text-primary"
                         : isCompleted
@@ -1486,8 +1573,8 @@ export default function FormularioCSSAnalisis({
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col flex-1 min-h-0 w-full"
         >
-          <main className="flex-1 overflow-y-auto">
-            <div className="p-4 sm:p-6 md:max-w-2xl mx-auto">
+          <main className="flex-1 overflow-y-auto scrollbar-thin">
+            <div className="p-4 max-w-2xl mx-auto">
               <div className="animate-in fade-in-50 slide-in-from-right-4 duration-300">
                 {renderStepContent()}
               </div>
@@ -1495,8 +1582,9 @@ export default function FormularioCSSAnalisis({
           </main>
 
           {/* ==================== FOOTER ==================== */}
-          <footer className="shrink-0 px-2 py-3 border-t bg-muted/20 backdrop-blur-sm">
-            <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
+          <footer className="shrink-0 px-3 py-3 border-t bg-linear-to-t from-muted/30 to-background/80 backdrop-blur-sm">
+            <div className="max-w-2xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
+              {/* Back button */}
               <Button
                 type="button"
                 variant="ghost"
@@ -1506,27 +1594,29 @@ export default function FormularioCSSAnalisis({
                   isSubmitting ||
                   isSavingDraft ||
                   isSavingChanges ||
-                  isDeletingFile ||
+                  deletingFileId !== null ||
                   isUploading
                 }
-                className="gap-2 text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground"
               >
-                <ArrowLeft className="size-3" />
-                <span className="hidden sm:inline text-xs">
+                <ArrowLeft className="size-4" />
+                <span className="hidden sm:inline text-xs font-medium">
                   {isFirstStep ? "Salir" : "Atrás"}
                 </span>
               </Button>
 
-              <div className="flex items-center gap-2 p-1.5 rounded-full bg-muted/50">
-                <span className="text-xs font-semibold text-foreground">
+              {/* Step indicator */}
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted/60 border border-border/50">
+                <span className="text-xs font-bold text-primary">
                   {currentStep}
                 </span>
                 <span className="text-muted-foreground text-xs">/</span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground font-medium">
                   {FORM_STEPS.length}
                 </span>
               </div>
 
+              {/* Action buttons */}
               <div className="flex items-center gap-2">
                 {isLastStep ? (
                   <>
@@ -1541,19 +1631,21 @@ export default function FormularioCSSAnalisis({
                             isSubmitting ||
                             isSavingDraft ||
                             isSavingChanges ||
-                            isDeletingFile ||
+                            deletingFileId !== null ||
                             isUploading
                           }
-                          className="gap-2"
                         >
                           {isSavingChanges ? (
-                            <Loader2 className="size-3.5 animate-spin" />
+                            <Spinner variant="ellipsis" />
                           ) : (
-                            <Save className="size-3.5" />
+                            <Save className="size-4" />
                           )}
-                          <span className="hidden sm:inline">
-                            Guardar cambios
-                          </span>
+
+                          {!isSavingChanges && (
+                            <span className="hidden sm:inline text-xs font-medium">
+                              Guardar cambios
+                            </span>
+                          )}
                         </Button>
 
                         <Button
@@ -1563,17 +1655,18 @@ export default function FormularioCSSAnalisis({
                             isSubmitting ||
                             isSavingDraft ||
                             isSavingChanges ||
-                            isDeletingFile ||
+                            deletingFileId !== null ||
                             isUploading
                           }
-                          className="gap-2 shadow-lg shadow-primary/25"
                         >
                           {isSubmitting ? (
-                            <Loader2 className="size-3.5 animate-spin" />
+                            <Spinner variant="ellipsis" />
                           ) : (
                             <>
-                              <Send className="size-3.5" />
-                              <span>Guardar y enviar</span>
+                              <Send className="size-4" />
+                              <span className="hidden sm:inline text-xs font-medium">
+                                Guardar y enviar
+                              </span>
                             </>
                           )}
                         </Button>
@@ -1589,17 +1682,16 @@ export default function FormularioCSSAnalisis({
                             isSubmitting ||
                             isSavingDraft ||
                             isSavingChanges ||
-                            isDeletingFile ||
+                            deletingFileId !== null ||
                             isUploading
                           }
-                          className="gap-2"
                         >
                           {isSavingDraft ? (
-                            <Loader2 className="size-3.5 animate-spin" />
+                            <Spinner variant="ellipsis" />
                           ) : (
-                            <FileDown className="size-3.5" />
+                            <FileDown className="size-4" />
                           )}
-                          <span className="hidden sm:inline">
+                          <span className="hidden sm:inline text-xs font-medium">
                             Guardar borrador
                           </span>
                         </Button>
@@ -1611,17 +1703,19 @@ export default function FormularioCSSAnalisis({
                             isSubmitting ||
                             isSavingDraft ||
                             isSavingChanges ||
-                            isDeletingFile ||
+                            deletingFileId !== null ||
                             isUploading
                           }
-                          className="gap-2 shadow-lg shadow-primary/25"
+                          className="h-10 gap-2 px-3 sm:px-4 shadow-lg shadow-primary/25"
                         >
                           {isSubmitting ? (
-                            <Loader2 className="size-3.5 animate-spin" />
+                            <Spinner variant="ellipsis" />
                           ) : (
                             <>
-                              <Save className="size-3.5" />
-                              <span>Guardar y enviar</span>
+                              <Save className="size-4" />
+                              <span className="text-xs font-medium">
+                                Guardar y enviar
+                              </span>
                             </>
                           )}
                         </Button>
@@ -1637,13 +1731,12 @@ export default function FormularioCSSAnalisis({
                       isSubmitting ||
                       isSavingDraft ||
                       isSavingChanges ||
-                      isDeletingFile ||
+                      deletingFileId !== null ||
                       isUploading
                     }
-                    className="gap-2"
                   >
-                    <span className="hidden sm:inline">Siguiente</span>
-                    <ArrowRight className="size-3.5" />
+                    <span className="text-xs font-medium">Siguiente</span>
+                    <ArrowRight className="size-4" />
                   </Button>
                 )}
               </div>

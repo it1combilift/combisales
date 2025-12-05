@@ -77,11 +77,20 @@ function transformArchivos(archivos: ArchivoSubido[]) {
 export function buildFormularioUpsert(data: CreateFormularioCSSData) {
   const transformedData = transformFormularioCSSData(data);
 
-  // Handle archivos if present
-  const archivosCreate = data.archivos?.length
+  // Handle archivos: for update, we need to handle both existing and new files
+  // New files (without id) should be created, existing files are already in DB
+  const newArchivos = data.archivos?.filter(
+    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl
+  );
+
+  const archivosCreate = newArchivos?.length
     ? {
         archivos: {
-          create: transformArchivos(data.archivos),
+          // Use createMany with skipDuplicates to avoid duplicate cloudinaryId errors
+          createMany: {
+            data: transformArchivos(newArchivos),
+            skipDuplicates: true,
+          },
         },
       }
     : {};
@@ -93,6 +102,7 @@ export function buildFormularioUpsert(data: CreateFormularioCSSData) {
     },
     update: {
       ...transformedData,
+      ...archivosCreate,
     },
   };
 }

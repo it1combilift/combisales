@@ -7,6 +7,7 @@ import {
   VisitStatus,
   ContenedorTipo,
   ContenedorMedida,
+  TipoArchivo,
 } from "@prisma/client";
 
 // ==================== CUSTOMER INTERFACES ====================
@@ -121,7 +122,7 @@ export interface VisitWithDetails extends Visit {
 export interface FormularioArchivo {
   id: string;
   nombre: string;
-  tipoArchivo: string;
+  tipoArchivo: TipoArchivo;
   mimeType: string;
   tamanio: number;
   cloudinaryId: string;
