@@ -308,6 +308,8 @@ export const CONTENEDOR_MEDIDA_LABELS: Record<ContenedorMedida, string> = {
   VEINTE_PIES: "20 pies",
   TREINTA_PIES: "30 pies",
   CUARENTA_PIES: "40 pies",
+  CUARENTA_Y_CINCO_PIES: "45 pies",
+  TODOS: "Todos los tamaños",
   OTRO: "Otro",
 };
 

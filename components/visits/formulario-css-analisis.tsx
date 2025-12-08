@@ -224,34 +224,49 @@ export default function FormularioCSSAnalisis({
     [currentStep]
   );
 
+  // Validate a specific step and update completedSteps
+  const validateStep = useCallback(
+    async (stepId: number) => {
+      const stepConfig = FORM_STEPS[stepId - 1];
+      const isValid = await form.trigger(stepConfig.fields);
+      if (isValid) {
+        setCompletedSteps((prev) => new Set([...prev, stepId]));
+      } else {
+        setCompletedSteps((prev) => {
+          const next = new Set(prev);
+          next.delete(stepId);
+          return next;
+        });
+      }
+      return isValid;
+    },
+    [form]
+  );
+
+  // Check if all steps are complete
+  const allStepsComplete = useMemo(() => {
+    return FORM_STEPS.every((step) => completedSteps.has(step.id));
+  }, [completedSteps]);
+
   const handleNextStep = useCallback(async () => {
-    const currentStepConfig = FORM_STEPS[currentStep - 1];
-    const isValid = await form.trigger(currentStepConfig.fields);
-    if (isValid) {
-      setCompletedSteps((prev) => new Set([...prev, currentStep]));
-      if (currentStep < FORM_STEPS.length) setCurrentStep((prev) => prev + 1);
-    }
-  }, [currentStep, form]);
+    // Validate current step and update its completion status
+    await validateStep(currentStep);
+    // Always advance to next step (free navigation)
+    if (currentStep < FORM_STEPS.length) setCurrentStep((prev) => prev + 1);
+  }, [currentStep, validateStep]);
 
   const handlePrevStep = useCallback(() => {
     if (currentStep > 1) setCurrentStep((prev) => prev - 1);
   }, [currentStep]);
 
   const goToStep = useCallback(
-    (stepId: number) => {
-      if (isEditing) {
-        setCurrentStep(stepId);
-        return;
-      }
-      if (
-        stepId < currentStep ||
-        completedSteps.has(stepId - 1) ||
-        stepId === 1
-      ) {
-        setCurrentStep(stepId);
-      }
+    async (stepId: number) => {
+      // Validate current step before leaving to update its completion status
+      await validateStep(currentStep);
+      // Free navigation - always allow going to any step
+      setCurrentStep(stepId);
     },
-    [currentStep, completedSteps, isEditing]
+    [currentStep, validateStep]
   );
 
   const saveVisit = async (
@@ -390,7 +405,7 @@ export default function FormularioCSSAnalisis({
               <FormControl>
                 <Input
                   placeholder="Nombre legal de la empresa"
-                  className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
+                  className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
                   {...field}
                 />
               </FormControl>
@@ -414,7 +429,7 @@ export default function FormularioCSSAnalisis({
                 <FormControl>
                   <Input
                     placeholder="Nombre completo"
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -438,7 +453,7 @@ export default function FormularioCSSAnalisis({
                   <Input
                     type="email"
                     placeholder="correo@empresa.com"
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -462,7 +477,7 @@ export default function FormularioCSSAnalisis({
                 <FormControl>
                   <Input
                     placeholder="Identificación fiscal"
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -485,7 +500,7 @@ export default function FormularioCSSAnalisis({
                   <Input
                     type="url"
                     placeholder="https://www.ejemplo.com"
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -514,7 +529,7 @@ export default function FormularioCSSAnalisis({
               <FormControl>
                 <Input
                   placeholder="Calle, número, piso, puerta..."
-                  className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                  className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                   {...field}
                 />
               </FormControl>
@@ -539,7 +554,7 @@ export default function FormularioCSSAnalisis({
                   <FormControl>
                     <Input
                       placeholder="Ciudad"
-                      className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                      className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                       {...field}
                     />
                   </FormControl>
@@ -562,7 +577,7 @@ export default function FormularioCSSAnalisis({
                 <FormControl>
                   <Input
                     placeholder="12345"
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -587,7 +602,7 @@ export default function FormularioCSSAnalisis({
                 <FormControl>
                   <Input
                     placeholder="Provincia o Estado"
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -610,7 +625,7 @@ export default function FormularioCSSAnalisis({
                 <FormControl>
                   <Input
                     placeholder="Ej: España"
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -639,7 +654,7 @@ export default function FormularioCSSAnalisis({
                 <FormControl>
                   <Input
                     placeholder="Nombre del distribuidor"
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -661,7 +676,7 @@ export default function FormularioCSSAnalisis({
                 <FormControl>
                   <Input
                     placeholder="Email o teléfono"
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -686,7 +701,7 @@ export default function FormularioCSSAnalisis({
                   <Button
                     variant="outline"
                     className={cn(
-                      "h-11 sm:h-12 w-full justify-start text-left font-normal text-sm rounded-lg border-input/80",
+                      "h-11 sm:h-12 w-full justify-start text-left font-normal text-xs sm:text-sm rounded-lg border-input/80",
                       !field.value && "text-muted-foreground"
                     )}
                   >
@@ -725,7 +740,7 @@ export default function FormularioCSSAnalisis({
               <FormControl>
                 <Textarea
                   placeholder="Información adicional sobre el cliente o proyecto..."
-                  className="min-h-[100px] sm:min-h-[120px] text-sm bg-background/50 resize-none border-input/80 focus:border-primary rounded-lg leading-relaxed"
+                  className="min-h-[100px] sm:min-h-[120px] text-xs sm:text-sm bg-background/50 resize-none border-input/80 focus:border-primary rounded-lg leading-relaxed"
                   {...field}
                 />
               </FormControl>
@@ -752,11 +767,11 @@ export default function FormularioCSSAnalisis({
             <FormControl>
               <Textarea
                 placeholder="Describa detalladamente el producto, incluyendo capacidades, dimensiones, frecuencia de uso..."
-                className="min-h-[180px] sm:min-h-[220px] text-sm bg-background/50 resize-none leading-relaxed border-input/80 focus:border-primary rounded-lg"
+                className="min-h-[180px] sm:min-h-[220px] text-xs sm:text-sm bg-background/50 resize-none leading-relaxed border-input/80 focus:border-primary rounded-lg"
                 {...field}
               />
             </FormControl>
-            <FormDescription className="text-xs sm:text-sm text-muted-foreground flex items-start gap-3 mt-4 p-3 sm:p-4 bg-linear-to-br from-primary/5 to-primary/10 rounded-xl border border-primary/20">
+            <FormDescription className="text-xs sm:text-sm text-muted-foreground  md:flex items-start gap-3 mt-4 p-3 sm:p-4 bg-linear-to-br from-primary/5 to-primary/10 rounded-xl border border-primary/20 hidden">
               <div className="size-8 sm:size-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                 <Sparkles className="size-4 sm:size-5 text-primary" />
               </div>
@@ -785,7 +800,7 @@ export default function FormularioCSSAnalisis({
               Tipo de contenedor
               <span className="text-destructive">*</span>
             </FormLabel>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {Object.entries(CONTENEDOR_TIPO_LABELS).map(([key, label]) => {
                 const isChecked = field.value?.includes(key as ContenedorTipo);
                 const Icon = CONTENEDOR_TIPO_ICONS[key as ContenedorTipo];
@@ -839,7 +854,7 @@ export default function FormularioCSSAnalisis({
       />
 
       <div className="pt-4 border-t border-border/60">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 gap-4 sm:gap-5">
           <FormField
             control={form.control}
             name="contenedoresPorSemana"
@@ -853,7 +868,7 @@ export default function FormularioCSSAnalisis({
                     type="number"
                     placeholder="Ej: 5"
                     min={1}
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                     value={field.value ?? ""}
                     onChange={(e) => {
@@ -877,8 +892,8 @@ export default function FormularioCSSAnalisis({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Ej: Compactado, rocoso..."
-                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    placeholder="Compactado, rocoso..."
+                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -893,50 +908,129 @@ export default function FormularioCSSAnalisis({
 
   // ==================== STEP 6: MEDIDAS ====================
   const Step6Content = (
-    <div className="space-y-4 sm:space-y-5">
+    <div className="space-y-4">
       <FormField
         control={form.control}
         name="contenedorMedida"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-              Medida del contenedor
-              <span className="text-destructive">*</span>
-            </FormLabel>
-            <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                value={field.value}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3"
-              >
-                {Object.entries(CONTENEDOR_MEDIDA_LABELS).map(
-                  ([key, label]) => (
-                    <Label
-                      key={key}
-                      className={cn(
-                        "flex items-center justify-between rounded-xl border-2 p-3 sm:p-4 cursor-pointer transition-all duration-200 select-none",
-                        field.value === key
-                          ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
-                          : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value={key} className="size-4" />
-                        <span className="text-sm font-medium">{label}</span>
-                      </div>
-                      {field.value === key && (
-                        <div className="size-6 rounded-full bg-primary/15 flex items-center justify-center">
-                          <Check className="size-3.5 text-primary" />
+        render={({ field }) => {
+          const standardSizes = [
+            ContenedorMedida.VEINTE_PIES,
+            ContenedorMedida.TREINTA_PIES,
+            ContenedorMedida.CUARENTA_PIES,
+            ContenedorMedida.CUARENTA_Y_CINCO_PIES,
+          ];
+
+          const specialOptions = [
+            ContenedorMedida.TODOS,
+            ContenedorMedida.OTRO,
+          ];
+
+          return (
+            <FormItem>
+              <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+                Medida del contenedor
+                <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <RadioGroup onValueChange={field.onChange} value={field.value}>
+                  {/* Standard sizes - grid layout */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                    {standardSizes.map((key) => (
+                      <Label
+                        key={key}
+                        className={cn(
+                          "flex items-center justify-between rounded-xl border-2 p-3 cursor-pointer transition-all duration-200 select-none",
+                          field.value === key
+                            ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
+                            : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value={key} className="size-3.5" />
+                          <span className="text-xs font-medium">
+                            {CONTENEDOR_MEDIDA_LABELS[key as ContenedorMedida]}
+                          </span>
                         </div>
-                      )}
-                    </Label>
-                  )
-                )}
-              </RadioGroup>
-            </FormControl>
-            <FormMessage className="text-xs" />
-          </FormItem>
-        )}
+                        {field.value === key && (
+                          <div className="size-5 rounded-full bg-primary/15 flex items-center justify-center">
+                            <Check className="size-3 text-primary" />
+                          </div>
+                        )}
+                      </Label>
+                    ))}
+                  </div>
+
+                  {/* Separator */}
+                  <div className="flex items-center gap-3 py-1">
+                    <div className="flex-1 h-px bg-border/60" />
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                      Opciones adicionales
+                    </span>
+                    <div className="flex-1 h-px bg-border/60" />
+                  </div>
+
+                  {/* Special options - full width */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    {specialOptions.map((key) => {
+                      const isAllSizes = key === ContenedorMedida.TODOS;
+                      return (
+                        <Label
+                          key={key}
+                          className={cn(
+                            "flex items-center justify-between rounded-xl border-2 p-3 cursor-pointer transition-all duration-200 select-none",
+                            field.value === key
+                              ? isAllSizes
+                                ? "border-emerald-500 bg-emerald-500/5 shadow-md shadow-emerald-500/10"
+                                : "border-amber-500 bg-amber-500/5 shadow-md shadow-amber-500/10"
+                              : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
+                          )}
+                        >
+                          <div className="flex items-center gap-2">
+                            <RadioGroupItem value={key} className="size-3.5" />
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium">
+                                {
+                                  CONTENEDOR_MEDIDA_LABELS[
+                                    key as ContenedorMedida
+                                  ]
+                                }
+                              </span>
+                              <span className="text-[10px] text-muted-foreground text-balance">
+                                {isAllSizes
+                                  ? "Trabaja con múltiples medidas"
+                                  : "Especificar dimensiones"}
+                              </span>
+                            </div>
+                          </div>
+                          {field.value === key && (
+                            <div
+                              className={cn(
+                                "size-5 rounded-full flex items-center justify-center",
+                                isAllSizes
+                                  ? "bg-emerald-500/15"
+                                  : "bg-amber-500/15"
+                              )}
+                            >
+                              <Check
+                                className={cn(
+                                  "size-3",
+                                  isAllSizes
+                                    ? "text-emerald-500"
+                                    : "text-amber-500"
+                                )}
+                              />
+                            </div>
+                          )}
+                        </Label>
+                      );
+                    })}
+                  </div>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage className="text-xs" />
+            </FormItem>
+          );
+        }}
       />
 
       {form.watch("contenedorMedida") === ContenedorMedida.OTRO && (
@@ -944,7 +1038,7 @@ export default function FormularioCSSAnalisis({
           control={form.control}
           name="contenedorMedidaOtro"
           render={({ field }) => (
-            <FormItem className="animate-in fade-in-50 slide-in-from-top-2 duration-300 p-4 bg-muted/30 rounded-xl border border-border/60">
+            <FormItem className="animate-in fade-in-50 slide-in-from-top-2 duration-300">
               <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
                 Especificar medida
                 <span className="text-destructive">*</span>
@@ -952,11 +1046,11 @@ export default function FormularioCSSAnalisis({
               <FormControl>
                 <Input
                   placeholder="Ej: 45 pies, 12m x 2.5m x 2.9m..."
-                  className="h-11 sm:h-12 text-sm bg-background border-input/80 focus:border-primary rounded-lg"
+                  className="h-11 text-xs sm:text-sm bg-background border-input/80 focus:border-primary rounded-lg"
                   {...field}
                 />
               </FormControl>
-              <FormDescription className="text-xs sm:text-sm text-muted-foreground">
+              <FormDescription className="text-xs text-muted-foreground text-pretty">
                 Indique las dimensiones exactas (largo x ancho x alto)
               </FormDescription>
               <FormMessage className="text-xs" />
@@ -1186,7 +1280,7 @@ export default function FormularioCSSAnalisis({
         {/* Mobile upload progress */}
         {isUploading && (
           <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
-            <Spinner variant="bars" size={20} className="text-primary" />
+            <Spinner variant="bars" className="text-primary size-3.5" />
             <div className="flex-1 space-y-1.5">
               <p className="text-xs font-medium">Subiendo archivos...</p>
               <Progress value={uploadProgress.total || 0} className="h-1.5" />
@@ -1285,10 +1379,15 @@ export default function FormularioCSSAnalisis({
           <div className="py-6 px-4">
             <div className="flex flex-col items-center justify-center gap-3 text-center">
               {isUploading ? (
-                <div className="flex items-center gap-4">
-                  <Spinner variant="bars" size={24} className="text-primary" />
+                <div className="flex justify-center items-center gap-4">
                   <div className="text-left space-y-1">
-                    <p className="text-sm font-medium">Subiendo archivos...</p>
+                    <Spinner
+                      variant="bars"
+                      className="text-primary size-3 inline mr-2"
+                    />
+                    <p className="text-xs font-medium inline">
+                      Subiendo archivos...
+                    </p>
                     <div className="flex items-center gap-2">
                       <Progress
                         value={uploadProgress.total || 0}
@@ -1533,11 +1632,8 @@ export default function FormularioCSSAnalisis({
           {FORM_STEPS.map((step) => {
             const isCompleted = completedSteps.has(step.id);
             const isCurrent = currentStep === step.id;
-            const isAccessible = isEditing
-              ? true
-              : step.id < currentStep ||
-                completedSteps.has(step.id - 1) ||
-                step.id === 1;
+            // Free navigation - all steps are always accessible
+            const isAccessible = true;
             const Icon = step.icon;
 
             return (
@@ -1658,7 +1754,13 @@ export default function FormularioCSSAnalisis({
                             isSavingDraft ||
                             isSavingChanges ||
                             deletingFileId !== null ||
-                            isUploading
+                            isUploading ||
+                            !allStepsComplete
+                          }
+                          title={
+                            !allStepsComplete
+                              ? "Completa todos los pasos para guardar"
+                              : undefined
                           }
                         >
                           {isSavingChanges ? (
@@ -1682,7 +1784,13 @@ export default function FormularioCSSAnalisis({
                             isSavingDraft ||
                             isSavingChanges ||
                             deletingFileId !== null ||
-                            isUploading
+                            isUploading ||
+                            !allStepsComplete
+                          }
+                          title={
+                            !allStepsComplete
+                              ? "Completa todos los pasos para guardar"
+                              : undefined
                           }
                         >
                           {isSubmitting ? (
@@ -1730,16 +1838,21 @@ export default function FormularioCSSAnalisis({
                             isSavingDraft ||
                             isSavingChanges ||
                             deletingFileId !== null ||
-                            isUploading
+                            isUploading ||
+                            !allStepsComplete
                           }
-                          className="h-10 gap-2 px-3 sm:px-4 shadow-lg shadow-primary/25"
+                          title={
+                            !allStepsComplete
+                              ? "Completa todos los pasos para guardar"
+                              : undefined
+                          }
                         >
                           {isSubmitting ? (
                             <Spinner variant="ellipsis" />
                           ) : (
                             <>
                               <Save className="size-4" />
-                              <span className="text-xs font-medium">
+                              <span className="text-xs font-medium hidden sm:inline">
                                 Guardar y enviar
                               </span>
                             </>
