@@ -1097,7 +1097,7 @@ export default function FormularioCSSAnalisis({
   const [isDragging, setIsDragging] = useState(false);
 
   const Step7Content = (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="space-y-4">
       {/* Hidden inputs */}
       <input
         ref={cameraPhotoRef}
@@ -1127,190 +1127,258 @@ export default function FormularioCSSAnalisis({
         disabled={isUploading || archivos.length >= MAX_FILES}
       />
 
-      {/* Quick action buttons - visible on all devices */}
-      <div className="flex flex-wrap gap-2 justify-center">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn(
-            "flex items-center gap-2 h-10 px-4 rounded-xl border-2",
-            "transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/5",
-            "disabled:opacity-50 disabled:cursor-not-allowed"
-          )}
-          onClick={() => cameraPhotoRef.current?.click()}
-          disabled={isUploading || archivos.length >= MAX_FILES}
-        >
-          <div className="size-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
-            <Camera className="size-4 text-blue-600" />
-          </div>
-          <span className="text-xs sm:text-sm font-medium">Foto</span>
-        </Button>
+      {/* ===== MOBILE: Action buttons only ===== */}
+      <div className="md:hidden space-y-3">
+        {/* Upload buttons grid */}
+        <div className="grid grid-cols-3 gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className={cn(
+              "flex flex-col items-center justify-center gap-1.5 h-auto py-0 rounded-xl border-2",
+              "transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/5",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
+            onClick={() => cameraPhotoRef.current?.click()}
+            disabled={isUploading || archivos.length >= MAX_FILES}
+          >
+            <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+              <Camera className="size-4 text-blue-600" />
+            </div>
+            <span className="text-xs font-medium">Foto</span>
+          </Button>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn(
-            "flex items-center gap-2 h-10 px-4 rounded-xl border-2",
-            "transition-all duration-200 hover:border-violet-500/50 hover:bg-violet-500/5",
-            "disabled:opacity-50 disabled:cursor-not-allowed"
-          )}
-          onClick={() => cameraVideoRef.current?.click()}
-          disabled={isUploading || archivos.length >= MAX_FILES}
-        >
-          <div className="size-7 rounded-lg bg-violet-500/10 flex items-center justify-center">
-            <Video className="size-4 text-violet-600" />
-          </div>
-          <span className="text-xs sm:text-sm font-medium">Video</span>
-        </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className={cn(
+              "flex flex-col items-center justify-center gap-1.5 h-auto py-3 rounded-xl border-2",
+              "transition-all duration-200 hover:border-violet-500/50 hover:bg-violet-500/5",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
+            onClick={() => cameraVideoRef.current?.click()}
+            disabled={isUploading || archivos.length >= MAX_FILES}
+          >
+            <div className="size-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+              <Video className="size-4 text-violet-600" />
+            </div>
+            <span className="text-xs font-medium">Video</span>
+          </Button>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn(
-            "flex items-center gap-2 h-10 px-4 rounded-xl border-2",
-            "transition-all duration-200 hover:border-amber-500/50 hover:bg-amber-500/5",
-            "disabled:opacity-50 disabled:cursor-not-allowed"
-          )}
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading || archivos.length >= MAX_FILES}
-        >
-          <div className="size-7 rounded-lg bg-amber-500/10 flex items-center justify-center">
-            <FolderOpen className="size-4 text-amber-600" />
+          <Button
+            type="button"
+            variant="outline"
+            className={cn(
+              "flex flex-col items-center justify-center gap-1.5 h-auto py-3 rounded-xl border-2",
+              "transition-all duration-200 hover:border-amber-500/50 hover:bg-amber-500/5",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading || archivos.length >= MAX_FILES}
+          >
+            <div className="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+              <FolderOpen className="size-4 text-amber-600" />
+            </div>
+            <span className="text-xs font-medium">Archivos</span>
+          </Button>
+        </div>
+
+        {/* Mobile upload progress */}
+        {isUploading && (
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
+            <Spinner variant="bars" size={20} className="text-primary" />
+            <div className="flex-1 space-y-1.5">
+              <p className="text-xs font-medium">Subiendo archivos...</p>
+              <Progress value={uploadProgress.total || 0} className="h-1.5" />
+            </div>
+            <span className="text-xs font-medium text-primary">
+              {uploadProgress.total || 0}%
+            </span>
           </div>
-          <span className="text-xs sm:text-sm font-medium">Archivos</span>
-        </Button>
+        )}
+
+        {/* Mobile file limits info */}
+        <p className="text-[10px] text-center text-muted-foreground text-balance">
+          Imágenes 10MB • Videos 100MB • Docs 25MB • Máx. {MAX_FILES} archivos
+        </p>
       </div>
 
-      {/* Modern Drop Zone - Desktop */}
-      <div
-        className={cn(
-          "relative rounded-2xl transition-all duration-300 overflow-hidden",
-          "border-2 border-dashed",
-          isDragging
-            ? "border-primary bg-primary/10 scale-[1.02] shadow-lg shadow-primary/20"
-            : "border-muted-foreground/30 hover:border-primary/50 hover:bg-muted/30",
-          isUploading && "pointer-events-none",
-          archivos.length >= MAX_FILES &&
-            "opacity-50 pointer-events-none cursor-not-allowed"
-        )}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setIsDragging(true);
-        }}
-        onDragLeave={(e) => {
-          e.preventDefault();
-          setIsDragging(false);
-        }}
-        onDrop={(e) => {
-          setIsDragging(false);
-          handleDrop(e);
-        }}
-        onClick={() => !isUploading && fileInputRef.current?.click()}
-      >
-        <div className="p-3 cursor-pointer">
-          <div className="flex flex-col items-center justify-center gap-4 text-center">
-            {isUploading ? (
-              <>
-                <div className="size-8 sm:size-12 rounded-2xl bg-primary/10 flex items-center justify-center animate-pulse">
-                  <Spinner variant="bars" size={14} />
+      {/* ===== DESKTOP: Drop zone + inline buttons ===== */}
+      <div className="hidden md:block space-y-3">
+        {/* Inline action buttons */}
+        <div className="flex flex-wrap gap-2 justify-center">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className={cn(
+              "flex items-center gap-2 h-9 px-3 rounded-lg border",
+              "transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/5",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
+            onClick={() => cameraPhotoRef.current?.click()}
+            disabled={isUploading || archivos.length >= MAX_FILES}
+          >
+            <Camera className="size-4 text-blue-600" />
+            <span className="text-xs font-medium">Tomar foto</span>
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className={cn(
+              "flex items-center gap-2 h-9 px-3 rounded-lg border",
+              "transition-all duration-200 hover:border-violet-500/50 hover:bg-violet-500/5",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
+            onClick={() => cameraVideoRef.current?.click()}
+            disabled={isUploading || archivos.length >= MAX_FILES}
+          >
+            <Video className="size-4 text-violet-600" />
+            <span className="text-xs font-medium">Grabar video</span>
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className={cn(
+              "flex items-center gap-2 h-9 px-3 rounded-lg border",
+              "transition-all duration-200 hover:border-amber-500/50 hover:bg-amber-500/5",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading || archivos.length >= MAX_FILES}
+          >
+            <FolderOpen className="size-4 text-amber-600" />
+            <span className="text-xs font-medium">Explorador</span>
+          </Button>
+        </div>
+
+        {/* Drop Zone */}
+        <div
+          className={cn(
+            "relative rounded-xl transition-all duration-300 overflow-hidden cursor-pointer",
+            "border-2 border-dashed",
+            isDragging
+              ? "border-primary bg-primary/5 scale-[1.01] shadow-md shadow-primary/10"
+              : "border-border hover:border-primary/40 hover:bg-muted/20",
+            isUploading && "pointer-events-none opacity-70",
+            archivos.length >= MAX_FILES &&
+              "opacity-50 pointer-events-none cursor-not-allowed"
+          )}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDragging(true);
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            setIsDragging(false);
+          }}
+          onDrop={(e) => {
+            setIsDragging(false);
+            handleDrop(e);
+          }}
+          onClick={() => !isUploading && fileInputRef.current?.click()}
+        >
+          <div className="py-6 px-4">
+            <div className="flex flex-col items-center justify-center gap-3 text-center">
+              {isUploading ? (
+                <div className="flex items-center gap-4">
+                  <Spinner variant="bars" size={24} className="text-primary" />
+                  <div className="text-left space-y-1">
+                    <p className="text-sm font-medium">Subiendo archivos...</p>
+                    <div className="flex items-center gap-2">
+                      <Progress
+                        value={uploadProgress.total || 0}
+                        className="h-1.5 w-40"
+                      />
+                      <span className="text-xs text-muted-foreground">
+                        {uploadProgress.total || 0}%
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-xs sm:text-sm font-semibold">
-                    Subiendo archivos...
-                  </p>
-                  <div className="w-48 sm:w-64 mx-auto">
-                    <Progress
-                      value={uploadProgress.total || 0}
-                      className="h-2"
+              ) : (
+                <>
+                  <div
+                    className={cn(
+                      "size-12 rounded-xl flex items-center justify-center transition-all duration-300",
+                      isDragging ? "bg-primary/15 scale-110" : "bg-muted/50"
+                    )}
+                  >
+                    <Upload
+                      className={cn(
+                        "size-6 transition-all duration-300",
+                        isDragging ? "text-primary" : "text-muted-foreground"
+                      )}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {uploadProgress.total || 0}% completado
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <div
-                  className={cn(
-                    "size-8 sm:size-12 rounded-2xl flex items-center justify-center transition-all duration-300",
-                    isDragging
-                      ? "bg-primary/20 scale-110"
-                      : "bg-linear-to-br from-primary/10 to-primary/5"
-                  )}
-                >
-                  <Upload
-                    className={cn(
-                      "size-4 sm:size-6 transition-all duration-300",
-                      isDragging ? "text-primary scale-110" : "text-primary/70"
-                    )}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <p className="text-xs sm:text-sm font-semibold text-foreground">
-                    {isDragging
-                      ? "¡Suelta aquí los archivos!"
-                      : "Arrastra y suelta archivos aquí"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    o haz clic para seleccionar desde tu dispositivo
-                  </p>
-                </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {isDragging
+                        ? "¡Suelta los archivos aquí!"
+                        : "Arrastra y suelta archivos aquí"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      o haz clic para seleccionar
+                    </p>
+                  </div>
 
-                {/* File type badges */}
-                <div className="flex flex-wrap gap-2 justify-center">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                    <ImageIcon className="size-3.5" /> Imágenes hasta 10MB
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20">
-                    <Video className="size-3.5" /> Videos hasta 100MB
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                    <FileIcon className="size-3.5" /> Documentos hasta 25MB
-                  </span>
-                </div>
-
-                <p className="text-[10px] text-muted-foreground/70">
-                  Máximo {MAX_FILES} archivos en total
-                </p>
-              </>
-            )}
+                  {/* File type limits */}
+                  <div className="flex flex-wrap gap-2 justify-center pt-1">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                      <ImageIcon className="size-3" /> Imágenes 10MB
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400">
+                      <Video className="size-3" /> Videos 100MB
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                      <FileIcon className="size-3" /> Docs 25MB
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Uploaded files list */}
+      {/* ===== UPLOADED FILES LIST (shared) ===== */}
       {archivos.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <p className="text-xs font-semibold text-foreground flex items-center gap-2">
-              <Check className="size-4 text-green-500" />
+        <div className="space-y-2">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium text-foreground flex items-center gap-1.5">
+              <Check className="size-3.5 text-green-500" />
               Archivos subidos
             </p>
-            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
               {archivos.length}/{MAX_FILES}
             </span>
           </div>
 
-          <div className="grid gap-2">
+          {/* Files grid */}
+          <div className="space-y-1.5">
             {archivos.map((archivo) => {
               const IconComponent = getFileIcon(archivo.tipoArchivo);
+              const isDeleting = deletingFileId === archivo.cloudinaryId;
+
               return (
                 <div
                   key={archivo.cloudinaryId}
                   className={cn(
-                    "flex items-center gap-3 p-1 sm:p-2 rounded-xl border-2 bg-card",
+                    "flex items-center gap-2 sm:gap-3 p-2 rounded-lg border bg-card",
                     "transition-all duration-200 group",
-                    "hover:border-primary/30 hover:shadow-md hover:shadow-primary/5"
+                    "hover:border-primary/20 hover:bg-accent/30",
+                    isDeleting && "opacity-50"
                   )}
                 >
-                  {/* Preview or icon */}
+                  {/* Thumbnail */}
                   {archivo.tipoArchivo === TipoArchivo.IMAGEN ? (
                     <div
-                      className="size-10 sm:size-12 rounded-xl overflow-hidden bg-muted shrink-0 cursor-pointer ring-2 ring-transparent hover:ring-primary/50 transition-all"
+                      className="size-10 rounded-lg overflow-hidden bg-muted shrink-0 cursor-pointer ring-1 ring-border hover:ring-primary/50 transition-all"
                       onClick={() =>
                         window.open(archivo.cloudinaryUrl, "_blank")
                       }
@@ -1319,8 +1387,8 @@ export default function FormularioCSSAnalisis({
                         src={archivo.cloudinaryUrl}
                         alt={archivo.nombre}
                         className="w-full h-full object-cover"
-                        width={80}
-                        height={80}
+                        width={40}
+                        height={40}
                         loading="lazy"
                         unoptimized
                       />
@@ -1328,15 +1396,15 @@ export default function FormularioCSSAnalisis({
                   ) : (
                     <div
                       className={cn(
-                        "size-10 sm:size-12 rounded-xl flex items-center justify-center shrink-0",
+                        "size-10 rounded-lg flex items-center justify-center shrink-0",
                         archivo.tipoArchivo === TipoArchivo.VIDEO
-                          ? "bg-linear-to-br from-violet-500/15 to-violet-500/5 border border-violet-500/20"
-                          : "bg-linear-to-br from-amber-500/15 to-amber-500/5 border border-amber-500/20"
+                          ? "bg-violet-500/10 border border-violet-500/20"
+                          : "bg-amber-500/10 border border-amber-500/20"
                       )}
                     >
                       <IconComponent
                         className={cn(
-                          "size-6",
+                          "size-5",
                           archivo.tipoArchivo === TipoArchivo.VIDEO
                             ? "text-violet-600"
                             : "text-amber-600"
@@ -1346,90 +1414,53 @@ export default function FormularioCSSAnalisis({
                   )}
 
                   {/* File info */}
-                  <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex-1 min-w-0">
                     <p
-                      className="text-xs font-medium truncate max-w-full"
+                      className="text-xs font-medium truncate"
                       title={archivo.nombre}
                     >
                       {archivo.nombre}
                     </p>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] sm:text-xs text-muted-foreground">
-                      <span className="font-medium">
-                        {formatFileSize(archivo.tamanio)}
-                      </span>
+                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                      <span>{formatFileSize(archivo.tamanio)}</span>
                       <span className="text-border">•</span>
-                      <span className="uppercase font-medium bg-muted px-1.5 py-0.5 rounded-sm">
-                        {archivo.formato}
-                      </span>
+                      <span className="uppercase">{archivo.formato}</span>
                       {archivo.ancho && archivo.alto && (
-                        <>
-                          <span className="text-border hidden sm:inline">
-                            •
-                          </span>
-                          <span className="hidden sm:inline">
-                            {archivo.ancho}×{archivo.alto}px
-                          </span>
-                        </>
-                      )}
-                      {archivo.duracion && (
-                        <>
-                          <span className="text-border hidden sm:inline">
-                            •
-                          </span>
-                          <span className="hidden sm:inline">
-                            {Math.round(archivo.duracion)}s
-                          </span>
-                        </>
+                        <span className="hidden sm:inline">
+                          • {archivo.ancho}×{archivo.alto}px
+                        </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Action buttons */}
-                  <div className="flex items-center gap-1 sm:gap-2 pr-1">
+                  {/* Actions */}
+                  <div className="flex items-center gap-0.5 shrink-0">
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className={cn(
-                        "size-8 rounded-xl",
-                        "opacity-60 sm:opacity-0 group-hover:opacity-100 transition-all duration-200",
-                        "hover:bg-green-500/10 hover:text-green-600"
-                      )}
+                      className="size-7 rounded-md opacity-70 hover:opacity-100 hover:bg-accent"
                       title="Ver archivo"
-                      disabled={
-                        isUploading ||
-                        isSavingChanges ||
-                        isSubmitting ||
-                        deletingFileId !== null
-                      }
+                      disabled={isUploading || isDeleting}
                       onClick={() =>
                         window.open(archivo.cloudinaryUrl, "_blank")
                       }
                     >
-                      <EyeIcon className="size-4" />
+                      <EyeIcon className="size-3.5" />
                     </Button>
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className={cn(
-                        "size-8 rounded-xl",
-                        "opacity-60 sm:opacity-0 group-hover:opacity-100 transition-all duration-200",
-                        "hover:bg-destructive/10 hover:text-destructive"
-                      )}
-                      title="Eliminar archivo"
+                      className="size-7 rounded-md opacity-70 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                      title="Eliminar"
                       onClick={() => handleRemoveFile(archivo)}
-                      disabled={
-                        isUploading ||
-                        isSavingChanges ||
-                        isSubmitting ||
-                        deletingFileId !== null
-                      }
+                      disabled={isUploading || deletingFileId !== null}
                     >
-                      {deletingFileId === archivo.cloudinaryId ? (
-                        <Spinner variant="ellipsis" />
+                      {isDeleting ? (
+                        <Spinner variant="ellipsis" size={12} />
                       ) : (
-                        <Trash2 className="size-4" />
+                        <Trash2 className="size-3.5" />
                       )}
                     </Button>
                   </div>
@@ -1440,14 +1471,11 @@ export default function FormularioCSSAnalisis({
         </div>
       )}
 
-      {/* Empty state when no files */}
+      {/* ===== EMPTY STATE ===== */}
       {archivos.length === 0 && !isUploading && (
-        <div className="text-center">
-          <p className="text-xs text-muted-foreground text-balance">
-            Aún no has subido ningún archivo. Usa los botones de arriba o
-            arrastra archivos a la zona de carga.
-          </p>
-        </div>
+        <p className="text-xs text-center text-muted-foreground py-2 text-balance">
+          Aún no has subido ningún archivo
+        </p>
       )}
     </div>
   );
@@ -1467,7 +1495,7 @@ export default function FormularioCSSAnalisis({
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[90vh] bg-background w-full">
+    <div className="flex flex-col h-full max-h-[90vh] bg-background max-w-dvw">
       {/* ==================== HEADER ==================== */}
       <header className="shrink-0 px-3 sm:px-4 pt-3 pb-0.5 bg-linear-to-b from-muted/30 to-background border-b border-border/50">
         {/* Title Row */}
@@ -1492,7 +1520,7 @@ export default function FormularioCSSAnalisis({
         </div>
 
         {/* Progress bar */}
-        <div className="space-y-2 mb-3">
+        <div className="space-y-2 mb-3 hidden md:block">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Progreso</span>
             <span className="font-medium text-primary">{progress}%</span>
@@ -1501,7 +1529,7 @@ export default function FormularioCSSAnalisis({
         </div>
 
         {/* Stepper */}
-        <div className="flex items-center justify-between gap-0.5 sm:gap-1">
+        <div className="flex items-center justify-between gap-0.5 sm:gap-1 w-full mx-auto md:mx-0">
           {FORM_STEPS.map((step) => {
             const isCompleted = completedSteps.has(step.id);
             const isCurrent = currentStep === step.id;
@@ -1569,10 +1597,10 @@ export default function FormularioCSSAnalisis({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col flex-1 min-h-0 w-full"
+          className="flex flex-col flex-1 min-h-0 max-w-dvw mx-auto w-full"
         >
           <main className="flex-1 overflow-y-auto scrollbar-thin">
-            <div className="p-4 max-w-2xl mx-auto">
+            <div className="p-4 mx-auto w-full">
               <div className="animate-in fade-in-50 slide-in-from-right-4 duration-300">
                 {renderStepContent()}
               </div>
