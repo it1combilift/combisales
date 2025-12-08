@@ -1513,7 +1513,7 @@ export default function FormularioCSSAnalisis({
                   )}
 
                   {/* File info */}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 max-w-[150px] md:max-w-sm">
                     <p
                       className="text-xs font-medium truncate"
                       title={archivo.nombre}
@@ -1533,12 +1533,12 @@ export default function FormularioCSSAnalisis({
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-0.5 shrink-0">
+                  <div className="flex-1 flex justify-end items-center shrink-0">
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="size-7 rounded-md opacity-70 hover:opacity-100 hover:bg-accent"
+                      className="rounded-md opacity-70 hover:opacity-100 hover:bg-accent"
                       title="Ver archivo"
                       disabled={isUploading || isDeleting}
                       onClick={() =>
@@ -1551,7 +1551,7 @@ export default function FormularioCSSAnalisis({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="size-7 rounded-md opacity-70 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                      className="rounded-md opacity-70 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
                       title="Eliminar"
                       onClick={() => handleRemoveFile(archivo)}
                       disabled={isUploading || deletingFileId !== null}
