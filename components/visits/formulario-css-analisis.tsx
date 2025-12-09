@@ -1692,7 +1692,7 @@ export default function FormularioCSSAnalisis({
 
       {/* ===== EMPTY STATE ===== */}
       {archivos.length === 0 && !isUploading && (
-        <p className="text-xs text-center text-muted-foreground py-2 text-balance">
+        <p className="text-xs text-center text-muted-foreground py-2 text-balance italic">
           Aún no has subido ningún archivo
         </p>
       )}
