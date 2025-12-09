@@ -56,19 +56,26 @@ export function transformFormularioCSSData(data: CreateFormularioCSSData) {
  * Transform archivos array to Prisma create format
  */
 function transformArchivos(archivos: ArchivoSubido[]) {
-  return archivos.map((archivo) => ({
-    nombre: archivo.nombre,
-    tipoArchivo: archivo.tipoArchivo,
-    mimeType: archivo.mimeType,
-    tamanio: archivo.tamanio,
-    cloudinaryId: archivo.cloudinaryId,
-    cloudinaryUrl: archivo.cloudinaryUrl,
-    cloudinaryType: archivo.cloudinaryType,
-    ancho: archivo.ancho,
-    alto: archivo.alto,
-    duracion: archivo.duracion,
-    formato: archivo.formato,
-  }));
+  return archivos.map((archivo) => {
+    // Ensure formato always has a value - fallback to file extension if missing
+    const fileExtension =
+      archivo.nombre.split(".").pop()?.toLowerCase() || "unknown";
+    const formato = archivo.formato || fileExtension;
+
+    return {
+      nombre: archivo.nombre,
+      tipoArchivo: archivo.tipoArchivo,
+      mimeType: archivo.mimeType,
+      tamanio: archivo.tamanio,
+      cloudinaryId: archivo.cloudinaryId,
+      cloudinaryUrl: archivo.cloudinaryUrl,
+      cloudinaryType: archivo.cloudinaryType,
+      ancho: archivo.ancho,
+      alto: archivo.alto,
+      duracion: archivo.duracion,
+      formato: formato,
+    };
+  });
 }
 
 /**

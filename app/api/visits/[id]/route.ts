@@ -3,22 +3,16 @@ import { getServerSession } from "next-auth";
 import { VisitFormType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { VISIT_INCLUDE, buildFormularioUpsert } from "@/lib/visits";
 import { UpdateVisitData, CreateFormularioCSSData } from "@/interfaces/visits";
 
 import {
-  HTTP_STATUS,
   API_SUCCESS,
   unauthorizedResponse,
   notFoundResponse,
   serverErrorResponse,
   createSuccessResponse,
 } from "@/lib/api-response";
-
-import {
-  VISIT_INCLUDE,
-  transformFormularioCSSData,
-  buildFormularioUpsert,
-} from "@/lib/visits";
 
 /**
  * GET /api/visits/[id]

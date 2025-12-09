@@ -71,6 +71,11 @@ export async function POST(req: NextRequest) {
           originalFilename: file.name,
         });
 
+        // Extract format from result or fallback to file extension
+        const fileExtension =
+          file.name.split(".").pop()?.toLowerCase() || "unknown";
+        const formato = result.format || fileExtension;
+
         uploadedFiles.push({
           nombre: file.name,
           tipoArchivo: getTipoArchivo(file.type),
@@ -82,7 +87,7 @@ export async function POST(req: NextRequest) {
           ancho: result.width,
           alto: result.height,
           duracion: result.duration,
-          formato: result.format,
+          formato: formato,
         });
       } catch (error) {
         console.error(`Error uploading ${file.name}:`, error);
