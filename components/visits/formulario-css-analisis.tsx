@@ -61,7 +61,6 @@ import {
   Briefcase,
   Phone,
   CalendarDays,
-  Sparkles,
   FileDown,
   Upload,
   ImageIcon,
@@ -1880,7 +1879,7 @@ export default function FormularioCSSAnalisis({
                           title={
                             !allStepsComplete
                               ? "Completa todos los pasos para guardar"
-                              : undefined
+                              : "Guardar cambios"
                           }
                         >
                           {isSavingChanges ? (
@@ -1910,7 +1909,7 @@ export default function FormularioCSSAnalisis({
                           title={
                             !allStepsComplete
                               ? "Completa todos los pasos para guardar"
-                              : undefined
+                              : "Guardar y enviar"
                           }
                         >
                           {isSubmitting ? (
@@ -1937,7 +1936,13 @@ export default function FormularioCSSAnalisis({
                             isSavingDraft ||
                             isSavingChanges ||
                             deletingFileId !== null ||
-                            isUploading
+                            isUploading ||
+                            !allStepsComplete
+                          }
+                          title={
+                            !allStepsComplete
+                              ? "Completa todos los pasos para guardar"
+                              : "Guardar como borrador"
                           }
                         >
                           {isSavingDraft ? (
@@ -1964,14 +1969,14 @@ export default function FormularioCSSAnalisis({
                           title={
                             !allStepsComplete
                               ? "Completa todos los pasos para guardar"
-                              : undefined
+                              : "Guardar y enviar"
                           }
                         >
                           {isSubmitting ? (
                             <Spinner variant="ellipsis" />
                           ) : (
                             <>
-                              <Save className="size-4" />
+                              <Send className="size-4" />
                               <span className="text-xs font-medium hidden sm:inline">
                                 Guardar y enviar
                               </span>
