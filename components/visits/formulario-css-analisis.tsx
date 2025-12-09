@@ -771,16 +771,6 @@ export default function FormularioCSSAnalisis({
                 {...field}
               />
             </FormControl>
-            <FormDescription className="text-xs sm:text-sm text-muted-foreground  md:flex items-start gap-3 mt-4 p-3 sm:p-4 bg-linear-to-br from-primary/5 to-primary/10 rounded-xl border border-primary/20 hidden">
-              <div className="size-8 sm:size-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <Sparkles className="size-4 sm:size-5 text-primary" />
-              </div>
-              <span className="leading-relaxed">
-                Incluya toda la información relevante: capacidades, dimensiones,
-                frecuencia de uso, condiciones ambientales y requisitos
-                especiales del proyecto.
-              </span>
-            </FormDescription>
             <FormMessage className="text-xs" />
           </FormItem>
         )}
@@ -874,7 +864,7 @@ export default function FormularioCSSAnalisis({
                         <Label
                           key={key}
                           className={cn(
-                            "flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer transition-all duration-200 select-none group",
+                            "flex items-center gap-3 rounded-xl border-2 p-1 cursor-pointer transition-all duration-200 select-none group",
                             isChecked
                               ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
                               : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
@@ -892,7 +882,7 @@ export default function FormularioCSSAnalisis({
                             <Icon className="size-4" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <span className="text-xs font-medium block">
+                            <span className="text-xs font-medium block text-pretty">
                               {label}
                             </span>
                           </div>
@@ -937,7 +927,7 @@ export default function FormularioCSSAnalisis({
                         <Label
                           key={key}
                           className={cn(
-                            "flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer transition-all duration-200 select-none group",
+                            "flex items-center gap-3 rounded-xl border-2 p-1 cursor-pointer transition-all duration-200 select-none group",
                             isChecked
                               ? "border-emerald-500 bg-emerald-500/5 shadow-md shadow-emerald-500/10"
                               : "border-input/80 hover:border-emerald-500/50 hover:bg-accent/50 hover:shadow-sm"
@@ -954,7 +944,7 @@ export default function FormularioCSSAnalisis({
                             <Icon className="size-4" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <span className="text-xs font-medium block">
+                            <span className="text-xs font-medium block text-pretty">
                               {label}
                             </span>
                           </div>
@@ -1064,7 +1054,7 @@ export default function FormularioCSSAnalisis({
               <FormControl>
                 <RadioGroup onValueChange={field.onChange} value={field.value}>
                   {/* Standard sizes - grid layout */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {standardSizes.map((key) => (
                       <Label
                         key={key}
