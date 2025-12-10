@@ -107,6 +107,7 @@ export interface Visit {
     email: string;
   };
   formularioCSSAnalisis?: FormularioCSSAnalisis;
+  formularioIndustrialAnalisis?: FormularioIndustrialAnalisis;
 }
 
 export interface VisitWithDetails extends Visit {
@@ -164,6 +165,75 @@ export interface FormularioCSSAnalisis {
   contenedorMedida: ContenedorMedida;
   contenedorMedidaOtro?: string | null;
   // Archivos adjuntos
+  archivos?: FormularioArchivo[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ==================== FORMULARIO INDUSTRIAL ANALYSIS INTERFACE ====================
+export interface FormularioIndustrialAnalisis {
+  id: string;
+  visitId: string;
+  // 1. Datos del cliente
+  razonSocial: string;
+  personaContacto: string;
+  email: string;
+  direccion: string;
+  localidad: string;
+  provinciaEstado: string;
+  pais: string;
+  codigoPostal: string;
+  website?: string | null;
+  numeroIdentificacionFiscal: string;
+  distribuidor?: string | null;
+  contactoDistribuidor?: string | null;
+  fechaCierre?: Date | null;
+  // 2. Descripción operación
+  notasOperacion: string;
+  // 3. Datos aplicación
+  descripcionProducto: string;
+  alturaUltimoNivelEstanteria?: number | null;
+  maximaAlturaElevacion?: number | null;
+  pesoCargaMaximaAltura?: number | null;
+  pesoCargaPrimerNivel?: number | null;
+  dimensionesAreaTrabajoAncho?: number | null;
+  dimensionesAreaTrabajoFondo?: number | null;
+  turnosTrabajo?: number | null;
+  fechaEstimadaDefinicion?: Date | null;
+  alimentacionDeseada: string;
+  // 4. Equipos eléctricos (JSON)
+  equiposElectricos?: {
+    tipoCorriente?: string;
+    voltaje?: number;
+    frecuencia?: number;
+    potenciaDisponible?: number;
+    distanciaPuntoRecarga?: number;
+  } | null;
+  // 5. Dimensiones cargas (JSON array)
+  dimensionesCargas: Array<{
+    producto: string;
+    largo?: number;
+    ancho?: number;
+    alto?: number;
+    peso?: number;
+    porcentaje?: number;
+  }>;
+  // 6. Especificaciones pasillo (JSON)
+  especificacionesPasillo: {
+    profundidadProducto?: number;
+    anchoLibreEntreProductos?: number;
+    distanciaLibreEntreEstanterias?: number;
+    fondoUtilEstanteria?: number;
+    alturaBaseEstanteria?: number;
+    distanciaBajoRielesGuia?: number;
+    alturaSueloPrimerBrazo?: number;
+    distanciaEntreRielesGuia?: number;
+    alturaLibreHastaGuia?: number;
+    grosorPilarColumna?: number;
+    alturaUltimoNivel?: number;
+    alturaMaximaInteriorEdificio?: number;
+  };
+  // 7. Archivos adjuntos
   archivos?: FormularioArchivo[];
   createdAt: Date;
   updatedAt: Date;
