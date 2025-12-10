@@ -40,7 +40,7 @@ function SectionHeader({
   title: string;
 }) {
   return (
-    <div className="flex items-center gap-1.5 pb-1.5 border-b border-border/40 mb-2">
+    <div className="items-center gap-1.5 pb-1.5 border-b border-border/40 mb-2 hidden md:flex">
       <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
         <Icon className="size-3 text-primary" />
       </div>
@@ -310,7 +310,7 @@ export function Step1Content({ form }: StepContentProps) {
       {/* ==================== COMERCIAL ==================== */}
       <section>
         <SectionHeader icon={Users} title="Información Comercial" />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           <FormField
             control={form.control}
             name="distribuidor"
@@ -367,7 +367,7 @@ export function Step1Content({ form }: StepContentProps) {
                           !field.value && "text-muted-foreground"
                         )}
                       >
-                        <CalendarIcon className="mr-1.5 size-3" />
+                        <CalendarIcon className="size-3" />
                         {field.value ? (
                           format(field.value, "dd/MM/yy", { locale: es })
                         ) : (

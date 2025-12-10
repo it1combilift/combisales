@@ -36,7 +36,7 @@ function SectionHeader({
   badge?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between pb-2 border-b mb-2">
+    <div className="hidden md:flex items-center justify-between pb-2 border-b mb-2">
       <div className="flex items-center gap-2">
         <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
           <Icon className="size-3 text-primary" />

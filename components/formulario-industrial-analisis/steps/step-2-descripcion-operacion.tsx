@@ -17,7 +17,7 @@ export function Step2Content({ form }: StepContentProps) {
   return (
     <div className="space-y-3">
       {/* Header */}
-      <div className="flex items-center gap-2 pb-2 border-b">
+      <div className="hidden md:flex items-center gap-2 pb-2 border-b">
         <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
           <FileText className="size-3 text-primary" />
         </div>

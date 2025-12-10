@@ -78,7 +78,7 @@ export function Step6Content({ form }: StepContentProps) {
         </h3>
         {isGuided && (
           <span className="ml-auto text-[9px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
-            + Rieles Guía
+            + Rieles guía
           </span>
         )}
       </div>
