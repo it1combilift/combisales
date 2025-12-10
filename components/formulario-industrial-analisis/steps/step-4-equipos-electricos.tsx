@@ -1,9 +1,9 @@
+import { Zap } from "lucide-react";
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
 import { AlertMessage } from "@/components/alert";
 import { TipoAlimentacion } from "@prisma/client";
 import { TipoCorriente, TIPO_CORRIENTE_LABELS } from "../types";
-import { Zap, Info } from "lucide-react";
 
 import {
   FormField,

@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Package, Ruler } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FormMessage } from "@/components/ui/form";
 import { Progress } from "@/components/ui/progress";
 import { StepContentProps, DimensionCarga } from "../types";
-import { FormMessage } from "@/components/ui/form";
-import { cn } from "@/lib/utils";
+import { Plus, Trash2, Package, Ruler } from "lucide-react";
 
 // ==================== SECTION HEADER ====================
 function SectionHeader({
@@ -53,7 +53,6 @@ function CargaRow({
 
   return (
     <div className="border rounded-lg p-3 bg-card hover:bg-muted/20 transition-colors">
-      {/* Header row: Index + Product + Delete */}
       <div className="flex items-center gap-2 mb-3">
         <span className="size-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center shrink-0">
           {index + 1}
@@ -75,7 +74,6 @@ function CargaRow({
         </Button>
       </div>
 
-      {/* Dimensions grid - responsive */}
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {fields.map(({ key, label, unit, placeholder }) => (
           <div key={key} className="space-y-1">

@@ -1,6 +1,6 @@
+import { FileText } from "lucide-react";
 import { StepContentProps } from "../types";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText, Lightbulb } from "lucide-react";
 
 import {
   FormField,

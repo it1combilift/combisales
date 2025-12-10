@@ -1,8 +1,8 @@
+import { cn } from "@/lib/utils";
+import { Ruler } from "lucide-react";
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
 import { TipoAlimentacion } from "@prisma/client";
-import { Ruler, Zap } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 import {
   FormField,

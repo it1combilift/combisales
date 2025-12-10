@@ -1,9 +1,12 @@
-import { useState } from "react";
 import Image from "next/image";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { TipoArchivo } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
+import { Progress } from "@/components/ui/progress";
+import { FileUploadProps, ArchivoSubido } from "../types";
+
 import {
   Upload,
   Camera,
@@ -14,8 +17,7 @@ import {
   Trash2,
   Paperclip,
 } from "lucide-react";
-import { TipoArchivo } from "@prisma/client";
-import { FileUploadProps, ArchivoSubido } from "../types";
+
 import {
   getFileIcon,
   formatFileSize,

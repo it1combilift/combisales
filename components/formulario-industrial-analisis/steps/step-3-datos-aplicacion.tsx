@@ -1,3 +1,14 @@
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { StepContentProps } from "../types";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { TipoAlimentacion, ALIMENTACION_LABELS } from "../types";
+import { CalendarIcon, Package, Ruler, Clock } from "lucide-react";
+
 import {
   FormField,
   FormItem,
@@ -5,15 +16,13 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
+
 import {
   Select,
   SelectContent,
@@ -21,12 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon, Package, Ruler, Weight, Clock, Zap } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { cn } from "@/lib/utils";
-import { StepContentProps } from "../types";
-import { TipoAlimentacion, ALIMENTACION_LABELS } from "../types";
 
 // ==================== SECTION HEADER ====================
 function SectionHeader({
