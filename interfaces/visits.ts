@@ -276,6 +276,37 @@ export interface CreateFormularioCSSData {
   archivos?: ArchivoSubido[];
 }
 
+export interface CreateFormularioIndustrialData {
+  razonSocial: string;
+  personaContacto: string;
+  email: string;
+  direccion: string;
+  localidad: string;
+  provinciaEstado: string;
+  pais: string;
+  codigoPostal: string;
+  website?: string;
+  numeroIdentificacionFiscal: string;
+  distribuidor?: string;
+  contactoDistribuidor?: string;
+  fechaCierre?: Date;
+  notasOperacion: string;
+  descripcionProducto: string;
+  alturaUltimoNivelEstanteria?: number;
+  maximaAlturaElevacion?: number;
+  pesoCargaMaximaAltura?: number;
+  pesoCargaPrimerNivel?: number;
+  dimensionesAreaTrabajoAncho?: number;
+  dimensionesAreaTrabajoFondo?: number;
+  turnosTrabajo?: number;
+  fechaEstimadaDefinicion?: Date;
+  alimentacionDeseada: string;
+  equiposElectricos?: any;
+  dimensionesCargas: any;
+  especificacionesPasillo: any;
+  archivos?: ArchivoSubido[];
+}
+
 export interface UpdateVisitData {
   status?: VisitStatus;
   visitDate?: Date;
@@ -348,7 +379,7 @@ export const FORM_OPTIONS = [
     type: VisitFormType.ANALISIS_INDUSTRIAL,
     icon: Factory,
     description: "Análisis de soluciones industriales y logística interna.",
-    available: false,
+    available: true,
   },
   {
     type: VisitFormType.ANALISIS_LOGISTICA,

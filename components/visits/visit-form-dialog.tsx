@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { VisitFormType } from "@prisma/client";
 import { FORM_TYPE_LABELS } from "@/interfaces/visits";
-import FormularioCSSAnalisis from "./formulario-css-analisis";
+import FormularioCSSAnalisis from "../formulario-css-analisis";
+import FormularioIndustrialAnalisis from "../formulario-industrial-analisis";
 import { FORM_OPTIONS, VisitFormDialogProps } from "@/interfaces/visits";
 
 import {
@@ -26,7 +27,6 @@ export default function VisitFormDialog({
   const [selectedFormType, setSelectedFormType] =
     useState<VisitFormType | null>(null);
 
-  // If editing an existing visit, set the form type automatically
   useEffect(() => {
     if (existingVisit && open) {
       setSelectedFormType(existingVisit.formType as VisitFormType);
@@ -36,7 +36,6 @@ export default function VisitFormDialog({
   }, [existingVisit, open]);
 
   const handleBack = () => {
-    // If editing, close the dialog instead of going back to form selection
     if (existingVisit) {
       onOpenChange(false);
     } else {
@@ -162,6 +161,14 @@ export default function VisitFormDialog({
           <>
             {selectedFormType === VisitFormType.ANALISIS_CSS && (
               <FormularioCSSAnalisis
+                customer={customer}
+                onBack={handleBack}
+                onSuccess={handleSuccess}
+                existingVisit={existingVisit}
+              />
+            )}
+            {selectedFormType === VisitFormType.ANALISIS_INDUSTRIAL && (
+              <FormularioIndustrialAnalisis
                 customer={customer}
                 onBack={handleBack}
                 onSuccess={handleSuccess}

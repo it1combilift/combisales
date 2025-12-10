@@ -234,6 +234,7 @@ export default function FormularioCSSAnalisis({
         setCompletedSteps((prev) => {
           const next = new Set(prev);
           next.delete(stepId);
+          
           return next;
         });
       }
@@ -1909,7 +1910,7 @@ export default function FormularioCSSAnalisis({
                           title={
                             !allStepsComplete
                               ? "Completa todos los pasos para guardar"
-                              : "Guardar y enviar"
+                              : "Enviar"
                           }
                         >
                           {isSubmitting ? (
@@ -1918,7 +1919,7 @@ export default function FormularioCSSAnalisis({
                             <>
                               <Send className="size-4" />
                               <span className="hidden sm:inline text-xs font-medium">
-                                Guardar y enviar
+                                Enviar
                               </span>
                             </>
                           )}
@@ -1951,7 +1952,7 @@ export default function FormularioCSSAnalisis({
                             <FileDown className="size-4" />
                           )}
                           <span className="hidden sm:inline text-xs font-medium">
-                            Guardar borrador
+                            Borrador
                           </span>
                         </Button>
 
@@ -1969,7 +1970,7 @@ export default function FormularioCSSAnalisis({
                           title={
                             !allStepsComplete
                               ? "Completa todos los pasos para guardar"
-                              : "Guardar y enviar"
+                              : "Enviar"
                           }
                         >
                           {isSubmitting ? (
@@ -1978,7 +1979,7 @@ export default function FormularioCSSAnalisis({
                             <>
                               <Send className="size-4" />
                               <span className="text-xs font-medium hidden sm:inline">
-                                Guardar y enviar
+                                Enviar
                               </span>
                             </>
                           )}

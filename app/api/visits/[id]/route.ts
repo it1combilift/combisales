@@ -1,10 +1,18 @@
 import { prisma } from "@/lib/prisma";
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { VisitFormType } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { VISIT_INCLUDE, buildFormularioUpsert } from "@/lib/visits";
-import { UpdateVisitData, CreateFormularioCSSData } from "@/interfaces/visits";
+import {
+  VISIT_INCLUDE,
+  buildFormularioUpsert,
+  buildFormularioIndustrialUpsert,
+} from "@/lib/visits";
+import {
+  UpdateVisitData,
+  CreateFormularioCSSData,
+  CreateFormularioIndustrialData,
+} from "@/interfaces/visits";
 
 import {
   API_SUCCESS,
@@ -63,16 +71,45 @@ export async function PUT(
     const body = await req.json();
     const { visitData, formularioData } = body as {
       visitData?: UpdateVisitData;
-      formularioData?: CreateFormularioCSSData;
+      formularioData?: CreateFormularioCSSData | CreateFormularioIndustrialData;
     };
 
     const existingVisit = await prisma.visit.findUnique({
       where: { id },
-      include: { formularioCSSAnalisis: true },
+      include: {
+        formularioCSSAnalisis: true,
+        formularioIndustrialAnalisis: true,
+      },
     });
 
     if (!existingVisit) {
       return notFoundResponse("VISIT");
+    }
+
+    // Build form data based on type
+    let formDataUpdate = {};
+    if (
+      existingVisit.formType === VisitFormType.ANALISIS_CSS &&
+      formularioData
+    ) {
+      formDataUpdate = {
+        formularioCSSAnalisis: {
+          upsert: buildFormularioUpsert(
+            formularioData as CreateFormularioCSSData
+          ),
+        },
+      };
+    } else if (
+      existingVisit.formType === VisitFormType.ANALISIS_INDUSTRIAL &&
+      formularioData
+    ) {
+      formDataUpdate = {
+        formularioIndustrialAnalisis: {
+          upsert: buildFormularioIndustrialUpsert(
+            formularioData as CreateFormularioIndustrialData
+          ),
+        },
+      };
     }
 
     const visit = await prisma.visit.update({
@@ -80,14 +117,7 @@ export async function PUT(
       data: {
         ...(visitData?.status && { status: visitData.status }),
         ...(visitData?.visitDate && { visitDate: visitData.visitDate }),
-        ...(existingVisit.formType === VisitFormType.ANALISIS_CSS &&
-        formularioData
-          ? {
-              formularioCSSAnalisis: {
-                upsert: buildFormularioUpsert(formularioData),
-              },
-            }
-          : {}),
+        ...formDataUpdate,
       },
       include: VISIT_INCLUDE,
     });

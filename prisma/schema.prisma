@@ -259,9 +259,10 @@ model Visit {
   visitDate  DateTime      @default(now())
 
   // Relaciones
-  customer              Customer               @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  formularioCSSAnalisis FormularioCSSAnalisis?
+  customer                     Customer                      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user                         User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  formularioCSSAnalisis        FormularioCSSAnalisis?
+  formularioIndustrialAnalisis FormularioIndustrialAnalisis?
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -290,6 +291,18 @@ enum ContenedorMedida {
   CUARENTA_Y_CINCO_PIES
   TODOS
   OTRO
+}
+
+// Enums para Formulario Industrial
+enum TipoAlimentacion {
+  ELECTRICO
+  DIESEL
+  GLP
+}
+
+enum TipoCorriente {
+  MONOFASICA
+  TRIFASICA
 }
 
 // Tipos de archivo permitidos en el formulario
@@ -340,6 +353,93 @@ model FormularioCSSAnalisis {
   updatedAt DateTime @updatedAt
 
   @@index([visitId])
+}
+
+// ==================== FORMULARIO INDUSTRIAL ANALYSIS MODEL ====================
+// Formulario específico de Análisis Industrial
+model FormularioIndustrialAnalisis {
+  id      String @id @default(cuid())
+  visitId String @unique
+
+  // 1. Datos del cliente
+  razonSocial                String
+  personaContacto            String
+  email                      String
+  direccion                  String
+  localidad                  String
+  provinciaEstado            String
+  pais                       String
+  codigoPostal               String
+  website                    String?
+  numeroIdentificacionFiscal String
+  distribuidor               String?
+  contactoDistribuidor       String?
+  fechaCierre                DateTime?
+
+  // 2. Descripción operación
+  notasOperacion String @db.Text
+
+  // 3. Datos aplicación
+  descripcionProducto         String           @db.Text
+  alturaUltimoNivelEstanteria Float?
+  maximaAlturaElevacion       Float?
+  pesoCargaMaximaAltura       Float?
+  pesoCargaPrimerNivel        Float?
+  dimensionesAreaTrabajoAncho Float?
+  dimensionesAreaTrabajoFondo Float?
+  turnosTrabajo               Int?
+  fechaEstimadaDefinicion     DateTime?
+  alimentacionDeseada         TipoAlimentacion
+
+  // 4. Equipos eléctricos (JSON object with tipoCorriente, voltaje, frecuencia, etc.)
+  equiposElectricos Json?
+
+  // 5. Dimensiones cargas (JSON array of DimensionCarga objects)
+  dimensionesCargas Json
+
+  // 6. Especificaciones pasillo (JSON object with 12 measurement fields)
+  especificacionesPasillo Json
+
+  // 7. Archivos adjuntos (relación con FormularioArchivoIndustrial)
+  archivos FormularioArchivoIndustrial[]
+
+  visit Visit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([visitId])
+}
+
+// ==================== ARCHIVOS DEL FORMULARIO INDUSTRIAL ====================
+// Modelo para almacenar metadatos de archivos subidos a Cloudinary para Industrial Analysis
+model FormularioArchivoIndustrial {
+  id           String @id @default(cuid())
+  formularioId String
+
+  // Información del archivo
+  nombre      String // Nombre original del archivo
+  tipoArchivo TipoArchivo
+  mimeType    String // application/pdf, image/jpeg, video/mp4, etc.
+  tamanio     Int // Tamaño en bytes
+
+  // Datos de Cloudinary
+  cloudinaryId   String @unique // public_id de Cloudinary
+  cloudinaryUrl  String // URL segura del archivo
+  cloudinaryType String // image, video, raw (para documentos)
+
+  // Metadatos adicionales
+  ancho    Int? // Solo para imágenes/videos
+  alto     Int? // Solo para imágenes/videos
+  duracion Float? // Solo para videos (en segundos)
+  formato  String // jpg, png, pdf, mp4, etc.
+
+  formulario FormularioIndustrialAnalisis @relation(fields: [formularioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([formularioId])
+  @@index([tipoArchivo])
 }
 
 // ==================== ARCHIVOS DEL FORMULARIO ====================

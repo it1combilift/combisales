@@ -1,0 +1,93 @@
+import { ContenedorTipo, ContenedorMedida, TipoArchivo } from "@prisma/client";
+import { UseFormReturn } from "react-hook-form";
+import { FormularioCSSSchema } from "@/schemas/visits";
+import { Customer } from "@/interfaces/visits";
+
+// ==================== FORM PROPS ====================
+export interface FormularioCSSAnalisisProps {
+  customer: Customer;
+  onBack: () => void;
+  onSuccess: () => void;
+  existingVisit?: any;
+}
+
+// ==================== ARCHIVO TYPES ====================
+export interface ArchivoSubido {
+  nombre: string;
+  tipoArchivo: TipoArchivo;
+  mimeType: string;
+  tamanio: number;
+  cloudinaryId: string;
+  cloudinaryUrl: string;
+  cloudinaryType: string;
+  ancho?: number;
+  alto?: number;
+  duracion?: number;
+  formato: string;
+}
+
+// ==================== STEP COMPONENT PROPS ====================
+export interface StepContentProps {
+  form: UseFormReturn<FormularioCSSSchema>;
+  isEditing?: boolean;
+}
+
+// ==================== FIELD WRAPPER PROPS ====================
+export interface FieldWrapperProps {
+  children: React.ReactNode;
+  icon?: React.ElementType;
+  className?: string;
+}
+
+// ==================== FILE UPLOAD PROPS ====================
+export interface FileUploadProps {
+  form: UseFormReturn<FormularioCSSSchema>;
+  customerId: string;
+  isUploading: boolean;
+  uploadProgress: Record<string, number>;
+  uploadingFiles: File[];
+  deletingFileId: string | null;
+  onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemoveFile: (archivo: ArchivoSubido) => void;
+  onDrop: (event: React.DragEvent<HTMLDivElement>) => void;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  cameraPhotoRef: React.RefObject<HTMLInputElement | null>;
+  cameraVideoRef: React.RefObject<HTMLInputElement | null>;
+}
+
+// ==================== FORM HEADER PROPS ====================
+export interface FormHeaderProps {
+  currentStep: number;
+  currentStepConfig: any;
+  progress: number;
+  completedSteps: Set<number>;
+  onGoToStep: (stepId: number) => void;
+}
+
+// ==================== FORM NAVIGATION PROPS ====================
+export interface FormNavigationProps {
+  currentStep: number;
+  isFirstStep: boolean;
+  isLastStep: boolean;
+  isEditing: boolean;
+  allStepsComplete: boolean;
+  isSubmitting: boolean;
+  isSavingDraft: boolean;
+  isSavingChanges: boolean;
+  isUploading: boolean;
+  deletingFileId: string | null;
+  onBack: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onSaveDraft: () => void;
+  onSaveChanges: () => void;
+}
+
+// ==================== SAVE VISIT PARAMS ====================
+export type SaveType = "submit" | "draft" | "changes";
+
+export interface SaveVisitParams {
+  data: FormularioCSSSchema;
+  status: string;
+  saveType: SaveType;
+}

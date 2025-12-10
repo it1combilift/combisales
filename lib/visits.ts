@@ -1,6 +1,10 @@
 import { Prisma } from "@prisma/client";
 import { ArchivoSubido } from "@/schemas/visits";
-import { CreateFormularioCSSData } from "@/interfaces/visits";
+
+import {
+  CreateFormularioCSSData,
+  CreateFormularioIndustrialData,
+} from "@/interfaces/visits";
 
 // ==================== PRISMA INCLUDES ====================
 /**
@@ -16,6 +20,11 @@ export const VISIT_INCLUDE = {
   },
   customer: true,
   formularioCSSAnalisis: {
+    include: {
+      archivos: true,
+    },
+  },
+  formularioIndustrialAnalisis: {
     include: {
       archivos: true,
     },
@@ -57,7 +66,6 @@ export function transformFormularioCSSData(data: CreateFormularioCSSData) {
  */
 function transformArchivos(archivos: ArchivoSubido[]) {
   return archivos.map((archivo) => {
-    // Ensure formato always has a value - fallback to file extension if missing
     const fileExtension =
       archivo.nombre.split(".").pop()?.toLowerCase() || "unknown";
     const formato = archivo.formato || fileExtension;
@@ -83,9 +91,6 @@ function transformArchivos(archivos: ArchivoSubido[]) {
  */
 export function buildFormularioUpsert(data: CreateFormularioCSSData) {
   const transformedData = transformFormularioCSSData(data);
-
-  // Handle archivos: for update, we need to handle both existing and new files
-  // New files (without id) should be created, existing files are already in DB
   const newArchivos = data.archivos?.filter(
     (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl
   );
@@ -93,7 +98,6 @@ export function buildFormularioUpsert(data: CreateFormularioCSSData) {
   const archivosCreate = newArchivos?.length
     ? {
         archivos: {
-          // Use createMany with skipDuplicates to avoid duplicate cloudinaryId errors
           createMany: {
             data: transformArchivos(newArchivos),
             skipDuplicates: true,
@@ -124,6 +128,126 @@ export function buildFormularioCreate(data: CreateFormularioCSSData) {
     ? {
         archivos: {
           create: transformArchivos(data.archivos),
+        },
+      }
+    : {};
+
+  return {
+    ...transformedData,
+    ...archivosCreate,
+  };
+}
+
+// ==================== FORMULARIO INDUSTRIAL DATA HELPERS ====================
+/**
+ * Transform FormularioIndustrialData to Prisma create/update format
+ */
+export function transformFormularioIndustrialData(
+  data: CreateFormularioIndustrialData
+) {
+  return {
+    razonSocial: data.razonSocial,
+    personaContacto: data.personaContacto,
+    email: data.email,
+    direccion: data.direccion,
+    localidad: data.localidad,
+    provinciaEstado: data.provinciaEstado,
+    pais: data.pais,
+    codigoPostal: data.codigoPostal,
+    website: data.website || null,
+    numeroIdentificacionFiscal: data.numeroIdentificacionFiscal,
+    distribuidor: data.distribuidor || null,
+    contactoDistribuidor: data.contactoDistribuidor || null,
+    fechaCierre: data.fechaCierre || null,
+    notasOperacion: data.notasOperacion,
+    descripcionProducto: data.descripcionProducto,
+    alturaUltimoNivelEstanteria: data.alturaUltimoNivelEstanteria || null,
+    maximaAlturaElevacion: data.maximaAlturaElevacion || null,
+    pesoCargaMaximaAltura: data.pesoCargaMaximaAltura || null,
+    pesoCargaPrimerNivel: data.pesoCargaPrimerNivel || null,
+    dimensionesAreaTrabajoAncho: data.dimensionesAreaTrabajoAncho || null,
+    dimensionesAreaTrabajoFondo: data.dimensionesAreaTrabajoFondo || null,
+    turnosTrabajo: data.turnosTrabajo || null,
+    fechaEstimadaDefinicion: data.fechaEstimadaDefinicion || null,
+    alimentacionDeseada: data.alimentacionDeseada as any,
+    equiposElectricos: data.equiposElectricos || null,
+    dimensionesCargas: data.dimensionesCargas,
+    especificacionesPasillo: data.especificacionesPasillo,
+  };
+}
+
+/**
+ * Transform archivos array for Industrial to Prisma create format
+ */
+function transformArchivosIndustrial(archivos: ArchivoSubido[]) {
+  return archivos.map((archivo) => {
+    const fileExtension =
+      archivo.nombre.split(".").pop()?.toLowerCase() || "unknown";
+    const formato = archivo.formato || fileExtension;
+
+    return {
+      nombre: archivo.nombre,
+      tipoArchivo: archivo.tipoArchivo,
+      mimeType: archivo.mimeType,
+      tamanio: archivo.tamanio,
+      cloudinaryId: archivo.cloudinaryId,
+      cloudinaryUrl: archivo.cloudinaryUrl,
+      cloudinaryType: archivo.cloudinaryType,
+      ancho: archivo.ancho,
+      alto: archivo.alto,
+      duracion: archivo.duracion,
+      formato: formato,
+    };
+  });
+}
+
+/**
+ * Build Prisma upsert operation for FormularioIndustrialAnalisis
+ */
+export function buildFormularioIndustrialUpsert(
+  data: CreateFormularioIndustrialData
+) {
+  const transformedData = transformFormularioIndustrialData(data);
+
+  const newArchivos = data.archivos?.filter(
+    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl
+  );
+
+  const archivosCreate = newArchivos?.length
+    ? {
+        archivos: {
+          createMany: {
+            data: transformArchivosIndustrial(newArchivos),
+            skipDuplicates: true,
+          },
+        },
+      }
+    : {};
+
+  return {
+    create: {
+      ...transformedData,
+      ...archivosCreate,
+    },
+    update: {
+      ...transformedData,
+      ...archivosCreate,
+    },
+  };
+}
+
+/**
+ * Build Prisma create operation for new visit with FormularioIndustrialAnalisis
+ */
+export function buildFormularioIndustrialCreate(
+  data: CreateFormularioIndustrialData
+) {
+  const transformedData = transformFormularioIndustrialData(data);
+
+  const archivosCreate = data.archivos?.length
+    ? {
+        archivos: {
+          create: transformArchivosIndustrial(data.archivos),
         },
       }
     : {};

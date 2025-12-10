@@ -1,9 +1,19 @@
 import { prisma } from "@/lib/prisma";
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
 import { VisitFormType, VisitStatus } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { CreateVisitData, CreateFormularioCSSData } from "@/interfaces/visits";
+import {
+  VISIT_INCLUDE,
+  buildFormularioCreate,
+  buildFormularioIndustrialCreate,
+} from "@/lib/visits";
+import {
+  CreateVisitData,
+  CreateFormularioCSSData,
+  CreateFormularioIndustrialData,
+} from "@/interfaces/visits";
+
 import {
   HTTP_STATUS,
   API_SUCCESS,
@@ -13,7 +23,6 @@ import {
   serverErrorResponse,
   createSuccessResponse,
 } from "@/lib/api-response";
-import { VISIT_INCLUDE, buildFormularioCreate } from "@/lib/visits";
 
 /**
  * GET /api/visits?customerId=xxx
@@ -59,7 +68,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { visitData, formularioData } = body as {
       visitData: CreateVisitData;
-      formularioData?: CreateFormularioCSSData;
+      formularioData?: CreateFormularioCSSData | CreateFormularioIndustrialData;
     };
 
     if (!visitData.customerId || !visitData.formType) {
@@ -74,8 +83,36 @@ export async function POST(req: NextRequest) {
       return notFoundResponse("CUSTOMER");
     }
 
-    if (visitData.formType === VisitFormType.ANALISIS_CSS && !formularioData) {
-      return badRequestResponse("CSS_FORM_DATA");
+    // Validate form data based on formType
+    if (
+      (visitData.formType === VisitFormType.ANALISIS_CSS ||
+        visitData.formType === VisitFormType.ANALISIS_INDUSTRIAL) &&
+      !formularioData
+    ) {
+      return badRequestResponse("FORM_DATA");
+    }
+
+    // Build form data based on type
+    let formDataCreate = {};
+    if (visitData.formType === VisitFormType.ANALISIS_CSS && formularioData) {
+      formDataCreate = {
+        formularioCSSAnalisis: {
+          create: buildFormularioCreate(
+            formularioData as CreateFormularioCSSData
+          ),
+        },
+      };
+    } else if (
+      visitData.formType === VisitFormType.ANALISIS_INDUSTRIAL &&
+      formularioData
+    ) {
+      formDataCreate = {
+        formularioIndustrialAnalisis: {
+          create: buildFormularioIndustrialCreate(
+            formularioData as CreateFormularioIndustrialData
+          ),
+        },
+      };
     }
 
     const visit = await prisma.visit.create({
@@ -85,13 +122,7 @@ export async function POST(req: NextRequest) {
         formType: visitData.formType,
         status: visitData.status || VisitStatus.COMPLETADA,
         visitDate: visitData.visitDate || new Date(),
-        ...(visitData.formType === VisitFormType.ANALISIS_CSS && formularioData
-          ? {
-              formularioCSSAnalisis: {
-                create: buildFormularioCreate(formularioData),
-              },
-            }
-          : {}),
+        ...formDataCreate,
       },
       include: VISIT_INCLUDE,
     });
