@@ -1,11 +1,11 @@
+import { FORM_STEPS } from "../constants";
+import { FormNavigationProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ArrowLeft, ArrowRight, Send, Save, FileDown } from "lucide-react";
-import { FORM_STEPS } from "../constants";
-import { FormNavigationProps } from "../types";
 
 /**
- * Form navigation footer - Compact version
+ * Form navigation footer
  */
 export function FormNavigation({
   currentStep,

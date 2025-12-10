@@ -176,8 +176,8 @@ export function Step5Content({ form }: StepContentProps) {
       {/* Empty state */}
       {dimensionesCargas.length === 0 ? (
         <div className="border border-dashed rounded-lg p-6 text-center">
-          <Ruler className="size-8 mx-auto text-muted-foreground/50 mb-2" />
-          <p className="text-sm text-muted-foreground">
+          <Ruler className="size-6 mx-auto text-muted-foreground/50 mb-2" />
+          <p className="text-sm text-muted-foreground text-balance">
             No hay cargas agregadas
           </p>
           <Button
@@ -187,7 +187,7 @@ export function Step5Content({ form }: StepContentProps) {
             className="mt-3"
             onClick={handleAddRow}
           >
-            <Plus className="size-3.5 mr-1" />
+            <Plus className="size-3.5" />
             Agregar primera carga
           </Button>
         </div>
