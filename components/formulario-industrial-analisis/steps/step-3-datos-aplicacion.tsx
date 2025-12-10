@@ -327,7 +327,7 @@ export function Step3Content({ form }: StepContentProps) {
                           !field.value && "text-muted-foreground"
                         )}
                       >
-                        <CalendarIcon className="mr-1 size-3" />
+                        <CalendarIcon className="size-3" />
                         {field.value ? (
                           format(field.value, "dd/MM/yy", { locale: es })
                         ) : (
@@ -361,7 +361,7 @@ export function Step3Content({ form }: StepContentProps) {
                 </FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="h-8 text-sm">
+                    <SelectTrigger className="h-8 text-sm w-full">
                       <SelectValue placeholder="Seleccionar" />
                     </SelectTrigger>
                   </FormControl>

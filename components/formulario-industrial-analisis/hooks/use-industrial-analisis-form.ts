@@ -86,13 +86,14 @@ export function useIndustrialAnalisisForm({
     async (step: number) => {
       if (step < 1 || step > FORM_STEPS.length) return;
 
-      if (step !== currentStep) {
-        const isCurrentStepValid = await validateStep(currentStep);
-        if (!isCurrentStepValid) {
-          toast.error("Completa el paso actual antes de cambiar");
-          return;
-        }
-      }
+      // Optional: Validate current step before allowing navigation
+      // if (step !== currentStep) {
+      //   const isCurrentStepValid = await validateStep(currentStep);
+      //   if (!isCurrentStepValid) {
+      //     toast.error("Completa el paso actual antes de cambiar");
+      //     return;
+      //   }
+      // }
 
       setCurrentStep(step);
     },
