@@ -384,10 +384,10 @@ export interface UpdateVisitData {
 
 // ==================== FORM TYPE LABELS ====================
 export const FORM_TYPE_LABELS: Record<VisitFormType, string> = {
-  ANALISIS_CSS: "Formulario Análisis CSS",
-  ANALISIS_INDUSTRIAL: "Formulario Análisis Industrial",
-  ANALISIS_LOGISTICA: "Formulario Análisis Logística",
-  ANALISIS_STRADDLE_CARRIER: "Formulario Análisis Straddle Carrier",
+  ANALISIS_CSS: "Análisis CSS",
+  ANALISIS_INDUSTRIAL: "Análisis Industrial",
+  ANALISIS_LOGISTICA: "Análisis Logística",
+  ANALISIS_STRADDLE_CARRIER: "Análisis Straddle Carrier",
 };
 
 export const VISIT_STATUS_LABELS: Record<VisitStatus, string> = {
