@@ -70,7 +70,8 @@ export default function VisitFormDialog({
                   Registrar visita
                 </DialogTitle>
                 <DialogDescription className="text-[10px] md:text-xs text-muted-foreground leading-snug text-balance">
-                  Selecciona el tipo de formulario para documentar esta visita.
+                  Selecciona el tipo de formulario para documentar esta visita
+                  de cliente {customer?.accountName}.
                 </DialogDescription>
               </DialogHeader>
             </div>
