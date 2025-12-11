@@ -1,23 +1,26 @@
 import { cn } from "@/lib/utils";
-import { DialogTitle } from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
-import { Check } from "lucide-react";
+import { Check, Ban } from "lucide-react";
 import { FORM_STEPS } from "../constants";
 import { FormHeaderProps } from "../types";
+import { Progress } from "@/components/ui/progress";
+import { DialogTitle } from "@/components/ui/dialog";
 import { getStepColorClasses } from "@/constants/visits";
 
-/**
- * Form header - Ultra compact with inline stepper
- */
+interface FormHeaderPropsExtended extends FormHeaderProps {
+  shouldSkipStep4?: () => boolean;
+}
+
 export function FormHeader({
   currentStep,
   currentStepConfig,
   progress,
   completedSteps,
   onGoToStep,
-}: FormHeaderProps) {
+  shouldSkipStep4,
+}: FormHeaderPropsExtended) {
   const currentColors = getStepColorClasses(currentStepConfig.color);
   const StepIcon = currentStepConfig.icon;
+  const skipStep4 = shouldSkipStep4?.() ?? false;
 
   return (
     <header className="shrink-0 px-2 sm:px-4 py-2 bg-muted/20 border-b">
@@ -59,28 +62,41 @@ export function FormHeader({
           const isCurrent = currentStep === step.number;
           const Icon = step.icon;
 
+          // Check if this step should be skipped (Step 4 when not electric)
+          const isSkipped = step.number === 4 && skipStep4;
+
           return (
             <div key={step.number} className="flex items-center">
               <button
                 type="button"
-                onClick={() => onGoToStep(step.number)}
+                onClick={() => !isSkipped && onGoToStep(step.number)}
+                disabled={isSkipped}
                 className={cn(
-                  "relative flex items-center justify-center transition-all duration-200 cursor-pointer",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5"
+                  "relative flex items-center justify-center transition-all duration-200",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5",
+                  isSkipped ? "cursor-not-allowed opacity-50" : "cursor-pointer"
                 )}
-                title={step.title}
+                title={
+                  isSkipped
+                    ? "No aplica (alimentación no eléctrica)"
+                    : step.title
+                }
               >
                 <div
                   className={cn(
                     "size-6 sm:size-7 rounded-md flex items-center justify-center transition-all duration-200",
-                    isCurrent
+                    isSkipped
+                      ? "bg-muted/40 text-muted-foreground/50"
+                      : isCurrent
                       ? "bg-primary text-primary-foreground shadow-sm"
                       : isCompleted
                       ? "bg-primary/15 text-primary"
                       : "bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
-                  {isCompleted && !isCurrent ? (
+                  {isSkipped ? (
+                    <Ban className="size-3" strokeWidth={2} />
+                  ) : isCompleted && !isCurrent ? (
                     <Check className="size-3" strokeWidth={2.5} />
                   ) : (
                     <Icon className="size-3" />
@@ -92,8 +108,10 @@ export function FormHeader({
                 <div
                   className={cn(
                     "w-2 sm:w-4 h-0.5 mx-0.5",
-                    completedSteps.has(step.number) &&
-                      completedSteps.has(FORM_STEPS[idx + 1]?.number)
+                    isSkipped || (idx === 3 && skipStep4)
+                      ? "bg-muted/40"
+                      : completedSteps.has(step.number) &&
+                        completedSteps.has(FORM_STEPS[idx + 1]?.number)
                       ? "bg-primary/40"
                       : "bg-border"
                   )}

@@ -1,47 +1,33 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
+import { FormHeader } from "./ui/form-header";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormNavigation } from "./ui/form-navigation";
 import { FormularioIndustrialAnalisisProps } from "./types";
+import { useFileUploader } from "./hooks/use-file-uploader";
+import { useIndustrialAnalisisForm } from "./hooks/use-industrial-analisis-form";
+
+import { Step7Content } from "./steps/step-7-archivos";
+import { Step1Content } from "./steps/step-1-datos-cliente";
+import { Step3Content } from "./steps/step-3-datos-aplicacion";
+import { Step5Content } from "./steps/step-5-dimensiones-cargas";
+import { Step4Content } from "./steps/step-4-equipos-electricos";
+import { Step2Content } from "./steps/step-2-descripcion-operacion";
+import { Step6Content } from "./steps/step-6-especificaciones-pasillo";
+
 import {
   FormularioIndustrialSchema,
   formularioIndustrialSchema,
 } from "./schemas";
-import { useIndustrialAnalisisForm } from "./hooks/use-industrial-analisis-form";
-import { useFileUploader } from "./hooks/use-file-uploader";
-import { FormHeader } from "./ui/form-header";
-import { FormNavigation } from "./ui/form-navigation";
+
 import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
 
-// Import all steps
-import { Step1Content } from "./steps/step-1-datos-cliente";
-import { Step2Content } from "./steps/step-2-descripcion-operacion";
-import { Step3Content } from "./steps/step-3-datos-aplicacion";
-import { Step4Content } from "./steps/step-4-equipos-electricos";
-import { Step5Content } from "./steps/step-5-dimensiones-cargas";
-import { Step6Content } from "./steps/step-6-especificaciones-pasillo";
-import { Step7Content } from "./steps/step-7-archivos";
-
-/**
- * FormularioIndustrialAnalisis - Main Form Component
- *
- * A multi-step form for creating/editing Industrial Analysis visits.
- * Fully modular architecture identical to FormularioCSSAnalisis.
- *
- * Features:
- * - 7-step wizard with free navigation
- * - Real-time validation per step
- * - Conditional fields (electrical equipment)
- * - Dynamic table (load dimensions)
- * - File upload with drag & drop
- * - Responsive design (mobile/tablet/desktop)
- * - Edit/Create modes with draft saving
- */
 export default function FormularioIndustrialAnalisis({
   customer,
   onBack,
@@ -73,6 +59,7 @@ export default function FormularioIndustrialAnalisis({
     currentStepConfig,
     isFirstStep,
     isLastStep,
+    shouldSkipStep4,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -157,6 +144,7 @@ export default function FormularioIndustrialAnalisis({
         progress={progress}
         completedSteps={completedSteps}
         onGoToStep={goToStep}
+        shouldSkipStep4={shouldSkipStep4}
       />
 
       {/* Form content */}

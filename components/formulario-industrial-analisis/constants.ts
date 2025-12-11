@@ -11,7 +11,7 @@ import {
 export const FORM_STEPS = [
   {
     number: 1,
-    title: "Datos del Cliente",
+    title: "Datos del cliente",
     description: "Información de contacto",
     icon: Building2,
     color: "primary" as const,
@@ -33,7 +33,7 @@ export const FORM_STEPS = [
   },
   {
     number: 2,
-    title: "Descripción Operación",
+    title: "Descripción operación",
     description: "Detalles de la operación",
     icon: FileText,
     color: "blue" as const,
@@ -41,7 +41,7 @@ export const FORM_STEPS = [
   },
   {
     number: 3,
-    title: "Datos Aplicación",
+    title: "Datos aplicación",
     description: "Información técnica",
     icon: Package,
     color: "amber" as const,
@@ -60,7 +60,7 @@ export const FORM_STEPS = [
   },
   {
     number: 4,
-    title: "Equipos Eléctricos",
+    title: "Equipos eléctricos",
     description: "Especificaciones eléctricas",
     icon: Zap,
     color: "violet" as const,
@@ -68,7 +68,7 @@ export const FORM_STEPS = [
   },
   {
     number: 5,
-    title: "Dimensiones Cargas",
+    title: "Dimensiones cargas",
     description: "Tabla de dimensiones",
     icon: Ruler,
     color: "emerald" as const,
@@ -76,7 +76,7 @@ export const FORM_STEPS = [
   },
   {
     number: 6,
-    title: "Especificaciones Pasillo",
+    title: "Especificaciones pasillo",
     description: "Medidas del pasillo",
     icon: Layout,
     color: "rose" as const,
@@ -84,7 +84,7 @@ export const FORM_STEPS = [
   },
   {
     number: 7,
-    title: "Archivos Adjuntos",
+    title: "Archivos adjuntos",
     description: "Fotos, videos y documentos",
     icon: Paperclip,
     color: "cyan" as const,

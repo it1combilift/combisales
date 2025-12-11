@@ -42,6 +42,7 @@ export function getDefaultValuesForNew(
 
     // Equipos eléctricos
     equiposElectricos: {
+      noAplica: false,
       tipoCorriente: null,
       voltaje: null,
       frecuencia: null,
@@ -118,13 +119,16 @@ export function getDefaultValuesForEdit(
       formulario.alimentacionDeseada || TipoAlimentacion.ELECTRICO,
 
     // Equipos eléctricos
-    equiposElectricos: formulario.equiposElectricos || {
-      tipoCorriente: null,
-      voltaje: null,
-      frecuencia: null,
-      amperaje: null,
-      temperaturaAmbiente: null,
-      horasTrabajoPorDia: null,
+    equiposElectricos: {
+      noAplica: formulario.equiposElectricos?.noAplica ?? false,
+      tipoCorriente: formulario.equiposElectricos?.tipoCorriente ?? null,
+      voltaje: formulario.equiposElectricos?.voltaje ?? null,
+      frecuencia: formulario.equiposElectricos?.frecuencia ?? null,
+      amperaje: formulario.equiposElectricos?.amperaje ?? null,
+      temperaturaAmbiente:
+        formulario.equiposElectricos?.temperaturaAmbiente ?? null,
+      horasTrabajoPorDia:
+        formulario.equiposElectricos?.horasTrabajoPorDia ?? null,
     },
 
     // Dimensiones cargas

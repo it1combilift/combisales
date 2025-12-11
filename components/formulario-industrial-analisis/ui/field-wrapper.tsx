@@ -1,10 +1,6 @@
 import { cn } from "@/lib/utils";
 import { FieldWrapperProps } from "../types";
 
-/**
- * Wrapper component for form fields with optional icon
- * Handles icon positioning and styling
- */
 export function FieldWrapper({
   children,
   icon: Icon,

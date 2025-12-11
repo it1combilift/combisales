@@ -164,14 +164,44 @@ export function useIndustrialAnalisisForm({
   }, [form, recalculateCompletedSteps]);
 
   // ==================== COMPUTED VALUES ====================
-  const progress = useMemo(
-    () => Math.round((completedSteps.size / FORM_STEPS.length) * 100),
-    [completedSteps]
-  );
+  /**
+   * Calcula el número de pasos requeridos
+   * Si alimentación no es ELECTRICO, Step 4 no cuenta
+   */
+  const requiredStepsCount = useMemo(() => {
+    const alimentacion = form.watch("alimentacionDeseada");
+    // Si no es eléctrico, son 6 pasos (excluye Step 4)
+    return alimentacion !== TipoAlimentacion.ELECTRICO
+      ? FORM_STEPS.length - 1
+      : FORM_STEPS.length;
+  }, [form]);
+
+  const progress = useMemo(() => {
+    const alimentacion = form.getValues("alimentacionDeseada");
+    const skipStep4 = alimentacion !== TipoAlimentacion.ELECTRICO;
+
+    // Si debemos saltar Step 4, no contarlo en completados
+    let effectiveCompleted = completedSteps.size;
+    if (skipStep4 && completedSteps.has(4)) {
+      effectiveCompleted--;
+    }
+
+    const totalSteps = skipStep4 ? FORM_STEPS.length - 1 : FORM_STEPS.length;
+    return Math.round((effectiveCompleted / totalSteps) * 100);
+  }, [completedSteps, form]);
 
   const allStepsComplete = useMemo(() => {
-    return completedSteps.size === FORM_STEPS.length;
-  }, [completedSteps]);
+    const alimentacion = form.getValues("alimentacionDeseada");
+    const skipStep4 = alimentacion !== TipoAlimentacion.ELECTRICO;
+
+    // Verificar que todos los pasos requeridos estén completos
+    for (let step = 1; step <= FORM_STEPS.length; step++) {
+      // Si debemos saltar Step 4, ignorarlo
+      if (step === 4 && skipStep4) continue;
+      if (!completedSteps.has(step)) return false;
+    }
+    return true;
+  }, [completedSteps, form]);
 
   const currentStepConfig = FORM_STEPS[currentStep - 1];
   const isFirstStep = currentStep === 1;
@@ -194,6 +224,46 @@ export function useIndustrialAnalisisForm({
     [form]
   );
 
+  // ==================== NAVIGATION HELPERS ====================
+  /**
+   * Determina si el Step 4 debe ser saltado
+   * El Step 4 (Equipos Eléctricos) solo aplica cuando alimentación es ELECTRICO
+   */
+  const shouldSkipStep4 = useCallback(() => {
+    const alimentacion = form.getValues("alimentacionDeseada");
+    return alimentacion !== TipoAlimentacion.ELECTRICO;
+  }, [form]);
+
+  /**
+   * Obtiene el siguiente paso considerando saltos
+   */
+  const getNextStep = useCallback(
+    (fromStep: number): number => {
+      const nextStep = fromStep + 1;
+      // Si el siguiente paso es 4 y debemos saltarlo, ir a 5
+      if (nextStep === 4 && shouldSkipStep4()) {
+        return 5;
+      }
+      return nextStep;
+    },
+    [shouldSkipStep4]
+  );
+
+  /**
+   * Obtiene el paso anterior considerando saltos
+   */
+  const getPrevStep = useCallback(
+    (fromStep: number): number => {
+      const prevStep = fromStep - 1;
+      // Si el paso anterior es 4 y debemos saltarlo, ir a 3
+      if (prevStep === 4 && shouldSkipStep4()) {
+        return 3;
+      }
+      return prevStep;
+    },
+    [shouldSkipStep4]
+  );
+
   // ==================== NAVIGATION ====================
   const handleNextStep = useCallback(async () => {
     const isValid = await validateStep(currentStep);
@@ -204,15 +274,17 @@ export function useIndustrialAnalisisForm({
     }
 
     if (currentStep < FORM_STEPS.length) {
-      setCurrentStep((prev) => prev + 1);
+      const nextStep = getNextStep(currentStep);
+      setCurrentStep(nextStep);
     }
-  }, [currentStep, validateStep]);
+  }, [currentStep, validateStep, getNextStep]);
 
   const handlePrevStep = useCallback(() => {
     if (currentStep > 1) {
-      setCurrentStep((prev) => prev - 1);
+      const prevStep = getPrevStep(currentStep);
+      setCurrentStep(prevStep);
     }
-  }, [currentStep]);
+  }, [currentStep, getPrevStep]);
 
   const goToStep = useCallback(
     async (step: number) => {
@@ -238,6 +310,18 @@ export function useIndustrialAnalisisForm({
       try {
         const formData = form.getValues();
 
+        // Determinar si los equipos eléctricos deben incluirse
+        const includeEquiposElectricos =
+          formData.alimentacionDeseada === TipoAlimentacion.ELECTRICO &&
+          !formData.equiposElectricos?.noAplica;
+
+        // Si noAplica está activo, enviar solo el campo noAplica
+        const equiposElectricosData = includeEquiposElectricos
+          ? formData.equiposElectricos
+          : formData.alimentacionDeseada === TipoAlimentacion.ELECTRICO
+          ? { noAplica: true } // Mantener el flag de noAplica
+          : undefined;
+
         const payload = {
           visitData: {
             customerId,
@@ -246,10 +330,7 @@ export function useIndustrialAnalisisForm({
           },
           formularioData: {
             ...formData,
-            equiposElectricos:
-              formData.alimentacionDeseada === TipoAlimentacion.ELECTRICO
-                ? formData.equiposElectricos
-                : undefined,
+            equiposElectricos: equiposElectricosData,
           },
         };
 
@@ -333,6 +414,7 @@ export function useIndustrialAnalisisForm({
     currentStepConfig,
     isFirstStep,
     isLastStep,
+    shouldSkipStep4,
 
     // Actions
     handleNextStep,

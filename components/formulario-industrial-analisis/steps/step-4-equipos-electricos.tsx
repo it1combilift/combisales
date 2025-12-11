@@ -1,6 +1,9 @@
-import { Zap } from "lucide-react";
+"use client";
+
+import { Zap, Ban } from "lucide-react";
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { AlertMessage } from "@/components/alert";
 import { TipoAlimentacion } from "@prisma/client";
 import { TipoCorriente, TIPO_CORRIENTE_LABELS } from "../types";
@@ -11,6 +14,7 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 
 import {
@@ -22,18 +26,19 @@ import {
 } from "@/components/ui/select";
 
 /**
- * Step 4: Equipos Eléctricos - Ultra Compact
+ * Step 4: Equipos Eléctricos
  */
 export function Step4Content({ form }: StepContentProps) {
   const alimentacion = form.watch("alimentacionDeseada");
+  const noAplica = form.watch("equiposElectricos.noAplica") ?? false;
 
   if (alimentacion !== TipoAlimentacion.ELECTRICO) {
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center py-8">
         <AlertMessage
           variant="info"
-          title="No se requieren especificaciones eléctricas"
-          description="Dado que la alimentación deseada no es eléctrica, no es necesario completar las especificaciones eléctricas."
+          title="Paso no aplicable"
+          description="Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puedes continuar al siguiente paso."
         />
       </div>
     );
@@ -42,16 +47,51 @@ export function Step4Content({ form }: StepContentProps) {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="hidden md:flex items-center gap-2 pb-2 border-b">
-        <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
-          <Zap className="size-3 text-primary" />
+      <div className="hidden md:flex items-center justify-between gap-2 pb-2 border-b">
+        <div className="flex items-center gap-2">
+          <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
+            <Zap className="size-3 text-primary" />
+          </div>
+          <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Especificaciones Eléctricas
+          </h3>
         </div>
-        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Especificaciones Eléctricas
-        </h3>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      {/* Toggle "No aplica" */}
+      <FormField
+        control={form.control}
+        name="equiposElectricos.noAplica"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border/60 bg-muted/30 p-3 sm:p-4 cols-span-2 sm:col-span-3">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-x-1.5">
+                <Ban className="size-3 text-muted-foreground" />
+                <FormLabel className="text-xs font-medium cursor-pointer text-pretty">
+                  No aplica
+                </FormLabel>
+              </div>
+              <FormDescription className="text-[10px] md:text-xs text-muted-foreground text-pretty max-w-sm border-l-2 border-muted-foreground/30 pl-2">
+                Activa esta opción si las especificaciones eléctricas no son
+                aplicables para esta visita.
+              </FormDescription>
+            </div>
+            <FormControl>
+              <Switch
+                checked={field.value ?? false}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+
+      {/* Campos de especificaciones (deshabilitados si noAplica) */}
+      <div
+        className={`grid grid-cols-2 sm:grid-cols-3 gap-2 transition-opacity duration-200 ${
+          noAplica ? "opacity-50 pointer-events-none" : ""
+        }`}
+      >
         {/* Tipo de corriente */}
         <FormField
           control={form.control}

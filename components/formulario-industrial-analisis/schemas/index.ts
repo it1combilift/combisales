@@ -57,6 +57,7 @@ export type EspecificacionesPasillo = z.infer<
 
 // ==================== EQUIPOS ELECTRICOS SCHEMA ====================
 export const equiposElectricosSchema = z.object({
+  noAplica: z.boolean().optional().default(false),
   tipoCorriente: z.enum(["MONOFASICA", "TRIFASICA"]).nullable().optional(),
   voltaje: z.number().positive().nullable().optional(),
   frecuencia: z.number().positive().nullable().optional(),
@@ -143,6 +144,7 @@ export const formularioIndustrialSchema = z
     archivos: z.array(archivoSubidoSchema).default([]),
   })
   .superRefine((data, ctx) => {
+    // Equipos eléctricos solo se validan si alimentación es ELECTRICO y noAplica es false
     if (data.alimentacionDeseada === TipoAlimentacion.ELECTRICO) {
       if (!data.equiposElectricos) {
         ctx.addIssue({
@@ -152,6 +154,7 @@ export const formularioIndustrialSchema = z
           path: ["equiposElectricos"],
         });
       }
+      // Si noAplica está marcado, no se requieren otros campos
     }
 
     // Validar que porcentajes sumen 100%
