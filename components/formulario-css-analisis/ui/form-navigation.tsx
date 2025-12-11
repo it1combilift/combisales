@@ -79,7 +79,7 @@ export function FormNavigation({
                     {isSavingChanges ? (
                       <Spinner variant="ellipsis" />
                     ) : (
-                      <Save className="size-4" />
+                      <Save className="size-3.5" />
                     )}
                     {!isSavingChanges && (
                       <span className="hidden sm:inline text-xs font-medium">
@@ -102,7 +102,7 @@ export function FormNavigation({
                       <Spinner variant="ellipsis" />
                     ) : (
                       <>
-                        <Send className="size-4" />
+                        <Send className="size-3.5" />
                         <span className="hidden sm:inline text-xs font-medium">
                           Enviar
                         </span>
@@ -117,7 +117,7 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveDraft}
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={isDisabled}
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
@@ -127,7 +127,7 @@ export function FormNavigation({
                     {isSavingDraft ? (
                       <Spinner variant="ellipsis" />
                     ) : (
-                      <FileDown className="size-4" />
+                      <FileDown className="size-3.5" />
                     )}
                     <span className="hidden sm:inline text-xs font-medium">
                       Borrador
@@ -148,7 +148,7 @@ export function FormNavigation({
                       <Spinner variant="ellipsis" />
                     ) : (
                       <>
-                        <Send className="size-4" />
+                        <Send className="size-3.5" />
                         <span className="text-xs font-medium hidden sm:inline">
                           Enviar
                         </span>
@@ -166,7 +166,7 @@ export function FormNavigation({
               disabled={isDisabled}
             >
               <span className="text-xs font-medium">Siguiente</span>
-              <ArrowRight className="size-4" />
+              <ArrowRight className="size-3.5" />
             </Button>
           )}
         </div>

@@ -119,7 +119,7 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveDraft}
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={isDisabled}
                     className="h-8 px-2"
                     title={
                       !allStepsComplete
@@ -128,11 +128,11 @@ export function FormNavigation({
                     }
                   >
                     {isSavingDraft ? (
-                      <Spinner variant="ellipsis" className="size-3" />
+                      <Spinner variant="ellipsis" />
                     ) : (
                       <>
                         <FileDown className="size-3.5" />
-                        <span className="hidden sm:inline text-xs ml-1">
+                        <span className="hidden sm:inline text-xs">
                           Borrador
                         </span>
                       </>
@@ -155,9 +155,7 @@ export function FormNavigation({
                     ) : (
                       <>
                         <Send className="size-3.5" />
-                        <span className="text-xs ml-1 hidden sm:inline">
-                          Enviar
-                        </span>
+                        <span className="text-xs hidden sm:inline">Enviar</span>
                       </>
                     )}
                   </Button>
