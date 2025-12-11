@@ -108,6 +108,7 @@ export interface Visit {
   };
   formularioCSSAnalisis?: FormularioCSSAnalisis;
   formularioIndustrialAnalisis?: FormularioIndustrialAnalisis;
+  formularioLogisticaAnalisis?: FormularioLogisticaAnalisis;
 }
 
 export interface VisitWithDetails extends Visit {
@@ -232,6 +233,83 @@ export interface FormularioIndustrialAnalisis {
     grosorPilarColumna?: number;
     alturaUltimoNivel?: number;
     alturaMaximaInteriorEdificio?: number;
+  };
+  // 7. Archivos adjuntos
+  archivos?: FormularioArchivo[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ==================== FORMULARIO LOGÍSTICA ANALYSIS INTERFACE ====================
+export interface FormularioLogisticaAnalisis {
+  id: string;
+  visitId: string;
+  // 1. Datos del cliente
+  razonSocial: string;
+  personaContacto: string;
+  email: string;
+  direccion: string;
+  localidad: string;
+  provinciaEstado: string;
+  pais: string;
+  codigoPostal: string;
+  website?: string | null;
+  numeroIdentificacionFiscal: string;
+  distribuidor?: string | null;
+  contactoDistribuidor?: string | null;
+  fechaCierre?: Date | null;
+  // 2. Descripción operación
+  notasOperacion: string;
+  tieneRampas: boolean;
+  notasRampas?: string | null;
+  tienePasosPuertas: boolean;
+  notasPasosPuertas?: string | null;
+  tieneRestricciones: boolean;
+  notasRestricciones?: string | null;
+  alturaMaximaNave?: number | null;
+  anchoPasilloActual?: number | null;
+  superficieTrabajo?: number | null;
+  condicionesSuelo?: string | null;
+  tipoOperacion?: string | null;
+  // 3. Datos aplicación
+  descripcionProducto: string;
+  alturaUltimoNivelEstanteria?: number | null;
+  maximaAlturaElevacion?: number | null;
+  pesoCargaMaximaAltura?: number | null;
+  pesoCargaPrimerNivel?: number | null;
+  dimensionesAreaTrabajoAncho?: number | null;
+  dimensionesAreaTrabajoFondo?: number | null;
+  turnosTrabajo?: number | null;
+  fechaEstimadaDefinicion?: Date | null;
+  alimentacionDeseada: string;
+  // 4. Equipos eléctricos (JSON)
+  equiposElectricos?: {
+    noAplica?: boolean;
+    tipoCorriente?: string;
+    voltaje?: number;
+    frecuencia?: number;
+    amperaje?: number;
+    temperaturaAmbiente?: number;
+    horasTrabajoPorDia?: number;
+  } | null;
+  // 5. Dimensiones cargas (JSON array)
+  dimensionesCargas: Array<{
+    id: string;
+    producto: string;
+    largo?: number | null;
+    fondo?: number | null;
+    alto?: number | null;
+    peso?: number | null;
+    porcentaje?: number | null;
+  }>;
+  // 6. Pasillo actual (JSON)
+  pasilloActual: {
+    distanciaEntreEstanterias?: number | null;
+    distanciaEntreProductos?: number | null;
+    anchoPasilloDisponible?: number | null;
+    tipoEstanterias?: string | null;
+    nivelEstanterias?: number | null;
+    alturaMaximaEstanteria?: number | null;
   };
   // 7. Archivos adjuntos
   archivos?: FormularioArchivo[];
@@ -377,6 +455,48 @@ export interface CreateFormularioIndustrialData {
   archivos?: ArchivoSubido[];
 }
 
+export interface CreateFormularioLogisticaData {
+  razonSocial: string;
+  personaContacto: string;
+  email: string;
+  direccion: string;
+  localidad: string;
+  provinciaEstado: string;
+  pais: string;
+  codigoPostal: string;
+  website?: string;
+  numeroIdentificacionFiscal: string;
+  distribuidor?: string;
+  contactoDistribuidor?: string;
+  fechaCierre?: Date;
+  notasOperacion: string;
+  tieneRampas: boolean;
+  notasRampas?: string;
+  tienePasosPuertas: boolean;
+  notasPasosPuertas?: string;
+  tieneRestricciones: boolean;
+  notasRestricciones?: string;
+  alturaMaximaNave?: number;
+  anchoPasilloActual?: number;
+  superficieTrabajo?: number;
+  condicionesSuelo?: string;
+  tipoOperacion?: string;
+  descripcionProducto: string;
+  alturaUltimoNivelEstanteria?: number;
+  maximaAlturaElevacion?: number;
+  pesoCargaMaximaAltura?: number;
+  pesoCargaPrimerNivel?: number;
+  dimensionesAreaTrabajoAncho?: number;
+  dimensionesAreaTrabajoFondo?: number;
+  turnosTrabajo?: number;
+  fechaEstimadaDefinicion?: Date;
+  alimentacionDeseada: string;
+  equiposElectricos?: any;
+  dimensionesCargas: any;
+  pasilloActual: any;
+  archivos?: ArchivoSubido[];
+}
+
 export interface UpdateVisitData {
   status?: VisitStatus;
   visitDate?: Date;
@@ -455,7 +575,7 @@ export const FORM_OPTIONS = [
     type: VisitFormType.ANALISIS_LOGISTICA,
     icon: Forklift,
     description: "Análisis de operaciones logísticas y almacenamiento.",
-    available: false,
+    available: true,
   },
   {
     type: VisitFormType.ANALISIS_STRADDLE_CARRIER,

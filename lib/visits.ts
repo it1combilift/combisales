@@ -4,6 +4,7 @@ import { ArchivoSubido } from "@/schemas/visits";
 import {
   CreateFormularioCSSData,
   CreateFormularioIndustrialData,
+  CreateFormularioLogisticaData,
 } from "@/interfaces/visits";
 
 // ==================== PRISMA INCLUDES ====================
@@ -25,6 +26,11 @@ export const VISIT_INCLUDE = {
     },
   },
   formularioIndustrialAnalisis: {
+    include: {
+      archivos: true,
+    },
+  },
+  formularioLogisticaAnalisis: {
     include: {
       archivos: true,
     },
@@ -248,6 +254,137 @@ export function buildFormularioIndustrialCreate(
     ? {
         archivos: {
           create: transformArchivosIndustrial(data.archivos),
+        },
+      }
+    : {};
+
+  return {
+    ...transformedData,
+    ...archivosCreate,
+  };
+}
+
+// ==================== FORMULARIO LOGÍSTICA DATA HELPERS ====================
+/**
+ * Transform FormularioLogisticaData to Prisma create/update format
+ */
+export function transformFormularioLogisticaData(
+  data: CreateFormularioLogisticaData
+) {
+  return {
+    razonSocial: data.razonSocial,
+    personaContacto: data.personaContacto,
+    email: data.email,
+    direccion: data.direccion,
+    localidad: data.localidad,
+    provinciaEstado: data.provinciaEstado,
+    pais: data.pais,
+    codigoPostal: data.codigoPostal,
+    website: data.website || null,
+    numeroIdentificacionFiscal: data.numeroIdentificacionFiscal,
+    distribuidor: data.distribuidor || null,
+    contactoDistribuidor: data.contactoDistribuidor || null,
+    fechaCierre: data.fechaCierre || null,
+    notasOperacion: data.notasOperacion,
+    tieneRampas: data.tieneRampas || false,
+    notasRampas: data.notasRampas || null,
+    tienePasosPuertas: data.tienePasosPuertas || false,
+    notasPasosPuertas: data.notasPasosPuertas || null,
+    tieneRestricciones: data.tieneRestricciones || false,
+    notasRestricciones: data.notasRestricciones || null,
+    alturaMaximaNave: data.alturaMaximaNave || null,
+    anchoPasilloActual: data.anchoPasilloActual || null,
+    superficieTrabajo: data.superficieTrabajo || null,
+    condicionesSuelo: data.condicionesSuelo || null,
+    tipoOperacion: data.tipoOperacion || null,
+    descripcionProducto: data.descripcionProducto,
+    alturaUltimoNivelEstanteria: data.alturaUltimoNivelEstanteria || null,
+    maximaAlturaElevacion: data.maximaAlturaElevacion || null,
+    pesoCargaMaximaAltura: data.pesoCargaMaximaAltura || null,
+    pesoCargaPrimerNivel: data.pesoCargaPrimerNivel || null,
+    dimensionesAreaTrabajoAncho: data.dimensionesAreaTrabajoAncho || null,
+    dimensionesAreaTrabajoFondo: data.dimensionesAreaTrabajoFondo || null,
+    turnosTrabajo: data.turnosTrabajo || null,
+    fechaEstimadaDefinicion: data.fechaEstimadaDefinicion || null,
+    alimentacionDeseada: data.alimentacionDeseada as any,
+    equiposElectricos: data.equiposElectricos || null,
+    dimensionesCargas: data.dimensionesCargas,
+    pasilloActual: data.pasilloActual,
+  };
+}
+
+/**
+ * Transform archivos array for Logística to Prisma create format
+ */
+function transformArchivosLogistica(archivos: ArchivoSubido[]) {
+  return archivos.map((archivo) => {
+    const fileExtension =
+      archivo.nombre.split(".").pop()?.toLowerCase() || "unknown";
+    const formato = archivo.formato || fileExtension;
+
+    return {
+      nombre: archivo.nombre,
+      tipoArchivo: archivo.tipoArchivo,
+      mimeType: archivo.mimeType,
+      tamanio: archivo.tamanio,
+      cloudinaryId: archivo.cloudinaryId,
+      cloudinaryUrl: archivo.cloudinaryUrl,
+      cloudinaryType: archivo.cloudinaryType,
+      ancho: archivo.ancho,
+      alto: archivo.alto,
+      duracion: archivo.duracion,
+      formato: formato,
+    };
+  });
+}
+
+/**
+ * Build Prisma upsert operation for FormularioLogisticaAnalisis
+ */
+export function buildFormularioLogisticaUpsert(
+  data: CreateFormularioLogisticaData
+) {
+  const transformedData = transformFormularioLogisticaData(data);
+
+  const newArchivos = data.archivos?.filter(
+    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl
+  );
+
+  const archivosCreate = newArchivos?.length
+    ? {
+        archivos: {
+          createMany: {
+            data: transformArchivosLogistica(newArchivos),
+            skipDuplicates: true,
+          },
+        },
+      }
+    : {};
+
+  return {
+    create: {
+      ...transformedData,
+      ...archivosCreate,
+    },
+    update: {
+      ...transformedData,
+      ...archivosCreate,
+    },
+  };
+}
+
+/**
+ * Build Prisma create operation for new visit with FormularioLogisticaAnalisis
+ */
+export function buildFormularioLogisticaCreate(
+  data: CreateFormularioLogisticaData
+) {
+  const transformedData = transformFormularioLogisticaData(data);
+
+  const archivosCreate = data.archivos?.length
+    ? {
+        archivos: {
+          create: transformArchivosLogistica(data.archivos),
         },
       }
     : {};

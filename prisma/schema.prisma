@@ -263,6 +263,7 @@ model Visit {
   user                         User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
   formularioCSSAnalisis        FormularioCSSAnalisis?
   formularioIndustrialAnalisis FormularioIndustrialAnalisis?
+  formularioLogisticaAnalisis  FormularioLogisticaAnalisis?
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -435,6 +436,106 @@ model FormularioArchivoIndustrial {
   formato  String // jpg, png, pdf, mp4, etc.
 
   formulario FormularioIndustrialAnalisis @relation(fields: [formularioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([formularioId])
+  @@index([tipoArchivo])
+}
+
+// ==================== FORMULARIO LOGÍSTICA ANALYSIS MODEL ====================
+// Formulario específico de Análisis Logística
+model FormularioLogisticaAnalisis {
+  id      String @id @default(cuid())
+  visitId String @unique
+
+  // 1. Datos del cliente
+  razonSocial                String
+  personaContacto            String
+  email                      String
+  direccion                  String
+  localidad                  String
+  provinciaEstado            String
+  pais                       String
+  codigoPostal               String
+  website                    String?
+  numeroIdentificacionFiscal String
+  distribuidor               String?
+  contactoDistribuidor       String?
+  fechaCierre                DateTime?
+
+  // 2. Descripción operación
+  notasOperacion     String  @db.Text
+  tieneRampas        Boolean @default(false)
+  notasRampas        String? @db.Text
+  tienePasosPuertas  Boolean @default(false)
+  notasPasosPuertas  String? @db.Text
+  tieneRestricciones Boolean @default(false)
+  notasRestricciones String? @db.Text
+  alturaMaximaNave   Float?
+  anchoPasilloActual Float?
+  superficieTrabajo  Float?
+  condicionesSuelo   String?
+  tipoOperacion      String? // Almacenamiento, Cross-docking, Picking, etc.
+
+  // 3. Datos aplicación
+  descripcionProducto         String           @db.Text
+  alturaUltimoNivelEstanteria Float?
+  maximaAlturaElevacion       Float?
+  pesoCargaMaximaAltura       Float?
+  pesoCargaPrimerNivel        Float?
+  dimensionesAreaTrabajoAncho Float?
+  dimensionesAreaTrabajoFondo Float?
+  turnosTrabajo               Int?
+  fechaEstimadaDefinicion     DateTime?
+  alimentacionDeseada         TipoAlimentacion
+
+  // 4. Equipos eléctricos (JSON object with tipoCorriente, voltaje, frecuencia, etc.)
+  // Solo aplica si alimentacionDeseada == ELECTRICO
+  equiposElectricos Json?
+
+  // 5. Dimensiones cargas (JSON array of DimensionCarga objects)
+  // {producto, ancho, fondo, alto, peso, porcentaje}[]
+  dimensionesCargas Json
+
+  // 6. Pasillo actual (JSON object with distanciaEntreEstanterias, distanciaEntreProductos, etc.)
+  pasilloActual Json
+
+  // 7. Archivos adjuntos
+  archivos FormularioArchivoLogistica[]
+
+  visit Visit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([visitId])
+}
+
+// ==================== ARCHIVOS DEL FORMULARIO LOGÍSTICA ====================
+// Modelo para almacenar metadatos de archivos subidos a Cloudinary para Logística
+model FormularioArchivoLogistica {
+  id           String @id @default(cuid())
+  formularioId String
+
+  // Información del archivo
+  nombre      String // Nombre original del archivo
+  tipoArchivo TipoArchivo
+  mimeType    String // application/pdf, image/jpeg, video/mp4, etc.
+  tamanio     Int // Tamaño en bytes
+
+  // Datos de Cloudinary
+  cloudinaryId   String @unique // public_id de Cloudinary
+  cloudinaryUrl  String // URL segura del archivo
+  cloudinaryType String // image, video, raw (para documentos)
+
+  // Metadatos adicionales
+  ancho    Int? // Solo para imágenes/videos
+  alto     Int? // Solo para imágenes/videos
+  duracion Float? // Solo para videos (en segundos)
+  formato  String // jpg, png, pdf, mp4, etc.
+
+  formulario FormularioLogisticaAnalisis @relation(fields: [formularioId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 

@@ -17,6 +17,7 @@ import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import {
   CSSDetail,
   IndustrialDetail,
+  LogisticaDetail,
   StatCard,
 } from "@/components/visit-detail";
 
@@ -113,6 +114,8 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
         return visit.formularioCSSAnalisis;
       case VisitFormType.ANALISIS_INDUSTRIAL:
         return visit.formularioIndustrialAnalisis;
+      case VisitFormType.ANALISIS_LOGISTICA:
+        return visit.formularioLogisticaAnalisis;
       default:
         return null;
     }
@@ -130,6 +133,10 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
       case VisitFormType.ANALISIS_INDUSTRIAL:
         return visit.formularioIndustrialAnalisis ? (
           <IndustrialDetail formulario={visit.formularioIndustrialAnalisis} />
+        ) : null;
+      case VisitFormType.ANALISIS_LOGISTICA:
+        return visit.formularioLogisticaAnalisis ? (
+          <LogisticaDetail formulario={visit.formularioLogisticaAnalisis} />
         ) : null;
       default:
         return (

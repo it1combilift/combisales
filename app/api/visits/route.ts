@@ -7,11 +7,13 @@ import {
   VISIT_INCLUDE,
   buildFormularioCreate,
   buildFormularioIndustrialCreate,
+  buildFormularioLogisticaCreate,
 } from "@/lib/visits";
 import {
   CreateVisitData,
   CreateFormularioCSSData,
   CreateFormularioIndustrialData,
+  CreateFormularioLogisticaData,
 } from "@/interfaces/visits";
 
 import {
@@ -68,7 +70,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { visitData, formularioData } = body as {
       visitData: CreateVisitData;
-      formularioData?: CreateFormularioCSSData | CreateFormularioIndustrialData;
+      formularioData?:
+        | CreateFormularioCSSData
+        | CreateFormularioIndustrialData
+        | CreateFormularioLogisticaData;
     };
 
     if (!visitData.customerId || !visitData.formType) {
@@ -86,7 +91,8 @@ export async function POST(req: NextRequest) {
     // Validate form data based on formType
     if (
       (visitData.formType === VisitFormType.ANALISIS_CSS ||
-        visitData.formType === VisitFormType.ANALISIS_INDUSTRIAL) &&
+        visitData.formType === VisitFormType.ANALISIS_INDUSTRIAL ||
+        visitData.formType === VisitFormType.ANALISIS_LOGISTICA) &&
       !formularioData
     ) {
       return badRequestResponse("FORM_DATA");
@@ -110,6 +116,17 @@ export async function POST(req: NextRequest) {
         formularioIndustrialAnalisis: {
           create: buildFormularioIndustrialCreate(
             formularioData as CreateFormularioIndustrialData
+          ),
+        },
+      };
+    } else if (
+      visitData.formType === VisitFormType.ANALISIS_LOGISTICA &&
+      formularioData
+    ) {
+      formDataCreate = {
+        formularioLogisticaAnalisis: {
+          create: buildFormularioLogisticaCreate(
+            formularioData as CreateFormularioLogisticaData
           ),
         },
       };
