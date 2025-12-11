@@ -69,7 +69,7 @@ export function Step6Content({ form }: StepContentProps) {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-2 pb-2 border-b">
+      <div className="hidden md:flex items-center gap-2 pb-2 border-b">
         <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
           <Ruler className="size-3 text-primary" />
         </div>

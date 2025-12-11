@@ -240,7 +240,6 @@ export function useIndustrialAnalisisForm({
   const getNextStep = useCallback(
     (fromStep: number): number => {
       const nextStep = fromStep + 1;
-      // Si el siguiente paso es 4 y debemos saltarlo, ir a 5
       if (nextStep === 4 && shouldSkipStep4()) {
         return 5;
       }
@@ -255,7 +254,6 @@ export function useIndustrialAnalisisForm({
   const getPrevStep = useCallback(
     (fromStep: number): number => {
       const prevStep = fromStep - 1;
-      // Si el paso anterior es 4 y debemos saltarlo, ir a 3
       if (prevStep === 4 && shouldSkipStep4()) {
         return 3;
       }

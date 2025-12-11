@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Check, Ban } from "lucide-react";
+import { Check } from "lucide-react";
 import { FORM_STEPS } from "../constants";
 import { FormHeaderProps } from "../types";
 import { Progress } from "@/components/ui/progress";
@@ -21,6 +21,11 @@ export function FormHeader({
   const currentColors = getStepColorClasses(currentStepConfig.color);
   const StepIcon = currentStepConfig.icon;
   const skipStep4 = shouldSkipStep4?.() ?? false;
+
+  // Filtrar los pasos visibles (excluir Step 4 si no aplica)
+  const visibleSteps = skipStep4
+    ? FORM_STEPS.filter((step) => step.number !== 4)
+    : FORM_STEPS;
 
   return (
     <header className="shrink-0 px-2 sm:px-4 py-2 bg-muted/20 border-b">
@@ -57,46 +62,33 @@ export function FormHeader({
 
       {/* Compact stepper */}
       <div className="flex items-center justify-center gap-0.5 mt-2 w-full">
-        {FORM_STEPS.map((step, idx) => {
+        {visibleSteps.map((step, idx) => {
           const isCompleted = completedSteps.has(step.number);
           const isCurrent = currentStep === step.number;
           const Icon = step.icon;
-
-          // Check if this step should be skipped (Step 4 when not electric)
-          const isSkipped = step.number === 4 && skipStep4;
 
           return (
             <div key={step.number} className="flex items-center">
               <button
                 type="button"
-                onClick={() => !isSkipped && onGoToStep(step.number)}
-                disabled={isSkipped}
+                onClick={() => onGoToStep(step.number)}
                 className={cn(
-                  "relative flex items-center justify-center transition-all duration-200",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5",
-                  isSkipped ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+                  "relative flex items-center justify-center transition-all duration-200 cursor-pointer",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5"
                 )}
-                title={
-                  isSkipped
-                    ? "No aplica (alimentación no eléctrica)"
-                    : step.title
-                }
+                title={step.title}
               >
                 <div
                   className={cn(
                     "size-6 sm:size-7 rounded-md flex items-center justify-center transition-all duration-200",
-                    isSkipped
-                      ? "bg-muted/40 text-muted-foreground/50"
-                      : isCurrent
+                    isCurrent
                       ? "bg-primary text-primary-foreground shadow-sm"
                       : isCompleted
                       ? "bg-primary/15 text-primary"
                       : "bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
-                  {isSkipped ? (
-                    <Ban className="size-3" strokeWidth={2} />
-                  ) : isCompleted && !isCurrent ? (
+                  {isCompleted && !isCurrent ? (
                     <Check className="size-3" strokeWidth={2.5} />
                   ) : (
                     <Icon className="size-3" />
@@ -104,14 +96,12 @@ export function FormHeader({
                 </div>
               </button>
               {/* Connector line */}
-              {idx < FORM_STEPS.length - 1 && (
+              {idx < visibleSteps.length - 1 && (
                 <div
                   className={cn(
                     "w-2 sm:w-4 h-0.5 mx-0.5",
-                    isSkipped || (idx === 3 && skipStep4)
-                      ? "bg-muted/40"
-                      : completedSteps.has(step.number) &&
-                        completedSteps.has(FORM_STEPS[idx + 1]?.number)
+                    completedSteps.has(step.number) &&
+                      completedSteps.has(visibleSteps[idx + 1]?.number)
                       ? "bg-primary/40"
                       : "bg-border"
                   )}

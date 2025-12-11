@@ -71,7 +71,7 @@ export function Step4Content({ form }: StepContentProps) {
                   No aplica
                 </FormLabel>
               </div>
-              <FormDescription className="text-[10px] md:text-xs text-muted-foreground text-pretty max-w-sm border-l-2 border-muted-foreground/30 pl-2">
+              <FormDescription className="text-xs text-muted-foreground text-pretty max-w-sm border-l-2 border-muted-foreground/30 pl-2">
                 Activa esta opción si las especificaciones eléctricas no son
                 aplicables para esta visita.
               </FormDescription>
@@ -80,6 +80,7 @@ export function Step4Content({ form }: StepContentProps) {
               <Switch
                 checked={field.value ?? false}
                 onCheckedChange={field.onChange}
+                className="cursor-pointer"
               />
             </FormControl>
           </FormItem>
