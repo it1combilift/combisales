@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Building2 } from "lucide-react";
 import { EmptyCard } from "../empty-card";
+import { useRouter } from "next/navigation";
 import { AccountCard } from "./accounts-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,7 @@ export function AccountsTable({
   setColumnFilters: setExternalColumnFilters,
 }: AccountsTableProps) {
   const isMobile = useIsMobile();
+  const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useQueryState(
     "search",
@@ -297,6 +299,10 @@ export function AccountsTable({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
+                    onClick={() =>
+                      router.push(`/dashboard/projects/visits/${data[row.index].id}`)
+                    }
+                    className="cursor-pointer"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

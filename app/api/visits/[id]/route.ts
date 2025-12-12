@@ -101,7 +101,6 @@ export async function PUT(
       return notFoundResponse("VISIT");
     }
 
-    // Build form data based on type
     let formDataUpdate = {};
     if (
       existingVisit.formType === VisitFormType.ANALISIS_CSS &&

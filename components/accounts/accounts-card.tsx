@@ -43,7 +43,10 @@ export const AccountCard = ({
     `/dashboard/projects/visits/${accountId}`;
 
   return (
-    <Card className="p-4 hover:shadow-lg transition-all duration-200 active:scale-[0.98] border-l-4 border-l-primary/20">
+    <Card
+      className="p-4 hover:shadow-lg transition-all duration-200 active:scale-[0.98] border-l-4 border-l-primary/20 cursor-pointer"
+      onClick={() => router.push(ACCOUNT_ID_URL(account.id))}
+    >
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
