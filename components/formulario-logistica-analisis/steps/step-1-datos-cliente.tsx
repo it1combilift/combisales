@@ -41,7 +41,7 @@ function SectionHeader({
   title: string;
 }) {
   return (
-    <div className="flex items-center gap-1.5 pb-1.5 border-b border-border/40 mb-3">
+    <div className="hidden md:flex items-center gap-1.5 pb-1.5 border-b border-border/40 mb-3">
       <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
         <Icon className="size-3 text-primary" />
       </div>

@@ -40,7 +40,7 @@ function SectionHeader({
   title: string;
 }) {
   return (
-    <div className="flex items-center gap-1.5 pb-1.5 border-b border-border/40 mb-3">
+    <div className="hidden md:flex items-center gap-1.5 pb-1.5 border-b border-border/40 mb-3">
       <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
         <Icon className="size-3 text-primary" />
       </div>
@@ -222,9 +222,10 @@ export function Step2Content({ form }: StepContentProps) {
       {/* ==================== DATOS DE LA NAVE ==================== */}
       <section>
         <SectionHeader icon={Warehouse} title="Datos de la Nave" />
-        <div className="grid grid-cols-12 gap-x-2 gap-y-3">
-          {/* Altura máxima nave */}
-          <div className="col-span-6 sm:col-span-4 lg:col-span-3">
+        <div className="space-y-4">
+          {/* Row 1: Dimensiones principales */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {/* Altura máxima nave */}
             <FormField
               control={form.control}
               name="alturaMaximaNave"
@@ -253,10 +254,8 @@ export function Step2Content({ form }: StepContentProps) {
                 </FormItem>
               )}
             />
-          </div>
 
-          {/* Ancho pasillo actual */}
-          <div className="col-span-6 sm:col-span-4 lg:col-span-3">
+            {/* Ancho pasillo actual */}
             <FormField
               control={form.control}
               name="anchoPasilloActual"
@@ -285,15 +284,13 @@ export function Step2Content({ form }: StepContentProps) {
                 </FormItem>
               )}
             />
-          </div>
 
-          {/* Superficie de trabajo */}
-          <div className="col-span-6 sm:col-span-4 lg:col-span-3">
+            {/* Superficie de trabajo */}
             <FormField
               control={form.control}
               name="superficieTrabajo"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="col-span-2 sm:col-span-1">
                   <FormLabel className="text-[11px] font-medium flex items-center gap-1">
                     <Layers className="size-3 text-muted-foreground" />
                     Superficie (m²)
@@ -319,8 +316,9 @@ export function Step2Content({ form }: StepContentProps) {
             />
           </div>
 
-          {/* Tipo operación */}
-          <div className="col-span-6 sm:col-span-6 lg:col-span-3">
+          {/* Row 2: Tipo operación y Condiciones suelo */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {/* Tipo operación */}
             <FormField
               control={form.control}
               name="tipoOperacion"
@@ -334,7 +332,7 @@ export function Step2Content({ form }: StepContentProps) {
                     defaultValue={field.value || undefined}
                   >
                     <FormControl>
-                      <SelectTrigger className="h-9 text-sm">
+                      <SelectTrigger className="h-9 text-sm w-full">
                         <SelectValue placeholder="Seleccionar..." />
                       </SelectTrigger>
                     </FormControl>
@@ -354,10 +352,8 @@ export function Step2Content({ form }: StepContentProps) {
                 </FormItem>
               )}
             />
-          </div>
 
-          {/* Condiciones suelo */}
-          <div className="col-span-12 sm:col-span-6">
+            {/* Condiciones suelo */}
             <FormField
               control={form.control}
               name="condicionesSuelo"
