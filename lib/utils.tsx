@@ -67,3 +67,13 @@ export function getRoleBadge(role: Role) {
     </Badge>
   );
 }
+
+export function getFormTypeName(formType: string): string {
+  const names: Record<string, string> = {
+    ANALISIS_CSS: "Análisis CSS",
+    ANALISIS_INDUSTRIAL: "Análisis Industrial",
+    ANALISIS_LOGISTICA: "Análisis Logística",
+    ANALISIS_STRADDLE_CARRIER: "Análisis Straddle Carrier",
+  };
+  return names[formType] || formType;
+}

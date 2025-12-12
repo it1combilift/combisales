@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
+import { VisitEmailData } from "@/interfaces/email";
 import { VisitFormType, VisitStatus } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 import {
   VISIT_INCLUDE,
   buildFormularioCreate,
@@ -10,6 +12,7 @@ import {
   buildFormularioLogisticaCreate,
   buildFormularioStraddleCarrierCreate,
 } from "@/lib/visits";
+
 import {
   CreateVisitData,
   CreateFormularioCSSData,
@@ -27,6 +30,11 @@ import {
   serverErrorResponse,
   createSuccessResponse,
 } from "@/lib/api-response";
+
+import {
+  sendVisitCompletedNotification,
+  shouldSendVisitNotification,
+} from "@/lib/visit-notifications";
 
 /**
  * GET /api/visits?customerId=xxx
@@ -91,7 +99,6 @@ export async function POST(req: NextRequest) {
       return notFoundResponse("CUSTOMER");
     }
 
-    // Validate form data based on formType
     if (
       (visitData.formType === VisitFormType.ANALISIS_CSS ||
         visitData.formType === VisitFormType.ANALISIS_INDUSTRIAL ||
@@ -102,7 +109,6 @@ export async function POST(req: NextRequest) {
       return badRequestResponse("FORM_DATA");
     }
 
-    // Build form data based on type
     let formDataCreate = {};
     if (visitData.formType === VisitFormType.ANALISIS_CSS && formularioData) {
       formDataCreate = {
@@ -158,6 +164,58 @@ export async function POST(req: NextRequest) {
       },
       include: VISIT_INCLUDE,
     });
+
+    const finalStatus = visitData.status || VisitStatus.COMPLETADA;
+    if (shouldSendVisitNotification(finalStatus) && formularioData) {
+      const archivos =
+        (formularioData as CreateFormularioCSSData).archivos || [];
+
+      const emailData: VisitEmailData = {
+        razonSocial:
+          (formularioData as CreateFormularioCSSData).razonSocial ||
+          customer.accountName,
+        personaContacto:
+          (formularioData as CreateFormularioCSSData).personaContacto || "",
+        email: (formularioData as CreateFormularioCSSData).email || "",
+        direccion: (formularioData as CreateFormularioCSSData).direccion || "",
+        localidad: (formularioData as CreateFormularioCSSData).localidad || "",
+        provinciaEstado:
+          (formularioData as CreateFormularioCSSData).provinciaEstado || "",
+        pais: (formularioData as CreateFormularioCSSData).pais || "",
+        descripcionProducto:
+          (formularioData as CreateFormularioCSSData).descripcionProducto || "",
+        formType: visitData.formType,
+        visitDate: visitData.visitDate || new Date(),
+        archivos,
+        vendedor: visit.user
+          ? {
+              name: visit.user.name || "Sin nombre",
+              email: visit.user.email || "",
+            }
+          : undefined,
+      };
+
+      sendVisitCompletedNotification({ visitData: emailData })
+        .then((result) => {
+          if (result.success) {
+            console.log(
+              `Notificación enviada para visita ${visit.id}:`,
+              result.data?.id
+            );
+          } else {
+            console.error(
+              `Error enviando notificación para visita ${visit.id}:`,
+              result.error
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(
+            `Error inesperado enviando notificación para visita ${visit.id}:`,
+            error
+          );
+        });
+    }
 
     return createSuccessResponse(
       { message: API_SUCCESS.VISIT_CREATED, visit },

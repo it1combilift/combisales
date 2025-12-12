@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { VisitFormType } from "@prisma/client";
+import { VisitFormType, VisitStatus } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import {
@@ -27,6 +27,9 @@ import {
   serverErrorResponse,
   createSuccessResponse,
 } from "@/lib/api-response";
+
+import { sendVisitCompletedNotification } from "@/lib/visit-notifications";
+import { VisitEmailData } from "@/interfaces/email";
 
 /**
  * GET /api/visits/[id]
@@ -155,6 +158,60 @@ export async function PUT(
       },
       include: VISIT_INCLUDE,
     });
+
+    const wasCompleted = existingVisit.status === VisitStatus.COMPLETADA;
+    const isNowCompleted = visitData?.status === VisitStatus.COMPLETADA;
+
+    if (!wasCompleted && isNowCompleted && formularioData) {
+      const archivos =
+        (formularioData as CreateFormularioCSSData).archivos || [];
+
+      const emailData: VisitEmailData = {
+        razonSocial:
+          (formularioData as CreateFormularioCSSData).razonSocial || "",
+        personaContacto:
+          (formularioData as CreateFormularioCSSData).personaContacto || "",
+        email: (formularioData as CreateFormularioCSSData).email || "",
+        direccion: (formularioData as CreateFormularioCSSData).direccion || "",
+        localidad: (formularioData as CreateFormularioCSSData).localidad || "",
+        provinciaEstado:
+          (formularioData as CreateFormularioCSSData).provinciaEstado || "",
+        pais: (formularioData as CreateFormularioCSSData).pais || "",
+        descripcionProducto:
+          (formularioData as CreateFormularioCSSData).descripcionProducto || "",
+        formType: existingVisit.formType,
+        visitDate: visit.visitDate,
+        archivos,
+        vendedor: visit.user
+          ? {
+              name: visit.user.name || "Sin nombre",
+              email: visit.user.email || "",
+            }
+          : undefined,
+      };
+
+      // Enviar notificación de forma asíncrona
+      sendVisitCompletedNotification({ visitData: emailData })
+        .then((result) => {
+          if (result.success) {
+            console.log(
+              `Notificación enviada para visita actualizada ${visit.id}:`,
+              result.data?.id
+            );
+          } else {
+            console.error(
+              `Error enviando notificación para visita ${visit.id}:`,
+              result.error
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(
+            `Error inesperado enviando notificación para visita ${visit.id}:`,
+            error
+          );
+        });
+    }
 
     return createSuccessResponse({
       message: API_SUCCESS.VISIT_UPDATED,
