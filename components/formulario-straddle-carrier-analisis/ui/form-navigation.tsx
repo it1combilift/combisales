@@ -1,11 +1,15 @@
+import { FORM_STEPS } from "../constants";
 import { FormNavigationProps } from "../types";
 import { Button } from "@/components/ui/button";
-import { FORM_STEPS } from "@/constants/visits";
 import { Spinner } from "@/components/ui/spinner";
 import { ArrowLeft, ArrowRight, Send, Save, FileDown } from "lucide-react";
 
+interface FormNavigationPropsExtended extends FormNavigationProps {
+  visibleStepsCount?: number;
+}
+
 /**
- * Form navigation footer with back, next, and save buttons
+ * Form navigation footer
  */
 export function FormNavigation({
   currentStep,
@@ -23,7 +27,8 @@ export function FormNavigation({
   onNext,
   onSaveDraft,
   onSaveChanges,
-}: FormNavigationProps) {
+  visibleStepsCount,
+}: FormNavigationPropsExtended) {
   const isDisabled =
     isSubmitting ||
     isSavingDraft ||
@@ -31,9 +36,11 @@ export function FormNavigation({
     isUploading ||
     deletingFileId !== null;
 
+  const totalSteps = visibleStepsCount ?? FORM_STEPS.length;
+
   return (
-    <footer className="shrink-0 px-3 py-3 border-t bg-linear-to-t from-muted/30 to-background/80 backdrop-blur-sm">
-      <div className="max-w-2xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
+    <footer className="shrink-0 px-2 py-2 border-t bg-muted/20">
+      <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
         {/* Back button */}
         <Button
           type="button"
@@ -41,25 +48,25 @@ export function FormNavigation({
           size="sm"
           onClick={isFirstStep ? onBack : onPrev}
           disabled={isDisabled}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground h-8 px-2"
         >
-          <ArrowLeft className="size-4" />
-          <span className="hidden sm:inline text-xs font-medium">
+          <ArrowLeft className="size-3.5" />
+          <span className="hidden sm:inline text-xs font-medium ml-1">
             {isFirstStep ? "Salir" : "Atrás"}
           </span>
         </Button>
 
         {/* Step indicator */}
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted/60 border border-border/50">
-          <span className="text-xs font-bold text-primary">{currentStep}</span>
-          <span className="text-muted-foreground text-xs">/</span>
-          <span className="text-xs text-muted-foreground font-medium">
-            {FORM_STEPS.length}
+        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted/60 text-[11px]">
+          <span className="font-bold text-primary">{currentStep}</span>
+          <span className="text-muted-foreground">/</span>
+          <span className="text-muted-foreground font-medium">
+            {totalSteps}
           </span>
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {isLastStep ? (
             <>
               {isEditing ? (
@@ -70,21 +77,22 @@ export function FormNavigation({
                     size="sm"
                     onClick={onSaveChanges}
                     disabled={isDisabled || !allStepsComplete}
+                    className="h-8 px-2"
                     title={
                       !allStepsComplete
-                        ? "Completa todos los pasos para guardar"
+                        ? "Completa todos los pasos"
                         : "Guardar cambios"
                     }
                   >
                     {isSavingChanges ? (
-                      <Spinner variant="ellipsis" />
+                      <Spinner variant="ellipsis" className="size-3" />
                     ) : (
-                      <Save className="size-3.5" />
-                    )}
-                    {!isSavingChanges && (
-                      <span className="hidden sm:inline text-xs font-medium">
-                        Guardar cambios
-                      </span>
+                      <>
+                        <Save className="size-3.5" />
+                        <span className="hidden sm:inline text-xs ml-1">
+                          Guardar
+                        </span>
+                      </>
                     )}
                   </Button>
 
@@ -92,18 +100,19 @@ export function FormNavigation({
                     type="submit"
                     size="sm"
                     disabled={isDisabled || !allStepsComplete}
+                    className="h-8 px-2"
                     title={
                       !allStepsComplete
-                        ? "Completa todos los pasos para guardar"
-                        : "Enviar"
+                        ? "Completa todos los pasos"
+                        : "Guardar y enviar"
                     }
                   >
                     {isSubmitting ? (
-                      <Spinner variant="ellipsis" />
+                      <Spinner variant="ellipsis" className="size-3" />
                     ) : (
                       <>
                         <Send className="size-3.5" />
-                        <span className="hidden sm:inline text-xs font-medium">
+                        <span className="hidden sm:inline text-xs ml-1">
                           Enviar
                         </span>
                       </>
@@ -118,40 +127,42 @@ export function FormNavigation({
                     size="sm"
                     onClick={onSaveDraft}
                     disabled={isDisabled}
+                    className="h-8 px-2"
                     title={
                       !allStepsComplete
-                        ? "Completa todos los pasos para guardar"
-                        : "Guardar como borrador"
+                        ? "Completa todos los pasos"
+                        : "Borrador"
                     }
                   >
                     {isSavingDraft ? (
                       <Spinner variant="ellipsis" />
                     ) : (
-                      <FileDown className="size-3.5" />
+                      <>
+                        <FileDown className="size-3.5" />
+                        <span className="hidden sm:inline text-xs">
+                          Borrador
+                        </span>
+                      </>
                     )}
-                    <span className="hidden sm:inline text-xs font-medium">
-                      Borrador
-                    </span>
                   </Button>
 
                   <Button
                     type="submit"
                     size="sm"
                     disabled={isDisabled || !allStepsComplete}
+                    className="h-8 px-2"
                     title={
                       !allStepsComplete
-                        ? "Completa todos los pasos para guardar"
-                        : "Enviar"
+                        ? "Completa todos los pasos"
+                        : "Guardar y enviar"
                     }
                   >
                     {isSubmitting ? (
-                      <Spinner variant="ellipsis" />
+                      <Spinner variant="ellipsis" className="size-3" />
                     ) : (
                       <>
                         <Send className="size-3.5" />
-                        <span className="text-xs font-medium hidden sm:inline">
-                          Enviar
-                        </span>
+                        <span className="text-xs hidden sm:inline">Enviar</span>
                       </>
                     )}
                   </Button>
@@ -164,6 +175,7 @@ export function FormNavigation({
               size="sm"
               onClick={onNext}
               disabled={isDisabled}
+              className="h-8 px-3"
             >
               <span className="text-xs font-medium">Siguiente</span>
               <ArrowRight className="size-3.5" />

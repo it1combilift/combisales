@@ -9,6 +9,7 @@ import FormularioCSSAnalisis from "../formulario-css-analisis";
 import { FORM_OPTIONS, VisitFormDialogProps } from "@/interfaces/visits";
 import FormularioIndustrialAnalisis from "../formulario-industrial-analisis";
 import FormularioLogisticaAnalisis from "../formulario-logistica-analisis";
+import FormularioStraddleCarrierAnalisis from "../formulario-straddle-carrier-analisis";
 
 import {
   Dialog,
@@ -179,6 +180,14 @@ export default function VisitFormDialog({
             )}
             {selectedFormType === VisitFormType.ANALISIS_LOGISTICA && (
               <FormularioLogisticaAnalisis
+                customer={customer}
+                onBack={handleBack}
+                onSuccess={handleSuccess}
+                existingVisit={existingVisit}
+              />
+            )}
+            {selectedFormType === VisitFormType.ANALISIS_STRADDLE_CARRIER && (
+              <FormularioStraddleCarrierAnalisis
                 customer={customer}
                 onBack={handleBack}
                 onSuccess={handleSuccess}

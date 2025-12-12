@@ -259,11 +259,12 @@ model Visit {
   visitDate  DateTime      @default(now())
 
   // Relaciones
-  customer                     Customer                      @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  user                         User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  formularioCSSAnalisis        FormularioCSSAnalisis?
-  formularioIndustrialAnalisis FormularioIndustrialAnalisis?
-  formularioLogisticaAnalisis  FormularioLogisticaAnalisis?
+  customer                          Customer                           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user                              User                               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  formularioCSSAnalisis             FormularioCSSAnalisis?
+  formularioIndustrialAnalisis      FormularioIndustrialAnalisis?
+  formularioLogisticaAnalisis       FormularioLogisticaAnalisis?
+  formularioStraddleCarrierAnalisis FormularioStraddleCarrierAnalisis?
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -567,6 +568,98 @@ model FormularioArchivo {
   formato  String // jpg, png, pdf, mp4, etc.
 
   formulario FormularioCSSAnalisis @relation(fields: [formularioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([formularioId])
+  @@index([tipoArchivo])
+}
+
+// ==================== FORMULARIO STRADDLE CARRIER ANALYSIS MODEL ====================
+// Formulario específico de Análisis Straddle Carrier
+model FormularioStraddleCarrierAnalisis {
+  id      String @id @default(cuid())
+  visitId String @unique
+
+  // 1. Datos del cliente
+  razonSocial                String
+  personaContacto            String
+  email                      String
+  direccion                  String
+  localidad                  String
+  provinciaEstado            String
+  pais                       String
+  codigoPostal               String
+  website                    String?
+  numeroIdentificacionFiscal String
+  distribuidor               String?
+  contactoDistribuidor       String?
+  fechaCierre                DateTime?
+
+  // 2. Cuadro 1 - Contenedores
+  manejaContenedores        Boolean @default(false)
+  manejaContenedoresIndiv   Boolean @default(false)
+  dobleApilamiento          Boolean @default(false)
+  // Tabla de tamaños (JSON: {size20ft, size30ft, size40ft, size45ft, size53ft} con selected y cantidad)
+  contenedoresTamanios      Json?
+  pesoMaximoContenedor      Float?
+  infoAdicionalContenedores String? @db.Text
+
+  // 3. Cuadro 2 - Carga especial
+  manejaCargaEspecial     Boolean @default(false)
+  productoMasLargo        Float?
+  productoMasCorto        Float?
+  productoMasAncho        Float?
+  productoMasEstrecho     Float?
+  puntosElevacionLongitud Float?
+  puntosElevacionAncho    Float?
+  pesoMaximoProductoLargo Float?
+  pesoMaximoProductoCorto Float?
+  productoMasAlto         Float?
+
+  // 4. Otros
+  zonasPasoAncho       Float?
+  zonasPasoAlto        Float?
+  condicionesPiso      String? @db.Text
+  pisoPlano            Boolean @default(true)
+  restriccionesAltura  Float?
+  restriccionesAnchura Float?
+  notasAdicionales     String? @db.Text
+
+  // 5. Archivos adjuntos
+  archivos FormularioArchivoStraddleCarrier[]
+
+  visit Visit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([visitId])
+}
+
+// ==================== ARCHIVOS DEL FORMULARIO STRADDLE CARRIER ====================
+model FormularioArchivoStraddleCarrier {
+  id           String @id @default(cuid())
+  formularioId String
+
+  // Información del archivo
+  nombre      String
+  tipoArchivo TipoArchivo
+  mimeType    String
+  tamanio     Int
+
+  // Datos de Cloudinary
+  cloudinaryId   String @unique
+  cloudinaryUrl  String
+  cloudinaryType String
+
+  // Metadatos adicionales
+  ancho    Int?
+  alto     Int?
+  duracion Float?
+  formato  String
+
+  formulario FormularioStraddleCarrierAnalisis @relation(fields: [formularioId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 

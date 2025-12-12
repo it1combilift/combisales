@@ -3,39 +3,43 @@
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
-import { FormularioCSSAnalisisProps } from "./types";
+import { FormHeader } from "./ui/form-header";
+import { FormNavigation } from "./ui/form-navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formularioCSSSchema, FormularioCSSSchema } from "./schemas";
+import { useFileUploader } from "./hooks/use-file-uploader";
+import { FormularioStraddleCarrierAnalisisProps } from "./types";
+import { useStraddleCarrierAnalisisForm } from "./hooks/use-straddle-carrier-analisis-form";
+import { FORM_STEPS } from "./constants";
+
+import { Step5Content } from "./steps/step-5-otros";
+import { Step6Content } from "./steps/step-6-archivos";
+import { Step3Content } from "./steps/step-3-contenedores";
+import { Step1Content } from "./steps/step-1-datos-cliente";
+import { Step2Content } from "./steps/step-2-instrucciones";
+import { Step4Content } from "./steps/step-4-carga-especial";
+
+import {
+  FormularioStraddleCarrierSchema,
+  formularioStraddleCarrierSchema,
+} from "./schemas";
 
 import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
 
-import { FormHeader } from "./ui/form-header";
-import { Step6Content } from "./steps/step-6-medidas";
-import { FormNavigation } from "./ui/form-navigation";
-import { Step1Content } from "./steps/step-1-empresa";
-import { Step4Content } from "./steps/step-4-producto";
-import { Step7Content } from "./steps/step-7-archivos";
-import { Step2Content } from "./steps/step-2-ubicacion";
-import { Step3Content } from "./steps/step-3-comercial";
-import { Step5Content } from "./steps/step-5-contenedor";
-import { useFileUploader } from "./hooks/use-file-uploader";
-import { useCSSAnalisisForm } from "./hooks/use-css-analisis-form";
-
-export default function FormularioCSSAnalisis({
+export default function FormularioStraddleCarrierAnalisis({
   customer,
   onBack,
   onSuccess,
   existingVisit,
-}: FormularioCSSAnalisisProps) {
+}: FormularioStraddleCarrierAnalisisProps) {
   const isEditing = !!existingVisit;
-  const formulario = existingVisit?.formularioCSSAnalisis;
+  const formulario = existingVisit?.formularioStraddleCarrierAnalisis;
 
   // ==================== FORM SETUP ====================
-  const form = useForm<FormularioCSSSchema>({
-    resolver: zodResolver(formularioCSSSchema),
+  const form = useForm<FormularioStraddleCarrierSchema>({
+    resolver: zodResolver(formularioStraddleCarrierSchema),
     mode: "onChange",
     defaultValues:
       isEditing && formulario
@@ -55,13 +59,15 @@ export default function FormularioCSSAnalisis({
     currentStepConfig,
     isFirstStep,
     isLastStep,
+    shouldSkipStep3,
+    shouldSkipStep4,
     handleNextStep,
     handlePrevStep,
     goToStep,
     onSubmit,
     onSaveDraft,
     onSaveChanges,
-  } = useCSSAnalisisForm({
+  } = useStraddleCarrierAnalisisForm({
     form,
     customerId: customer.id,
     isEditing,
@@ -85,6 +91,13 @@ export default function FormularioCSSAnalisis({
     customerId: customer.id,
   });
 
+  // Calculate visible steps count for navigation
+  const visibleStepsCount = FORM_STEPS.filter((step) => {
+    if (step.number === 3 && shouldSkipStep3()) return false;
+    if (step.number === 4 && shouldSkipStep4()) return false;
+    return true;
+  }).length;
+
   // ==================== RENDER STEP CONTENT ====================
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
@@ -107,10 +120,7 @@ export default function FormularioCSSAnalisis({
           <Step5Content {...stepProps} />
         </div>
         <div className={cn(currentStep !== 6 && "hidden")}>
-          <Step6Content {...stepProps} />
-        </div>
-        <div className={cn(currentStep !== 7 && "hidden")}>
-          <Step7Content
+          <Step6Content
             form={form}
             customerId={customer.id}
             isUploading={isUploading}
@@ -131,7 +141,7 @@ export default function FormularioCSSAnalisis({
 
   // ==================== MAIN RENDER ====================
   return (
-    <div className="flex flex-col h-full max-h-[90vh] bg-background max-w-dvw">
+    <div className="flex flex-col h-full max-h-[85vh] bg-background w-full overflow-hidden">
       {/* Header with stepper */}
       <FormHeader
         currentStep={currentStep}
@@ -139,17 +149,19 @@ export default function FormularioCSSAnalisis({
         progress={progress}
         completedSteps={completedSteps}
         onGoToStep={goToStep}
+        shouldSkipStep3={shouldSkipStep3}
+        shouldSkipStep4={shouldSkipStep4}
       />
 
       {/* Form content */}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col flex-1 min-h-0 max-w-dvw mx-auto w-full"
+          className="flex flex-col flex-1 min-h-0 w-full overflow-hidden"
         >
-          <main className="flex-1 overflow-y-auto scrollbar-thin">
-            <div className="p-4 mx-auto w-full">
-              <div className="animate-in fade-in-50 slide-in-from-right-4 duration-300">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
+            <div className="px-3 py-3 sm:px-4 sm:py-4 mx-auto w-full max-w-4xl">
+              <div className="animate-in fade-in-20 duration-150">
                 {renderStepContent()}
               </div>
             </div>
@@ -172,6 +184,7 @@ export default function FormularioCSSAnalisis({
             onNext={handleNextStep}
             onSaveDraft={onSaveDraft}
             onSaveChanges={onSaveChanges}
+            visibleStepsCount={visibleStepsCount}
           />
         </form>
       </Form>

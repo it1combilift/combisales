@@ -9,6 +9,7 @@ import {
   buildFormularioUpsert,
   buildFormularioIndustrialUpsert,
   buildFormularioLogisticaUpsert,
+  buildFormularioStraddleCarrierUpsert,
 } from "@/lib/visits";
 
 import {
@@ -16,6 +17,7 @@ import {
   CreateFormularioCSSData,
   CreateFormularioIndustrialData,
   CreateFormularioLogisticaData,
+  CreateFormularioStraddleCarrierData,
 } from "@/interfaces/visits";
 
 import {
@@ -78,7 +80,8 @@ export async function PUT(
       formularioData?:
         | CreateFormularioCSSData
         | CreateFormularioIndustrialData
-        | CreateFormularioLogisticaData;
+        | CreateFormularioLogisticaData
+        | CreateFormularioStraddleCarrierData;
     };
 
     const existingVisit = await prisma.visit.findUnique({
@@ -87,6 +90,7 @@ export async function PUT(
         formularioCSSAnalisis: true,
         formularioIndustrialAnalisis: true,
         formularioLogisticaAnalisis: true,
+        formularioStraddleCarrierAnalisis: true,
       },
     });
 
@@ -126,6 +130,17 @@ export async function PUT(
         formularioLogisticaAnalisis: {
           upsert: buildFormularioLogisticaUpsert(
             formularioData as CreateFormularioLogisticaData
+          ),
+        },
+      };
+    } else if (
+      existingVisit.formType === VisitFormType.ANALISIS_STRADDLE_CARRIER &&
+      formularioData
+    ) {
+      formDataUpdate = {
+        formularioStraddleCarrierAnalisis: {
+          upsert: buildFormularioStraddleCarrierUpsert(
+            formularioData as CreateFormularioStraddleCarrierData
           ),
         },
       };

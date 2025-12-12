@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
-import { DialogTitle } from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
 import { Check } from "lucide-react";
-import { FORM_STEPS, getStepColorClasses } from "@/constants/visits";
 import { FormHeaderProps } from "../types";
+import { Progress } from "@/components/ui/progress";
+import { DialogTitle } from "@/components/ui/dialog";
+import { FORM_STEPS, getStepColorClasses } from "@/constants/visits";
 
 /**
  * Form header with title, progress bar, and step navigation

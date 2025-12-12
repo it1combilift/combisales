@@ -8,12 +8,14 @@ import {
   buildFormularioCreate,
   buildFormularioIndustrialCreate,
   buildFormularioLogisticaCreate,
+  buildFormularioStraddleCarrierCreate,
 } from "@/lib/visits";
 import {
   CreateVisitData,
   CreateFormularioCSSData,
   CreateFormularioIndustrialData,
   CreateFormularioLogisticaData,
+  CreateFormularioStraddleCarrierData,
 } from "@/interfaces/visits";
 
 import {
@@ -73,7 +75,8 @@ export async function POST(req: NextRequest) {
       formularioData?:
         | CreateFormularioCSSData
         | CreateFormularioIndustrialData
-        | CreateFormularioLogisticaData;
+        | CreateFormularioLogisticaData
+        | CreateFormularioStraddleCarrierData;
     };
 
     if (!visitData.customerId || !visitData.formType) {
@@ -92,7 +95,8 @@ export async function POST(req: NextRequest) {
     if (
       (visitData.formType === VisitFormType.ANALISIS_CSS ||
         visitData.formType === VisitFormType.ANALISIS_INDUSTRIAL ||
-        visitData.formType === VisitFormType.ANALISIS_LOGISTICA) &&
+        visitData.formType === VisitFormType.ANALISIS_LOGISTICA ||
+        visitData.formType === VisitFormType.ANALISIS_STRADDLE_CARRIER) &&
       !formularioData
     ) {
       return badRequestResponse("FORM_DATA");
@@ -127,6 +131,17 @@ export async function POST(req: NextRequest) {
         formularioLogisticaAnalisis: {
           create: buildFormularioLogisticaCreate(
             formularioData as CreateFormularioLogisticaData
+          ),
+        },
+      };
+    } else if (
+      visitData.formType === VisitFormType.ANALISIS_STRADDLE_CARRIER &&
+      formularioData
+    ) {
+      formDataCreate = {
+        formularioStraddleCarrierAnalisis: {
+          create: buildFormularioStraddleCarrierCreate(
+            formularioData as CreateFormularioStraddleCarrierData
           ),
         },
       };

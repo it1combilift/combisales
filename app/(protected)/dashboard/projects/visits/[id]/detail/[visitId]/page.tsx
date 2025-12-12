@@ -18,6 +18,7 @@ import {
   CSSDetail,
   IndustrialDetail,
   LogisticaDetail,
+  StraddleCarrierDetail,
   StatCard,
 } from "@/components/visit-detail";
 
@@ -116,6 +117,8 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
         return visit.formularioIndustrialAnalisis;
       case VisitFormType.ANALISIS_LOGISTICA:
         return visit.formularioLogisticaAnalisis;
+      case VisitFormType.ANALISIS_STRADDLE_CARRIER:
+        return visit.formularioStraddleCarrierAnalisis;
       default:
         return null;
     }
@@ -137,6 +140,12 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
       case VisitFormType.ANALISIS_LOGISTICA:
         return visit.formularioLogisticaAnalisis ? (
           <LogisticaDetail formulario={visit.formularioLogisticaAnalisis} />
+        ) : null;
+      case VisitFormType.ANALISIS_STRADDLE_CARRIER:
+        return visit.formularioStraddleCarrierAnalisis ? (
+          <StraddleCarrierDetail
+            formulario={visit.formularioStraddleCarrierAnalisis}
+          />
         ) : null;
       default:
         return (

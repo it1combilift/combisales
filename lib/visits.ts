@@ -5,6 +5,7 @@ import {
   CreateFormularioCSSData,
   CreateFormularioIndustrialData,
   CreateFormularioLogisticaData,
+  CreateFormularioStraddleCarrierData,
 } from "@/interfaces/visits";
 
 // ==================== PRISMA INCLUDES ====================
@@ -31,6 +32,11 @@ export const VISIT_INCLUDE = {
     },
   },
   formularioLogisticaAnalisis: {
+    include: {
+      archivos: true,
+    },
+  },
+  formularioStraddleCarrierAnalisis: {
     include: {
       archivos: true,
     },
@@ -385,6 +391,138 @@ export function buildFormularioLogisticaCreate(
     ? {
         archivos: {
           create: transformArchivosLogistica(data.archivos),
+        },
+      }
+    : {};
+
+  return {
+    ...transformedData,
+    ...archivosCreate,
+  };
+}
+
+// ==================== FORMULARIO STRADDLE CARRIER DATA HELPERS ====================
+/**
+ * Transform FormularioStraddleCarrierData to Prisma create/update format
+ */
+export function transformFormularioStraddleCarrierData(
+  data: CreateFormularioStraddleCarrierData
+) {
+  return {
+    razonSocial: data.razonSocial,
+    personaContacto: data.personaContacto,
+    email: data.email,
+    direccion: data.direccion,
+    localidad: data.localidad,
+    provinciaEstado: data.provinciaEstado,
+    pais: data.pais,
+    codigoPostal: data.codigoPostal,
+    website: data.website || null,
+    numeroIdentificacionFiscal: data.numeroIdentificacionFiscal,
+    distribuidor: data.distribuidor || null,
+    contactoDistribuidor: data.contactoDistribuidor || null,
+    fechaCierre: data.fechaCierre || null,
+    // Cuadro 1 - Contenedores
+    manejaContenedores: data.manejaContenedores || false,
+    manejaContenedoresIndiv: data.manejaContenedoresIndiv || false,
+    dobleApilamiento: data.dobleApilamiento || false,
+    contenedoresTamanios: data.contenedoresTamanios || null,
+    pesoMaximoContenedor: data.pesoMaximoContenedor || null,
+    infoAdicionalContenedores: data.infoAdicionalContenedores || null,
+    // Cuadro 2 - Carga especial
+    manejaCargaEspecial: data.manejaCargaEspecial || false,
+    productoMasLargo: data.productoMasLargo || null,
+    productoMasCorto: data.productoMasCorto || null,
+    productoMasAncho: data.productoMasAncho || null,
+    productoMasEstrecho: data.productoMasEstrecho || null,
+    puntosElevacionLongitud: data.puntosElevacionLongitud || null,
+    puntosElevacionAncho: data.puntosElevacionAncho || null,
+    pesoMaximoProductoLargo: data.pesoMaximoProductoLargo || null,
+    pesoMaximoProductoCorto: data.pesoMaximoProductoCorto || null,
+    productoMasAlto: data.productoMasAlto || null,
+    // Otros
+    zonasPasoAncho: data.zonasPasoAncho || null,
+    zonasPasoAlto: data.zonasPasoAlto || null,
+    condicionesPiso: data.condicionesPiso || null,
+    pisoPlano: data.pisoPlano ?? true,
+    restriccionesAltura: data.restriccionesAltura || null,
+    restriccionesAnchura: data.restriccionesAnchura || null,
+    notasAdicionales: data.notasAdicionales || null,
+  };
+}
+
+/**
+ * Transform archivos array for Straddle Carrier to Prisma create format
+ */
+function transformArchivosStraddleCarrier(archivos: ArchivoSubido[]) {
+  return archivos.map((archivo) => {
+    const fileExtension =
+      archivo.nombre.split(".").pop()?.toLowerCase() || "unknown";
+    const formato = archivo.formato || fileExtension;
+
+    return {
+      nombre: archivo.nombre,
+      tipoArchivo: archivo.tipoArchivo,
+      mimeType: archivo.mimeType,
+      tamanio: archivo.tamanio,
+      cloudinaryId: archivo.cloudinaryId,
+      cloudinaryUrl: archivo.cloudinaryUrl,
+      cloudinaryType: archivo.cloudinaryType,
+      ancho: archivo.ancho,
+      alto: archivo.alto,
+      duracion: archivo.duracion,
+      formato: formato,
+    };
+  });
+}
+
+/**
+ * Build Prisma upsert operation for FormularioStraddleCarrierAnalisis
+ */
+export function buildFormularioStraddleCarrierUpsert(
+  data: CreateFormularioStraddleCarrierData
+) {
+  const transformedData = transformFormularioStraddleCarrierData(data);
+
+  const newArchivos = data.archivos?.filter(
+    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl
+  );
+
+  const archivosCreate = newArchivos?.length
+    ? {
+        archivos: {
+          createMany: {
+            data: transformArchivosStraddleCarrier(newArchivos),
+            skipDuplicates: true,
+          },
+        },
+      }
+    : {};
+
+  return {
+    create: {
+      ...transformedData,
+      ...archivosCreate,
+    },
+    update: {
+      ...transformedData,
+      ...archivosCreate,
+    },
+  };
+}
+
+/**
+ * Build Prisma create operation for new visit with FormularioStraddleCarrierAnalisis
+ */
+export function buildFormularioStraddleCarrierCreate(
+  data: CreateFormularioStraddleCarrierData
+) {
+  const transformedData = transformFormularioStraddleCarrierData(data);
+
+  const archivosCreate = data.archivos?.length
+    ? {
+        archivos: {
+          create: transformArchivosStraddleCarrier(data.archivos),
         },
       }
     : {};

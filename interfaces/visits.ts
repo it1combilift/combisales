@@ -109,6 +109,7 @@ export interface Visit {
   formularioCSSAnalisis?: FormularioCSSAnalisis;
   formularioIndustrialAnalisis?: FormularioIndustrialAnalisis;
   formularioLogisticaAnalisis?: FormularioLogisticaAnalisis;
+  formularioStraddleCarrierAnalisis?: FormularioStraddleCarrierAnalisis;
 }
 
 export interface VisitWithDetails extends Visit {
@@ -317,6 +318,62 @@ export interface FormularioLogisticaAnalisis {
   updatedAt: Date;
 }
 
+// ==================== FORMULARIO STRADDLE CARRIER ANALYSIS INTERFACE ====================
+export interface FormularioStraddleCarrierAnalisis {
+  id: string;
+  visitId: string;
+  // 1. Datos del cliente
+  razonSocial: string;
+  personaContacto: string;
+  email: string;
+  direccion: string;
+  localidad: string;
+  provinciaEstado: string;
+  pais: string;
+  codigoPostal: string;
+  website?: string | null;
+  numeroIdentificacionFiscal: string;
+  distribuidor?: string | null;
+  contactoDistribuidor?: string | null;
+  fechaCierre?: Date | null;
+  // 2. Cuadro 1 - Contenedores
+  manejaContenedores: boolean;
+  manejaContenedoresIndiv: boolean;
+  dobleApilamiento: boolean;
+  contenedoresTamanios?: {
+    size20ft?: { selected: boolean; cantidad: number | null };
+    size30ft?: { selected: boolean; cantidad: number | null };
+    size40ft?: { selected: boolean; cantidad: number | null };
+    size45ft?: { selected: boolean; cantidad: number | null };
+    size53ft?: { selected: boolean; cantidad: number | null };
+  } | null;
+  pesoMaximoContenedor?: number | null;
+  infoAdicionalContenedores?: string | null;
+  // 3. Cuadro 2 - Carga especial
+  manejaCargaEspecial: boolean;
+  productoMasLargo?: number | null;
+  productoMasCorto?: number | null;
+  productoMasAncho?: number | null;
+  productoMasEstrecho?: number | null;
+  puntosElevacionLongitud?: number | null;
+  puntosElevacionAncho?: number | null;
+  pesoMaximoProductoLargo?: number | null;
+  pesoMaximoProductoCorto?: number | null;
+  productoMasAlto?: number | null;
+  // 4. Otros
+  zonasPasoAncho?: number | null;
+  zonasPasoAlto?: number | null;
+  condicionesPiso?: string | null;
+  pisoPlano: boolean;
+  restriccionesAltura?: number | null;
+  restriccionesAnchura?: number | null;
+  notasAdicionales?: string | null;
+  // 5. Archivos adjuntos
+  archivos?: FormularioArchivo[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // ==================== FORM DATA INTERFACES ====================
 // Interface para crear un nuevo cliente desde datos de Zoho
 export interface CreateCustomerData {
@@ -497,6 +554,49 @@ export interface CreateFormularioLogisticaData {
   archivos?: ArchivoSubido[];
 }
 
+export interface CreateFormularioStraddleCarrierData {
+  razonSocial: string;
+  personaContacto: string;
+  email: string;
+  direccion: string;
+  localidad: string;
+  provinciaEstado: string;
+  pais: string;
+  codigoPostal: string;
+  website?: string;
+  numeroIdentificacionFiscal: string;
+  distribuidor?: string;
+  contactoDistribuidor?: string;
+  fechaCierre?: Date;
+  // Cuadro 1 - Contenedores
+  manejaContenedores: boolean;
+  manejaContenedoresIndiv: boolean;
+  dobleApilamiento: boolean;
+  contenedoresTamanios?: any;
+  pesoMaximoContenedor?: number;
+  infoAdicionalContenedores?: string;
+  // Cuadro 2 - Carga especial
+  manejaCargaEspecial: boolean;
+  productoMasLargo?: number;
+  productoMasCorto?: number;
+  productoMasAncho?: number;
+  productoMasEstrecho?: number;
+  puntosElevacionLongitud?: number;
+  puntosElevacionAncho?: number;
+  pesoMaximoProductoLargo?: number;
+  pesoMaximoProductoCorto?: number;
+  productoMasAlto?: number;
+  // Otros
+  zonasPasoAncho?: number;
+  zonasPasoAlto?: number;
+  condicionesPiso?: string;
+  pisoPlano: boolean;
+  restriccionesAltura?: number;
+  restriccionesAnchura?: number;
+  notasAdicionales?: string;
+  archivos?: ArchivoSubido[];
+}
+
 export interface UpdateVisitData {
   status?: VisitStatus;
   visitDate?: Date;
@@ -581,7 +681,7 @@ export const FORM_OPTIONS = [
     type: VisitFormType.ANALISIS_STRADDLE_CARRIER,
     icon: Ship,
     description: "Análisis de Straddle Carrier para terminales portuarias.",
-    available: false,
+    available: true,
   },
 ];
 
