@@ -1,6 +1,6 @@
-import { StepContentProps, TIPO_ESTANTERIAS_OPTIONS } from "../types";
-import { Input } from "@/components/ui/input";
 import { Route, Layers } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { StepContentProps, TIPO_ESTANTERIAS_OPTIONS } from "../types";
 
 import {
   FormField,
@@ -44,164 +44,157 @@ function SectionHeader({
  */
 export function Step6Content({ form }: StepContentProps) {
   return (
-    <div className="space-y-5">
-      {/* ==================== DISTANCIAS ==================== */}
+    <div className="space-y-4">
+      {/* ==================== DISTANCIAS DEL PASILLO ==================== */}
       <section>
         <SectionHeader icon={Route} title="Distancias del Pasillo" />
-        <div className="grid grid-cols-12 gap-x-2 gap-y-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {/* Distancia entre estanterías */}
-          <div className="col-span-6 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="pasilloActual.distanciaEntreEstanterias"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[11px] font-medium">
-                    Dist. entre estanterías
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        className="text-sm h-9 pr-7"
-                        {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value ? parseFloat(e.target.value) : null
-                          )
-                        }
-                      />
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
-                        m
-                      </span>
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-[10px]" />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="pasilloActual.distanciaEntreEstanterias"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[11px] font-medium">
+                  Dist. entre estanterías
+                </FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      className="text-sm h-9 pr-7"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? parseFloat(e.target.value) : null
+                        )
+                      }
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                      m
+                    </span>
+                  </div>
+                </FormControl>
+                <FormMessage className="text-[10px]" />
+              </FormItem>
+            )}
+          />
 
           {/* Distancia entre productos */}
-          <div className="col-span-6 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="pasilloActual.distanciaEntreProductos"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[11px] font-medium">
-                    Dist. entre productos
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        className="text-sm h-9 pr-7"
-                        {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value ? parseFloat(e.target.value) : null
-                          )
-                        }
-                      />
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
-                        m
-                      </span>
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-[10px]" />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="pasilloActual.distanciaEntreProductos"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[11px] font-medium">
+                  Dist. entre productos
+                </FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      className="text-sm h-9 pr-7"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? parseFloat(e.target.value) : null
+                        )
+                      }
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                      m
+                    </span>
+                  </div>
+                </FormControl>
+                <FormMessage className="text-[10px]" />
+              </FormItem>
+            )}
+          />
 
           {/* Ancho pasillo disponible */}
-          <div className="col-span-6 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="pasilloActual.anchoPasilloDisponible"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[11px] font-medium">
-                    Ancho pasillo disponible
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        className="text-sm h-9 pr-7"
-                        {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value ? parseFloat(e.target.value) : null
-                          )
-                        }
-                      />
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
-                        m
-                      </span>
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-[10px]" />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="pasilloActual.anchoPasilloDisponible"
+            render={({ field }) => (
+              <FormItem className="col-span-2 sm:col-span-1">
+                <FormLabel className="text-[11px] font-medium">
+                  Ancho pasillo disponible
+                </FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      className="text-sm h-9 pr-7"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? parseFloat(e.target.value) : null
+                        )
+                      }
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                      m
+                    </span>
+                  </div>
+                </FormControl>
+                <FormMessage className="text-[10px]" />
+              </FormItem>
+            )}
+          />
         </div>
       </section>
 
       {/* ==================== ESTANTERÍAS ==================== */}
       <section>
         <SectionHeader icon={Layers} title="Información de Estanterías" />
-        <div className="grid grid-cols-12 gap-x-2 gap-y-3">
-          {/* Tipo de estanterías */}
-          <div className="col-span-12 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="pasilloActual.tipoEstanterias"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[11px] font-medium">
-                    Tipo de estanterías
-                  </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value || undefined}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-9 text-sm">
-                        <SelectValue placeholder="Seleccionar..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {TIPO_ESTANTERIAS_OPTIONS.map((option) => (
-                        <SelectItem
-                          key={option.value}
-                          value={option.value}
-                          className="text-sm"
-                        >
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage className="text-[10px]" />
-                </FormItem>
-              )}
-            />
-          </div>
+        <div className="space-y-3">
+          {/* Row 1: Tipo de estanterías - full width en mobile */}
+          <FormField
+            control={form.control}
+            name="pasilloActual.tipoEstanterias"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[11px] font-medium">
+                  Tipo de estanterías
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value || undefined}
+                >
+                  <FormControl>
+                    <SelectTrigger className="h-9 text-sm w-full">
+                      <SelectValue placeholder="Seleccionar..." />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {TIPO_ESTANTERIAS_OPTIONS.map((option) => (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value}
+                        className="text-sm"
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage className="text-[10px]" />
+              </FormItem>
+            )}
+          />
 
-          {/* Nivel de estanterías */}
-          <div className="col-span-6 sm:col-span-4">
+          {/* Row 2: Niveles y Altura - 2 columnas */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* Nivel de estanterías */}
             <FormField
               control={form.control}
               name="pasilloActual.nivelEstanterias"
@@ -230,10 +223,8 @@ export function Step6Content({ form }: StepContentProps) {
                 </FormItem>
               )}
             />
-          </div>
 
-          {/* Altura máxima estantería */}
-          <div className="col-span-6 sm:col-span-4">
+            {/* Altura máxima estantería */}
             <FormField
               control={form.control}
               name="pasilloActual.alturaMaximaEstanteria"
