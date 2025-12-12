@@ -1,3 +1,12 @@
+import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
+import { StepContentProps } from "../types";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ContenedorMedida } from "@prisma/client";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CONTENEDOR_MEDIDA_LABELS } from "@/interfaces/visits";
+
 import {
   FormField,
   FormItem,
@@ -6,14 +15,6 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ContenedorMedida } from "@prisma/client";
-import { CONTENEDOR_MEDIDA_LABELS } from "@/interfaces/visits";
-import { StepContentProps } from "../types";
-import { Label } from "@/components/ui/label";
 
 /**
  * Step 6: Container Measurements (Multi-select)
@@ -58,9 +59,6 @@ export function Step6Content({ form }: StepContentProps) {
               Medidas del contenedor
               <span className="text-destructive">*</span>
             </FormLabel>
-            <FormDescription className="text-[11px] text-muted-foreground mb-2">
-              Seleccione todas las medidas con las que trabaja el cliente
-            </FormDescription>
             <FormControl>
               <div className="space-y-3">
                 {/* Standard sizes - grid layout */}
@@ -68,7 +66,7 @@ export function Step6Content({ form }: StepContentProps) {
                   {standardSizes.map((medida) => {
                     const isSelected = field.value?.includes(medida);
                     return (
-                      <label
+                      <Label
                         key={medida}
                         className={cn(
                           "flex items-center justify-between rounded-xl border-2 p-2 sm:p-3 cursor-pointer transition-all duration-200 select-none",
@@ -95,12 +93,7 @@ export function Step6Content({ form }: StepContentProps) {
                             {CONTENEDOR_MEDIDA_LABELS[medida]}
                           </span>
                         </div>
-                        {isSelected && (
-                          <div className="size-5 rounded-full bg-primary/15 flex items-center justify-center">
-                            <Check className="size-3 text-primary" />
-                          </div>
-                        )}
-                      </label>
+                      </Label>
                     );
                   })}
                 </div>
@@ -146,11 +139,6 @@ export function Step6Content({ form }: StepContentProps) {
                       </span>
                     </div>
                   </div>
-                  {hasOtroSelected && (
-                    <div className="size-5 rounded-full bg-amber-500/15 flex items-center justify-center">
-                      <Check className="size-3 text-amber-500" />
-                    </div>
-                  )}
                 </Label>
               </div>
             </FormControl>

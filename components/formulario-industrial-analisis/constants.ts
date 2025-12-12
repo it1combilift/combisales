@@ -1,14 +1,10 @@
 import { FileText, Package, Zap, Ruler, Layout, Paperclip } from "lucide-react";
 
-/**
- * Pasos del formulario Industrial optimizados
- * Se eliminó el paso de datos del cliente (autocompletados)
- * Ahora el flujo empieza directamente con el contenido relevante
- */
 export const FORM_STEPS = [
   {
     number: 1,
     title: "Descripción operación",
+    shortTitle: "Descripción",
     description: "Detalles de la operación",
     icon: FileText,
     color: "blue" as const,
@@ -17,6 +13,7 @@ export const FORM_STEPS = [
   {
     number: 2,
     title: "Datos aplicación",
+    shortTitle: "Aplicación",
     description: "Información técnica",
     icon: Package,
     color: "amber" as const,
@@ -36,6 +33,7 @@ export const FORM_STEPS = [
   {
     number: 3,
     title: "Equipos eléctricos",
+    shortTitle: "Equipos",
     description: "Especificaciones eléctricas",
     icon: Zap,
     color: "violet" as const,
@@ -44,6 +42,7 @@ export const FORM_STEPS = [
   {
     number: 4,
     title: "Dimensiones cargas",
+    shortTitle: "Dimensiones",
     description: "Tabla de dimensiones",
     icon: Ruler,
     color: "emerald" as const,
@@ -52,6 +51,7 @@ export const FORM_STEPS = [
   {
     number: 5,
     title: "Especificaciones pasillo",
+    shortTitle: "Especificaciones",
     description: "Medidas del pasillo",
     icon: Layout,
     color: "rose" as const,
@@ -60,6 +60,7 @@ export const FORM_STEPS = [
   {
     number: 6,
     title: "Archivos adjuntos",
+    shortTitle: "Archivos",
     description: "Fotos, videos y documentos",
     icon: Paperclip,
     color: "cyan" as const,

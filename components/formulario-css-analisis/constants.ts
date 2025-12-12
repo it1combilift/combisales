@@ -1,6 +1,5 @@
 import { FileText, Package, Ruler, Paperclip } from "lucide-react";
 
-// ==================== STEP COLORS ====================
 export type StepColor =
   | "primary"
   | "blue"
@@ -57,21 +56,18 @@ export const STEP_COLOR_MAP: Record<StepColor, StepColorClasses> = {
 export interface StepConfig {
   number: number;
   title: string;
+  shortTitle: string;
   description: string;
   icon: React.ElementType;
   color: StepColor;
   fields: string[];
 }
 
-/**
- * Pasos del formulario CSS optimizados
- * Se eliminaron los pasos de datos autocompletados (empresa, ubicación, comercial)
- * Ahora el flujo empieza directamente con el contenido relevante
- */
 export const FORM_STEPS: StepConfig[] = [
   {
     number: 1,
     title: "Producto",
+    shortTitle: "Producto",
     description: "Descripción del proyecto",
     icon: FileText,
     color: "violet",
@@ -80,6 +76,7 @@ export const FORM_STEPS: StepConfig[] = [
   {
     number: 2,
     title: "Contenedor",
+    shortTitle: "Contenedor",
     description: "Tipo y operación",
     icon: Package,
     color: "emerald",
@@ -88,6 +85,7 @@ export const FORM_STEPS: StepConfig[] = [
   {
     number: 3,
     title: "Medidas",
+    shortTitle: "Medidas",
     description: "Dimensiones del contenedor",
     icon: Ruler,
     color: "rose",
@@ -96,6 +94,7 @@ export const FORM_STEPS: StepConfig[] = [
   {
     number: 4,
     title: "Archivos",
+    shortTitle: "Archivos",
     description: "Fotos, videos y documentos",
     icon: Paperclip,
     color: "cyan",
@@ -103,7 +102,6 @@ export const FORM_STEPS: StepConfig[] = [
   },
 ];
 
-// ==================== HELPER FUNCTIONS ====================
 export function getStepColorClasses(color: string): StepColorClasses {
   return STEP_COLOR_MAP[color as StepColor] || STEP_COLOR_MAP.primary;
 }

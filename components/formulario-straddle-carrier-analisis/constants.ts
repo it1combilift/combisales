@@ -1,11 +1,10 @@
 import { Info, Container, Package, Settings, Paperclip } from "lucide-react";
 
-// Steps optimizados: Se eliminó el Step de datos del cliente (autocompletado)
-// El campo fechaCierre se movió al Step 1 (Instrucciones)
 export const FORM_STEPS = [
   {
     number: 1,
     title: "Instrucciones",
+    shortTitle: "Instrucciones",
     description: "Detalles de las cargas",
     icon: Info,
     color: "primary" as const,
@@ -14,6 +13,7 @@ export const FORM_STEPS = [
   {
     number: 2,
     title: "Contenedores",
+    shortTitle: "Contenedores",
     description: "Cuadro 1 - Contenedores",
     icon: Container,
     color: "blue" as const,
@@ -28,6 +28,7 @@ export const FORM_STEPS = [
   {
     number: 3,
     title: "Carga especial",
+    shortTitle: "Carg. Especial",
     description: "Cuadro 2 - Dimensiones",
     icon: Package,
     color: "amber" as const,
@@ -46,6 +47,7 @@ export const FORM_STEPS = [
   {
     number: 4,
     title: "Otros",
+    shortTitle: "Otros",
     description: "Condiciones adicionales",
     icon: Settings,
     color: "violet" as const,
@@ -62,6 +64,7 @@ export const FORM_STEPS = [
   {
     number: 5,
     title: "Archivos adjuntos",
+    shortTitle: "Archivos",
     description: "Fotos, videos y documentos",
     icon: Paperclip,
     color: "emerald" as const,
