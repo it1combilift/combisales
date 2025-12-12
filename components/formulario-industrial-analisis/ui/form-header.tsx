@@ -22,7 +22,6 @@ export function FormHeader({
   const StepIcon = currentStepConfig.icon;
   const skipStep3 = shouldSkipStep3?.() ?? false;
 
-  // Filtrar los pasos visibles (excluir Step 3 si no aplica - Equipos eléctricos)
   const visibleSteps = skipStep3
     ? FORM_STEPS.filter((step) => step.number !== 3)
     : FORM_STEPS;
@@ -97,7 +96,7 @@ export function FormHeader({
                 {/* Mobile: shortTitle, Desktop: full title */}
                 <span
                   className={cn(
-                    "block sm:hidden text-[8px] mt-0.5 font-medium text-center leading-tight",
+                    "block sm:hidden text-[8.5px] mt-0.5 font-medium text-center leading-tight",
                     isCurrent
                       ? "text-primary"
                       : isCompleted

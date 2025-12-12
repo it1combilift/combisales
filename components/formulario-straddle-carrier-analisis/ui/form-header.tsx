@@ -105,7 +105,7 @@ export function FormHeader({
                 {/* Mobile: shortTitle, Desktop: full title */}
                 <span
                   className={cn(
-                    "block sm:hidden text-[8px] mt-0.5 font-medium text-center leading-tight",
+                    "block sm:hidden text-[8.5px] mt-0.5 font-medium text-center leading-tight",
                     isCurrent
                       ? "text-primary"
                       : isCompleted

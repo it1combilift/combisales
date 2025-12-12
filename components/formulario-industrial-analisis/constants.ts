@@ -51,7 +51,7 @@ export const FORM_STEPS = [
   {
     number: 5,
     title: "Especificaciones pasillo",
-    shortTitle: "Especificaciones",
+    shortTitle: "Pasillo",
     description: "Medidas del pasillo",
     icon: Layout,
     color: "rose" as const,

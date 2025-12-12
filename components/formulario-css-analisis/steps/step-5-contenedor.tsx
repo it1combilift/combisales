@@ -220,8 +220,12 @@ export function Step5Content({ form }: StepContentProps) {
             name="contenedoresPorSemana"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  Contenedores por semana
+                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5 text-pretty">
+                  <span className="hidden md:block">
+                    Contenedores por semana
+                  </span>
+
+                  <span className="block md:hidden">Contenedores/semana</span>
                 </FormLabel>
                 <FormControl>
                   <Input
