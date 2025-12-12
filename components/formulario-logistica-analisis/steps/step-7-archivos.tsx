@@ -471,3 +471,6 @@ export function Step7Content({
     </div>
   );
 }
+
+// Alias export para compatibilidad con el nuevo flujo de steps
+export { Step7Content as Step6Content };

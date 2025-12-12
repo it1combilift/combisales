@@ -28,7 +28,7 @@ export function useLogisticaAnalisisForm({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5, 6, 7]) : new Set()
+    isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set()
   );
 
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -41,7 +41,8 @@ export function useLogisticaAnalisisForm({
 
       const alimentacion = values.alimentacionDeseada;
 
-      if (step === 4 && alimentacion !== TipoAlimentacion.ELECTRICO) {
+      // Step 3 es Equipos eléctricos (condicional)
+      if (step === 3 && alimentacion !== TipoAlimentacion.ELECTRICO) {
         return true;
       }
 
@@ -185,23 +186,23 @@ export function useLogisticaAnalisisForm({
 
   const progress = useMemo(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
-    const skipStep4 = alimentacion !== TipoAlimentacion.ELECTRICO;
+    const skipStep3 = alimentacion !== TipoAlimentacion.ELECTRICO;
 
     let effectiveCompleted = completedSteps.size;
-    if (skipStep4 && completedSteps.has(4)) {
+    if (skipStep3 && completedSteps.has(3)) {
       effectiveCompleted--;
     }
 
-    const totalSteps = skipStep4 ? FORM_STEPS.length - 1 : FORM_STEPS.length;
+    const totalSteps = skipStep3 ? FORM_STEPS.length - 1 : FORM_STEPS.length;
     return Math.round((effectiveCompleted / totalSteps) * 100);
   }, [completedSteps, form]);
 
   const allStepsComplete = useMemo(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
-    const skipStep4 = alimentacion !== TipoAlimentacion.ELECTRICO;
+    const skipStep3 = alimentacion !== TipoAlimentacion.ELECTRICO;
 
     for (let step = 1; step <= FORM_STEPS.length; step++) {
-      if (step === 4 && skipStep4) continue;
+      if (step === 3 && skipStep3) continue;
       if (!completedSteps.has(step)) return false;
     }
     return true;
@@ -229,7 +230,7 @@ export function useLogisticaAnalisisForm({
   );
 
   // ==================== NAVIGATION HELPERS ====================
-  const shouldSkipStep4 = useCallback(() => {
+  const shouldSkipStep3 = useCallback(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
     return alimentacion !== TipoAlimentacion.ELECTRICO;
   }, [form]);
@@ -237,23 +238,23 @@ export function useLogisticaAnalisisForm({
   const getNextStep = useCallback(
     (fromStep: number): number => {
       const nextStep = fromStep + 1;
-      if (nextStep === 4 && shouldSkipStep4()) {
-        return 5;
+      if (nextStep === 3 && shouldSkipStep3()) {
+        return 4;
       }
       return nextStep;
     },
-    [shouldSkipStep4]
+    [shouldSkipStep3]
   );
 
   const getPrevStep = useCallback(
     (fromStep: number): number => {
       const prevStep = fromStep - 1;
-      if (prevStep === 4 && shouldSkipStep4()) {
-        return 3;
+      if (prevStep === 3 && shouldSkipStep3()) {
+        return 2;
       }
       return prevStep;
     },
-    [shouldSkipStep4]
+    [shouldSkipStep3]
   );
 
   // ==================== NAVIGATION ====================
@@ -391,7 +392,7 @@ export function useLogisticaAnalisisForm({
     currentStepConfig,
     isFirstStep,
     isLastStep,
-    shouldSkipStep4,
+    shouldSkipStep3,
 
     // Actions
     handleNextStep,

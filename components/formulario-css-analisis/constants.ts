@@ -1,19 +1,4 @@
-import {
-  Building2,
-  MapPin,
-  Users,
-  FileText,
-  Package,
-  Ruler,
-  Paperclip,
-  Layers,
-  BoxSelect,
-  Home,
-  Globe,
-} from "lucide-react";
-
-import { ContenedorTipo, ContenedorMedida } from "@prisma/client";
-import { StepConfig } from "@/interfaces/visits";
+import { FileText, Package, Ruler, Paperclip } from "lucide-react";
 
 // ==================== STEP COLORS ====================
 export type StepColor =
@@ -69,91 +54,54 @@ export const STEP_COLOR_MAP: Record<StepColor, StepColorClasses> = {
   },
 };
 
-// ==================== FORM STEPS ====================
+export interface StepConfig {
+  number: number;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  color: StepColor;
+  fields: string[];
+}
+
+/**
+ * Pasos del formulario CSS optimizados
+ * Se eliminaron los pasos de datos autocompletados (empresa, ubicación, comercial)
+ * Ahora el flujo empieza directamente con el contenido relevante
+ */
 export const FORM_STEPS: StepConfig[] = [
   {
-    id: 1,
-    name: "Empresa",
-    description: "Datos de la empresa",
-    icon: Building2,
-    color: "primary",
-    fields: [
-      "razonSocial",
-      "personaContacto",
-      "email",
-      "numeroIdentificacionFiscal",
-      "website",
-    ],
-  },
-  {
-    id: 2,
-    name: "Ubicación",
-    description: "Dirección y localización",
-    icon: MapPin,
-    color: "blue",
-    fields: [
-      "direccion",
-      "localidad",
-      "codigoPostal",
-      "provinciaEstado",
-      "pais",
-    ],
-  },
-  {
-    id: 3,
-    name: "Comercial",
-    description: "Información de ventas",
-    icon: Users,
-    color: "amber",
-    fields: [
-      "distribuidor",
-      "contactoDistribuidor",
-      "fechaCierre",
-      "datosClienteUsuarioFinal",
-    ],
-  },
-  {
-    id: 4,
-    name: "Producto",
+    number: 1,
+    title: "Producto",
     description: "Descripción del proyecto",
     icon: FileText,
     color: "violet",
-    fields: ["descripcionProducto"],
+    fields: ["descripcionProducto", "fechaCierre"],
   },
   {
-    id: 5,
-    name: "Contenedor",
+    number: 2,
+    title: "Contenedor",
     description: "Tipo y operación",
     icon: Package,
     color: "emerald",
     fields: ["contenedorTipos", "contenedoresPorSemana", "condicionesSuelo"],
   },
   {
-    id: 6,
-    name: "Medidas",
+    number: 3,
+    title: "Medidas",
     description: "Dimensiones del contenedor",
     icon: Ruler,
     color: "rose",
     fields: ["contenedorMedidas", "contenedorMedidaOtro"],
   },
   {
-    id: 7,
-    name: "Archivos",
+    number: 4,
+    title: "Archivos",
     description: "Fotos, videos y documentos",
     icon: Paperclip,
     color: "cyan",
     fields: ["archivos"],
   },
 ];
-
-// ==================== CONTENEDOR ICONS ====================
-export const CONTENEDOR_TIPO_ICONS: Record<ContenedorTipo, React.ElementType> =
-  {
-    SOBRE_CAMION: Layers,
-    EN_SUELO: BoxSelect,
-    INTERIOR: Home,
-    EXTERIOR: Globe,
-  };
 
 // ==================== HELPER FUNCTIONS ====================
 export function getStepColorClasses(color: string): StepColorClasses {
@@ -164,6 +112,6 @@ export function getTotalSteps(): number {
   return FORM_STEPS.length;
 }
 
-export function getStepById(stepId: number): StepConfig | undefined {
-  return FORM_STEPS.find((step) => step.id === stepId);
+export function getStepByNumber(stepNumber: number): StepConfig | undefined {
+  return FORM_STEPS.find((step) => step.number === stepNumber);
 }

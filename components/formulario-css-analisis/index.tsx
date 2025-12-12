@@ -13,14 +13,11 @@ import {
 } from "./utils/default-values";
 
 import { FormHeader } from "./ui/form-header";
-import { Step6Content } from "./steps/step-6-medidas";
 import { FormNavigation } from "./ui/form-navigation";
-import { Step1Content } from "./steps/step-1-empresa";
-import { Step4Content } from "./steps/step-4-producto";
-import { Step7Content } from "./steps/step-7-archivos";
-import { Step2Content } from "./steps/step-2-ubicacion";
-import { Step3Content } from "./steps/step-3-comercial";
-import { Step5Content } from "./steps/step-5-contenedor";
+import { Step1Content } from "./steps/step-4-producto";
+import { Step2Content } from "./steps/step-5-contenedor";
+import { Step3Content } from "./steps/step-6-medidas";
+import { Step4Content } from "./steps/step-7-archivos";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useCSSAnalisisForm } from "./hooks/use-css-analisis-form";
 
@@ -91,26 +88,21 @@ export default function FormularioCSSAnalisis({
 
     return (
       <>
+        {/* Step 1: Producto y Fecha de cierre */}
         <div className={cn(currentStep !== 1 && "hidden")}>
           <Step1Content {...stepProps} />
         </div>
+        {/* Step 2: Contenedor */}
         <div className={cn(currentStep !== 2 && "hidden")}>
           <Step2Content {...stepProps} />
         </div>
+        {/* Step 3: Medidas */}
         <div className={cn(currentStep !== 3 && "hidden")}>
           <Step3Content {...stepProps} />
         </div>
+        {/* Step 4: Archivos */}
         <div className={cn(currentStep !== 4 && "hidden")}>
-          <Step4Content {...stepProps} />
-        </div>
-        <div className={cn(currentStep !== 5 && "hidden")}>
-          <Step5Content {...stepProps} />
-        </div>
-        <div className={cn(currentStep !== 6 && "hidden")}>
-          <Step6Content {...stepProps} />
-        </div>
-        <div className={cn(currentStep !== 7 && "hidden")}>
-          <Step7Content
+          <Step4Content
             form={form}
             customerId={customer.id}
             isUploading={isUploading}

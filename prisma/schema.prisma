@@ -343,7 +343,7 @@ model FormularioCSSAnalisis {
   condicionesSuelo      String?
 
   // 4. Medidas del contenedor
-  contenedorMedida     ContenedorMedida
+  contenedorMedidas    ContenedorMedida[]
   contenedorMedidaOtro String?
 
   // 5. Archivos adjuntos (relación con FormularioArchivo)

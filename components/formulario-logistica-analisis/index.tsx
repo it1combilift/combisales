@@ -10,15 +10,13 @@ import { FormularioLogisticaAnalisisProps } from "./types";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useLogisticaAnalisisForm } from "./hooks/use-logistica-analisis-form";
 
-import {
-  Step1Content,
-  Step2Content,
-  Step3Content,
-  Step4Content,
-  Step5Content,
-  Step6Content,
-  Step7Content,
-} from "./steps";
+// Steps renumerados: Step 1 = Descripción operación, Step 2 = Datos aplicación, etc.
+import { Step1Content } from "./steps/step-2-descripcion-operacion";
+import { Step2Content } from "./steps/step-3-datos-aplicacion";
+import { Step3Content } from "./steps/step-4-equipos-electricos";
+import { Step4Content } from "./steps/step-5-dimensiones-cargas";
+import { Step5Content } from "./steps/step-6-pasillo-actual";
+import { Step6Content } from "./steps/step-7-archivos";
 
 import {
   FormularioLogisticaSchema,
@@ -61,7 +59,7 @@ export default function FormularioLogisticaAnalisis({
     currentStepConfig,
     isFirstStep,
     isLastStep,
-    shouldSkipStep4,
+    shouldSkipStep3,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -98,26 +96,29 @@ export default function FormularioLogisticaAnalisis({
 
     return (
       <>
+        {/* Step 1: Descripción operación */}
         <div className={cn(currentStep !== 1 && "hidden")}>
           <Step1Content {...stepProps} />
         </div>
+        {/* Step 2: Datos aplicación */}
         <div className={cn(currentStep !== 2 && "hidden")}>
           <Step2Content {...stepProps} />
         </div>
+        {/* Step 3: Equipos eléctricos (condicional) */}
         <div className={cn(currentStep !== 3 && "hidden")}>
           <Step3Content {...stepProps} />
         </div>
+        {/* Step 4: Dimensiones cargas */}
         <div className={cn(currentStep !== 4 && "hidden")}>
           <Step4Content {...stepProps} />
         </div>
+        {/* Step 5: Pasillo actual */}
         <div className={cn(currentStep !== 5 && "hidden")}>
           <Step5Content {...stepProps} />
         </div>
+        {/* Step 6: Archivos */}
         <div className={cn(currentStep !== 6 && "hidden")}>
-          <Step6Content {...stepProps} />
-        </div>
-        <div className={cn(currentStep !== 7 && "hidden")}>
-          <Step7Content
+          <Step6Content
             form={form}
             customerId={customer.id}
             isUploading={isUploading}
@@ -146,7 +147,7 @@ export default function FormularioLogisticaAnalisis({
         progress={progress}
         completedSteps={completedSteps}
         onGoToStep={goToStep}
-        shouldSkipStep4={shouldSkipStep4}
+        shouldSkipStep3={shouldSkipStep3}
       />
 
       {/* Form content */}

@@ -139,7 +139,7 @@ export function Step5Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem
                 className={cn(
-                  "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all select-none",
+                  "flex items-center gap-3 rounded-lg border p-1.5 cursor-pointer transition-all select-none",
                   field.value
                     ? "border-green-500/50 bg-green-50/50 dark:bg-green-950/20"
                     : "border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30"
@@ -161,10 +161,10 @@ export function Step5Content({ form }: StepContentProps) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <FormLabel className="text-xs sm:text-sm font-medium cursor-pointer">
+                  <FormLabel className="text-xs font-medium cursor-pointer">
                     ¿El piso es plano?
                   </FormLabel>
-                  <FormDescription className="text-[10px] sm:text-xs">
+                  <FormDescription className="text-[12px]">
                     {field.value
                       ? "Piso plano y uniforme"
                       : "Piso con irregularidades"}
@@ -251,3 +251,6 @@ export function Step5Content({ form }: StepContentProps) {
     </div>
   );
 }
+
+// Alias export para compatibilidad con el nuevo flujo de steps
+export { Step5Content as Step4Content };

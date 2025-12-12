@@ -7,19 +7,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ContenedorMedida } from "@prisma/client";
 import { CONTENEDOR_MEDIDA_LABELS } from "@/interfaces/visits";
 import { StepContentProps } from "../types";
+import { Label } from "@/components/ui/label";
 
 /**
- * Step 6: Container Measurements
- * Fields: contenedorMedida, contenedorMedidaOtro
+ * Step 6: Container Measurements (Multi-select)
+ * Fields: contenedorMedidas, contenedorMedidaOtro
  */
 export function Step6Content({ form }: StepContentProps) {
+  // Medidas estándar disponibles (sin TODOS que fue eliminado)
   const standardSizes = [
     ContenedorMedida.VEINTE_PIES,
     ContenedorMedida.TREINTA_PIES,
@@ -27,121 +28,138 @@ export function Step6Content({ form }: StepContentProps) {
     ContenedorMedida.CUARENTA_Y_CINCO_PIES,
   ];
 
-  const specialOptions = [ContenedorMedida.TODOS, ContenedorMedida.OTRO];
+  const selectedMedidas = form.watch("contenedorMedidas") || [];
+  const hasOtroSelected = selectedMedidas.includes(ContenedorMedida.OTRO);
+
+  // Handler para toggle de medidas
+  const handleMedidaToggle = (
+    medida: ContenedorMedida,
+    checked: boolean,
+    currentValue: ContenedorMedida[]
+  ) => {
+    if (checked) {
+      return [...currentValue, medida];
+    } else {
+      if (medida === ContenedorMedida.OTRO) {
+        form.setValue("contenedorMedidaOtro", "");
+      }
+      return currentValue.filter((m) => m !== medida);
+    }
+  };
 
   return (
     <div className="space-y-4">
       <FormField
         control={form.control}
-        name="contenedorMedida"
+        name="contenedorMedidas"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-              Medida del contenedor
+              Medidas del contenedor
               <span className="text-destructive">*</span>
             </FormLabel>
+            <FormDescription className="text-[11px] text-muted-foreground mb-2">
+              Seleccione todas las medidas con las que trabaja el cliente
+            </FormDescription>
             <FormControl>
-              <RadioGroup onValueChange={field.onChange} value={field.value}>
+              <div className="space-y-3">
                 {/* Standard sizes - grid layout */}
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                  {standardSizes.map((key) => (
-                    <Label
-                      key={key}
-                      className={cn(
-                        "flex items-center justify-between rounded-xl border-2 p-3 cursor-pointer transition-all duration-200 select-none",
-                        field.value === key
-                          ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
-                          : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
-                      )}
-                    >
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value={key} className="size-3.5" />
-                        <span className="text-xs font-medium">
-                          {CONTENEDOR_MEDIDA_LABELS[key as ContenedorMedida]}
-                        </span>
-                      </div>
-                      {field.value === key && (
-                        <div className="size-5 rounded-full bg-primary/15 flex items-center justify-center">
-                          <Check className="size-3 text-primary" />
+                  {standardSizes.map((medida) => {
+                    const isSelected = field.value?.includes(medida);
+                    return (
+                      <label
+                        key={medida}
+                        className={cn(
+                          "flex items-center justify-between rounded-xl border-2 p-2 sm:p-3 cursor-pointer transition-all duration-200 select-none",
+                          isSelected
+                            ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
+                            : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={(checked) => {
+                              field.onChange(
+                                handleMedidaToggle(
+                                  medida,
+                                  !!checked,
+                                  field.value || []
+                                )
+                              );
+                            }}
+                            className="size-4"
+                          />
+                          <span className="text-xs sm:text-sm font-medium">
+                            {CONTENEDOR_MEDIDA_LABELS[medida]}
+                          </span>
                         </div>
-                      )}
-                    </Label>
-                  ))}
+                        {isSelected && (
+                          <div className="size-5 rounded-full bg-primary/15 flex items-center justify-center">
+                            <Check className="size-3 text-primary" />
+                          </div>
+                        )}
+                      </label>
+                    );
+                  })}
                 </div>
 
                 {/* Separator */}
                 <div className="flex items-center gap-3 py-1">
                   <div className="flex-1 h-px bg-border/60" />
                   <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                    Opciones adicionales
+                    Medida personalizada
                   </span>
                   <div className="flex-1 h-px bg-border/60" />
                 </div>
 
-                {/* Special options - full width */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                  {specialOptions.map((key) => {
-                    const isAllSizes = key === ContenedorMedida.TODOS;
-                    return (
-                      <Label
-                        key={key}
-                        className={cn(
-                          "flex items-center justify-between rounded-xl border-2 p-3 cursor-pointer transition-all duration-200 select-none",
-                          field.value === key
-                            ? isAllSizes
-                              ? "border-emerald-500 bg-emerald-500/5 shadow-md shadow-emerald-500/10"
-                              : "border-amber-500 bg-amber-500/5 shadow-md shadow-amber-500/10"
-                            : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
-                        )}
-                      >
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem value={key} className="size-3.5" />
-                          <div className="flex flex-col">
-                            <span className="text-xs font-medium">
-                              {
-                                CONTENEDOR_MEDIDA_LABELS[
-                                  key as ContenedorMedida
-                                ]
-                              }
-                            </span>
-                            <span className="text-[10px] text-muted-foreground text-balance">
-                              {isAllSizes
-                                ? "Trabaja con múltiples medidas"
-                                : "Especificar dimensiones"}
-                            </span>
-                          </div>
-                        </div>
-                        {field.value === key && (
-                          <div
-                            className={cn(
-                              "size-5 rounded-full flex items-center justify-center",
-                              isAllSizes
-                                ? "bg-emerald-500/15"
-                                : "bg-amber-500/15"
-                            )}
-                          >
-                            <Check
-                              className={cn(
-                                "size-3",
-                                isAllSizes
-                                  ? "text-emerald-500"
-                                  : "text-amber-500"
-                              )}
-                            />
-                          </div>
-                        )}
-                      </Label>
-                    );
-                  })}
-                </div>
-              </RadioGroup>
+                {/* Opción "Otro" */}
+                <Label
+                  className={cn(
+                    "flex items-center justify-between rounded-xl border-2 p-2 sm:p-3 cursor-pointer transition-all duration-200 select-none",
+                    hasOtroSelected
+                      ? "border-amber-500 bg-amber-500/5 shadow-md shadow-amber-500/10"
+                      : "border-input/80 hover:border-amber-500/50 hover:bg-accent/50 hover:shadow-sm"
+                  )}
+                >
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <Checkbox
+                      checked={hasOtroSelected}
+                      onCheckedChange={(checked) => {
+                        field.onChange(
+                          handleMedidaToggle(
+                            ContenedorMedida.OTRO,
+                            !!checked,
+                            field.value || []
+                          )
+                        );
+                      }}
+                      className="size-4"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-xs sm:text-sm font-medium">
+                        {CONTENEDOR_MEDIDA_LABELS[ContenedorMedida.OTRO]}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        Especificar dimensiones adicionales
+                      </span>
+                    </div>
+                  </div>
+                  {hasOtroSelected && (
+                    <div className="size-5 rounded-full bg-amber-500/15 flex items-center justify-center">
+                      <Check className="size-3 text-amber-500" />
+                    </div>
+                  )}
+                </Label>
+              </div>
             </FormControl>
             <FormMessage className="text-xs" />
           </FormItem>
         )}
       />
 
-      {form.watch("contenedorMedida") === ContenedorMedida.OTRO && (
+      {hasOtroSelected && (
         <FormField
           control={form.control}
           name="contenedorMedidaOtro"
@@ -169,3 +187,6 @@ export function Step6Content({ form }: StepContentProps) {
     </div>
   );
 }
+
+// Alias para nuevo sistema de steps (ahora es Step 3)
+export { Step6Content as Step3Content };

@@ -1,3 +1,8 @@
+import { StepContentProps } from "../types";
+import { Input } from "@/components/ui/input";
+import { FieldWrapper } from "../ui/field-wrapper";
+import { Home, Navigation, Hash, MapPinned, Flag } from "lucide-react";
+
 import {
   FormField,
   FormItem,
@@ -5,10 +10,6 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Home, Navigation, Hash, MapPinned, Flag } from "lucide-react";
-import { FieldWrapper } from "../ui/field-wrapper";
-import { StepContentProps } from "../types";
 
 /**
  * Step 2: Location/Address Information

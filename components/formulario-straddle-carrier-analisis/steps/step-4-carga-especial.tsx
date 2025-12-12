@@ -209,3 +209,6 @@ export function Step4Content({ form }: StepContentProps) {
     </div>
   );
 }
+
+// Alias export para compatibilidad con el nuevo flujo de steps
+export { Step4Content as Step3Content };

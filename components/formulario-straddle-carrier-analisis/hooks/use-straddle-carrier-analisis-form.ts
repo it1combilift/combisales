@@ -28,7 +28,7 @@ export function useStraddleCarrierAnalisisForm({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set()
+    isEditing ? new Set([1, 2, 3, 4, 5]) : new Set()
   );
 
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -42,13 +42,13 @@ export function useStraddleCarrierAnalisisForm({
       const manejaContenedores = values.manejaContenedores;
       const manejaCargaEspecial = values.manejaCargaEspecial;
 
-      // Step 3 (Contenedores) solo aplica si manejaContenedores
-      if (step === 3 && !manejaContenedores) {
+      // Step 2 (Contenedores) solo aplica si manejaContenedores
+      if (step === 2 && !manejaContenedores) {
         return true;
       }
 
-      // Step 4 (Carga especial) solo aplica si manejaCargaEspecial
-      if (step === 4 && !manejaCargaEspecial) {
+      // Step 3 (Carga especial) solo aplica si manejaCargaEspecial
+      if (step === 3 && !manejaCargaEspecial) {
         return true;
       }
 
@@ -61,8 +61,8 @@ export function useStraddleCarrierAnalisisForm({
 
           case "manejaContenedores":
           case "manejaCargaEspecial":
-            // Al menos uno debe estar seleccionado
-            if (step === 2) {
+            // Al menos uno debe estar seleccionado (en Step 1)
+            if (step === 1) {
               if (!manejaContenedores && !manejaCargaEspecial) {
                 return false;
               }
@@ -93,23 +93,7 @@ export function useStraddleCarrierAnalisisForm({
           default:
             if (typeof value === "string") {
               if (!value || value.trim() === "") {
-                // Solo requerimos campos específicos por paso
-                if (step === 1) {
-                  const requiredFields = [
-                    "razonSocial",
-                    "personaContacto",
-                    "email",
-                    "direccion",
-                    "localidad",
-                    "provinciaEstado",
-                    "pais",
-                    "codigoPostal",
-                    "numeroIdentificacionFiscal",
-                  ];
-                  if (requiredFields.includes(fieldName)) {
-                    return false;
-                  }
-                }
+                // No hay campos obligatorios por defecto
               }
             }
         }
@@ -165,52 +149,54 @@ export function useStraddleCarrierAnalisisForm({
   }, [form, recalculateCompletedSteps]);
 
   // ==================== COMPUTED VALUES ====================
-  const shouldSkipStep3 = useCallback(() => {
+  // Step 2 = Contenedores (se salta si no manejaContenedores)
+  const shouldSkipStep2 = useCallback(() => {
     return !form.getValues("manejaContenedores");
   }, [form]);
 
-  const shouldSkipStep4 = useCallback(() => {
+  // Step 3 = Carga especial (se salta si no manejaCargaEspecial)
+  const shouldSkipStep3 = useCallback(() => {
     return !form.getValues("manejaCargaEspecial");
   }, [form]);
 
   const requiredStepsCount = useMemo(() => {
+    const skipStep2 = shouldSkipStep2();
     const skipStep3 = shouldSkipStep3();
-    const skipStep4 = shouldSkipStep4();
     let count = FORM_STEPS.length;
+    if (skipStep2) count--;
     if (skipStep3) count--;
-    if (skipStep4) count--;
     return count;
-  }, [shouldSkipStep3, shouldSkipStep4]);
+  }, [shouldSkipStep2, shouldSkipStep3]);
 
   const progress = useMemo(() => {
+    const skipStep2 = shouldSkipStep2();
     const skipStep3 = shouldSkipStep3();
-    const skipStep4 = shouldSkipStep4();
 
     let effectiveCompleted = 0;
     completedSteps.forEach((step) => {
+      if (step === 2 && skipStep2) return;
       if (step === 3 && skipStep3) return;
-      if (step === 4 && skipStep4) return;
       effectiveCompleted++;
     });
 
     let totalSteps = FORM_STEPS.length;
+    if (skipStep2) totalSteps--;
     if (skipStep3) totalSteps--;
-    if (skipStep4) totalSteps--;
 
     return Math.round((effectiveCompleted / totalSteps) * 100);
-  }, [completedSteps, shouldSkipStep3, shouldSkipStep4]);
+  }, [completedSteps, shouldSkipStep2, shouldSkipStep3]);
 
   const allStepsComplete = useMemo(() => {
+    const skipStep2 = shouldSkipStep2();
     const skipStep3 = shouldSkipStep3();
-    const skipStep4 = shouldSkipStep4();
 
     for (let step = 1; step <= FORM_STEPS.length; step++) {
+      if (step === 2 && skipStep2) continue;
       if (step === 3 && skipStep3) continue;
-      if (step === 4 && skipStep4) continue;
       if (!completedSteps.has(step)) return false;
     }
     return true;
-  }, [completedSteps, shouldSkipStep3, shouldSkipStep4]);
+  }, [completedSteps, shouldSkipStep2, shouldSkipStep3]);
 
   const currentStepConfig = FORM_STEPS[currentStep - 1];
   const isFirstStep = currentStep === 1;
@@ -237,33 +223,33 @@ export function useStraddleCarrierAnalisisForm({
   const getNextStep = useCallback(
     (fromStep: number): number => {
       let nextStep = fromStep + 1;
-      // Skip step 3 if not handling containers
+      // Skip step 2 if not handling containers
+      if (nextStep === 2 && shouldSkipStep2()) {
+        nextStep = 3;
+      }
+      // Skip step 3 if not handling special cargo
       if (nextStep === 3 && shouldSkipStep3()) {
         nextStep = 4;
       }
-      // Skip step 4 if not handling special cargo
-      if (nextStep === 4 && shouldSkipStep4()) {
-        nextStep = 5;
-      }
       return nextStep;
     },
-    [shouldSkipStep3, shouldSkipStep4]
+    [shouldSkipStep2, shouldSkipStep3]
   );
 
   const getPrevStep = useCallback(
     (fromStep: number): number => {
       let prevStep = fromStep - 1;
-      // Skip step 4 if not handling special cargo
-      if (prevStep === 4 && shouldSkipStep4()) {
-        prevStep = 3;
-      }
-      // Skip step 3 if not handling containers
+      // Skip step 3 if not handling special cargo
       if (prevStep === 3 && shouldSkipStep3()) {
         prevStep = 2;
       }
+      // Skip step 2 if not handling containers
+      if (prevStep === 2 && shouldSkipStep2()) {
+        prevStep = 1;
+      }
       return prevStep;
     },
-    [shouldSkipStep3, shouldSkipStep4]
+    [shouldSkipStep2, shouldSkipStep3]
   );
 
   // ==================== NAVIGATION ====================
@@ -394,8 +380,8 @@ export function useStraddleCarrierAnalisisForm({
     currentStepConfig,
     isFirstStep,
     isLastStep,
+    shouldSkipStep2,
     shouldSkipStep3,
-    shouldSkipStep4,
 
     // Actions
     handleNextStep,

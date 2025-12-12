@@ -1,46 +1,21 @@
-import {
-  Building2,
-  FileText,
-  Package,
-  Zap,
-  Ruler,
-  Layout,
-  Paperclip,
-} from "lucide-react";
+import { FileText, Package, Zap, Ruler, Layout, Paperclip } from "lucide-react";
 
+/**
+ * Pasos del formulario Industrial optimizados
+ * Se eliminó el paso de datos del cliente (autocompletados)
+ * Ahora el flujo empieza directamente con el contenido relevante
+ */
 export const FORM_STEPS = [
   {
     number: 1,
-    title: "Datos del cliente",
-    description: "Información de contacto",
-    icon: Building2,
-    color: "primary" as const,
-    fields: [
-      "razonSocial",
-      "personaContacto",
-      "email",
-      "direccion",
-      "localidad",
-      "provinciaEstado",
-      "pais",
-      "codigoPostal",
-      "website",
-      "numeroIdentificacionFiscal",
-      "distribuidor",
-      "contactoDistribuidor",
-      "fechaCierre",
-    ],
-  },
-  {
-    number: 2,
     title: "Descripción operación",
     description: "Detalles de la operación",
     icon: FileText,
     color: "blue" as const,
-    fields: ["notasOperacion"],
+    fields: ["notasOperacion", "fechaCierre"],
   },
   {
-    number: 3,
+    number: 2,
     title: "Datos aplicación",
     description: "Información técnica",
     icon: Package,
@@ -59,7 +34,7 @@ export const FORM_STEPS = [
     ],
   },
   {
-    number: 4,
+    number: 3,
     title: "Equipos eléctricos",
     description: "Especificaciones eléctricas",
     icon: Zap,
@@ -67,7 +42,7 @@ export const FORM_STEPS = [
     fields: ["equiposElectricos"],
   },
   {
-    number: 5,
+    number: 4,
     title: "Dimensiones cargas",
     description: "Tabla de dimensiones",
     icon: Ruler,
@@ -75,7 +50,7 @@ export const FORM_STEPS = [
     fields: ["dimensionesCargas"],
   },
   {
-    number: 6,
+    number: 5,
     title: "Especificaciones pasillo",
     description: "Medidas del pasillo",
     icon: Layout,
@@ -83,7 +58,7 @@ export const FORM_STEPS = [
     fields: ["especificacionesPasillo"],
   },
   {
-    number: 7,
+    number: 6,
     title: "Archivos adjuntos",
     description: "Fotos, videos y documentos",
     icon: Paperclip,

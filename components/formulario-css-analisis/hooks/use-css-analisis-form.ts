@@ -3,7 +3,7 @@ import { UseFormReturn } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
 import { VisitStatus, VisitFormType } from "@prisma/client";
-import { FORM_STEPS } from "@/constants/visits";
+import { FORM_STEPS } from "../constants";
 import { FormularioCSSSchema } from "../schemas";
 import { SaveType } from "../types";
 
@@ -28,7 +28,7 @@ export function useCSSAnalisisForm({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5, 6, 7]) : new Set()
+    isEditing ? new Set([1, 2, 3, 4]) : new Set()
   );
 
   // ==================== COMPUTED VALUES ====================
@@ -38,7 +38,7 @@ export function useCSSAnalisisForm({
   );
 
   const allStepsComplete = useMemo(() => {
-    return FORM_STEPS.every((step) => completedSteps.has(step.id));
+    return FORM_STEPS.every((step) => completedSteps.has(step.number));
   }, [completedSteps]);
 
   const currentStepConfig = FORM_STEPS[currentStep - 1];
@@ -47,15 +47,15 @@ export function useCSSAnalisisForm({
 
   // ==================== VALIDATION ====================
   const validateStep = useCallback(
-    async (stepId: number) => {
-      const stepConfig = FORM_STEPS[stepId - 1];
-      const isValid = await form.trigger(stepConfig.fields);
+    async (stepNumber: number) => {
+      const stepConfig = FORM_STEPS[stepNumber - 1];
+      const isValid = await form.trigger(stepConfig.fields as any);
       if (isValid) {
-        setCompletedSteps((prev) => new Set([...prev, stepId]));
+        setCompletedSteps((prev) => new Set([...prev, stepNumber]));
       } else {
         setCompletedSteps((prev) => {
           const next = new Set(prev);
-          next.delete(stepId);
+          next.delete(stepNumber);
           return next;
         });
       }

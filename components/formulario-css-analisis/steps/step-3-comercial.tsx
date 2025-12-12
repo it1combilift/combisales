@@ -1,3 +1,21 @@
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { StepContentProps } from "../types";
+import { FieldWrapper } from "../ui/field-wrapper";
+import { Briefcase, Phone, CalendarDays } from "lucide-react";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 import {
   FormField,
   FormItem,
@@ -5,21 +23,6 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { Briefcase, Phone, CalendarDays } from "lucide-react";
-import { FieldWrapper } from "../ui/field-wrapper";
-import { StepContentProps } from "../types";
 
 /**
  * Step 3: Commercial Information

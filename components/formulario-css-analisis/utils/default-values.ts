@@ -37,7 +37,7 @@ export function getDefaultValuesForNew(
     descripcionProducto: "",
     contenedorTipos: [],
     condicionesSuelo: "",
-    contenedorMedida: ContenedorMedida.VEINTE_PIES,
+    contenedorMedidas: [],
     contenedorMedidaOtro: "",
     archivos: [],
   };
@@ -80,8 +80,7 @@ export function getDefaultValuesForEdit(formulario: any): FormularioCSSSchema {
     condicionesSuelo: formulario.condicionesSuelo || "",
 
     // Step 6: Container measurements
-    contenedorMedida:
-      formulario.contenedorMedida || ContenedorMedida.VEINTE_PIES,
+    contenedorMedidas: formulario.contenedorMedidas || [],
     contenedorMedidaOtro: formulario.contenedorMedidaOtro || "",
 
     // Step 7: Files

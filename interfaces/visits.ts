@@ -164,7 +164,7 @@ export interface FormularioCSSAnalisis {
   contenedoresPorSemana?: number | null;
   condicionesSuelo?: string | null;
   // Medidas del contenedor
-  contenedorMedida: ContenedorMedida;
+  contenedorMedidas: ContenedorMedida[];
   contenedorMedidaOtro?: string | null;
   // Archivos adjuntos
   archivos?: FormularioArchivo[];
@@ -476,7 +476,7 @@ export interface CreateFormularioCSSData {
   contenedorTipos: ContenedorTipo[];
   contenedoresPorSemana?: number;
   condicionesSuelo?: string;
-  contenedorMedida: ContenedorMedida;
+  contenedorMedidas: ContenedorMedida[];
   contenedorMedidaOtro?: string;
   archivos?: ArchivoSubido[];
 }

@@ -11,8 +11,8 @@ interface FormHeaderProps {
   progress: number;
   completedSteps: Set<number>;
   onGoToStep: (step: number) => void;
+  shouldSkipStep2?: () => boolean;
   shouldSkipStep3?: () => boolean;
-  shouldSkipStep4?: () => boolean;
 }
 
 export function FormHeader({
@@ -21,18 +21,17 @@ export function FormHeader({
   progress,
   completedSteps,
   onGoToStep,
+  shouldSkipStep2,
   shouldSkipStep3,
-  shouldSkipStep4,
 }: FormHeaderProps) {
   const currentColors = getStepColorClasses(currentStepConfig.color);
   const StepIcon = currentStepConfig.icon;
+  const skipStep2 = shouldSkipStep2?.() ?? false;
   const skipStep3 = shouldSkipStep3?.() ?? false;
-  const skipStep4 = shouldSkipStep4?.() ?? false;
 
-  // Filter visible steps (exclude Step 3 if no containers, Step 4 if no special cargo)
   const visibleSteps = FORM_STEPS.filter((step) => {
+    if (step.number === 2 && skipStep2) return false;
     if (step.number === 3 && skipStep3) return false;
-    if (step.number === 4 && skipStep4) return false;
     return true;
   });
 
@@ -82,7 +81,7 @@ export function FormHeader({
                 type="button"
                 onClick={() => onGoToStep(step.number)}
                 className={cn(
-                  "relative flex items-center justify-center transition-all duration-200 cursor-pointer",
+                  "relative flex flex-col items-center justify-center transition-all duration-200 cursor-pointer",
                   "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5"
                 )}
                 title={step.title}
@@ -103,12 +102,24 @@ export function FormHeader({
                     <Icon className="size-3" />
                   )}
                 </div>
+                <span
+                  className={cn(
+                    "block text-[9px] mt-1 font-medium max-w-[50px] truncate text-center leading-tight",
+                    isCurrent
+                      ? "text-primary"
+                      : isCompleted
+                      ? "text-primary/70"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  {step.title}
+                </span>
               </button>
               {/* Connector line */}
               {idx < visibleSteps.length - 1 && (
                 <div
                   className={cn(
-                    "w-2 sm:w-4 h-0.5 mx-0.5",
+                    "w-2 sm:w-3 h-0.5 mx-0.5 self-start mt-3 sm:mt-3.5",
                     completedSteps.has(step.number) &&
                       completedSteps.has(visibleSteps[idx + 1]?.number)
                       ? "bg-primary/40"

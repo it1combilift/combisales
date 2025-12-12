@@ -1,3 +1,8 @@
+import { StepContentProps } from "../types";
+import { Input } from "@/components/ui/input";
+import { FieldWrapper } from "../ui/field-wrapper";
+import { Building2, User, Mail, Hash, Link2 } from "lucide-react";
+
 import {
   FormField,
   FormItem,
@@ -5,10 +10,6 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Building2, User, Mail, Hash, Link2 } from "lucide-react";
-import { FieldWrapper } from "../ui/field-wrapper";
-import { StepContentProps } from "../types";
 
 /**
  * Step 1: Company Information

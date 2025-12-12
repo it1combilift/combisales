@@ -223,20 +223,31 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
         {/* Medidas del contenedor */}
         <InfoSection title="Medidas del contenedor" icon={Ruler}>
           <div className="space-y-4">
-            {/* Main measurement */}
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-primary/5 border border-primary/20">
-              <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10">
-                <Layers className="size-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">
-                  Medida seleccionada
+            {/* Selected measurements */}
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Medidas seleccionadas
+              </p>
+              {formulario.contenedorMedidas &&
+              formulario.contenedorMedidas.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {formulario.contenedorMedidas.map((medida) => (
+                    <div
+                      key={medida}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/5 border border-primary/20"
+                    >
+                      <Layers className="size-3.5 text-primary" />
+                      <span className="text-xs md:text-sm font-medium text-foreground">
+                        {CONTENEDOR_MEDIDA_LABELS[medida]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground italic">
+                  No especificadas
                 </p>
-                <p className="text-xs md:text-sm font-semibold text-foreground">
-                  {CONTENEDOR_MEDIDA_LABELS[formulario.contenedorMedida] ||
-                    "No especificada"}
-                </p>
-              </div>
+              )}
             </div>
 
             {/* Custom measurement */}

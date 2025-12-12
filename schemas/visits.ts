@@ -46,7 +46,9 @@ export const formularioCSSSchema = z.object({
     .min(1, "Selecciona al menos un tipo"),
   contenedoresPorSemana: z.coerce.number().int().positive().optional(),
   condicionesSuelo: z.string().optional(),
-  contenedorMedida: z.nativeEnum(ContenedorMedida),
+  contenedorMedidas: z
+    .array(z.nativeEnum(ContenedorMedida))
+    .min(1, "Selecciona al menos una medida"),
   contenedorMedidaOtro: z.string().optional(),
 
   archivos: z.array(archivoSubidoSchema).optional().default([]),

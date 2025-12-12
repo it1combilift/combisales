@@ -68,7 +68,7 @@ export function transformFormularioCSSData(data: CreateFormularioCSSData) {
     contenedorTipos: data.contenedorTipos,
     contenedoresPorSemana: data.contenedoresPorSemana || null,
     condicionesSuelo: data.condicionesSuelo || null,
-    contenedorMedida: data.contenedorMedida,
+    contenedorMedidas: data.contenedorMedidas,
     contenedorMedidaOtro: data.contenedorMedidaOtro || null,
   };
 }

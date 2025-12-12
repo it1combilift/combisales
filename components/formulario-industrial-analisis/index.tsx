@@ -10,13 +10,12 @@ import { FormularioIndustrialAnalisisProps } from "./types";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useIndustrialAnalisisForm } from "./hooks/use-industrial-analisis-form";
 
-import { Step7Content } from "./steps/step-7-archivos";
-import { Step1Content } from "./steps/step-1-datos-cliente";
-import { Step3Content } from "./steps/step-3-datos-aplicacion";
-import { Step5Content } from "./steps/step-5-dimensiones-cargas";
-import { Step4Content } from "./steps/step-4-equipos-electricos";
-import { Step2Content } from "./steps/step-2-descripcion-operacion";
-import { Step6Content } from "./steps/step-6-especificaciones-pasillo";
+import { Step1Content } from "./steps/step-2-descripcion-operacion";
+import { Step2Content } from "./steps/step-3-datos-aplicacion";
+import { Step3Content } from "./steps/step-4-equipos-electricos";
+import { Step4Content } from "./steps/step-5-dimensiones-cargas";
+import { Step5Content } from "./steps/step-6-especificaciones-pasillo";
+import { Step6Content } from "./steps/step-7-archivos";
 
 import {
   FormularioIndustrialSchema,
@@ -59,7 +58,7 @@ export default function FormularioIndustrialAnalisis({
     currentStepConfig,
     isFirstStep,
     isLastStep,
-    shouldSkipStep4,
+    shouldSkipStep3,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -96,26 +95,29 @@ export default function FormularioIndustrialAnalisis({
 
     return (
       <>
+        {/* Step 1: Descripción operación */}
         <div className={cn(currentStep !== 1 && "hidden")}>
           <Step1Content {...stepProps} />
         </div>
+        {/* Step 2: Datos aplicación */}
         <div className={cn(currentStep !== 2 && "hidden")}>
           <Step2Content {...stepProps} />
         </div>
+        {/* Step 3: Equipos eléctricos (condicional) */}
         <div className={cn(currentStep !== 3 && "hidden")}>
           <Step3Content {...stepProps} />
         </div>
+        {/* Step 4: Dimensiones cargas */}
         <div className={cn(currentStep !== 4 && "hidden")}>
           <Step4Content {...stepProps} />
         </div>
+        {/* Step 5: Especificaciones pasillo */}
         <div className={cn(currentStep !== 5 && "hidden")}>
           <Step5Content {...stepProps} />
         </div>
+        {/* Step 6: Archivos */}
         <div className={cn(currentStep !== 6 && "hidden")}>
-          <Step6Content {...stepProps} />
-        </div>
-        <div className={cn(currentStep !== 7 && "hidden")}>
-          <Step7Content
+          <Step6Content
             form={form}
             customerId={customer.id}
             isUploading={isUploading}
@@ -144,7 +146,7 @@ export default function FormularioIndustrialAnalisis({
         progress={progress}
         completedSteps={completedSteps}
         onGoToStep={goToStep}
-        shouldSkipStep4={shouldSkipStep4}
+        shouldSkipStep3={shouldSkipStep3}
       />
 
       {/* Form content */}

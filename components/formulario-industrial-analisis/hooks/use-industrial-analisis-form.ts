@@ -28,7 +28,7 @@ export function useIndustrialAnalisisForm({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5, 6, 7]) : new Set()
+    isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set()
   );
 
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -41,7 +41,8 @@ export function useIndustrialAnalisisForm({
 
       const alimentacion = values.alimentacionDeseada;
 
-      if (step === 4 && alimentacion !== TipoAlimentacion.ELECTRICO) {
+      // Step 3 (Equipos eléctricos) solo aplica si alimentación es ELECTRICO
+      if (step === 3 && alimentacion !== TipoAlimentacion.ELECTRICO) {
         return true;
       }
 
@@ -166,11 +167,11 @@ export function useIndustrialAnalisisForm({
   // ==================== COMPUTED VALUES ====================
   /**
    * Calcula el número de pasos requeridos
-   * Si alimentación no es ELECTRICO, Step 4 no cuenta
+   * Si alimentación no es ELECTRICO, Step 3 (Equipos eléctricos) no cuenta
    */
   const requiredStepsCount = useMemo(() => {
     const alimentacion = form.watch("alimentacionDeseada");
-    // Si no es eléctrico, son 6 pasos (excluye Step 4)
+    // Si no es eléctrico, son 5 pasos (excluye Step 3)
     return alimentacion !== TipoAlimentacion.ELECTRICO
       ? FORM_STEPS.length - 1
       : FORM_STEPS.length;
@@ -178,26 +179,26 @@ export function useIndustrialAnalisisForm({
 
   const progress = useMemo(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
-    const skipStep4 = alimentacion !== TipoAlimentacion.ELECTRICO;
+    const skipStep3 = alimentacion !== TipoAlimentacion.ELECTRICO;
 
-    // Si debemos saltar Step 4, no contarlo en completados
+    // Si debemos saltar Step 3, no contarlo en completados
     let effectiveCompleted = completedSteps.size;
-    if (skipStep4 && completedSteps.has(4)) {
+    if (skipStep3 && completedSteps.has(3)) {
       effectiveCompleted--;
     }
 
-    const totalSteps = skipStep4 ? FORM_STEPS.length - 1 : FORM_STEPS.length;
+    const totalSteps = skipStep3 ? FORM_STEPS.length - 1 : FORM_STEPS.length;
     return Math.round((effectiveCompleted / totalSteps) * 100);
   }, [completedSteps, form]);
 
   const allStepsComplete = useMemo(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
-    const skipStep4 = alimentacion !== TipoAlimentacion.ELECTRICO;
+    const skipStep3 = alimentacion !== TipoAlimentacion.ELECTRICO;
 
     // Verificar que todos los pasos requeridos estén completos
     for (let step = 1; step <= FORM_STEPS.length; step++) {
-      // Si debemos saltar Step 4, ignorarlo
-      if (step === 4 && skipStep4) continue;
+      // Si debemos saltar Step 3, ignorarlo
+      if (step === 3 && skipStep3) continue;
       if (!completedSteps.has(step)) return false;
     }
     return true;
@@ -226,10 +227,10 @@ export function useIndustrialAnalisisForm({
 
   // ==================== NAVIGATION HELPERS ====================
   /**
-   * Determina si el Step 4 debe ser saltado
-   * El Step 4 (Equipos Eléctricos) solo aplica cuando alimentación es ELECTRICO
+   * Determina si el Step 3 debe ser saltado
+   * El Step 3 (Equipos Eléctricos) solo aplica cuando alimentación es ELECTRICO
    */
-  const shouldSkipStep4 = useCallback(() => {
+  const shouldSkipStep3 = useCallback(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
     return alimentacion !== TipoAlimentacion.ELECTRICO;
   }, [form]);
@@ -240,12 +241,12 @@ export function useIndustrialAnalisisForm({
   const getNextStep = useCallback(
     (fromStep: number): number => {
       const nextStep = fromStep + 1;
-      if (nextStep === 4 && shouldSkipStep4()) {
-        return 5;
+      if (nextStep === 3 && shouldSkipStep3()) {
+        return 4;
       }
       return nextStep;
     },
-    [shouldSkipStep4]
+    [shouldSkipStep3]
   );
 
   /**
@@ -254,12 +255,12 @@ export function useIndustrialAnalisisForm({
   const getPrevStep = useCallback(
     (fromStep: number): number => {
       const prevStep = fromStep - 1;
-      if (prevStep === 4 && shouldSkipStep4()) {
-        return 3;
+      if (prevStep === 3 && shouldSkipStep3()) {
+        return 2;
       }
       return prevStep;
     },
-    [shouldSkipStep4]
+    [shouldSkipStep3]
   );
 
   // ==================== NAVIGATION ====================
@@ -412,7 +413,7 @@ export function useIndustrialAnalisisForm({
     currentStepConfig,
     isFirstStep,
     isLastStep,
-    shouldSkipStep4,
+    shouldSkipStep3,
 
     // Actions
     handleNextStep,

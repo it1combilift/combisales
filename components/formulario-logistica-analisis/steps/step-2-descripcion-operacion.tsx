@@ -1,7 +1,12 @@
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
 import { StepContentProps, TIPO_OPERACION_OPTIONS } from "../types";
 
 import {
@@ -21,6 +26,13 @@ import {
 } from "@/components/ui/select";
 
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import {
+  CalendarIcon,
   FileText,
   ArrowUpDown,
   DoorOpen,
@@ -52,16 +64,64 @@ function SectionHeader({
 }
 
 /**
- * Step 2: Descripción de la Operación - Logística
- * Includes additional fields for ramps, doors, restrictions, etc.
+ * Step 1: Descripción de la Operación - Logística
+ * (Antes Step 2, renumerado tras eliminar datos del cliente)
+ * Includes fechaCierre and additional fields for ramps, doors, restrictions, etc.
  */
-export function Step2Content({ form }: StepContentProps) {
+export function Step1Content({ form }: StepContentProps) {
   const tieneRampas = form.watch("tieneRampas");
   const tienePasosPuertas = form.watch("tienePasosPuertas");
   const tieneRestricciones = form.watch("tieneRestricciones");
 
   return (
     <div className="space-y-5">
+      {/* ==================== FECHA CIERRE ==================== */}
+      <section>
+        <SectionHeader icon={CalendarIcon} title="Fecha Estimada" />
+        <FormField
+          control={form.control}
+          name="fechaCierre"
+          render={({ field }) => (
+            <FormItem className="max-w-xs">
+              <FormLabel className="text-[11px] font-medium">
+                Fecha estimada de cierre
+              </FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal h-8 text-xs",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 size-3.5" />
+                      {field.value
+                        ? format(new Date(field.value), "PPP", { locale: es })
+                        : "Seleccionar fecha"}
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value ? new Date(field.value) : undefined}
+                    onSelect={(date) =>
+                      field.onChange(date?.toISOString() ?? null)
+                    }
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    locale={es}
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage className="text-[10px]" />
+            </FormItem>
+          )}
+        />
+      </section>
+
       {/* ==================== NOTAS OPERACIÓN ==================== */}
       <section>
         <SectionHeader icon={FileText} title="Descripción General" />
@@ -379,3 +439,6 @@ export function Step2Content({ form }: StepContentProps) {
     </div>
   );
 }
+
+// Alias export para compatibilidad
+export { Step1Content as Step2Content };

@@ -1,49 +1,22 @@
-import {
-  Building2,
-  Info,
-  Container,
-  Package,
-  Settings,
-  Paperclip,
-} from "lucide-react";
+import { Info, Container, Package, Settings, Paperclip } from "lucide-react";
 
+// Steps optimizados: Se eliminó el Step de datos del cliente (autocompletado)
+// El campo fechaCierre se movió al Step 1 (Instrucciones)
 export const FORM_STEPS = [
   {
     number: 1,
-    title: "Datos del cliente",
-    description: "Información de contacto",
-    icon: Building2,
-    color: "primary" as const,
-    fields: [
-      "razonSocial",
-      "personaContacto",
-      "email",
-      "direccion",
-      "localidad",
-      "provinciaEstado",
-      "pais",
-      "codigoPostal",
-      "website",
-      "numeroIdentificacionFiscal",
-      "distribuidor",
-      "contactoDistribuidor",
-      "fechaCierre",
-    ],
-  },
-  {
-    number: 2,
     title: "Instrucciones",
     description: "Detalles de las cargas",
     icon: Info,
-    color: "blue" as const,
-    fields: ["manejaContenedores", "manejaCargaEspecial"],
+    color: "primary" as const,
+    fields: ["fechaCierre", "manejaContenedores", "manejaCargaEspecial"],
   },
   {
-    number: 3,
+    number: 2,
     title: "Contenedores",
     description: "Cuadro 1 - Contenedores",
     icon: Container,
-    color: "amber" as const,
+    color: "blue" as const,
     fields: [
       "manejaContenedoresIndiv",
       "dobleApilamiento",
@@ -53,11 +26,11 @@ export const FORM_STEPS = [
     ],
   },
   {
-    number: 4,
+    number: 3,
     title: "Carga especial",
     description: "Cuadro 2 - Dimensiones",
     icon: Package,
-    color: "violet" as const,
+    color: "amber" as const,
     fields: [
       "productoMasLargo",
       "productoMasCorto",
@@ -71,11 +44,11 @@ export const FORM_STEPS = [
     ],
   },
   {
-    number: 5,
+    number: 4,
     title: "Otros",
     description: "Condiciones adicionales",
     icon: Settings,
-    color: "emerald" as const,
+    color: "violet" as const,
     fields: [
       "zonasPasoAncho",
       "zonasPasoAlto",
@@ -87,11 +60,11 @@ export const FORM_STEPS = [
     ],
   },
   {
-    number: 6,
+    number: 5,
     title: "Archivos adjuntos",
     description: "Fotos, videos y documentos",
     icon: Paperclip,
-    color: "cyan" as const,
+    color: "emerald" as const,
     fields: ["archivos"],
   },
 ];

@@ -1,6 +1,6 @@
 import { FormNavigationProps } from "../types";
 import { Button } from "@/components/ui/button";
-import { FORM_STEPS } from "@/constants/visits";
+import { FORM_STEPS } from "../constants";
 import { Spinner } from "@/components/ui/spinner";
 import { ArrowLeft, ArrowRight, Send, Save, FileDown } from "lucide-react";
 

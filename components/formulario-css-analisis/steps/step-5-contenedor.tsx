@@ -91,7 +91,6 @@ export function Step5Content({ form }: StepContentProps) {
               </FormLabel>
 
               <div className="space-y-4">
-                {/* Location Type - Mutual exclusive (Radio-like behavior) */}
                 <div className="space-y-2">
                   <span className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">
                     Ubicación del contenedor
@@ -114,7 +113,7 @@ export function Step5Content({ form }: StepContentProps) {
                         >
                           <div
                             className={cn(
-                              "size-9 rounded-xl flex items-center justify-center transition-all duration-200",
+                              "size-8 rounded-xl flex items-center justify-center transition-all duration-200",
                               isChecked
                                 ? "bg-primary/15 text-primary"
                                 : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
@@ -123,7 +122,7 @@ export function Step5Content({ form }: StepContentProps) {
                             <Icon className="size-4" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <span className="text-xs font-medium block text-pretty">
+                            <span className="text-xs font-medium block text-balance">
                               {label}
                             </span>
                           </div>
@@ -176,7 +175,7 @@ export function Step5Content({ form }: StepContentProps) {
                         >
                           <div
                             className={cn(
-                              "size-9 rounded-xl flex items-center justify-center transition-all duration-200",
+                              "size-8 rounded-xl flex items-center justify-center transition-all duration-200",
                               isChecked
                                 ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
                                 : "bg-muted text-muted-foreground group-hover:bg-emerald-500/10 group-hover:text-emerald-600"
@@ -267,3 +266,6 @@ export function Step5Content({ form }: StepContentProps) {
     </div>
   );
 }
+
+// Alias para nuevo sistema de steps (ahora es Step 2)
+export { Step5Content as Step2Content };

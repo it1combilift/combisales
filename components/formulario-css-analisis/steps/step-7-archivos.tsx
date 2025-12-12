@@ -432,3 +432,6 @@ export function Step7Content({
     </div>
   );
 }
+
+// Alias para nuevo sistema de steps (ahora es Step 4)
+export { Step7Content as Step4Content };

@@ -11,12 +11,12 @@ import { FormularioStraddleCarrierAnalisisProps } from "./types";
 import { useStraddleCarrierAnalisisForm } from "./hooks/use-straddle-carrier-analisis-form";
 import { FORM_STEPS } from "./constants";
 
-import { Step5Content } from "./steps/step-5-otros";
-import { Step6Content } from "./steps/step-6-archivos";
-import { Step3Content } from "./steps/step-3-contenedores";
-import { Step1Content } from "./steps/step-1-datos-cliente";
-import { Step2Content } from "./steps/step-2-instrucciones";
-import { Step4Content } from "./steps/step-4-carga-especial";
+// Steps renumerados: Step 1 = Instrucciones, Step 2 = Contenedores, etc.
+import { Step1Content } from "./steps/step-2-instrucciones";
+import { Step2Content } from "./steps/step-3-contenedores";
+import { Step3Content } from "./steps/step-4-carga-especial";
+import { Step4Content } from "./steps/step-5-otros";
+import { Step5Content } from "./steps/step-6-archivos";
 
 import {
   FormularioStraddleCarrierSchema,
@@ -59,8 +59,8 @@ export default function FormularioStraddleCarrierAnalisis({
     currentStepConfig,
     isFirstStep,
     isLastStep,
+    shouldSkipStep2,
     shouldSkipStep3,
-    shouldSkipStep4,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -93,8 +93,8 @@ export default function FormularioStraddleCarrierAnalisis({
 
   // Calculate visible steps count for navigation
   const visibleStepsCount = FORM_STEPS.filter((step) => {
+    if (step.number === 2 && shouldSkipStep2()) return false;
     if (step.number === 3 && shouldSkipStep3()) return false;
-    if (step.number === 4 && shouldSkipStep4()) return false;
     return true;
   }).length;
 
@@ -104,23 +104,25 @@ export default function FormularioStraddleCarrierAnalisis({
 
     return (
       <>
+        {/* Step 1: Instrucciones */}
         <div className={cn(currentStep !== 1 && "hidden")}>
           <Step1Content {...stepProps} />
         </div>
+        {/* Step 2: Contenedores (condicional) */}
         <div className={cn(currentStep !== 2 && "hidden")}>
           <Step2Content {...stepProps} />
         </div>
+        {/* Step 3: Carga especial (condicional) */}
         <div className={cn(currentStep !== 3 && "hidden")}>
           <Step3Content {...stepProps} />
         </div>
+        {/* Step 4: Otros */}
         <div className={cn(currentStep !== 4 && "hidden")}>
           <Step4Content {...stepProps} />
         </div>
+        {/* Step 5: Archivos */}
         <div className={cn(currentStep !== 5 && "hidden")}>
-          <Step5Content {...stepProps} />
-        </div>
-        <div className={cn(currentStep !== 6 && "hidden")}>
-          <Step6Content
+          <Step5Content
             form={form}
             customerId={customer.id}
             isUploading={isUploading}
@@ -149,8 +151,8 @@ export default function FormularioStraddleCarrierAnalisis({
         progress={progress}
         completedSteps={completedSteps}
         onGoToStep={goToStep}
+        shouldSkipStep2={shouldSkipStep2}
         shouldSkipStep3={shouldSkipStep3}
-        shouldSkipStep4={shouldSkipStep4}
       />
 
       {/* Form content */}

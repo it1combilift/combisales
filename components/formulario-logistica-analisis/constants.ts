@@ -1,43 +1,16 @@
-import {
-  Building2,
-  FileText,
-  Package,
-  Zap,
-  Ruler,
-  Route,
-  Paperclip,
-} from "lucide-react";
+import { FileText, Package, Zap, Ruler, Route, Paperclip } from "lucide-react";
 
+// Steps optimizados: Se eliminó el Step de datos del cliente (autocompletado)
+// El campo fechaCierre se movió al Step 1 (Descripción operación)
 export const FORM_STEPS = [
   {
     number: 1,
-    title: "Datos del cliente",
-    description: "Información de contacto",
-    icon: Building2,
-    color: "primary" as const,
-    fields: [
-      "razonSocial",
-      "personaContacto",
-      "email",
-      "direccion",
-      "localidad",
-      "provinciaEstado",
-      "pais",
-      "codigoPostal",
-      "website",
-      "numeroIdentificacionFiscal",
-      "distribuidor",
-      "contactoDistribuidor",
-      "fechaCierre",
-    ],
-  },
-  {
-    number: 2,
     title: "Descripción operación",
     description: "Detalles logísticos",
     icon: FileText,
-    color: "blue" as const,
+    color: "primary" as const,
     fields: [
+      "fechaCierre",
       "notasOperacion",
       "tieneRampas",
       "notasRampas",
@@ -53,11 +26,11 @@ export const FORM_STEPS = [
     ],
   },
   {
-    number: 3,
+    number: 2,
     title: "Datos aplicación",
     description: "Información técnica",
     icon: Package,
-    color: "amber" as const,
+    color: "blue" as const,
     fields: [
       "descripcionProducto",
       "alturaUltimoNivelEstanteria",
@@ -72,15 +45,15 @@ export const FORM_STEPS = [
     ],
   },
   {
-    number: 4,
+    number: 3,
     title: "Equipos eléctricos",
     description: "Especificaciones eléctricas",
     icon: Zap,
-    color: "violet" as const,
+    color: "amber" as const,
     fields: ["equiposElectricos"],
   },
   {
-    number: 5,
+    number: 4,
     title: "Dimensiones cargas",
     description: "Tabla de dimensiones",
     icon: Ruler,
@@ -88,19 +61,19 @@ export const FORM_STEPS = [
     fields: ["dimensionesCargas"],
   },
   {
-    number: 6,
+    number: 5,
     title: "Pasillo actual",
     description: "Medidas del pasillo",
     icon: Route,
-    color: "rose" as const,
+    color: "violet" as const,
     fields: ["pasilloActual"],
   },
   {
-    number: 7,
+    number: 6,
     title: "Archivos adjuntos",
     description: "Fotos, videos y documentos",
     icon: Paperclip,
-    color: "cyan" as const,
+    color: "rose" as const,
     fields: ["archivos"],
   },
 ];
