@@ -83,7 +83,7 @@ export function Step1Content({ form }: StepContentProps) {
                       !field.value && "text-muted-foreground"
                     )}
                   >
-                    <CalendarDays className="size-4 mr-2" />
+                    <CalendarDays className="size-4" />
                     {field.value
                       ? format(field.value, "PPP", { locale: es })
                       : "Seleccionar fecha"}
