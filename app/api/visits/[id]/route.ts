@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
+import { VisitEmailData } from "@/interfaces/email";
 import { VisitFormType, VisitStatus } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { sendVisitCompletedNotification } from "@/lib/visit-notifications";
 
 import {
   VISIT_INCLUDE,
@@ -27,9 +29,6 @@ import {
   serverErrorResponse,
   createSuccessResponse,
 } from "@/lib/api-response";
-
-import { sendVisitCompletedNotification } from "@/lib/visit-notifications";
-import { VisitEmailData } from "@/interfaces/email";
 
 /**
  * GET /api/visits/[id]

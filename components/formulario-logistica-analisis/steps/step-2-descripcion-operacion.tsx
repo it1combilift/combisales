@@ -107,9 +107,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <Calendar
                     mode="single"
                     selected={field.value ? new Date(field.value) : undefined}
-                    onSelect={(date) =>
-                      field.onChange(date?.toISOString() ?? null)
-                    }
+                    onSelect={(date) => field.onChange(date ?? null)}
                     disabled={(date) => date < new Date()}
                     initialFocus
                     locale={es}
