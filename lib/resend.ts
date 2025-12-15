@@ -1,10 +1,25 @@
+import { Resend } from "resend";
+import { EMAIL_CONFIG } from "@/constants/constants";
 import { SendEmailParams, SendEmailResult } from "@/interfaces/email";
-import { EMAIL_CONFIG, resend, resendApiKey } from "@/constants/constants";
+
+const resendApiKey = process.env.RESEND_API_KEY;
 
 if (!resendApiKey) {
   console.warn(
     "RESEND_API_KEY no está configurada en las variables de entorno"
   );
+}
+
+let resendInstance: Resend | null = null;
+
+function getResendClient(): Resend {
+  if (!resendInstance) {
+    if (!resendApiKey) {
+      throw new Error("RESEND_API_KEY no está configurada");
+    }
+    resendInstance = new Resend(resendApiKey);
+  }
+  return resendInstance;
 }
 
 /**
@@ -19,10 +34,7 @@ export async function sendEmail({
   replyTo,
 }: SendEmailParams): Promise<SendEmailResult> {
   try {
-    if (!resendApiKey) {
-      throw new Error("RESEND_API_KEY no está configurada");
-    }
-
+    const resend = getResendClient();
     const content = html ? { html } : { text: text || "" };
 
     const { data, error } = await resend.emails.send({

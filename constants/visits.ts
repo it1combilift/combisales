@@ -1,3 +1,6 @@
+import { ContenedorTipo } from "@prisma/client";
+import { StepConfig } from "@/interfaces/visits";
+
 import {
   Building2,
   MapPin,
@@ -12,8 +15,6 @@ import {
   Globe,
 } from "lucide-react";
 
-import { ContenedorTipo, ContenedorMedida } from "@prisma/client";
-import { StepConfig } from "@/interfaces/visits";
 
 // ==================== STEP COLORS ====================
 export type StepColor =

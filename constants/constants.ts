@@ -1,5 +1,3 @@
-import { Resend } from "resend";
-
 export const ZOHO_AUTH_URL = "https://accounts.zoho.com/oauth/v2/auth";
 export const ZOHO_TOKEN_URL = "https://accounts.zoho.com/oauth/v2/token";
 
@@ -45,16 +43,12 @@ export const MAX_TOTAL_SIZE = 500 * 1024 * 1024; // 500MB total
 // Maximum number of files
 export const MAX_FILES = 20;
 
-export const resendApiKey = process.env.RESEND_API_KEY;
-
-export const resend = new Resend(resendApiKey);
-
+// ======= EMAIL CONFIG (safe for client) =======
 export const EMAIL_CONFIG = {
   fromEmail: "onboarding@resend.dev",
   fromName: "Combilift Sales",
   testEmail: "anyeloisaacbenavide@gmail.com",
 } as const;
-
 
 export const NOTIFICATION_CONFIG = {
   visitCompleted: {
