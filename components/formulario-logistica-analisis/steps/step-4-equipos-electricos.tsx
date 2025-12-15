@@ -4,6 +4,7 @@ import { Zap, Ban } from "lucide-react";
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { AlertMessage } from "@/components/alert";
 import { TipoAlimentacion } from "@prisma/client";
 import { TipoCorriente, TIPO_CORRIENTE_LABELS } from "../types";
@@ -260,6 +261,34 @@ export function Step4Content({ form }: StepContentProps) {
                     h
                   </span>
                 </div>
+              </FormControl>
+              <FormMessage className="text-[10px]" />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      {/* Notas / Observaciones */}
+      <div
+        className={`transition-opacity duration-200 ${
+          noAplica ? "opacity-50 pointer-events-none" : ""
+        }`}
+      >
+        <FormField
+          control={form.control}
+          name="equiposElectricos.notas"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-[11px] font-medium">
+                Observaciones (opcional)
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Notas adicionales sobre los equipos eléctricos..."
+                  className="text-sm min-h-[60px] resize-none"
+                  {...field}
+                  value={field.value ?? ""}
+                />
               </FormControl>
               <FormMessage className="text-[10px]" />
             </FormItem>

@@ -56,6 +56,7 @@ export const equiposElectricosSchema = z.object({
   amperaje: z.number().positive().nullable().optional(),
   temperaturaAmbiente: z.number().nullable().optional(),
   horasTrabajoPorDia: z.number().min(0).max(24).nullable().optional(),
+  notas: z.string().optional(),
 });
 
 export type EquiposElectricos = z.infer<typeof equiposElectricosSchema>;

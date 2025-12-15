@@ -60,6 +60,7 @@ export function getDefaultValuesForNew(
       amperaje: null,
       temperaturaAmbiente: null,
       horasTrabajoPorDia: null,
+      notas: "",
     },
 
     // Dimensiones cargas
@@ -145,6 +146,7 @@ export function getDefaultValuesForEdit(
         formulario.equiposElectricos?.temperaturaAmbiente ?? null,
       horasTrabajoPorDia:
         formulario.equiposElectricos?.horasTrabajoPorDia ?? null,
+      notas: formulario.equiposElectricos?.notas ?? "",
     },
 
     // Dimensiones cargas
