@@ -1,5 +1,6 @@
+import { sendEmail } from "@/lib/resend";
 import { VisitStatus } from "@prisma/client";
-import { sendEmail, EMAIL_CONFIG } from "@/lib/resend";
+import { EMAIL_CONFIG, NOTIFICATION_CONFIG } from "@/constants/constants";
 
 import {
   SendVisitNotificationParams,
@@ -52,17 +53,6 @@ export async function sendVisitCompletedNotification({
     };
   }
 }
-
-/**
- * Configuración para notificaciones
- * Centraliza los destinatarios por defecto
- */
-export const NOTIFICATION_CONFIG = {
-  visitCompleted: {
-    recipients: [EMAIL_CONFIG.testEmail],
-    enabled: true,
-  },
-} as const;
 
 /**
  * Determinar si se debe enviar notificación de visita

@@ -1,4 +1,3 @@
-import { SendEmailResult } from "@/lib/resend";
 import { ArchivoSubido } from "@/schemas/visits";
 
 export interface VisitEmailData {
@@ -27,3 +26,19 @@ export interface SendVisitNotificationParams {
 export interface VisitNotificationResult extends SendEmailResult {
   sentTo: string[];
 }
+
+export interface SendEmailParams {
+  to: string | string[];
+  subject: string;
+  html?: string;
+  text?: string;
+  from?: string;
+  replyTo?: string;
+}
+
+export interface SendEmailResult {
+  success: boolean;
+  data?: { id: string };
+  error?: string;
+}
+
