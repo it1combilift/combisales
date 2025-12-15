@@ -47,7 +47,7 @@ export const FORM_STEPS = [
   {
     number: 3,
     title: "Equipos eléctricos",
-    shortTitle: "Equipos",
+    shortTitle: "Eléctricos",
     description: "Especificaciones eléctricas",
     icon: Zap,
     color: "amber" as const,

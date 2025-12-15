@@ -93,10 +93,9 @@ export function FormHeader({
                     <Icon className="size-3" />
                   )}
                 </div>
-                {/* Mobile: shortTitle, Desktop: full title */}
                 <span
                   className={cn(
-                    "block sm:hidden text-[8.5px] mt-0.5 font-medium text-center leading-tight",
+                    "block text-[9px] mt-1 font-medium max-w-[60px] truncate text-center leading-tight",
                     isCurrent
                       ? "text-primary"
                       : isCompleted
@@ -105,18 +104,6 @@ export function FormHeader({
                   )}
                 >
                   {step.shortTitle}
-                </span>
-                <span
-                  className={cn(
-                    "hidden sm:block text-[9px] mt-1 font-medium max-w-[60px] truncate text-center leading-tight",
-                    isCurrent
-                      ? "text-primary"
-                      : isCompleted
-                      ? "text-primary/70"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {step.title}
                 </span>
               </button>
               {/* Connector line */}

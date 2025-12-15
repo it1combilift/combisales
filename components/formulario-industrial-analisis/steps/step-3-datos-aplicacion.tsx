@@ -71,9 +71,9 @@ export function Step3Content({ form }: StepContentProps) {
                 Producto a manipular <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Describa el producto a manipular..."
-                  className="min-h-16 sm:min-h-20 md:min-h-24 lg:min-h-28 text-sm bg-background/50 resize-none"
+                <Input
+                  placeholder="Descripción del producto"
+                  className="text-sm h-8 pr-7"
                   {...field}
                 />
               </FormControl>
