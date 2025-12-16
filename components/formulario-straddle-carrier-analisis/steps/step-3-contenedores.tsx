@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
 import { CONTAINER_SIZES } from "../constants";
+import { UseFormReturn } from "react-hook-form";
 import { AlertMessage } from "@/components/alert";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Container, Layers, Weight, FileText, Box } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
+import { Container, Weight, Box } from "lucide-react";
 
 import {
   FormField,
@@ -19,25 +19,6 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 
-// ==================== SECTION HEADER ====================
-function SectionHeader({
-  icon: Icon,
-  title,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-}) {
-  return (
-    <div className="hidden md:flex items-center gap-1.5 pb-1.5 border-b border-border/40 mb-3">
-      <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
-        <Icon className="size-3 text-primary" />
-      </div>
-      <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wide">
-        {title}
-      </h3>
-    </div>
-  );
-}
 
 // ==================== CONTAINER SIZE CARD ====================
 interface ContainerSizeCardProps {
@@ -147,7 +128,6 @@ export function Step3Content({ form }: StepContentProps) {
     <div className="space-y-4">
       {/* ==================== OPCIONES GENERALES ==================== */}
       <section>
-        <SectionHeader icon={Container} title="Opciones Generales" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {/* Manejo de contenedores individuales */}
           <FormField
@@ -172,10 +152,10 @@ export function Step3Content({ form }: StepContentProps) {
                   className="flex-1 min-w-0"
                   onClick={() => field.onChange(!field.value)}
                 >
-                  <FormLabel className="text-xs sm:text-sm font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
                     Manejo individual
                   </FormLabel>
-                  <FormDescription className="text-[10px] sm:text-xs leading-tight text-pretty">
+                  <FormDescription className="text-[11px] leading-tight text-pretty">
                     Contenedores de forma individual
                   </FormDescription>
                 </div>
@@ -206,10 +186,10 @@ export function Step3Content({ form }: StepContentProps) {
                   className="flex-1 min-w-0"
                   onClick={() => field.onChange(!field.value)}
                 >
-                  <FormLabel className="text-xs sm:text-sm font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
                     Doble apilamiento
                   </FormLabel>
-                  <FormDescription className="text-[10px] sm:text-xs leading-tight text-pretty">
+                  <FormDescription className="text-[11px] leading-tight text-pretty">
                     Apilar dos contenedores
                   </FormDescription>
                 </div>
@@ -221,7 +201,6 @@ export function Step3Content({ form }: StepContentProps) {
 
       {/* ==================== TAMAÑOS DE CONTENEDORES - Card Grid ==================== */}
       <section>
-        <SectionHeader icon={Layers} title="Tamaños y Cantidades" />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {CONTAINER_SIZES.map((size) => (
             <ContainerSizeCard
@@ -236,7 +215,6 @@ export function Step3Content({ form }: StepContentProps) {
 
       {/* ==================== PESO MÁXIMO ==================== */}
       <section>
-        <SectionHeader icon={Weight} title="Peso Máximo" />
         <FormField
           control={form.control}
           name="pesoMaximoContenedor"
@@ -274,7 +252,6 @@ export function Step3Content({ form }: StepContentProps) {
 
       {/* ==================== INFORMACIÓN ADICIONAL ==================== */}
       <section>
-        <SectionHeader icon={FileText} title="Información Adicional" />
         <FormField
           control={form.control}
           name="infoAdicionalContenedores"
@@ -296,5 +273,4 @@ export function Step3Content({ form }: StepContentProps) {
   );
 }
 
-// Alias export para compatibilidad con el nuevo flujo de steps
 export { Step3Content as Step2Content };

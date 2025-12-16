@@ -209,7 +209,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
           <div className="relative flex-1 max-w-full sm:max-w-sm">
             <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Buscar visitas..."
+              placeholder="Buscar formulario..."
               value={searchQuery}
               onChange={(event) => {
                 const value = event.target.value;

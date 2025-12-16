@@ -33,35 +33,13 @@ import {
 
 import {
   CalendarIcon,
-  FileText,
   ArrowUpDown,
   DoorOpen,
   AlertTriangle,
-  Warehouse,
   Route,
   Layers,
   Building,
 } from "lucide-react";
-
-// ==================== SECTION HEADER ====================
-function SectionHeader({
-  icon: Icon,
-  title,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-}) {
-  return (
-    <div className="hidden md:flex items-center gap-1.5 pb-1.5 border-b border-border/40 mb-3">
-      <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
-        <Icon className="size-3 text-primary" />
-      </div>
-      <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wide">
-        {title}
-      </h3>
-    </div>
-  );
-}
 
 /**
  * Step 1: Descripción de la Operación - Logística
@@ -77,7 +55,6 @@ export function Step1Content({ form }: StepContentProps) {
     <div className="space-y-5">
       {/* ==================== FECHA CIERRE ==================== */}
       <section>
-        <SectionHeader icon={CalendarIcon} title="Fecha Estimada" />
         <FormField
           control={form.control}
           name="fechaCierre"
@@ -92,7 +69,7 @@ export function Step1Content({ form }: StepContentProps) {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal h-8 text-xs",
+                        "w-fit justify-start text-left font-normal h-8 text-xs",
                         !field.value && "text-muted-foreground"
                       )}
                     >
@@ -122,7 +99,6 @@ export function Step1Content({ form }: StepContentProps) {
 
       {/* ==================== NOTAS OPERACIÓN ==================== */}
       <section>
-        <SectionHeader icon={FileText} title="Descripción General" />
         <FormField
           control={form.control}
           name="notasOperacion"
@@ -147,7 +123,6 @@ export function Step1Content({ form }: StepContentProps) {
 
       {/* ==================== CONDICIONES ESPECIALES ==================== */}
       <section>
-        <SectionHeader icon={AlertTriangle} title="Condiciones Especiales" />
         <div className="space-y-4">
           {/* Rampas */}
           <div className="space-y-2">
@@ -279,7 +254,6 @@ export function Step1Content({ form }: StepContentProps) {
 
       {/* ==================== DATOS DE LA NAVE ==================== */}
       <section>
-        <SectionHeader icon={Warehouse} title="Datos de la Nave" />
         <div className="space-y-4">
           {/* Row 1: Dimensiones principales */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">

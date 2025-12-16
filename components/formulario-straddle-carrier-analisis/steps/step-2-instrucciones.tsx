@@ -69,7 +69,6 @@ export function Step1Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem className="max-w-xs">
               <FormLabel className="text-[11px] font-medium flex items-center gap-1.5">
-                <CalendarIcon className="size-3.5" />
                 Fecha estimada de cierre
               </FormLabel>
               <Popover>
@@ -78,7 +77,7 @@ export function Step1Content({ form }: StepContentProps) {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal h-8 text-xs",
+                        "w-fit justify-start text-left font-normal h-8 text-xs",
                         !field.value && "text-muted-foreground"
                       )}
                     >
