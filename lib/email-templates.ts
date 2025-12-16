@@ -160,7 +160,7 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
 
           <!-- Descripción -->
           <div style="margin-bottom: 20px;">
-            <h3 style="color: #1f2937; font-size: 15px; margin-bottom: 8px;">📝 Descripción del Producto</h3>
+            <h3 style="color: #1f2937; font-size: 15px; margin-bottom: 8px;">Descripción del Producto</h3>
             <div style="background: #fefce8; padding: 16px; border-radius: 8px; border-left: 4px solid #eab308;">
               <p style="margin: 0; color: #713f12; font-size: 14px; white-space: pre-wrap;">${
                 data.descripcionProducto || "Sin descripción"
