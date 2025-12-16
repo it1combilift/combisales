@@ -7,8 +7,8 @@ import { VisitFormType } from "@prisma/client";
 import { FORM_TYPE_LABELS } from "@/interfaces/visits";
 import FormularioCSSAnalisis from "../formulario-css-analisis";
 import { FORM_OPTIONS, VisitFormDialogProps } from "@/interfaces/visits";
-import FormularioIndustrialAnalisis from "../formulario-industrial-analisis";
 import FormularioLogisticaAnalisis from "../formulario-logistica-analisis";
+import FormularioIndustrialAnalisis from "../formulario-industrial-analisis";
 import FormularioStraddleCarrierAnalisis from "../formulario-straddle-carrier-analisis";
 
 import {
