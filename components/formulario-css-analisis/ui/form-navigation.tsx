@@ -83,7 +83,7 @@ export function FormNavigation({
                     )}
                     {!isSavingChanges && (
                       <span className="hidden sm:inline text-xs font-medium">
-                        Guardar cambios
+                        Guardar
                       </span>
                     )}
                   </Button>

@@ -124,9 +124,11 @@ export function useFileUploader({ form, customerId }: UseFileUploaderProps) {
       try {
         const currentFiles = form.getValues("archivos") || [];
 
-        await axios.delete(`/api/upload/${archivo.cloudinaryId}`, {
-          params: { resourceType: archivo.cloudinaryType },
-        });
+        await axios.delete(
+          `/api/upload/${encodeURIComponent(archivo.cloudinaryId)}?type=${
+            archivo.cloudinaryType
+          }`
+        );
 
         const updatedFiles = currentFiles.filter(
           (f) => f.cloudinaryId !== archivo.cloudinaryId
