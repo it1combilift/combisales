@@ -50,12 +50,10 @@ export async function DELETE(
       return badRequestResponse("FILE_ID");
     }
 
-    // Try to find the file in the database
     const archivo = await prisma.formularioArchivo.findUnique({
       where: { cloudinaryId },
     });
 
-    // Determine resource type from database or query param
     let resourceType: CloudinaryResourceType = "raw";
     if (archivo) {
       resourceType = archivo.cloudinaryType as CloudinaryResourceType;
@@ -66,7 +64,6 @@ export async function DELETE(
       }
     }
 
-    // Delete from Cloudinary
     const deletedFromCloudinary = await deleteFromCloudinary(
       cloudinaryId,
       resourceType
@@ -76,7 +73,6 @@ export async function DELETE(
       console.warn(`Could not delete from Cloudinary: ${cloudinaryId}`);
     }
 
-    // Delete from database if exists
     if (archivo) {
       await prisma.formularioArchivo.delete({
         where: { cloudinaryId },
