@@ -26,6 +26,8 @@ import {
   Visit,
   FORM_TYPE_LABELS,
   VISIT_STATUS_LABELS,
+  STATUS_CONFIG,
+  VisitDetailPageProps,
 } from "@/interfaces/visits";
 
 import {
@@ -40,46 +42,6 @@ import {
   FileX,
 } from "lucide-react";
 
-interface VisitDetailPageProps {
-  params: Promise<{ id: string; visitId: string }>;
-}
-
-const STATUS_CONFIG: Record<
-  VisitStatus,
-  {
-    variant: "default" | "secondary" | "success" | "warning" | "destructive";
-    bgColor: string;
-    textColor: string;
-  }
-> = {
-  BORRADOR: {
-    variant: "warning",
-    bgColor: "bg-amber-500/10",
-    textColor: "text-amber-600 dark:text-amber-400",
-  },
-  COMPLETADA: {
-    variant: "success",
-    bgColor: "bg-emerald-500/10",
-    textColor: "text-emerald-600 dark:text-emerald-400",
-  },
-  ENVIADA: {
-    variant: "default",
-    bgColor: "bg-blue-500/10",
-    textColor: "text-blue-600 dark:text-blue-400",
-  },
-  APROBADA: {
-    variant: "success",
-    bgColor: "bg-emerald-500/10",
-    textColor: "text-emerald-600 dark:text-emerald-400",
-  },
-  RECHAZADA: {
-    variant: "destructive",
-    bgColor: "bg-red-500/10",
-    textColor: "text-red-600 dark:text-red-400",
-  },
-};
-
-// ==================== MAIN COMPONENT ====================
 const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
   const [visit, setVisit] = useState<Visit | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -106,7 +68,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
     fetchVisitDetail();
   }, [params]);
 
-  // Get the appropriate formulario based on formType
   const getFormulario = () => {
     if (!visit) return null;
 
@@ -124,7 +85,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
     }
   };
 
-  // Render the appropriate detail component based on formType
   const renderFormularioDetail = () => {
     if (!visit) return null;
 
@@ -183,9 +143,7 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
         </div>
       ) : (
         <div className="space-y-4 sm:space-y-6 px-3 sm:px-4 lg:px-6 pb-8">
-          {/* ==================== HEADER ==================== */}
           <header className="space-y-4">
-            {/* Title and status */}
             <div>
               <div className="flex flex-row justify-between items-center gap-2 sm:gap-3">
                 <div className="flex items-center gap-3 w-fit">
@@ -198,7 +156,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                   </Badge>
                 </div>
 
-                {/* Top bar with back button and actions */}
                 <div className="flex items-center justify-center gap-3 w-fit">
                   <Button
                     variant="ghost"
@@ -233,7 +190,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
               </Paragraph>
             </div>
 
-            {/* Alert for draft status */}
             {visit.status === VisitStatus.BORRADOR && (
               <AlertMessage
                 variant="warning"
@@ -243,7 +199,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
             )}
           </header>
 
-          {/* ==================== STATS GRID ==================== */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             <StatCard
               icon={ClipboardList}
@@ -270,7 +225,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
             />
           </div>
 
-          {/* ==================== CUSTOMER QUICK INFO ==================== */}
           <Card className="overflow-hidden">
             <CardContent>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -314,8 +268,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
               </div>
             </CardContent>
           </Card>
-
-          {/* ==================== FORMULARIO SECTIONS (Dynamic) ==================== */}
           {renderFormularioDetail()}
         </div>
       )}

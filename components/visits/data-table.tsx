@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { History, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,9 +9,10 @@ import { useIsMobile } from "@/components/ui/use-mobile";
 import { VisitCardSkeleton } from "../dashboard-skeleton";
 import { VisitCard } from "@/components/visits/visit-card";
 import { VisitFormType, VisitStatus } from "@prisma/client";
-import { Visit, DataTableProps } from "@/interfaces/visits";
+import { GalleryHorizontalEnd, History, X } from "lucide-react";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
+import { Visit, DataTableProps, VISIT_STATUS_ICONS } from "@/interfaces/visits";
 
 import {
   type ColumnFiltersState,
@@ -63,7 +63,6 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 
-// ==================== COLUMN LABELS ====================
 const COLUMN_LABELS: Record<string, string> = {
   formType: "Tipo de formulario",
   visitDate: "Fecha",
@@ -86,7 +85,6 @@ export function VisitsDataTable<TData extends Visit, TValue>({
 }: DataTableProps<TData, TValue>) {
   const isMobile = useIsMobile();
 
-  // URL state management with nuqs
   const [searchQuery, setSearchQuery] = useQueryState(
     "search",
     parseAsString.withDefault("")
@@ -116,15 +114,12 @@ export function VisitsDataTable<TData extends Visit, TValue>({
     parseAsString.withDefault("")
   );
 
-  // Local state
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [internalColumnFilters, setInternalColumnFilters] =
     React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [internalRowSelection, setInternalRowSelection] = React.useState({});
-
-  // Use external state if provided, otherwise use internal
   const rowSelection = externalRowSelection ?? internalRowSelection;
   const setRowSelection = setExternalRowSelection ?? setInternalRowSelection;
   const globalFilter = searchQuery;
@@ -132,7 +127,6 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   const columnFilters = externalColumnFilters ?? internalColumnFilters;
   const setColumnFilters = setExternalColumnFilters ?? setInternalColumnFilters;
 
-  // Sync sorting with URL
   React.useEffect(() => {
     if (sortBy && sortOrder) {
       setSorting([{ id: sortBy, desc: sortOrder === "desc" }]);
@@ -149,7 +143,6 @@ export function VisitsDataTable<TData extends Visit, TValue>({
     }
   }, [sorting, setSortBy, setSortOrder]);
 
-  // Sync column filters with URL
   React.useEffect(() => {
     const newFilters: ColumnFiltersState = [];
     if (statusFilter) {
@@ -189,7 +182,6 @@ export function VisitsDataTable<TData extends Visit, TValue>({
     pageCount: Math.ceil(data.length / pageSize),
   });
 
-  // Sync pagination with URL
   React.useEffect(() => {
     const tablePagination = table.getState().pagination;
     const internalPageIndex = pageIndex - 1;
@@ -212,10 +204,8 @@ export function VisitsDataTable<TData extends Visit, TValue>({
 
   return (
     <div className="w-full space-y-4">
-      {/* Search and Filters Bar */}
       <div className="flex gap-3 flex-row items-center justify-between">
         <div className="flex flex-1 items-center gap-2">
-          {/* Search Input */}
           <div className="relative flex-1 max-w-full sm:max-w-sm">
             <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -232,7 +222,6 @@ export function VisitsDataTable<TData extends Visit, TValue>({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Status Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -261,6 +250,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                 }}
                 className="cursor-pointer"
               >
+                <GalleryHorizontalEnd className="size-3.5 inline-flex" />
                 Todos
               </DropdownMenuCheckboxItem>
               {Object.entries(VISIT_STATUS_LABELS).map(([key, label]) => (
@@ -273,6 +263,16 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                   }}
                   className="cursor-pointer"
                 >
+                  {VISIT_STATUS_ICONS[key as VisitStatus] && (
+                    <span className="inline-flex">
+                      {React.createElement(
+                        VISIT_STATUS_ICONS[key as VisitStatus],
+                        {
+                          className: "size-3.5",
+                        }
+                      )}
+                    </span>
+                  )}
                   {label}
                 </DropdownMenuCheckboxItem>
               ))}

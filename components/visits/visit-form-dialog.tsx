@@ -77,7 +77,6 @@ export default function VisitFormDialog({
               </DialogHeader>
             </div>
 
-            {/* OPTIONS SCROLLABLE */}
             <div
               className="
                 flex-1 overflow-y-auto

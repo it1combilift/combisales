@@ -1,13 +1,19 @@
 "use client";
 
+import React from "react";
 import { formatDate } from "@/lib/utils";
-import { Visit } from "@/interfaces/visits";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { VisitStatus, VisitFormType } from "@prisma/client";
 import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
+
+import {
+  FORM_TYPE_ICONS,
+  Visit,
+  VISIT_STATUS_ICONS,
+} from "@/interfaces/visits";
 
 import {
   DropdownMenu,
@@ -29,24 +35,18 @@ import {
   User,
 } from "lucide-react";
 
+
 const STATUS_VARIANTS: Record<
   VisitStatus,
   "default" | "secondary" | "success" | "warning" | "destructive"
 > = {
   BORRADOR: "warning",
   COMPLETADA: "success",
-  ENVIADA: "default",
-  APROBADA: "success",
-  RECHAZADA: "destructive",
 };
 
-// ==================== STATUS COLORS ====================
 const STATUS_COLORS: Record<VisitStatus, string> = {
   BORRADOR: "border-l-amber-500",
   COMPLETADA: "border-l-green-500",
-  ENVIADA: "border-l-blue-500",
-  APROBADA: "border-l-emerald-500",
-  RECHAZADA: "border-l-red-500",
 };
 
 interface VisitCardProps {
@@ -74,7 +74,6 @@ export const VisitCard = ({
       className={`p-4 hover:shadow-lg transition-all duration-200 active:scale-[0.98] border-l-4 ${STATUS_COLORS[status]}`}
     >
       <div className="space-y-4">
-        {/* Header with checkbox, title and actions */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
             <Checkbox
@@ -83,11 +82,24 @@ export const VisitCard = ({
               aria-label={`Seleccionar visita ${visit.id}`}
               className="mt-1"
             />
-            <div className="flex-1 min-w-0">
-              <Badge variant="info" className="text-xs font-normal">
+            <div className="flex justify-start w-full items-start">
+              <Badge variant="info" className="text-xs">
+                {FORM_TYPE_ICONS[formType] && (
+                  <span className="inline-flex size-3 items-center justify-center">
+                    {React.createElement(FORM_TYPE_ICONS[formType])}
+                  </span>
+                )}
                 {FORM_TYPE_LABELS[formType]}
               </Badge>
+
               <Badge variant={STATUS_VARIANTS[status]} className="ml-2 text-xs">
+                {VISIT_STATUS_ICONS[status] && (
+                  <span>
+                    {React.createElement(VISIT_STATUS_ICONS[status], {
+                      className: "size-3",
+                    })}
+                  </span>
+                )}
                 {VISIT_STATUS_LABELS[status]}
               </Badge>
             </div>

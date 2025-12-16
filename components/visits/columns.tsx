@@ -1,21 +1,29 @@
 "use client";
 
+import React from "react";
 import { formatDate } from "@/lib/utils";
 import { VisitStatus } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { ColumnsConfig, Visit } from "@/interfaces/visits";
-import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
 
 import {
-  MoreHorizontal,
+  ColumnsConfig,
+  Visit,
+  VISIT_STATUS_ICONS,
+  FORM_TYPE_LABELS,
+  VISIT_STATUS_LABELS,
+  FORM_TYPE_ICONS,
+} from "@/interfaces/visits";
+
+import {
   Trash2,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
   ArrowUpRight,
   PencilLine,
+  MoreVertical,
 } from "lucide-react";
 
 import {
@@ -56,9 +64,16 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
           "formType"
         ) as keyof typeof FORM_TYPE_LABELS;
         return (
-          <span className="text-xs sm:text-sm leading-relaxed text-primary">
-            {FORM_TYPE_LABELS[formType]}
-          </span>
+          <div className="flex items-center gap-2">
+            {FORM_TYPE_ICONS[formType] && (
+              <span className="inline-flex size-4 items-center justify-center">
+                {React.createElement(FORM_TYPE_ICONS[formType])}
+              </span>
+            )}
+            <span className="text-xs sm:text-sm leading-relaxed text-primary">
+              {FORM_TYPE_LABELS[formType]}
+            </span>
+          </div>
         );
       },
     },
@@ -119,12 +134,16 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
         > = {
           BORRADOR: "warning",
           COMPLETADA: "success",
-          ENVIADA: "default",
-          APROBADA: "success",
-          RECHAZADA: "destructive",
         };
         return (
           <Badge variant={variants[status]}>
+            {VISIT_STATUS_ICONS[status] && (
+              <span className="inline-flex">
+                {React.createElement(VISIT_STATUS_ICONS[status], {
+                  className: "size-3.5",
+                })}
+              </span>
+            )}
             {VISIT_STATUS_LABELS[status]}
           </Badge>
         );
@@ -181,7 +200,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
                 aria-label="Abrir menú"
               >
                 <span className="sr-only">Abrir menú</span>
-                <MoreHorizontal className="size-4" />
+                <MoreVertical className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

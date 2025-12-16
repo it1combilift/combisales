@@ -1,6 +1,14 @@
-import { ClipboardList, Factory, Forklift, Ship } from "lucide-react";
 import { FormularioCSSSchema, ArchivoSubido } from "@/schemas/visits";
 import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
+
+import {
+  CheckCircle,
+  ClipboardList,
+  Factory,
+  Forklift,
+  Ship,
+  Timer,
+} from "lucide-react";
 
 import {
   VisitFormType,
@@ -602,6 +610,10 @@ export interface UpdateVisitData {
   visitDate?: Date;
 }
 
+export interface VisitDetailPageProps {
+  params: Promise<{ id: string; visitId: string }>;
+}
+
 // ==================== FORM TYPE LABELS ====================
 export const FORM_TYPE_LABELS: Record<VisitFormType, string> = {
   ANALISIS_CSS: "Análisis CSS",
@@ -613,6 +625,31 @@ export const FORM_TYPE_LABELS: Record<VisitFormType, string> = {
 export const VISIT_STATUS_LABELS: Record<VisitStatus, string> = {
   BORRADOR: "Borrador",
   COMPLETADA: "Completada",
+};
+
+export const STATUS_CONFIG: Record<
+  VisitStatus,
+  {
+    variant: "default" | "secondary" | "success" | "warning" | "destructive";
+    bgColor: string;
+    textColor: string;
+  }
+> = {
+  BORRADOR: {
+    variant: "warning",
+    bgColor: "bg-amber-500/10",
+    textColor: "text-amber-600 dark:text-amber-400",
+  },
+  COMPLETADA: {
+    variant: "success",
+    bgColor: "bg-emerald-500/10",
+    textColor: "text-emerald-600 dark:text-emerald-400",
+  }
+};
+
+export const VISIT_STATUS_ICONS: Record<VisitStatus, React.ElementType> = {
+  BORRADOR: Timer,
+  COMPLETADA: CheckCircle,
 };
 
 export const CONTENEDOR_TIPO_LABELS: Record<ContenedorTipo, string> = {
@@ -681,6 +718,13 @@ export const FORM_OPTIONS = [
     available: true,
   },
 ];
+
+export const FORM_TYPE_ICONS: Record<VisitFormType, React.ElementType> = {
+  ANALISIS_CSS: ClipboardList,
+  ANALISIS_INDUSTRIAL: Factory,
+  ANALISIS_LOGISTICA: Forklift,
+  ANALISIS_STRADDLE_CARRIER: Ship,
+};
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
