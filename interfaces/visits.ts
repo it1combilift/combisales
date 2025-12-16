@@ -613,9 +613,6 @@ export const FORM_TYPE_LABELS: Record<VisitFormType, string> = {
 export const VISIT_STATUS_LABELS: Record<VisitStatus, string> = {
   BORRADOR: "Borrador",
   COMPLETADA: "Completada",
-  ENVIADA: "Enviada",
-  APROBADA: "Aprobada",
-  RECHAZADA: "Rechazada",
 };
 
 export const CONTENEDOR_TIPO_LABELS: Record<ContenedorTipo, string> = {

@@ -259,6 +259,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                   setStatusFilter(null);
                   setPageIndex(1);
                 }}
+                className="cursor-pointer"
               >
                 Todos
               </DropdownMenuCheckboxItem>
@@ -270,6 +271,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                     setStatusFilter(statusFilter === key ? null : key);
                     setPageIndex(1);
                   }}
+                  className="cursor-pointer"
                 >
                   {label}
                 </DropdownMenuCheckboxItem>

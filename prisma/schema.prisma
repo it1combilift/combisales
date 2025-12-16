@@ -245,9 +245,6 @@ enum VisitFormType {
 enum VisitStatus {
   BORRADOR
   COMPLETADA
-  ENVIADA
-  APROBADA
-  RECHAZADA
 }
 
 model Visit {
