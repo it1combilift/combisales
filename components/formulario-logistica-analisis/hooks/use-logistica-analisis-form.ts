@@ -338,11 +338,6 @@ export function useLogisticaAnalisisForm({
   // ==================== FORM SUBMIT ====================
   const onSubmit = useCallback(
     async (data: FormularioLogisticaSchema) => {
-      if (!allStepsComplete) {
-        toast.error("Debes completar todos los pasos antes de enviar");
-        return;
-      }
-
       setIsSubmitting(true);
       try {
         await saveVisit({ saveType: "submit", visitStatus: "COMPLETADA" });
@@ -350,7 +345,7 @@ export function useLogisticaAnalisisForm({
         setIsSubmitting(false);
       }
     },
-    [allStepsComplete, saveVisit]
+    [saveVisit]
   );
 
   // ==================== SAVE DRAFT ====================

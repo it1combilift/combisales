@@ -329,11 +329,6 @@ export function useStraddleCarrierAnalisisForm({
   // ==================== FORM SUBMIT ====================
   const onSubmit = useCallback(
     async (data: FormularioStraddleCarrierSchema) => {
-      if (!allStepsComplete) {
-        toast.error("Debes completar todos los pasos antes de enviar");
-        return;
-      }
-
       setIsSubmitting(true);
       try {
         await saveVisit({ saveType: "submit" });
@@ -341,7 +336,7 @@ export function useStraddleCarrierAnalisisForm({
         setIsSubmitting(false);
       }
     },
-    [allStepsComplete, saveVisit]
+    [saveVisit]
   );
 
   // ==================== SAVE DRAFT ====================

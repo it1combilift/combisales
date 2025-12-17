@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { VisitEmailData } from "@/interfaces/email";
 import { VisitFormType, VisitStatus } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { sendVisitCompletedNotification } from "@/lib/visit-notifications";
+
+import {
+  sendVisitCompletedNotification,
+  shouldSendVisitNotification,
+  buildVisitEmailData,
+} from "@/lib/visit-notifications";
 
 import {
   VISIT_INCLUDE,
@@ -157,55 +161,41 @@ export async function PUT(
       include: VISIT_INCLUDE,
     });
 
-    const wasCompleted = existingVisit.status === VisitStatus.COMPLETADA;
-    const isNowCompleted = visitData?.status === VisitStatus.COMPLETADA;
-
-    if (!wasCompleted && isNowCompleted && formularioData) {
-      const archivos =
-        (formularioData as CreateFormularioCSSData).archivos || [];
-
-      const emailData: VisitEmailData = {
-        razonSocial:
-          (formularioData as CreateFormularioCSSData).razonSocial || "",
-        personaContacto:
-          (formularioData as CreateFormularioCSSData).personaContacto || "",
-        email: (formularioData as CreateFormularioCSSData).email || "",
-        direccion: (formularioData as CreateFormularioCSSData).direccion || "",
-        localidad: (formularioData as CreateFormularioCSSData).localidad || "",
-        provinciaEstado:
-          (formularioData as CreateFormularioCSSData).provinciaEstado || "",
-        pais: (formularioData as CreateFormularioCSSData).pais || "",
-        descripcionProducto:
-          (formularioData as CreateFormularioCSSData).descripcionProducto || "",
-        formType: existingVisit.formType,
-        visitDate: visit.visitDate,
-        archivos,
-        vendedor: visit.user
+    // Enviar notificacion de email para cualquier guardado (BORRADOR o COMPLETADA)
+    const currentStatus = visitData?.status || existingVisit.status;
+    if (shouldSendVisitNotification(currentStatus) && formularioData) {
+      const emailData = buildVisitEmailData(
+        existingVisit.formType,
+        formularioData,
+        visit.visitDate,
+        currentStatus,
+        visit.user
           ? {
               name: visit.user.name || "Sin nombre",
               email: visit.user.email || "",
             }
-          : undefined,
-      };
+          : undefined
+      );
 
-      // Enviar notificación de forma asíncrona
+      // Enviar notificacion de forma asincrona (no bloquea la respuesta)
       sendVisitCompletedNotification({ visitData: emailData })
         .then((result) => {
           if (result.success) {
             console.log(
-              `Notificación enviada para visita actualizada ${visit.id}:`,
-              result.data?.id
+              `[Email] Notificacion enviada para visita actualizada ${visit.id} (${currentStatus}):`,
+              result.data?.id,
+              `Destinatarios: ${result.sentTo.join(", ")}`
             );
           } else {
             console.error(
-              `Error enviando notificación para visita ${visit.id}:`,
+              `[Email] Error enviando notificacion para visita ${visit.id}:`,
               result.error
             );
           }
         })
         .catch((error) => {
           console.error(
-            `Error inesperado enviando notificación para visita ${visit.id}:`,
+            `[Email] Error inesperado enviando notificacion para visita ${visit.id}:`,
             error
           );
         });

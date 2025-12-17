@@ -47,12 +47,20 @@ export const MAX_FILES = 20;
 export const EMAIL_CONFIG = {
   fromEmail: "onboarding@resend.dev",
   fromName: "Combilift Sales",
-  testEmail: "anyeloisaacbenavide@gmail.com",
+  // Destinatarios para borradores
+  draftRecipients: ["anyeloisaacbenavide@gmail.com"],
+  // Destinatarios para visitas completadas
+  completedRecipients: [
+    "anyeloisaacbenavide@gmail.com",
+    "anyeloanyelobg.dev@gmail.com",
+  ],
+  // Logo de la empresa
+  companyLogo:
+    "https://cdn-ilecokb.nitrocdn.com/hnMkqPskCLTYmYthFPcpNZClCZrSTwWV/assets/images/optimized/rev-f20b5bb/combilift.com/wp-content/uploads/2024/08/cropped-cropped-cropped-Combilift-logo-lg-1.jpg",
 } as const;
 
 export const NOTIFICATION_CONFIG = {
   visitCompleted: {
-    recipients: [EMAIL_CONFIG.testEmail],
     enabled: true,
   },
 } as const;

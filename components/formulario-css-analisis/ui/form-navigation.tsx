@@ -1,6 +1,6 @@
+import { FORM_STEPS } from "../constants";
 import { FormNavigationProps } from "../types";
 import { Button } from "@/components/ui/button";
-import { FORM_STEPS } from "../constants";
 import { Spinner } from "@/components/ui/spinner";
 import { ArrowLeft, ArrowRight, Send, Save, FileDown } from "lucide-react";
 
@@ -127,11 +127,13 @@ export function FormNavigation({
                     {isSavingDraft ? (
                       <Spinner variant="ellipsis" />
                     ) : (
-                      <FileDown className="size-3.5" />
+                      <>
+                        <FileDown className="size-3.5" />
+                        <span className="hidden sm:inline text-xs font-medium">
+                          Borrador
+                        </span>
+                      </>
                     )}
-                    <span className="hidden sm:inline text-xs font-medium">
-                      Borrador
-                    </span>
                   </Button>
 
                   <Button

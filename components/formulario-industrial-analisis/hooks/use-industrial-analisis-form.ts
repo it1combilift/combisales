@@ -359,11 +359,6 @@ export function useIndustrialAnalisisForm({
   // ==================== FORM SUBMIT ====================
   const onSubmit = useCallback(
     async (data: FormularioIndustrialSchema) => {
-      if (!allStepsComplete) {
-        toast.error("Debes completar todos los pasos antes de enviar");
-        return;
-      }
-
       setIsSubmitting(true);
       try {
         await saveVisit({ saveType: "submit", visitStatus: "COMPLETADA" });
@@ -371,7 +366,7 @@ export function useIndustrialAnalisisForm({
         setIsSubmitting(false);
       }
     },
-    [allStepsComplete, saveVisit]
+    [saveVisit]
   );
 
   // ==================== SAVE DRAFT ====================
