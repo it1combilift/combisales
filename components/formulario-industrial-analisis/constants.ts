@@ -32,8 +32,8 @@ export const FORM_STEPS = [
   },
   {
     number: 3,
-    title: "Equipos eléctricos",
-    shortTitle: "Eléctricos",
+    title: "Baterías",
+    shortTitle: "Baterías",
     description: "Especificaciones eléctricas",
     icon: Zap,
     color: "violet" as const,
@@ -41,8 +41,8 @@ export const FORM_STEPS = [
   },
   {
     number: 4,
-    title: "Dimensiones cargas",
-    shortTitle: "Dimensiones",
+    title: "Cargas",
+    shortTitle: "Cargas",
     description: "Tabla de dimensiones",
     icon: Ruler,
     color: "emerald" as const,
