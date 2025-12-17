@@ -6,14 +6,13 @@ import { ZohoAccount } from "@/interfaces/zoho";
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/empty-card";
 import { H1, Paragraph } from "@/components/fonts/fonts";
-import { useState, useEffect, useCallback, useRef } from "react";
 import { createColumns } from "@/components/accounts/columns";
 import type { ColumnFiltersState } from "@tanstack/react-table";
-import { RefreshCw, Building2, AlertCircle, Search } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AccountsTable } from "@/components/accounts/accounts-table";
+import { RefreshCw, Building2, AlertCircle, Search } from "lucide-react";
 import { DashboardProjectsPageSkeleton } from "@/components/dashboard-skeleton";
 
-// Constantes de paginación
 const PER_PAGE = 200;
 
 interface PaginationState {
@@ -22,7 +21,7 @@ interface PaginationState {
   isLoadingMore: boolean;
 }
 
-export default function ProjectsPage() {
+export default function ClientsPage() {
   const [accounts, setAccounts] = useState<ZohoAccount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -32,17 +31,14 @@ export default function ProjectsPage() {
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  // Estado de paginación del backend
   const [pagination, setPagination] = useState<PaginationState>({
     currentPage: 1,
     hasMoreRecords: false,
     isLoadingMore: false,
   });
 
-  // Store all accounts for reference when clearing search
   const allAccountsRef = useRef<ZohoAccount[]>([]);
 
-  // Flag para evitar llamadas duplicadas
   const isLoadingRef = useRef(false);
 
   /**
@@ -101,18 +97,15 @@ export default function ProjectsPage() {
         let currentPage = 1;
         let hasMore = true;
 
-        // Cargar todas las páginas progresivamente
         while (hasMore) {
           const result = await fetchAccountsPage(currentPage);
 
-          // Concatenar sin duplicados (por ID)
           const existingIds = new Set(allAccounts.map((a) => a.id));
           const newAccounts = result.accounts.filter(
             (a: ZohoAccount) => !existingIds.has(a.id)
           );
           allAccounts = [...allAccounts, ...newAccounts];
 
-          // Actualizar estado progresivamente para mostrar datos mientras carga
           setAccounts([...allAccounts]);
           setPagination({
             currentPage,
@@ -123,13 +116,11 @@ export default function ProjectsPage() {
           hasMore = result.pagination.more_records;
           currentPage++;
 
-          // Prevenir rate limiting (pequeña pausa entre requests)
           if (hasMore) {
             await new Promise((resolve) => setTimeout(resolve, 100));
           }
         }
 
-        // Guardar referencia de todas las cuentas
         allAccountsRef.current = allAccounts;
 
         setPagination((prev) => ({
@@ -178,7 +169,6 @@ export default function ProjectsPage() {
           isLoadingMore: false,
         });
       } catch (err: any) {
-        // No mostrar error en búsqueda para evitar spam
         console.error("Search error:", err);
         setAccounts([]);
       } finally {
@@ -200,7 +190,6 @@ export default function ProjectsPage() {
       setSearchQuery(searchText);
 
       if (searchText.trim().length === 0) {
-        // If search is empty, restore all accounts
         setAccounts(allAccountsRef.current);
         setPagination({
           currentPage: 1,
@@ -210,7 +199,6 @@ export default function ProjectsPage() {
         return;
       }
 
-      // Minimum 2 characters to search
       if (searchText.trim().length < 2) {
         return;
       }
@@ -234,7 +222,6 @@ export default function ProjectsPage() {
   // Handle refresh - reload all pages
   const handleRefresh = useCallback(() => {
     setSearchQuery("");
-    setAccounts([]);
     allAccountsRef.current = [];
     fetchAllAccounts({ isRefresh: true });
   }, [fetchAllAccounts]);
@@ -287,7 +274,7 @@ export default function ProjectsPage() {
                     {pagination.isLoadingMore && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary animate-pulse">
                         <RefreshCw className="size-3 animate-spin" />
-                        Cargando más...
+                        Cargando...
                       </span>
                     )}
                   </div>
