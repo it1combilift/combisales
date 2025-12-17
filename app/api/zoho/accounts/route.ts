@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
-    const perPage = parseInt(searchParams.get("per_page") || "50");
+    const perPage = parseInt(searchParams.get("per_page") || "200");
     const sortBy = searchParams.get("sort_by") || "Modified_Time";
     const sortOrder = (searchParams.get("sort_order") || "desc") as
       | "asc"

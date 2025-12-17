@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Building2 } from "lucide-react";
 import { EmptyCard } from "../empty-card";
 import { useRouter } from "next/navigation";
 import { AccountCard } from "./accounts-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useDebouncedCallback } from "use-debounce";
+import { Building2, X, Loader2 } from "lucide-react";
 import { AccountsTableProps } from "@/interfaces/zoho";
 import { useIsMobile } from "@/components/ui/use-mobile";
 import { AccountsCardsPageSkeleton } from "../dashboard-skeleton";
@@ -66,14 +67,24 @@ export function AccountsTable({
   setRowSelection: setExternalRowSelection,
   columnFilters: externalColumnFilters,
   setColumnFilters: setExternalColumnFilters,
+  // Props para búsqueda remota
+  onSearch,
+  isSearching = false,
+  searchQuery: externalSearchQuery,
+  onClearSearch,
+  // Props para paginación progresiva
+  isLoadingMore = false,
+  hasMoreRecords = false,
+  totalLoaded = 0,
 }: AccountsTableProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
 
-  const [searchQuery, setSearchQuery] = useQueryState(
-    "search",
-    parseAsString.withDefault("")
+  // Local search input state (for immediate UI feedback)
+  const [localSearchValue, setLocalSearchValue] = React.useState(
+    externalSearchQuery || ""
   );
+
   const [pageIndex, setPageIndex] = useQueryState(
     "page",
     parseAsInteger.withDefault(1)
@@ -100,10 +111,41 @@ export function AccountsTable({
 
   const rowSelection = externalRowSelection ?? internalRowSelection;
   const setRowSelection = setExternalRowSelection ?? setInternalRowSelection;
-  const globalFilter = searchQuery;
-  const setGlobalFilter = setSearchQuery;
   const columnFilters = externalColumnFilters ?? internalColumnFilters;
   const setColumnFilters = setExternalColumnFilters ?? setInternalColumnFilters;
+
+  // Debounced search callback - triggers remote search after 400ms of inactivity
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    if (onSearch) {
+      onSearch(value);
+    }
+    setPageIndex(1); // Reset to first page on search
+  }, 400);
+
+  // Sync local search value with external search query
+  React.useEffect(() => {
+    if (
+      externalSearchQuery !== undefined &&
+      externalSearchQuery !== localSearchValue
+    ) {
+      setLocalSearchValue(externalSearchQuery);
+    }
+  }, [externalSearchQuery]);
+
+  // Handle search input change
+  const handleSearchChange = (value: string) => {
+    setLocalSearchValue(value);
+    debouncedSearch(value);
+  };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setLocalSearchValue("");
+    if (onClearSearch) {
+      onClearSearch();
+    }
+    setPageIndex(1);
+  };
 
   React.useEffect(() => {
     if (sortBy && sortOrder) {
@@ -132,14 +174,11 @@ export function AccountsTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "includesString",
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      globalFilter,
       pagination: {
         pageIndex: pageIndex - 1,
         pageSize,
@@ -168,15 +207,30 @@ export function AccountsTable({
             <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Buscar clientes..."
-              value={searchQuery}
-              onChange={(event) => {
-                const value = event.target.value;
-                setSearchQuery(value);
-                setPageIndex(1);
-              }}
-              className="pl-9 h-10 text-xs sm:text-sm"
+              value={localSearchValue}
+              onChange={(event) => handleSearchChange(event.target.value)}
+              className="pl-9 pr-9 h-10 text-xs sm:text-sm"
             />
+            {/* Clear button or loading indicator */}
+            {isSearching ? (
+              <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground animate-spin" />
+            ) : localSearchValue ? (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Limpiar búsqueda"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : null}
           </div>
+          {/* Show search status badge */}
+          {externalSearchQuery && !isSearching && (
+            <span className="hidden sm:inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary whitespace-nowrap">
+              Resultados para &quot;{externalSearchQuery}&quot;
+            </span>
+          )}
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -300,7 +354,9 @@ export function AccountsTable({
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                     onClick={() =>
-                      router.push(`/dashboard/projects/visits/${data[row.index].id}`)
+                      router.push(
+                        `/dashboard/projects/visits/${data[row.index].id}`
+                      )
                     }
                     className="cursor-pointer"
                   >

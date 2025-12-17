@@ -215,4 +215,14 @@ export interface AccountsTableProps {
   setGlobalFilter?: (value: string) => void;
   columnFilters?: ColumnFiltersState;
   setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
+  // Props para búsqueda remota
+  onSearch?: (searchText: string) => void;
+  isSearching?: boolean;
+  searchQuery?: string;
+  onClearSearch?: () => void;
+  // Props para paginación progresiva
+  isLoadingMore?: boolean;
+  hasMoreRecords?: boolean;
+  onLoadMore?: () => void;
+  totalLoaded?: number;
 }

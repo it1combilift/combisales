@@ -96,7 +96,9 @@ export class ZohoCRMService {
   }
 
   /**
-   * Search accounts by name
+   * Search accounts by multiple fields (Account_Name, Razon_Social, CIF, C_digo_Cliente)
+   * Uses OR criteria for comprehensive search
+   * Note: Zoho CRM only supports 'starts_with' and 'equals' operators for text fields
    */
   async searchAccounts(
     searchText: string,
@@ -105,8 +107,20 @@ export class ZohoCRMService {
       per_page?: number;
     }
   ): Promise<ZohoCRMResponse<ZohoAccount>> {
+    // Escape special characters that could break the criteria
+    const escapedText = searchText.replace(/[()"']/g, "").trim();
+
+    // Build OR criteria to search across multiple fields
+    // Using 'starts_with' as 'contains' is not supported by Zoho CRM API
+    const criteria = [
+      `(Account_Name:starts_with:${escapedText})`,
+      `(Razon_Social:starts_with:${escapedText})`,
+      `(CIF:starts_with:${escapedText})`,
+      `(C_digo_Cliente:starts_with:${escapedText})`,
+    ].join("or");
+
     const params: Record<string, any> = {
-      criteria: `(Account_Name:starts_with:${searchText})`,
+      criteria: `(${criteria})`,
       page: options?.page || 1,
       per_page: options?.per_page || 200,
     };
