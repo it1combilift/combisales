@@ -58,7 +58,6 @@ export async function GET(
 
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    // Detectar error de permisos específicamente
     if (errorMessage.includes("ZOHO_NO_PERMISSION")) {
       return NextResponse.json(
         {

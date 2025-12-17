@@ -15,6 +15,7 @@ import AnimatedTabsComponent from "@/components/accounts/tabs";
 import { VisitsDataTable } from "@/components/visits/data-table";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
+import { AccountDetailsCard } from "@/components/accounts/account-details-card";
 
 import {
   AlertDialog,
@@ -272,17 +273,20 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
     </div>
   );
 
-  const detailsTabContent = (
+  const detailsTabContent = account ? (
+    <div className="py-4">
+      <AccountDetailsCard account={account} />
+    </div>
+  ) : (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
       <div className="rounded-full bg-muted/50 p-6 mb-4">
-        <FileText className=" text-muted-foreground" />
+        <FileText className="text-muted-foreground" />
       </div>
       <h3 className="text-xl font-semibold mb-2 text-foreground">
-        Detalles del Cliente
+        Información no disponible
       </h3>
       <p className="text-sm text-muted-foreground max-w-md">
-        Información detallada del cliente, datos de contacto, dirección y
-        preferencias.
+        No se pudo cargar la información del cliente.
       </p>
     </div>
   );

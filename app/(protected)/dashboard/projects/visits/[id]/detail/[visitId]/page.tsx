@@ -120,7 +120,6 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
     }
   };
 
-  const formulario = getFormulario();
   const statusConfig = visit ? STATUS_CONFIG[visit.status] : null;
 
   return (
