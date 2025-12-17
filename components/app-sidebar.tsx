@@ -42,15 +42,15 @@ const data = {
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: IconDashboard,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: IconDashboard,
+    // },
 
     {
       title: "Clientes",
-      url: "/dashboard/projects",
+      url: "/dashboard/clients",
       icon: IconFolder,
     },
 

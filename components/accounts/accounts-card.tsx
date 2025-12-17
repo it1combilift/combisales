@@ -40,7 +40,7 @@ export const AccountCard = ({
 }) => {
   const router = useRouter();
   const ACCOUNT_ID_URL = (accountId: string) =>
-    `/dashboard/projects/visits/${accountId}`;
+    `/dashboard/clients/visits/${accountId}`;
 
   return (
     <Card

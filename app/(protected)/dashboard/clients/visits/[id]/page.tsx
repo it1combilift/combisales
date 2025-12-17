@@ -236,7 +236,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   };
 
   const handleViewVisit = (visit: Visit) => {
-    router.push(`/dashboard/projects/visits/${id}/detail/${visit.id}`);
+    router.push(`/dashboard/clients/visits/${id}/detail/${visit.id}`);
   };
 
   const columns = createColumns({

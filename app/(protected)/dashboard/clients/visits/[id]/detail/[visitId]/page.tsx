@@ -160,7 +160,7 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                     variant="ghost"
                     size="sm"
                     onClick={() =>
-                      router.push(`/dashboard/projects/visits/${accountId}`)
+                      router.push(`/dashboard/clients/visits/${accountId}`)
                     }
                     className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2"
                   >

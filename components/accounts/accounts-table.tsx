@@ -355,7 +355,7 @@ export function AccountsTable({
                     data-state={row.getIsSelected() && "selected"}
                     onClick={() =>
                       router.push(
-                        `/dashboard/projects/visits/${data[row.index].id}`
+                        `/dashboard/clients/visits/${data[row.index].id}`
                       )
                     }
                     className="cursor-pointer"

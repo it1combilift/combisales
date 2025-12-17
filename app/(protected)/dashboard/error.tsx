@@ -37,9 +37,9 @@ export default function DashboardError({ error, reset }: ErrorProps) {
               Intentar nuevamente
             </Button>
             <Button variant="outline" asChild className="gap-2">
-              <Link href="/dashboard">
+              <Link href="/dashboard/clients">
                 <Home className="size-4" />
-                Ir al Dashboard
+                Regresar
               </Link>
             </Button>
           </div>
