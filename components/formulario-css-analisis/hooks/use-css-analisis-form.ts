@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
@@ -37,9 +37,56 @@ export function useCSSAnalisisForm({
     [currentStep]
   );
 
-  const allStepsComplete = useMemo(() => {
-    return FORM_STEPS.every((step) => completedSteps.has(step.number));
-  }, [completedSteps]);
+  // Watch required fields for real-time validation
+  const descripcionProducto = form.watch("descripcionProducto");
+  const contenedorTipos = form.watch("contenedorTipos");
+  const contenedorMedidas = form.watch("contenedorMedidas");
+
+  // Real-time validation: check if all required fields are filled
+  const allStepsComplete = useMemo((): boolean => {
+    // Step 1: descripcionProducto is required (min 10 chars)
+    const step1Valid = Boolean(
+      descripcionProducto && descripcionProducto.trim().length >= 10
+    );
+
+    // Step 2: contenedorTipos is required (min 1 item)
+    const step2Valid = Boolean(contenedorTipos && contenedorTipos.length >= 1);
+
+    // Step 3: contenedorMedidas is required (min 1 item)
+    const step3Valid = Boolean(
+      contenedorMedidas && contenedorMedidas.length >= 1
+    );
+
+    // Step 4: archivos is optional, no validation needed
+    const step4Valid = true;
+
+    return step1Valid && step2Valid && step3Valid && step4Valid;
+  }, [descripcionProducto, contenedorTipos, contenedorMedidas]);
+
+  // Update completedSteps based on real-time validation for visual feedback
+  useEffect(() => {
+    const newCompletedSteps = new Set<number>();
+
+    // Step 1
+    if (descripcionProducto && descripcionProducto.trim().length >= 10) {
+      newCompletedSteps.add(1);
+    }
+
+    // Step 2
+    if (contenedorTipos && contenedorTipos.length >= 1) {
+      newCompletedSteps.add(2);
+    }
+
+    // Step 3
+    if (contenedorMedidas && contenedorMedidas.length >= 1) {
+      newCompletedSteps.add(3);
+    }
+
+    // Step 4 is always considered complete (archivos is optional)
+    newCompletedSteps.add(4);
+
+    setCompletedSteps(newCompletedSteps);
+  }, [descripcionProducto, contenedorTipos, contenedorMedidas]);
 
   const currentStepConfig = FORM_STEPS[currentStep - 1];
   const isFirstStep = currentStep === 1;

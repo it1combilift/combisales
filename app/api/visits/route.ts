@@ -165,7 +165,6 @@ export async function POST(req: NextRequest) {
       include: VISIT_INCLUDE,
     });
 
-    // Enviar notificacion de email (siempre, tanto BORRADOR como COMPLETADA)
     const finalStatus = visitData.status || VisitStatus.COMPLETADA;
     if (shouldSendVisitNotification(finalStatus) && formularioData) {
       const emailData = buildVisitEmailData(

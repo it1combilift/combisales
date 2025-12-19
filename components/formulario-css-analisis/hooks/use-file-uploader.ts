@@ -1,10 +1,10 @@
-import { useState, useCallback, useRef } from "react";
-import { UseFormReturn } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
-import { ALL_ALLOWED_TYPES, MAX_FILES } from "@/constants/constants";
-import { FormularioCSSSchema } from "../schemas";
 import { ArchivoSubido } from "../types";
+import { UseFormReturn } from "react-hook-form";
+import { FormularioCSSSchema } from "../schemas";
+import { useState, useCallback, useRef } from "react";
+import { ALL_ALLOWED_TYPES, MAX_FILES } from "@/constants/constants";
 
 interface UseFileUploaderProps {
   form: UseFormReturn<FormularioCSSSchema>;

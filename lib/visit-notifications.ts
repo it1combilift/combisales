@@ -296,7 +296,6 @@ export async function sendVisitNotification({
   visitData,
   to,
 }: SendVisitNotificationParams): Promise<VisitNotificationResult> {
-  // Get recipients based on status or use provided recipients
   const recipients = to
     ? Array.isArray(to)
       ? to
@@ -352,7 +351,6 @@ export const sendVisitCompletedNotification = sendVisitNotification;
  * Ahora siempre envia si las notificaciones estan habilitadas
  */
 export function shouldSendVisitNotification(status: string): boolean {
-  // Enviar notificaciones para BORRADOR y COMPLETADA
   const validStatuses = [VisitStatus.BORRADOR, VisitStatus.COMPLETADA];
   return (
     validStatuses.includes(status as VisitStatus) &&

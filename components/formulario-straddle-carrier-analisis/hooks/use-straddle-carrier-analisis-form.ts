@@ -159,14 +159,6 @@ export function useStraddleCarrierAnalisisForm({
     return !form.getValues("manejaCargaEspecial");
   }, [form]);
 
-  const requiredStepsCount = useMemo(() => {
-    const skipStep2 = shouldSkipStep2();
-    const skipStep3 = shouldSkipStep3();
-    let count = FORM_STEPS.length;
-    if (skipStep2) count--;
-    if (skipStep3) count--;
-    return count;
-  }, [shouldSkipStep2, shouldSkipStep3]);
 
   const progress = useMemo(() => {
     const skipStep2 = shouldSkipStep2();
@@ -186,17 +178,24 @@ export function useStraddleCarrierAnalisisForm({
     return Math.round((effectiveCompleted / totalSteps) * 100);
   }, [completedSteps, shouldSkipStep2, shouldSkipStep3]);
 
-  const allStepsComplete = useMemo(() => {
+  const allStepsComplete = useMemo((): boolean => {
+    const values = form.getValues();
     const skipStep2 = shouldSkipStep2();
     const skipStep3 = shouldSkipStep3();
 
     for (let step = 1; step <= FORM_STEPS.length; step++) {
       if (step === 2 && skipStep2) continue;
       if (step === 3 && skipStep3) continue;
-      if (!completedSteps.has(step)) return false;
+      if (!validateStepFields(step, values)) return false;
     }
     return true;
-  }, [completedSteps, shouldSkipStep2, shouldSkipStep3]);
+  }, [
+    completedSteps,
+    shouldSkipStep2,
+    shouldSkipStep3,
+    form,
+    validateStepFields,
+  ]);
 
   const currentStepConfig = FORM_STEPS[currentStep - 1];
   const isFirstStep = currentStep === 1;

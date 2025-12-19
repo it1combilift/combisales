@@ -197,16 +197,17 @@ export function useLogisticaAnalisisForm({
     return Math.round((effectiveCompleted / totalSteps) * 100);
   }, [completedSteps, form]);
 
-  const allStepsComplete = useMemo(() => {
-    const alimentacion = form.getValues("alimentacionDeseada");
+  const allStepsComplete = useMemo((): boolean => {
+    const values = form.getValues();
+    const alimentacion = values.alimentacionDeseada;
     const skipStep3 = alimentacion !== TipoAlimentacion.ELECTRICO;
 
     for (let step = 1; step <= FORM_STEPS.length; step++) {
       if (step === 3 && skipStep3) continue;
-      if (!completedSteps.has(step)) return false;
+      if (!validateStepFields(step, values)) return false;
     }
     return true;
-  }, [completedSteps, form]);
+  }, [completedSteps, form, validateStepFields]);
 
   const currentStepConfig = FORM_STEPS[currentStep - 1];
   const isFirstStep = currentStep === 1;

@@ -72,19 +72,17 @@ export type EquiposElectricos = z.infer<typeof equiposElectricosSchema>;
 // ==================== MAIN FORM SCHEMA ====================
 export const formularioIndustrialSchema = z
   .object({
-    // ==================== DATOS DEL CLIENTE ====================
-    razonSocial: z.string().min(1, "Razón social es requerida"),
-    personaContacto: z.string().min(1, "Persona de contacto es requerida"),
-    email: z.string().email("Email inválido"),
-    direccion: z.string().min(1, "Dirección es requerida"),
-    localidad: z.string().min(1, "Localidad es requerida"),
-    provinciaEstado: z.string().min(1, "Provincia/Estado es requerida"),
-    pais: z.string().min(1, "País es requerido"),
-    codigoPostal: z.string().min(1, "Código postal es requerido"),
+    // ==================== DATOS DEL CLIENTE (pre-llenados, opcionales) ====================
+    razonSocial: z.string().optional().default(""),
+    personaContacto: z.string().optional().default(""),
+    email: z.string().email("Email inválido").optional().or(z.literal("")),
+    direccion: z.string().optional().default(""),
+    localidad: z.string().optional().default(""),
+    provinciaEstado: z.string().optional().default(""),
+    pais: z.string().optional().default(""),
+    codigoPostal: z.string().optional().default(""),
     website: z.string().url("URL inválida").optional().or(z.literal("")),
-    numeroIdentificacionFiscal: z
-      .string()
-      .min(1, "No. identificación fiscal es requerido"),
+    numeroIdentificacionFiscal: z.string().optional().default(""),
     distribuidor: z.string().optional(),
     contactoDistribuidor: z.string().optional(),
     fechaCierre: z.date().optional().nullable(),
