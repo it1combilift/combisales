@@ -31,6 +31,8 @@ export function useLogisticaAnalisisForm({
     isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set()
   );
 
+  const VisitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
+
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // ==================== STEP VALIDATION LOGIC ====================
@@ -397,5 +399,8 @@ export function useLogisticaAnalisisForm({
     onSubmit,
     onSaveDraft,
     onSaveChanges,
+
+    // Visit info
+    VisitIsCompleted,
   };
 }

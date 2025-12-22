@@ -3,6 +3,7 @@ import { VisitStatus } from "@prisma/client";
 import { FormNavigationProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -71,7 +72,7 @@ export function FormNavigation({
         <div className="flex items-center gap-2">
           {isLastStep ? (
             <>
-              {isEditing ? (
+              {isEditing && !visitIsCompleted ? (
                 <>
                   <Button
                     type="button"
@@ -127,6 +128,7 @@ export function FormNavigation({
                     size="sm"
                     onClick={onSaveDraft}
                     disabled={isDisabled}
+                    className={visitIsCompleted ? "hidden" : ""}
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
@@ -148,7 +150,16 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={
+                      isDisabled ||
+                      !allStepsComplete ||
+                      visitIsCompleted === VisitStatus.COMPLETADA
+                    }
+                    className={
+                      visitIsCompleted
+                        ? "px-2 opacity-50 cursor-not-allowed"
+                        : ""
+                    }
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
@@ -159,10 +170,21 @@ export function FormNavigation({
                       <Spinner variant="ellipsis" />
                     ) : (
                       <>
-                        <Send className="size-3.5" />
-                        <span className="text-xs font-medium hidden sm:inline">
-                          Enviar
-                        </span>
+                        {visitIsCompleted ? (
+                          <>
+                            <CheckCircle className="size-3.5" />
+                            <span className="hidden sm:inline text-xs font-medium">
+                              Completado
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <Send className="size-3.5" />
+                            <span className="hidden sm:inline text-xs font-medium">
+                              Enviar
+                            </span>
+                          </>
+                        )}
                       </>
                     )}
                   </Button>

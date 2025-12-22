@@ -27,6 +27,7 @@ import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
+import { VisitStatus } from "@prisma/client";
 
 export default function FormularioStraddleCarrierAnalisis({
   customer,
@@ -67,6 +68,7 @@ export default function FormularioStraddleCarrierAnalisis({
     onSubmit,
     onSaveDraft,
     onSaveChanges,
+    visitIsCompleted,
   } = useStraddleCarrierAnalisisForm({
     form,
     customerId: customer.id,
@@ -186,7 +188,9 @@ export default function FormularioStraddleCarrierAnalisis({
             onNext={handleNextStep}
             onSaveDraft={onSaveDraft}
             onSaveChanges={onSaveChanges}
-            visibleStepsCount={visibleStepsCount}
+            visitIsCompleted={
+              visitIsCompleted ? VisitStatus.COMPLETADA : undefined
+            }
           />
         </form>
       </Form>

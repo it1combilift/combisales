@@ -2,6 +2,7 @@ import { UseFormReturn } from "react-hook-form";
 import { Customer } from "@/interfaces/visits";
 import { FormularioIndustrialSchema } from "./schemas";
 import { RefObject } from "react";
+import { VisitStatus } from "@prisma/client";
 
 // ==================== FORM PROPS ====================
 export interface FormularioIndustrialAnalisisProps {
@@ -91,6 +92,7 @@ export interface FormNavigationProps {
   onNext: () => void;
   onSaveDraft: () => void;
   onSaveChanges: () => void;
+  visitIsCompleted?: VisitStatus;
 }
 
 // ==================== SAVE VISIT PARAMS ====================

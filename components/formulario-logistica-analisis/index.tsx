@@ -27,6 +27,7 @@ import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
+import { VisitStatus } from "@prisma/client";
 
 export default function FormularioLogisticaAnalisis({
   customer,
@@ -66,6 +67,7 @@ export default function FormularioLogisticaAnalisis({
     onSubmit,
     onSaveDraft,
     onSaveChanges,
+    VisitIsCompleted,
   } = useLogisticaAnalisisForm({
     form,
     customerId: customer.id,
@@ -181,6 +183,9 @@ export default function FormularioLogisticaAnalisis({
             onNext={handleNextStep}
             onSaveDraft={onSaveDraft}
             onSaveChanges={onSaveChanges}
+            visitIsCompleted={
+              VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
+            }
           />
         </form>
       </Form>

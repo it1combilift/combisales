@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
+import { VisitStatus } from "@prisma/client";
 import { FormHeader } from "./ui/form-header";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormNavigation } from "./ui/form-navigation";
@@ -65,6 +66,7 @@ export default function FormularioIndustrialAnalisis({
     onSubmit,
     onSaveDraft,
     onSaveChanges,
+    VisitIsCompleted,
   } = useIndustrialAnalisisForm({
     form,
     customerId: customer.id,
@@ -180,6 +182,9 @@ export default function FormularioIndustrialAnalisis({
             onNext={handleNextStep}
             onSaveDraft={onSaveDraft}
             onSaveChanges={onSaveChanges}
+            visitIsCompleted={
+              VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
+            }
           />
         </form>
       </Form>

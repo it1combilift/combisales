@@ -1,3 +1,4 @@
+import { VisitStatus } from "@prisma/client";
 import { EMAIL_CONFIG } from "@/constants/constants";
 import { formatDateShort, getFormTypeName } from "@/lib/utils";
 import { formatFileSize } from "@/components/formulario-css-analisis/utils/file-utils";
@@ -10,6 +11,7 @@ import {
   FormularioLogisticaEmailData,
   FormularioStraddleCarrierEmailData,
 } from "@/interfaces/email";
+
 import {
   CONTENEDOR_MEDIDA_LABELS,
   CONTENEDOR_TIPO_LABELS,
@@ -63,14 +65,14 @@ function getStatusConfig(status: string): {
   borderColor: string;
 } {
   switch (status) {
-    case "COMPLETADA":
+    case VisitStatus.COMPLETADA:
       return {
         label: "COMPLETADA",
         bgColor: COLORS.successBg,
         textColor: COLORS.successText,
         borderColor: COLORS.success,
       };
-    case "BORRADOR":
+    case VisitStatus.BORRADOR:
       return {
         label: "BORRADOR",
         bgColor: COLORS.warningBg,
@@ -925,7 +927,7 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>${
-    data.status === "BORRADOR" ? "[Borrador] " : ""
+    data.status === VisitStatus.BORRADOR ? "[Borrador] " : ""
   }Visita: ${companyName} - ${formTypeName}</title>
   <!--[if mso]>
   <noscript>
@@ -946,7 +948,9 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
   <!-- Preheader -->
   <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">
     ${
-      data.status === "COMPLETADA" ? "Visita completada" : "Borrador de visita"
+      data.status === VisitStatus.COMPLETADA
+        ? "Visita completada"
+        : "Borrador de visita"
     }: ${companyName} - ${formTypeName}
   </div>
 
@@ -969,7 +973,7 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
               <!-- Title -->
               <h1 style="color: #ffffff; margin: 0 0 4px 0; font-size: 20px; font-weight: 700;">
                 ${
-                  data.status === "COMPLETADA"
+                  data.status === VisitStatus.COMPLETADA
                     ? "Visita completada"
                     : "Borrador de visita"
                 }
@@ -1055,11 +1059,11 @@ export function generateVisitCompletedEmailText(data: VisitEmailData): string {
   const formTypeName = getFormTypeName(data.formType);
   const archivos = data.archivos || [];
   const statusLabel =
-    data.status === "COMPLETADA"
+    data.status === VisitStatus.COMPLETADA
       ? "VISITA COMPLETADA"
-      : data.status === "BORRADOR"
+      : data.status === VisitStatus.BORRADOR
       ? "BORRADOR DE VISITA"
-      : "VISITA EN PROGRESO";
+      : "ESTADO DESCONOCIDO";
 
   let text = `
 ${"═".repeat(55)}

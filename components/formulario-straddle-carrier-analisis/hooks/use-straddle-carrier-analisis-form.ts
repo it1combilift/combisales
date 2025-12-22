@@ -30,6 +30,8 @@ export function useStraddleCarrierAnalisisForm({
     isEditing ? new Set([1, 2, 3, 4, 5]) : new Set()
   );
 
+  const visitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
+
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const validateStepFields = useCallback(
@@ -361,5 +363,8 @@ export function useStraddleCarrierAnalisisForm({
     onSubmit,
     onSaveDraft,
     onSaveChanges,
+
+    // Visit info
+    visitIsCompleted,
   };
 }
