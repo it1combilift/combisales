@@ -29,8 +29,7 @@ export function FormNavigation({
     isSavingDraft ||
     isSavingChanges ||
     isUploading ||
-    deletingFileId !== null ||
-    !allStepsComplete;
+    deletingFileId !== null
 
   return (
     <footer className="shrink-0 px-2 py-2 border-t bg-muted/20">
@@ -93,7 +92,7 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled}
+                    disabled={isDisabled || !allStepsComplete}
                     className="h-8 px-2"
                     title={
                       !allStepsComplete
@@ -143,7 +142,7 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled}
+                    disabled={isDisabled || !allStepsComplete}
                     className="h-8 px-2"
                     title={
                       !allStepsComplete

@@ -31,6 +31,8 @@ export function useCSSAnalisisForm({
     isEditing ? new Set([1, 2, 3, 4]) : new Set()
   );
 
+  const VisitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
+
   // ==================== COMPUTED VALUES ====================
   const progress = useMemo(
     () => Math.round((currentStep / FORM_STEPS.length) * 100),
@@ -238,6 +240,6 @@ export function useCSSAnalisisForm({
     onSaveChanges,
 
     // Visit info
-    VisitStatus,
+    VisitIsCompleted,
   };
 }

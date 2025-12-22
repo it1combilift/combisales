@@ -20,6 +20,7 @@ import { Step3Content } from "./steps/step-6-medidas";
 import { Step4Content } from "./steps/step-7-archivos";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useCSSAnalisisForm } from "./hooks/use-css-analisis-form";
+import { VisitStatus } from "@prisma/client";
 
 export default function FormularioCSSAnalisis({
   customer,
@@ -58,7 +59,7 @@ export default function FormularioCSSAnalisis({
     onSubmit,
     onSaveDraft,
     onSaveChanges,
-    VisitStatus
+    VisitIsCompleted,
   } = useCSSAnalisisForm({
     form,
     customerId: customer.id,
@@ -165,7 +166,9 @@ export default function FormularioCSSAnalisis({
             onNext={handleNextStep}
             onSaveDraft={onSaveDraft}
             onSaveChanges={onSaveChanges}
-            visitStatus={VisitStatus}
+            visitIsCompleted={
+              VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
+            }
           />
         </form>
       </Form>

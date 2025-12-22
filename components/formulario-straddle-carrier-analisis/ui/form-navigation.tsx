@@ -34,8 +34,7 @@ export function FormNavigation({
     isSavingDraft ||
     isSavingChanges ||
     isUploading ||
-    deletingFileId !== null ||
-    !allStepsComplete;
+    deletingFileId !== null
 
   const totalSteps = visibleStepsCount ?? FORM_STEPS.length;
 
@@ -100,7 +99,7 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled}
+                    disabled={isDisabled || !allStepsComplete}
                     className="h-8 px-2"
                     title={
                       !allStepsComplete
@@ -150,7 +149,7 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled}
+                    disabled={isDisabled || !allStepsComplete}
                     className="h-8 px-2"
                     title={
                       !allStepsComplete

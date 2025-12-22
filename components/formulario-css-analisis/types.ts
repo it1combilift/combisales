@@ -81,7 +81,7 @@ export interface FormNavigationProps {
   onNext: () => void;
   onSaveDraft: () => void;
   onSaveChanges: () => void;
-  visitStatus?: VisitStatus;
+  visitIsCompleted?: VisitStatus;
 }
 
 // ==================== SAVE VISIT PARAMS ====================
