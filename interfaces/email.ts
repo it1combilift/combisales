@@ -1,4 +1,5 @@
 import { ArchivoSubido } from "@/schemas/visits";
+import { ContenedorMedida, ContenedorTipo } from "@prisma/client";
 
 // ==================== FORM-SPECIFIC DATA TYPES ====================
 
@@ -18,9 +19,9 @@ export interface DimensionCargaEmail {
  * Datos especificos del formulario CSS
  */
 export interface FormularioCSSEmailData {
-  contenedorTipos?: string[];
+  contenedorTipos?: ContenedorTipo[];
   contenedoresPorSemana?: number | null;
-  contenedorMedidas?: string[];
+  contenedorMedidas?: ContenedorMedida[];
   contenedorMedidaOtro?: string;
   condicionesSuelo?: string;
   datosClienteUsuarioFinal?: string;

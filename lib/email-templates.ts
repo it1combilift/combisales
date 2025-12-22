@@ -10,6 +10,10 @@ import {
   FormularioLogisticaEmailData,
   FormularioStraddleCarrierEmailData,
 } from "@/interfaces/email";
+import {
+  CONTENEDOR_MEDIDA_LABELS,
+  CONTENEDOR_TIPO_LABELS,
+} from "@/interfaces/visits";
 
 // ==================== COLOR PALETTE ====================
 const COLORS = {
@@ -250,7 +254,9 @@ function buildCSSFormContent(data: FormularioCSSEmailData): string {
   html += buildSectionHeader("Contenedor");
   html += buildRow(
     "Tipos de contenedor",
-    data.contenedorTipos?.join(", ") || null
+    data.contenedorTipos
+      ?.map((tipo) => CONTENEDOR_TIPO_LABELS[tipo])
+      .join(", ") || null
   );
   html += buildRow(
     "Contenedores por semana",
@@ -264,8 +270,11 @@ function buildCSSFormContent(data: FormularioCSSEmailData): string {
   html += buildSectionHeader("Medidas del Contenedor");
   html += buildRow(
     "Medidas seleccionadas",
-    data.contenedorMedidas?.join(", ") || null
+    data.contenedorMedidas
+      ?.map((medida) => CONTENEDOR_MEDIDA_LABELS[medida])
+      .join(", ") || null
   );
+
   if (data.contenedorMedidaOtro) {
     html += buildRow("Otra medida", data.contenedorMedidaOtro);
   }

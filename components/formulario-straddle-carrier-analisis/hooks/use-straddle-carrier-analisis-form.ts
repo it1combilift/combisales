@@ -3,15 +3,15 @@ import { toast } from "sonner";
 import { FORM_STEPS } from "../constants";
 import { SaveVisitParams } from "../types";
 import { UseFormReturn } from "react-hook-form";
-import { FormularioStraddleCarrierSchema } from "../schemas";
 import { VisitStatus } from "@prisma/client";
+import { FormularioStraddleCarrierSchema } from "../schemas";
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 
 interface UseStraddleCarrierAnalisisFormProps {
   form: UseFormReturn<FormularioStraddleCarrierSchema>;
   customerId: string;
   isEditing: boolean;
-  existingVisit?: any;
+  existingVisit?: any;k
   onSuccess: () => void;
 }
 
@@ -22,7 +22,6 @@ export function useStraddleCarrierAnalisisForm({
   existingVisit,
   onSuccess,
 }: UseStraddleCarrierAnalisisFormProps) {
-  // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
@@ -33,7 +32,6 @@ export function useStraddleCarrierAnalisisForm({
 
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ==================== STEP VALIDATION LOGIC ====================
   const validateStepFields = useCallback(
     (step: number, values: FormularioStraddleCarrierSchema): boolean => {
       const stepConfig = FORM_STEPS[step - 1];
@@ -42,12 +40,10 @@ export function useStraddleCarrierAnalisisForm({
       const manejaContenedores = values.manejaContenedores;
       const manejaCargaEspecial = values.manejaCargaEspecial;
 
-      // Step 2 (Contenedores) solo aplica si manejaContenedores
       if (step === 2 && !manejaContenedores) {
         return true;
       }
 
-      // Step 3 (Carga especial) solo aplica si manejaCargaEspecial
       if (step === 3 && !manejaCargaEspecial) {
         return true;
       }
@@ -61,7 +57,6 @@ export function useStraddleCarrierAnalisisForm({
 
           case "manejaContenedores":
           case "manejaCargaEspecial":
-            // Al menos uno debe estar seleccionado (en Step 1)
             if (step === 1) {
               if (!manejaContenedores && !manejaCargaEspecial) {
                 return false;
@@ -70,7 +65,6 @@ export function useStraddleCarrierAnalisisForm({
             continue;
 
           case "contenedoresTamanios":
-            // Si maneja contenedores, al menos uno debe estar seleccionado
             if (manejaContenedores && value) {
               const hasSelected = Object.values(value).some(
                 (size: any) => size.selected
@@ -93,7 +87,6 @@ export function useStraddleCarrierAnalisisForm({
           default:
             if (typeof value === "string") {
               if (!value || value.trim() === "") {
-                // No hay campos obligatorios por defecto
               }
             }
         }
@@ -126,7 +119,6 @@ export function useStraddleCarrierAnalisisForm({
     [validateStepFields]
   );
 
-  // ==================== REACTIVE STEP VALIDATION ====================
   useEffect(() => {
     const subscription = form.watch((values) => {
       if (validationTimeoutRef.current) {
@@ -148,17 +140,13 @@ export function useStraddleCarrierAnalisisForm({
     };
   }, [form, recalculateCompletedSteps]);
 
-  // ==================== COMPUTED VALUES ====================
-  // Step 2 = Contenedores (se salta si no manejaContenedores)
   const shouldSkipStep2 = useCallback(() => {
     return !form.getValues("manejaContenedores");
   }, [form]);
 
-  // Step 3 = Carga especial (se salta si no manejaCargaEspecial)
   const shouldSkipStep3 = useCallback(() => {
     return !form.getValues("manejaCargaEspecial");
   }, [form]);
-
 
   const progress = useMemo(() => {
     const skipStep2 = shouldSkipStep2();
@@ -201,7 +189,6 @@ export function useStraddleCarrierAnalisisForm({
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === FORM_STEPS.length;
 
-  // ==================== STEP VALIDATION ====================
   const validateStep = useCallback(
     async (step: number): Promise<boolean> => {
       const stepConfig = FORM_STEPS[step - 1];
@@ -218,15 +205,12 @@ export function useStraddleCarrierAnalisisForm({
     [form]
   );
 
-  // ==================== NAVIGATION HELPERS ====================
   const getNextStep = useCallback(
     (fromStep: number): number => {
       let nextStep = fromStep + 1;
-      // Skip step 2 if not handling containers
       if (nextStep === 2 && shouldSkipStep2()) {
         nextStep = 3;
       }
-      // Skip step 3 if not handling special cargo
       if (nextStep === 3 && shouldSkipStep3()) {
         nextStep = 4;
       }
@@ -238,11 +222,9 @@ export function useStraddleCarrierAnalisisForm({
   const getPrevStep = useCallback(
     (fromStep: number): number => {
       let prevStep = fromStep - 1;
-      // Skip step 3 if not handling special cargo
       if (prevStep === 3 && shouldSkipStep3()) {
         prevStep = 2;
       }
-      // Skip step 2 if not handling containers
       if (prevStep === 2 && shouldSkipStep2()) {
         prevStep = 1;
       }
@@ -251,7 +233,6 @@ export function useStraddleCarrierAnalisisForm({
     [shouldSkipStep2, shouldSkipStep3]
   );
 
-  // ==================== NAVIGATION ====================
   const handleNextStep = useCallback(async () => {
     const isValid = await validateStep(currentStep);
 
@@ -278,7 +259,6 @@ export function useStraddleCarrierAnalisisForm({
     setCurrentStep(step);
   }, []);
 
-  // ==================== SAVE VISIT ====================
   const saveVisit = useCallback(
     async ({ saveType }: SaveVisitParams) => {
       try {
@@ -325,7 +305,6 @@ export function useStraddleCarrierAnalisisForm({
     [form, customerId, isEditing, existingVisit, onSuccess]
   );
 
-  // ==================== FORM SUBMIT ====================
   const onSubmit = useCallback(
     async (data: FormularioStraddleCarrierSchema) => {
       setIsSubmitting(true);
@@ -338,7 +317,6 @@ export function useStraddleCarrierAnalisisForm({
     [saveVisit]
   );
 
-  // ==================== SAVE DRAFT ====================
   const onSaveDraft = useCallback(async () => {
     setIsSavingDraft(true);
     try {
@@ -348,7 +326,6 @@ export function useStraddleCarrierAnalisisForm({
     }
   }, [saveVisit]);
 
-  // ==================== SAVE CHANGES ====================
   const onSaveChanges = useCallback(async () => {
     if (!isEditing) return;
 
