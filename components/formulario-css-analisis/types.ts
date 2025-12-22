@@ -1,7 +1,7 @@
-import { ContenedorTipo, ContenedorMedida, TipoArchivo } from "@prisma/client";
+import { Customer } from "@/interfaces/visits";
 import { UseFormReturn } from "react-hook-form";
 import { FormularioCSSSchema } from "@/schemas/visits";
-import { Customer } from "@/interfaces/visits";
+import { TipoArchivo, VisitStatus } from "@prisma/client";
 
 // ==================== FORM PROPS ====================
 export interface FormularioCSSAnalisisProps {
@@ -81,7 +81,7 @@ export interface FormNavigationProps {
   onNext: () => void;
   onSaveDraft: () => void;
   onSaveChanges: () => void;
-  
+  visitStatus?: VisitStatus;
 }
 
 // ==================== SAVE VISIT PARAMS ====================

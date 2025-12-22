@@ -34,7 +34,8 @@ export function FormNavigation({
     isSavingDraft ||
     isSavingChanges ||
     isUploading ||
-    deletingFileId !== null;
+    deletingFileId !== null ||
+    !allStepsComplete;
 
   const totalSteps = visibleStepsCount ?? FORM_STEPS.length;
 
@@ -76,14 +77,7 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveChanges}
-                    disabled={
-                      isDisabled ||
-                      !allStepsComplete ||
-                      isUploading ||
-                      deletingFileId !== null ||
-                      isSavingChanges ||
-                      isSubmitting
-                    }
+                    disabled={isDisabled}
                     className="h-8 px-2"
                     title={
                       !allStepsComplete
@@ -106,14 +100,7 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={
-                      isDisabled ||
-                      !allStepsComplete ||
-                      isUploading ||
-                      deletingFileId !== null ||
-                      isSavingChanges ||
-                      isSubmitting
-                    }
+                    disabled={isDisabled}
                     className="h-8 px-2"
                     title={
                       !allStepsComplete
@@ -163,14 +150,7 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={
-                      isDisabled ||
-                      !allStepsComplete ||
-                      isUploading ||
-                      deletingFileId !== null ||
-                      isSavingChanges ||
-                      isSubmitting
-                    }
+                    disabled={isDisabled}
                     className="h-8 px-2"
                     title={
                       !allStepsComplete

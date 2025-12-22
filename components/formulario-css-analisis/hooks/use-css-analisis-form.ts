@@ -236,5 +236,8 @@ export function useCSSAnalisisForm({
     onSubmit,
     onSaveDraft,
     onSaveChanges,
+
+    // Visit info
+    VisitStatus,
   };
 }

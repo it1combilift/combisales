@@ -58,6 +58,7 @@ export default function FormularioCSSAnalisis({
     onSubmit,
     onSaveDraft,
     onSaveChanges,
+    VisitStatus
   } = useCSSAnalisisForm({
     form,
     customerId: customer.id,
@@ -164,6 +165,7 @@ export default function FormularioCSSAnalisis({
             onNext={handleNextStep}
             onSaveDraft={onSaveDraft}
             onSaveChanges={onSaveChanges}
+            visitStatus={VisitStatus}
           />
         </form>
       </Form>

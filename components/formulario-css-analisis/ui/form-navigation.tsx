@@ -1,4 +1,5 @@
 import { FORM_STEPS } from "../constants";
+import { VisitStatus } from "@prisma/client";
 import { FormNavigationProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -23,13 +24,16 @@ export function FormNavigation({
   onNext,
   onSaveDraft,
   onSaveChanges,
+  visitStatus,
 }: FormNavigationProps) {
   const isDisabled =
     isSubmitting ||
     isSavingDraft ||
     isSavingChanges ||
     isUploading ||
-    deletingFileId !== null;
+    deletingFileId !== null ||
+    visitStatus === VisitStatus.COMPLETADA ||
+    !allStepsComplete;
 
   return (
     <footer className="shrink-0 px-3 py-3 border-t bg-linear-to-t from-muted/30 to-background/80 backdrop-blur-sm">
@@ -69,14 +73,7 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveChanges}
-                    disabled={
-                      isDisabled ||
-                      !allStepsComplete ||
-                      isUploading ||
-                      deletingFileId !== null ||
-                      isSavingChanges ||
-                      isSubmitting
-                    }
+                    disabled={isDisabled}
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
@@ -98,14 +95,7 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={
-                      isDisabled ||
-                      !allStepsComplete ||
-                      isUploading ||
-                      deletingFileId !== null ||
-                      isSavingChanges ||
-                      isSubmitting
-                    }
+                    disabled={isDisabled}
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
@@ -131,14 +121,7 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveDraft}
-                    disabled={
-                      isDisabled ||
-                      !allStepsComplete ||
-                      isUploading ||
-                      deletingFileId !== null ||
-                      isSavingChanges ||
-                      isSubmitting
-                    }
+                    disabled={isDisabled}
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
@@ -160,14 +143,7 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={
-                      isDisabled ||
-                      !allStepsComplete ||
-                      isUploading ||
-                      deletingFileId !== null ||
-                      isSavingChanges ||
-                      isSubmitting
-                    }
+                    disabled={isDisabled}
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
