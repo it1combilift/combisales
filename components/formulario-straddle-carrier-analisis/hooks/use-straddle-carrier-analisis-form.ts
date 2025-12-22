@@ -11,7 +11,7 @@ interface UseStraddleCarrierAnalisisFormProps {
   form: UseFormReturn<FormularioStraddleCarrierSchema>;
   customerId: string;
   isEditing: boolean;
-  existingVisit?: any;k
+  existingVisit?: any;
   onSuccess: () => void;
 }
 
