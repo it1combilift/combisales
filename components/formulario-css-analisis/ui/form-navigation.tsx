@@ -69,7 +69,14 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveChanges}
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={
+                      isDisabled ||
+                      !allStepsComplete ||
+                      isUploading ||
+                      deletingFileId !== null ||
+                      isSavingChanges ||
+                      isSubmitting
+                    }
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
@@ -91,7 +98,14 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={
+                      isDisabled ||
+                      !allStepsComplete ||
+                      isUploading ||
+                      deletingFileId !== null ||
+                      isSavingChanges ||
+                      isSubmitting
+                    }
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
@@ -117,7 +131,14 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveDraft}
-                    disabled={isDisabled}
+                    disabled={
+                      isDisabled ||
+                      !allStepsComplete ||
+                      isUploading ||
+                      deletingFileId !== null ||
+                      isSavingChanges ||
+                      isSubmitting
+                    }
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"
@@ -139,7 +160,14 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={
+                      isDisabled ||
+                      !allStepsComplete ||
+                      isUploading ||
+                      deletingFileId !== null ||
+                      isSavingChanges ||
+                      isSubmitting
+                    }
                     title={
                       !allStepsComplete
                         ? "Completa todos los pasos para guardar"

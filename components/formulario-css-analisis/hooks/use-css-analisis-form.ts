@@ -1,11 +1,11 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { UseFormReturn } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
-import { VisitStatus, VisitFormType } from "@prisma/client";
-import { FORM_STEPS } from "../constants";
-import { FormularioCSSSchema } from "../schemas";
 import { SaveType } from "../types";
+import { FORM_STEPS } from "../constants";
+import { UseFormReturn } from "react-hook-form";
+import { FormularioCSSSchema } from "../schemas";
+import { VisitStatus, VisitFormType } from "@prisma/client";
+import { useState, useCallback, useMemo, useEffect } from "react";
 
 interface UseCSSAnalisisFormProps {
   form: UseFormReturn<FormularioCSSSchema>;

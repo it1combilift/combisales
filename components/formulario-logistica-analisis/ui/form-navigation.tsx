@@ -69,7 +69,14 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveChanges}
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={
+                      isDisabled ||
+                      !allStepsComplete ||
+                      isUploading ||
+                      deletingFileId !== null ||
+                      isSavingChanges ||
+                      isSubmitting
+                    }
                     className="h-8 px-2"
                     title={
                       !allStepsComplete
@@ -92,7 +99,14 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={
+                      isDisabled ||
+                      !allStepsComplete ||
+                      isUploading ||
+                      deletingFileId !== null ||
+                      isSavingChanges ||
+                      isSubmitting
+                    }
                     className="h-8 px-2"
                     title={
                       !allStepsComplete
@@ -142,7 +156,14 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={
+                      isDisabled ||
+                      !allStepsComplete ||
+                      isUploading ||
+                      deletingFileId !== null ||
+                      isSavingChanges ||
+                      isSubmitting
+                    }
                     className="h-8 px-2"
                     title={
                       !allStepsComplete

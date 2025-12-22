@@ -81,6 +81,7 @@ export interface FormNavigationProps {
   onNext: () => void;
   onSaveDraft: () => void;
   onSaveChanges: () => void;
+  
 }
 
 // ==================== SAVE VISIT PARAMS ====================
