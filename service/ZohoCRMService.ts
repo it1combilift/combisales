@@ -5,6 +5,7 @@ import {
   ZohoAccount,
   ZohoContact,
   ZohoCRMResponse,
+  ZohoTask,
   ZohoTokens,
 } from "@/interfaces/zoho";
 
@@ -200,6 +201,102 @@ export class ZohoCRMService {
       "/Contacts/search",
       params
     );
+  }
+
+  /**
+   * Get list of tasks from Zoho CRM
+   */
+  async getTasks(options?: {
+    page?: number;
+    per_page?: number;
+    sort_order?: "asc" | "desc";
+    sort_by?: string;
+    fields?: string[];
+  }): Promise<ZohoCRMResponse<ZohoTask>> {
+    const params: Record<string, any> = {
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    if (options?.sort_order) params.sort_order = options.sort_order;
+    if (options?.sort_by) params.sort_by = options.sort_by;
+    if (options?.fields) params.fields = options.fields.join(",");
+
+    return this.request<ZohoCRMResponse<ZohoTask>>("/Tasks", params);
+  }
+
+  /**
+   * Get a specific task by ID
+   */
+  async getTaskById(taskId: string): Promise<ZohoTask> {
+    const response = await this.request<ZohoCRMResponse<ZohoTask>>(
+      `/Tasks/${taskId}`
+    );
+    return response.data[0];
+  }
+
+  /**
+   * Search tasks by Subject
+   * Note: Zoho CRM only supports 'starts_with' and 'equals' operators for text fields
+   */
+  async searchTasks(
+    searchText: string,
+    options?: {
+      page?: number;
+      per_page?: number;
+    }
+  ): Promise<ZohoCRMResponse<ZohoTask>> {
+    // Escape special characters that could break the criteria
+    const escapedText = searchText.replace(/[()"']/g, "").trim();
+
+    // Build criteria to search by Subject
+    const criteria = `(Subject:starts_with:${escapedText})`;
+
+    const params: Record<string, any> = {
+      criteria,
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    return this.request<ZohoCRMResponse<ZohoTask>>("/Tasks/search", params);
+  }
+
+  /**
+   * Get tasks related to a specific account
+   */
+  async getTasksByAccountId(
+    accountId: string,
+    options?: {
+      page?: number;
+      per_page?: number;
+    }
+  ): Promise<ZohoCRMResponse<ZohoTask>> {
+    const params: Record<string, any> = {
+      criteria: `(What_Id:equals:${accountId})`,
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    return this.request<ZohoCRMResponse<ZohoTask>>("/Tasks/search", params);
+  }
+
+  /**
+   * Get tasks related to a specific contact
+   */
+  async getTasksByContactId(
+    contactId: string,
+    options?: {
+      page?: number;
+      per_page?: number;
+    }
+  ): Promise<ZohoCRMResponse<ZohoTask>> {
+    const params: Record<string, any> = {
+      criteria: `(Who_Id:equals:${contactId})`,
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    return this.request<ZohoCRMResponse<ZohoTask>>("/Tasks/search", params);
   }
 }
 

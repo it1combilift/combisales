@@ -179,6 +179,88 @@ export interface ZohoContact {
   Tag?: Array<{ name: string }>;
 }
 
+// ==================== ZOHO TASK INTERFACE ====================
+export interface ZohoTask {
+  // Identificación
+  id: string;
+  Subject: string;
+
+  // Estado y prioridad
+  Status?:
+    | "Not Started"
+    | "In Progress"
+    | "Completed"
+    | "Deferred"
+    | "Waiting for Input";
+  Priority?: "High" | "Highest" | "Low" | "Lowest" | "Normal";
+
+  // Fechas
+  Due_Date?: string;
+  Created_Time?: string;
+  Modified_Time?: string;
+  Closed_Time?: string;
+
+  // Relaciones
+  $se_module?: string; // Módulo relacionado (Accounts, Contacts, Deals, etc.)
+  What_Id?: {
+    name: string;
+    id: string;
+    module?: string;
+  } | null; // Relacionado con (Account, Deal, etc.)
+  Who_Id?: {
+    name: string;
+    id: string;
+    module?: string;
+  } | null; // Relacionado con (Contact, Lead)
+
+  // Propietario y creador
+  Owner?: {
+    name: string;
+    id: string;
+    email: string;
+  };
+  Created_By?: {
+    name: string;
+    id: string;
+    email?: string;
+  };
+  Modified_By?: {
+    name: string;
+    id: string;
+    email?: string;
+  };
+
+  // Recordatorios
+  Remind_At?: string | null;
+  Reminder?: string | null;
+
+  // Descripción y detalles
+  Description?: string;
+
+  // Campos de sistema ZOHO
+  $currency_symbol?: string;
+  $field_states?: string | null;
+  $state?: string;
+  $process_flow?: boolean;
+  $locked_for_me?: boolean;
+  $approved?: boolean;
+  $approval?: {
+    delegate: boolean;
+    approve: boolean;
+    reject: boolean;
+    resubmit: boolean;
+  };
+  $editable?: boolean;
+
+  // Recurrencia (si es tarea recurrente)
+  Recurring_Activity?: {
+    RRULE: string;
+  } | null;
+
+  // Tags
+  Tag?: Array<{ name: string }>;
+}
+
 export interface ZohoCRMResponse<T> {
   data: T[];
   info: {
