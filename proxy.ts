@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  const protectedPaths = ["/dashboard/clients", "/dashboard/users"];
+  const protectedPaths = [
+    "/dashboard/clients",
+    "/dashboard/users",
+    "/dashboard/equipment",
+  ];
   const adminOnlyPaths = ["/dashboard/users"];
 
   const isProtectedPath = protectedPaths.some((path) =>

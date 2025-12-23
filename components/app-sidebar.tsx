@@ -22,7 +22,7 @@ import {
   IconUsers,
   IconFileWord,
   IconForklift,
-  IconBuilding
+  IconBuilding,
 } from "@tabler/icons-react";
 
 import {
@@ -54,8 +54,8 @@ const data = {
       icon: IconUsers,
     },
     {
-      title: "Máquinas",
-      url: "/dashboard/machines",
+      title: "Equipos",
+      url: "/dashboard/equipment",
       icon: IconForklift,
     },
   ],

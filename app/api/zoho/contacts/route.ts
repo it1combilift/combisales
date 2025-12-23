@@ -13,6 +13,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    
     if (!session?.user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
