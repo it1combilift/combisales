@@ -30,7 +30,7 @@ function useIsMobile() {
 
 export function MachinesPageComponent() {
   const { data, error, isLoading, mutate } = useSWR<MachinesResponse>(
-    "/api/machines",
+    "/api/equipment",
     fetcher
   );
   const isMobile = useIsMobile();
