@@ -211,22 +211,21 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
                   </TableCell>
                   <TableCell className="py-2">
                     <Badge
-                      variant="outline"
-                      className={cn(
-                        "text-[10px] px-1.5 py-0 h-5 font-medium",
+                      variant={
                         machine.status === "Operativa"
-                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                          : "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
-                      )}
+                          ? "success"
+                          : "destructive"
+                      }
+                      className="text-[10px] px-1.5 py-0 h-5 flex items-center gap-0.5 font-medium"
                     >
                       {machine.status === "Operativa" ? (
                         <>
-                          <CheckCircle2 className="size-2.5 mr-0.5" />
+                          <CheckCircle2 className="size-2.5" />
                           <span>{machine.status}</span>
                         </>
                       ) : (
                         <>
-                          <XCircle className="size-2.5 mr-0.5" />
+                          <XCircle className="size-2.5" />
                           <span>{machine.status}</span>
                         </>
                       )}
@@ -235,16 +234,18 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
                   <TableCell className="hidden md:table-cell py-2">
                     {machine.available ? (
                       <Badge
-                        variant="outline"
-                        className="text-[10px] px-1.5 py-0 h-5 font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+                        variant="info"
+                        className="text-[10px] px-1.5 py-0 h-5 flex items-center gap-0.5 font-medium"
                       >
+                        <CheckCircle2 className="size-2.5" />
                         Disponible
                       </Badge>
                     ) : (
                       <Badge
-                        variant="outline"
-                        className="text-[10px] px-1.5 py-0 h-5 font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                        variant="destructive"
+                        className="text-[10px] px-1.5 py-0 h-5 flex items-center gap-0.5 font-medium"
                       >
+                        <XCircle className="size-2.5" />
                         No disponible
                       </Badge>
                     )}

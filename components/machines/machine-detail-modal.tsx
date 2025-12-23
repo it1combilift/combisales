@@ -100,27 +100,17 @@ export function MachineDetailModal({
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
             <div className="absolute top-3 left-3 right-3 flex gap-1.5">
               <Badge
-                className={cn(
-                  "text-[10px] px-2 py-0.5 font-medium shadow-md",
-                  machine.status === "Operativa"
-                    ? "bg-emerald-500 text-white"
-                    : "bg-red-500 text-white"
-                )}
+                variant={machine.status === "Operativa" ? "success" : "destructive"}
               >
                 {machine.status === "Operativa" ? (
-                  <CheckCircle2 className="size-3 mr-1" />
+                  <CheckCircle2 className="size-3" />
                 ) : (
-                  <XCircle className="size-3 mr-1" />
+                  <XCircle className="size-3" />
                 )}
                 {machine.status}
               </Badge>
               <Badge
-                className={cn(
-                  "text-[10px] px-2 py-0.5 font-medium shadow-md",
-                  machine.available
-                    ? "bg-blue-500 text-white"
-                    : "bg-amber-500 text-white"
-                )}
+                variant={machine.available ? "info" : "destructive"}
               >
                 {machine.available ? "Disponible" : "No disponible"}
               </Badge>
@@ -189,7 +179,7 @@ export function MachineDetailModal({
                     <div
                       key={key}
                       className={cn(
-                        "flex flex-col items-center gap-1 py-2 px-1 rounded-lg border text-center transition-colors",
+                        "flex items-center justify-center gap-1 py-2 px-1 rounded-lg border text-center transition-colors",
                         active
                           ? `bg-${color}-500/10 border-${color}-500/20 text-${color}-600 dark:text-${color}-400`
                           : "bg-muted/50 border-border text-muted-foreground/50"
@@ -202,7 +192,7 @@ export function MachineDetailModal({
                     >
                       <Icon
                         className={cn(
-                          "size-4",
+                          "size-4 shrink-0",
                           active
                             ? `text-${color}-500`
                             : "text-muted-foreground/50"
@@ -213,10 +203,13 @@ export function MachineDetailModal({
                       </span>
                       {active ? (
                         <CheckCircle2
-                          className={cn("size-3", `text-${color}-500`)}
+                          className={cn(
+                            "size-3.5 shrink-0",
+                            `text-${color}-500`
+                          )}
                         />
                       ) : (
-                        <XCircle className="size-3 text-muted-foreground/30" />
+                        <XCircle className="size-3.5 shrink-0 text-muted-foreground/30" />
                       )}
                     </div>
                   )

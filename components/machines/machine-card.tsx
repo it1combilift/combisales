@@ -46,12 +46,7 @@ export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
         <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute top-2 left-2 right-2 flex items-start justify-between gap-1.5">
           <Badge
-            className={cn(
-              "text-[10px] px-2 py-0.5 font-medium shadow-md",
-              machine.status === "Operativa"
-                ? "bg-emerald-500 text-white"
-                : "bg-red-500 text-white"
-            )}
+            variant={machine.status === "Operativa" ? "success" : "destructive"}
           >
             {machine.status === "Operativa" ? (
               <CheckCircle2 className="size-3" />
@@ -60,14 +55,7 @@ export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
             )}
             {machine.status}
           </Badge>
-          <Badge
-            className={cn(
-              "text-[10px] px-2 py-0.5 font-medium shadow-md",
-              machine.available
-                ? "bg-blue-500 text-white"
-                : "bg-amber-500 text-white"
-            )}
-          >
+          <Badge variant={machine.available ? "info" : "destructive"}>
             {machine.available ? "Disponible" : "No disponible"}
           </Badge>
         </div>
@@ -117,7 +105,6 @@ export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
         {machine.dealer && (
           <div className="flex items-center gap-1.5 text-xs py-1.5 px-2 rounded-md bg-muted/50">
             <Building2 className="size-3 text-muted-foreground shrink-0" />
-            <span className="text-muted-foreground">Dist:</span>
             <span className="text-foreground font-medium truncate">
               {machine.dealer}
             </span>

@@ -29,6 +29,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Label } from "../ui/label";
 
 interface MachineFiltersProps {
   searchQuery: string;
@@ -76,76 +77,101 @@ export function MachineFilters({
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const FilterControls = ({ inSheet = false }: { inSheet?: boolean }) => (
-    <div className={inSheet ? "space-y-4" : "flex flex-wrap gap-3"}>
-      <Select value={statusFilter} onValueChange={onStatusChange}>
-        <SelectTrigger
-          className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
-        >
-          <SelectValue placeholder="Estado" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Estados</SelectItem>
-          <SelectItem value="Operativa">Operativa</SelectItem>
-          <SelectItem value="NO Operativa">No Operativa</SelectItem>
-        </SelectContent>
-      </Select>
+    <div className={inSheet ? "space-y-4" : "flex flex-wrap gap-3 w-full items-center pt-4"}>
+      <div
+        className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
+      >
+        <Label className={inSheet ? "sr-only" : "w-fit"}>Estados</Label>
+        <Select value={statusFilter} onValueChange={onStatusChange}>
+          <SelectTrigger
+            className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
+          >
+            <SelectValue placeholder="Estado" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="Operativa">Operativa</SelectItem>
+            <SelectItem value="NO Operativa">No Operativa</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-      <Select value={availabilityFilter} onValueChange={onAvailabilityChange}>
-        <SelectTrigger
-          className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
-        >
-          <SelectValue placeholder="Disponibilidad" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Todas</SelectItem>
-          <SelectItem value="available">Disponibles</SelectItem>
-          <SelectItem value="unavailable">No disponibles</SelectItem>
-        </SelectContent>
-      </Select>
+      <div
+        className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
+      >
+        <Label className={inSheet ? "sr-only" : "w-full"}>Disponibilidad</Label>
+        <Select value={availabilityFilter} onValueChange={onAvailabilityChange}>
+          <SelectTrigger
+            className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
+          >
+            <SelectValue placeholder="Disponibilidad" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="available">Disponibles</SelectItem>
+            <SelectItem value="unavailable">No disponibles</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-      <Select value={locationFilter} onValueChange={onLocationChange}>
-        <SelectTrigger
-          className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
-        >
-          <SelectValue placeholder="Ubicación" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Ubicaciones</SelectItem>
-          {locations.map((loc) => (
-            <SelectItem key={loc} value={loc}>
-              {loc}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div
+        className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
+      >
+        <Label className={inSheet ? "sr-only" : "w-full"}>Ubicación</Label>
+        <Select value={locationFilter} onValueChange={onLocationChange}>
+          <SelectTrigger
+            className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
+          >
+            <SelectValue placeholder="Ubicación" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            {locations.map((loc) => (
+              <SelectItem key={loc} value={loc}>
+                {loc}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-      <Select value={insuranceFilter} onValueChange={onInsuranceChange}>
-        <SelectTrigger
-          className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
-        >
-          <SelectValue placeholder="Seguro" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Todos</SelectItem>
-          <SelectItem value="insured">Aseguradas</SelectItem>
-          <SelectItem value="not-insured">Sin seguro</SelectItem>
-        </SelectContent>
-      </Select>
+      <div
+        className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
+      >
+        <Label className={inSheet ? "sr-only" : "w-full"}>Seguro</Label>
+        <Select value={insuranceFilter} onValueChange={onInsuranceChange}>
+          <SelectTrigger
+            className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
+          >
+            <SelectValue placeholder="Seguro" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="insured">Aseguradas</SelectItem>
+            <SelectItem value="not-insured">Sin seguro</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-      <Select value={hoursRangeFilter} onValueChange={onHoursRangeChange}>
-        <SelectTrigger
-          className={inSheet ? "w-full" : "w-full sm:w-[180px] bg-background"}
-        >
-          <SelectValue placeholder="Horas de uso" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Todas las horas</SelectItem>
-          <SelectItem value="0-1000">0 - 1,000 h</SelectItem>
-          <SelectItem value="1000-5000">1,000 - 5,000 h</SelectItem>
-          <SelectItem value="5000-10000">5,000 - 10,000 h</SelectItem>
-          <SelectItem value="10000+">Más de 10,000 h</SelectItem>
-        </SelectContent>
-      </Select>
+      <div
+        className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
+      >
+        <Label className={inSheet ? "sr-only" : "w-full"}>Horas de uso</Label>
+        <Select value={hoursRangeFilter} onValueChange={onHoursRangeChange}>
+          <SelectTrigger
+            className={inSheet ? "w-full" : "w-full sm:w-[180px] bg-background"}
+          >
+            <SelectValue placeholder="Horas de uso" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="0-1000">0 - 1,000 h</SelectItem>
+            <SelectItem value="1000-5000">1,000 - 5,000 h</SelectItem>
+            <SelectItem value="5000-10000">5,000 - 10,000 h</SelectItem>
+            <SelectItem value="10000+">Más de 10,000 h</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       {hasActiveFilters && (
         <Button

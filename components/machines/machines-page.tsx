@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MachineDetailModal } from "./machine-detail-modal";
 import { Machine, MachinesResponse } from "@/interfaces/machine";
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { Badge } from "../ui/badge";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -241,12 +242,10 @@ export function MachinesPageComponent() {
                   {" máquinas"}
                 </p>
                 {!isMobile && (
-                  <p>
+                  <Badge variant="secondary">
                     Vista:{" "}
-                    <span className="font-medium text-foreground">
-                      {viewMode === "grid" ? "Tarjetas" : "Tabla"}
-                    </span>
-                  </p>
+                    <span>{viewMode === "grid" ? "Tarjetas" : "Tabla"}</span>
+                  </Badge>
                 )}
               </div>
 
