@@ -12,17 +12,17 @@ import { NavSecondary } from "@/components/nav-secondary";
 
 import {
   IconCamera,
-  IconDashboard,
   IconDatabase,
   IconFileAi,
   IconFileDescription,
-  IconFileWord,
-  IconFolder,
   IconHelp,
   IconReport,
   IconSearch,
   IconSettings,
   IconUsers,
+  IconFileWord,
+  IconForklift,
+  IconBuilding
 } from "@tabler/icons-react";
 
 import {
@@ -42,22 +42,21 @@ const data = {
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
-    // {
-    //   title: "Dashboard",
-    //   url: "/dashboard",
-    //   icon: IconDashboard,
-    // },
-
     {
       title: "Clientes",
       url: "/dashboard/clients",
-      icon: IconFolder,
+      icon: IconBuilding,
     },
 
     {
       title: "Usuarios",
       url: "/dashboard/users",
       icon: IconUsers,
+    },
+    {
+      title: "Máquinas",
+      url: "/dashboard/machines",
+      icon: IconForklift,
     },
   ],
   navClouds: [
