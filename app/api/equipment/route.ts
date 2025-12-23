@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import machinesData from "@/data/machines.json";
+import machinesData from "@/data/equipment.json";
 
 export async function GET() {
   try {
