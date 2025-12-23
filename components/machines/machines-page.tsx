@@ -1,17 +1,17 @@
 "use client";
 
 import useSWR from "swr";
+import { AlertMessage } from "../alert";
 import { MachineCard } from "./machine-card";
 import { H1, Paragraph } from "../fonts/fonts";
 import { Button } from "@/components/ui/button";
+import { RefreshCw, Truck } from "lucide-react";
 import { MachinesTable } from "./machines-table";
 import { MachineFilters } from "./machine-filters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MachineDetailModal } from "./machine-detail-modal";
-import { RefreshCw, AlertCircle, Truck } from "lucide-react";
 import { Machine, MachinesResponse } from "@/interfaces/machine";
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -156,142 +156,145 @@ export function MachinesPageComponent() {
     mutate();
   }, [mutate]);
 
-  if (error) {
-    return (
-      <section className="mx-auto px-4 py-6 space-y-6 w-full max-w-7xl">
-        <Alert variant="destructive">
-          <AlertCircle className="size-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            No se pudieron cargar los datos de las máquinas. Por favor, intente
-            de nuevo.
-          </AlertDescription>
-        </Alert>
-      </section>
-    );
-  }
-
   return (
-    <section className="mx-auto px-4 space-y-6 w-full h-full">
-      <div className="flex gap-4 flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
-        <div>
-          <H1>Máquinas disponibles</H1>
-          <div className="flex flex-col justify-start">
-            <Paragraph>
-              Aquí puedes ver todas las máquinas disponibles en el sistema.
-            </Paragraph>
-
-            <Paragraph>
-              {data?.metadata.totalMachines || 0} máquinas en el sistema
-            </Paragraph>
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Button variant="outline" title="Actualizar datos" size="sm">
-            <RefreshCw className="size-4" />
-            <span className="hidden md:inline">Actualizar</span>
-          </Button>
-        </div>
-      </div>
-
-      {isLoading ? (
-        <div className="space-y-6">
-          <Skeleton className="h-12 rounded-lg" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Skeleton key={i} className="aspect-4/5 rounded-xl" />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <>
-          <MachineFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            statusFilter={statusFilter}
-            onStatusChange={setStatusFilter}
-            availabilityFilter={availabilityFilter}
-            onAvailabilityChange={setAvailabilityFilter}
-            locationFilter={locationFilter}
-            onLocationChange={setLocationFilter}
-            insuranceFilter={insuranceFilter}
-            onInsuranceChange={setInsuranceFilter}
-            hoursRangeFilter={hoursRangeFilter}
-            onHoursRangeChange={setHoursRangeFilter}
-            locations={locations}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            onClearFilters={clearFilters}
-            hasActiveFilters={hasActiveFilters}
-            activeFilterCount={activeFilterCount}
-            showViewToggle={!isMobile}
+    <>
+      {error ? (
+        <section className="mx-auto px-4 py-6 space-y-6 w-full max-w-7xl">
+          <AlertMessage
+            title="Error al cargar las máquinas"
+            description="Hubo un problema al obtener los datos de las máquinas. Por favor, inténtalo de nuevo más tarde."
+            variant="destructive"
           />
+        </section>
+      ) : (
+        <section className="mx-auto px-4 space-y-6 w-full h-full">
+          <div className="flex gap-4 flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
+            <div>
+              <H1>Máquinas disponibles</H1>
+              <div className="flex flex-col justify-start">
+                <Paragraph>
+                  Aquí puedes ver todas las máquinas disponibles en el sistema.
+                </Paragraph>
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <p>
-              <span className="font-medium text-foreground">
-                {filteredMachines.length}
-              </span>
-              {" de "}
-              <span className="font-medium text-foreground">
-                {data?.metadata.totalMachines || 0}
-              </span>
-              {" máquinas"}
-            </p>
-            {!isMobile && (
-              <p>
-                Vista:{" "}
-                <span className="font-medium text-foreground">
-                  {viewMode === "grid" ? "Tarjetas" : "Tabla"}
-                </span>
-              </p>
-            )}
+                <Paragraph>
+                  {data?.metadata.totalMachines || 0} máquinas en el sistema
+                </Paragraph>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                title="Actualizar datos"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={isLoading}
+              >
+                <RefreshCw className="size-4" />
+                <span className="hidden md:inline">Actualizar</span>
+              </Button>
+            </div>
           </div>
 
-          {isMobile || viewMode === "grid" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-              {filteredMachines.map((machine) => (
-                <MachineCard
-                  key={machine.id}
-                  machine={machine}
-                  onViewDetails={handleViewMachine}
-                />
-              ))}
+          {isLoading ? (
+            <div className="space-y-6">
+              <Skeleton className="h-12 rounded-lg" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} className="aspect-4/5 rounded-xl" />
+                ))}
+              </div>
             </div>
           ) : (
-            <MachinesTable
-              machines={filteredMachines}
-              onViewMachine={handleViewMachine}
-            />
-          )}
+            <>
+              <MachineFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                statusFilter={statusFilter}
+                onStatusChange={setStatusFilter}
+                availabilityFilter={availabilityFilter}
+                onAvailabilityChange={setAvailabilityFilter}
+                locationFilter={locationFilter}
+                onLocationChange={setLocationFilter}
+                insuranceFilter={insuranceFilter}
+                onInsuranceChange={setInsuranceFilter}
+                hoursRangeFilter={hoursRangeFilter}
+                onHoursRangeChange={setHoursRangeFilter}
+                locations={locations}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                onClearFilters={clearFilters}
+                hasActiveFilters={hasActiveFilters}
+                activeFilterCount={activeFilterCount}
+                showViewToggle={!isMobile}
+              />
 
-          {filteredMachines.length === 0 && !isLoading && (
-            <div className="text-center py-12 px-4">
-              <div className="inline-flex items-center justify-center size-12 rounded-full bg-muted mb-3">
-                <Truck className="size-6 text-muted-foreground" />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <p>
+                  <span className="font-medium text-foreground">
+                    {filteredMachines.length}
+                  </span>
+                  {" de "}
+                  <span className="font-medium text-foreground">
+                    {data?.metadata.totalMachines || 0}
+                  </span>
+                  {" máquinas"}
+                </p>
+                {!isMobile && (
+                  <p>
+                    Vista:{" "}
+                    <span className="font-medium text-foreground">
+                      {viewMode === "grid" ? "Tarjetas" : "Tabla"}
+                    </span>
+                  </p>
+                )}
               </div>
-              <h3 className="text-sm font-semibold text-foreground mb-1">
-                No se encontraron máquinas
-              </h3>
-              <p className="text-xs text-muted-foreground mb-3 max-w-sm mx-auto">
-                No hay máquinas que coincidan con los filtros aplicados.
-              </p>
-              {hasActiveFilters && (
-                <Button variant="outline" size="sm" onClick={clearFilters}>
-                  Limpiar filtros
-                </Button>
-              )}
-            </div>
-          )}
-        </>
-      )}
 
-      <MachineDetailModal
-        machine={selectedMachine}
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-      />
-    </section>
+              {isMobile || viewMode === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+                  {filteredMachines.map((machine) => (
+                    <MachineCard
+                      key={machine.id}
+                      machine={machine}
+                      onViewDetails={handleViewMachine}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <MachinesTable
+                  machines={filteredMachines}
+                  onViewMachine={handleViewMachine}
+                />
+              )}
+
+              {filteredMachines.length === 0 && !isLoading && (
+                <div className="text-center py-12 px-4">
+                  <div className="inline-flex items-center justify-center size-12 rounded-full bg-muted mb-3">
+                    <Truck className="size-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground mb-1">
+                    No se encontraron máquinas
+                  </h3>
+                  <p className="text-xs text-muted-foreground mb-3 max-w-sm mx-auto">
+                    No hay máquinas que coincidan con los filtros aplicados.
+                  </p>
+                  {hasActiveFilters && (
+                    <Button variant="outline" size="sm" onClick={clearFilters}>
+                      Limpiar filtros
+                    </Button>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
+          <MachineDetailModal
+            machine={selectedMachine}
+            open={isModalOpen}
+            onOpenChange={setIsModalOpen}
+          />
+        </section>
+      )}
+    </>
   );
 }
