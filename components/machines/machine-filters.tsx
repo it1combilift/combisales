@@ -77,7 +77,11 @@ export function MachineFilters({
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const FilterControls = ({ inSheet = false }: { inSheet?: boolean }) => (
-    <div className={inSheet ? "space-y-4" : "flex flex-wrap gap-3 w-full items-center pt-4"}>
+    <div
+      className={
+        inSheet ? "space-y-4" : "flex flex-wrap gap-3 w-full items-center pt-4"
+      }
+    >
       <div
         className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
       >

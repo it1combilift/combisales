@@ -1,6 +1,5 @@
 "use client";
 
-import { cn, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import AttachmentsGallery from "@/components/attachments-gallery";
@@ -8,7 +7,6 @@ import { InfoField, InfoSection, NumberDisplay } from "./shared";
 import { FormularioStraddleCarrierAnalisis } from "@/interfaces/visits";
 
 import {
-  Calendar,
   FileText,
   Mail,
   MapPin,
@@ -58,7 +56,7 @@ export function StraddleCarrierDetail({
   );
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4">
       {/* Section Header */}
       <div className="flex items-center gap-3">
         <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10">
@@ -78,54 +76,73 @@ export function StraddleCarrierDetail({
       <InfoSection title="Datos del cliente" icon={Contact}>
         <div className="space-y-4">
           {/* Primary info */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <InfoField label="Razón Social" value={formulario.razonSocial} />
-            <InfoField
-              label="Persona de contacto"
-              value={formulario.personaContacto}
-            />
-          </div>
+          {formulario.razonSocial && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <InfoField
+                  label="Razón Social"
+                  value={formulario.razonSocial}
+                />
+                <InfoField
+                  label="Persona de contacto"
+                  value={formulario.personaContacto}
+                />
+              </div>
 
-          <Separator />
+              <Separator />
+            </>
+          )}
 
           {/* Contact info */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <InfoField label="Email" value={formulario.email} icon={Mail} />
-            <InfoField
-              label="Website"
-              value={formulario.website}
-              icon={Globe}
-              isLink
-            />
-            <InfoField
-              label="NIF/CIF"
-              value={formulario.numeroIdentificacionFiscal}
-              icon={Hash}
-            />
-          </div>
+          {formulario.email ||
+            (formulario.website && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <InfoField
+                    label="Email"
+                    value={formulario.email}
+                    icon={Mail}
+                  />
+                  <InfoField
+                    label="Website"
+                    value={formulario.website}
+                    icon={Globe}
+                    isLink
+                  />
+                  <InfoField
+                    label="NIF/CIF"
+                    value={formulario.numeroIdentificacionFiscal}
+                    icon={Hash}
+                  />
+                </div>
 
-          <Separator />
+                <Separator />
+              </>
+            ))}
 
           {/* Address */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-              <MapPin className="size-3" />
-              Dirección
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <InfoField label="Dirección" value={formulario.direccion} />
-              <InfoField label="Localidad" value={formulario.localidad} />
-              <InfoField
-                label="Provincia/Estado"
-                value={formulario.provinciaEstado}
-              />
-              <InfoField label="País" value={formulario.pais} />
-              <InfoField
-                label="Código postal"
-                value={formulario.codigoPostal}
-              />
-            </div>
-          </div>
+          {formulario.direccion ||
+            (formulario.codigoPostal && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                  <MapPin className="size-3" />
+                  Dirección
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <InfoField label="Dirección" value={formulario.direccion} />
+                  <InfoField label="Localidad" value={formulario.localidad} />
+                  <InfoField
+                    label="Provincia/Estado"
+                    value={formulario.provinciaEstado}
+                  />
+                  <InfoField label="País" value={formulario.pais} />
+                  <InfoField
+                    label="Código postal"
+                    value={formulario.codigoPostal}
+                  />
+                </div>
+              </div>
+            ))}
 
           {/* Distributor info */}
           {(formulario.distribuidor || formulario.contactoDistribuidor) && (
@@ -149,6 +166,20 @@ export function StraddleCarrierDetail({
               </div>
             </>
           )}
+
+          {/* if not info, set a messagge */}
+          {!formulario.razonSocial &&
+            !formulario.personaContacto &&
+            !formulario.email &&
+            !formulario.website &&
+            !formulario.direccion &&
+            !formulario.codigoPostal &&
+            !formulario.distribuidor &&
+            !formulario.contactoDistribuidor && (
+              <p className="text-sm text-muted-foreground italic">
+                No se proporcionó información del cliente.
+              </p>
+            )}
         </div>
       </InfoSection>
 
@@ -161,9 +192,9 @@ export function StraddleCarrierDetail({
               className="text-xs"
             >
               {formulario.manejaContenedores ? (
-                <Check className="size-3 mr-1" />
+                <Check className="size-3" />
               ) : (
-                <X className="size-3 mr-1" />
+                <X className="size-3" />
               )}
               Maneja Contenedores
             </Badge>
@@ -172,9 +203,9 @@ export function StraddleCarrierDetail({
               className="text-xs"
             >
               {formulario.manejaCargaEspecial ? (
-                <Check className="size-3 mr-1" />
+                <Check className="size-3" />
               ) : (
-                <X className="size-3 mr-1" />
+                <X className="size-3" />
               )}
               Maneja Carga Especial
             </Badge>
@@ -222,7 +253,7 @@ export function StraddleCarrierDetail({
             )}
 
             {/* Additional container options */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex justify-start items-center gap-2">
               <div className="flex items-center gap-2">
                 <Badge
                   variant={
@@ -231,9 +262,9 @@ export function StraddleCarrierDetail({
                   className="text-xs"
                 >
                   {formulario.dobleApilamiento ? (
-                    <Check className="size-3 mr-1" />
+                    <Check className="size-3" />
                   ) : (
-                    <X className="size-3 mr-1" />
+                    <X className="size-3" />
                   )}
                   Doble apilamiento
                 </Badge>
@@ -246,9 +277,9 @@ export function StraddleCarrierDetail({
                   className="text-xs"
                 >
                   {formulario.manejaContenedoresIndiv ? (
-                    <Check className="size-3 mr-1" />
+                    <Check className="size-3" />
                   ) : (
-                    <X className="size-3 mr-1" />
+                    <X className="size-3" />
                   )}
                   Contenedores individuales
                 </Badge>
@@ -377,9 +408,9 @@ export function StraddleCarrierDetail({
                 className="text-xs"
               >
                 {formulario.pisoPlano ? (
-                  <Check className="size-3 mr-1" />
+                  <Check className="size-3" />
                 ) : (
-                  <X className="size-3 mr-1" />
+                  <X className="size-3" />
                 )}
                 Piso plano
               </Badge>
