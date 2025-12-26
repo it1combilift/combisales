@@ -13,7 +13,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-
 /**
  * Form navigation footer
  */

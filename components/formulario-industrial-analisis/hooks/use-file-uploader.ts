@@ -10,7 +10,7 @@ import { UploadedFile } from "@/interfaces/claudinary";
 
 interface UseFileUploaderProps {
   form: UseFormReturn<FormularioIndustrialSchema>;
-  customerId: string;
+  customerId?: string;
 }
 
 export function useFileUploader({ form, customerId }: UseFileUploaderProps) {

@@ -30,6 +30,7 @@ import {
 
 export default function FormularioIndustrialAnalisis({
   customer,
+  zohoTaskId,
   onBack,
   onSuccess,
   existingVisit,
@@ -44,7 +45,9 @@ export default function FormularioIndustrialAnalisis({
     defaultValues:
       isEditing && formulario
         ? getDefaultValuesForEdit(formulario)
-        : getDefaultValuesForNew(customer),
+        : customer
+        ? getDefaultValuesForNew(customer)
+        : getDefaultValuesForNew({} as any),
   });
 
   // ==================== CUSTOM HOOKS ====================
@@ -69,7 +72,8 @@ export default function FormularioIndustrialAnalisis({
     VisitIsCompleted,
   } = useIndustrialAnalisisForm({
     form,
-    customerId: customer.id,
+    customerId: customer?.id || undefined,
+    zohoTaskId,
     isEditing,
     existingVisit,
     onSuccess,
@@ -88,40 +92,30 @@ export default function FormularioIndustrialAnalisis({
     handleDrop,
   } = useFileUploader({
     form,
-    customerId: customer.id,
+    customerId: customer?.id || undefined,
   });
 
   // ==================== RENDER STEP CONTENT ====================
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
 
-    return (
-      <>
-        {/* Step 1: Descripción operación */}
-        <div className={cn(currentStep !== 1 && "hidden")}>
-          <Step1Content {...stepProps} />
-        </div>
-        {/* Step 2: Datos aplicación */}
-        <div className={cn(currentStep !== 2 && "hidden")}>
-          <Step2Content {...stepProps} />
-        </div>
-        {/* Step 3: Equipos eléctricos (condicional) */}
-        <div className={cn(currentStep !== 3 && "hidden")}>
-          <Step3Content {...stepProps} />
-        </div>
-        {/* Step 4: Dimensiones cargas */}
-        <div className={cn(currentStep !== 4 && "hidden")}>
-          <Step4Content {...stepProps} />
-        </div>
-        {/* Step 5: Especificaciones pasillo */}
-        <div className={cn(currentStep !== 5 && "hidden")}>
-          <Step5Content {...stepProps} />
-        </div>
-        {/* Step 6: Archivos */}
-        <div className={cn(currentStep !== 6 && "hidden")}>
+    // Render only the current step to avoid HTML validation issues with hidden required fields
+    switch (currentStep) {
+      case 1:
+        return <Step1Content {...stepProps} />;
+      case 2:
+        return <Step2Content {...stepProps} />;
+      case 3:
+        return <Step3Content {...stepProps} />;
+      case 4:
+        return <Step4Content {...stepProps} />;
+      case 5:
+        return <Step5Content {...stepProps} />;
+      case 6:
+        return (
           <Step6Content
             form={form}
-            customerId={customer.id}
+            customerId={customer?.id || ""}
             isUploading={isUploading}
             uploadProgress={uploadProgress}
             uploadingFiles={uploadingFiles}
@@ -133,9 +127,10 @@ export default function FormularioIndustrialAnalisis({
             cameraPhotoRef={cameraPhotoRef}
             cameraVideoRef={cameraVideoRef}
           />
-        </div>
-      </>
-    );
+        );
+      default:
+        return null;
+    }
   };
 
   // ==================== MAIN RENDER ====================

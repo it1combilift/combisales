@@ -207,7 +207,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
       <div className="flex gap-3 flex-row items-center justify-between">
         <div className="flex flex-1 items-center gap-2">
           <div className="relative flex-1 max-w-full sm:max-w-sm">
-            <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Buscar formulario..."
               value={searchQuery}
@@ -224,19 +224,15 @@ export function VisitsDataTable<TData extends Visit, TValue>({
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="h-10 text-xs sm:text-sm"
-                size="sm"
-              >
-                <IconFilter className="h-4 w-4" />
-                <span className="hidden sm:inline ml-1">Estado</span>
+              <Button variant="outline" size="sm">
+                <IconFilter className="size-4" />
+                <span className="hidden sm:inline">Estado</span>
                 {statusFilter && (
                   <Badge variant="secondary" className="ml-1 px-1.5 text-xs">
                     1
                   </Badge>
                 )}
-                <IconChevronDown className="ml-1 size-3.5" />
+                <IconChevronDown className="size-3.5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[180px]">
@@ -282,14 +278,10 @@ export function VisitsDataTable<TData extends Visit, TValue>({
           {!isMobile && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-10 text-xs sm:text-sm"
-                  size="sm"
-                >
-                  <IconLayoutColumns className="h-4 w-4" />
-                  <span className="hidden md:inline ml-1">Columnas</span>
-                  <IconChevronDown className="ml-1 size-3.5" />
+                <Button variant="outline" size="sm">
+                  <IconLayoutColumns className="size-4" />
+                  <span className="hidden md:inline">Columnas</span>
+                  <IconChevronDown className="size-3.5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[200px]">
@@ -430,6 +422,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
+                  
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
@@ -517,7 +510,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               disabled={!table.getCanPreviousPage()}
             >
               <span className="sr-only">Ir a la primera página</span>
-              <IconChevronsLeft className="h-4 w-4" />
+              <IconChevronsLeft className="size-4" />
             </Button>
             <Button
               variant="outline"
@@ -526,7 +519,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               disabled={!table.getCanPreviousPage()}
             >
               <span className="sr-only">Ir a la página anterior</span>
-              <IconChevronLeft className="h-4 w-4" />
+              <IconChevronLeft className="size-4" />
             </Button>
             <Button
               variant="outline"
@@ -535,7 +528,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               disabled={!table.getCanNextPage()}
             >
               <span className="sr-only">Ir a la página siguiente</span>
-              <IconChevronRight className="h-4 w-4" />
+              <IconChevronRight className="size-4" />
             </Button>
             <Button
               variant="outline"
@@ -544,7 +537,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               disabled={!table.getCanNextPage()}
             >
               <span className="sr-only">Ir a la última página</span>
-              <IconChevronsRight className="h-4 w-4" />
+              <IconChevronsRight className="size-4" />
             </Button>
           </div>
         </div>

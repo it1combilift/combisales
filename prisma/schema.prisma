@@ -249,14 +249,15 @@ enum VisitStatus {
 
 model Visit {
   id         String        @id @default(cuid())
-  customerId String
+  customerId String? // Opcional: visita asociada a cliente
+  zohoTaskId String? // Opcional: visita asociada a tarea de Zoho
   userId     String
   formType   VisitFormType
   status     VisitStatus   @default(BORRADOR)
   visitDate  DateTime      @default(now())
 
   // Relaciones
-  customer                          Customer                           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer                          Customer?                          @relation(fields: [customerId], references: [id], onDelete: Cascade)
   user                              User                               @relation(fields: [userId], references: [id], onDelete: Cascade)
   formularioCSSAnalisis             FormularioCSSAnalisis?
   formularioIndustrialAnalisis      FormularioIndustrialAnalisis?
@@ -268,6 +269,7 @@ model Visit {
   updatedAt DateTime @updatedAt
 
   @@index([customerId])
+  @@index([zohoTaskId])
   @@index([userId])
   @@index([visitDate])
   @@index([status])

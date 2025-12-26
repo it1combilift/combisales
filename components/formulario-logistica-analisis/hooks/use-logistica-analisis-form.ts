@@ -9,7 +9,8 @@ import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 
 interface UseLogisticaAnalisisFormProps {
   form: UseFormReturn<FormularioLogisticaSchema>;
-  customerId: string;
+  customerId?: string; // Opcional: para visitas de cliente
+  zohoTaskId?: string; // Opcional: para visitas de tarea
   isEditing: boolean;
   existingVisit?: any;
   onSuccess: () => void;
@@ -18,6 +19,7 @@ interface UseLogisticaAnalisisFormProps {
 export function useLogisticaAnalisisForm({
   form,
   customerId,
+  zohoTaskId,
   isEditing,
   existingVisit,
   onSuccess,
@@ -306,6 +308,7 @@ export function useLogisticaAnalisisForm({
         const payload = {
           visitData: {
             customerId,
+            zohoTaskId,
             formType: "ANALISIS_LOGISTICA",
             status: visitStatus,
           },
@@ -335,7 +338,7 @@ export function useLogisticaAnalisisForm({
         throw error;
       }
     },
-    [form, customerId, isEditing, existingVisit, onSuccess]
+    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess]
   );
 
   // ==================== FORM SUBMIT ====================

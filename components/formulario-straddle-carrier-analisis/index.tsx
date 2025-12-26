@@ -31,6 +31,7 @@ import { VisitStatus } from "@prisma/client";
 
 export default function FormularioStraddleCarrierAnalisis({
   customer,
+  zohoTaskId,
   onBack,
   onSuccess,
   existingVisit,
@@ -45,7 +46,9 @@ export default function FormularioStraddleCarrierAnalisis({
     defaultValues:
       isEditing && formulario
         ? getDefaultValuesForEdit(formulario)
-        : getDefaultValuesForNew(customer),
+        : customer
+        ? getDefaultValuesForNew(customer)
+        : getDefaultValuesForNew({} as any),
   });
 
   // ==================== CUSTOM HOOKS ====================
@@ -71,7 +74,8 @@ export default function FormularioStraddleCarrierAnalisis({
     visitIsCompleted,
   } = useStraddleCarrierAnalisisForm({
     form,
-    customerId: customer.id,
+    customerId: customer?.id || undefined,
+    zohoTaskId,
     isEditing,
     existingVisit,
     onSuccess,
@@ -90,7 +94,7 @@ export default function FormularioStraddleCarrierAnalisis({
     handleDrop,
   } = useFileUploader({
     form,
-    customerId: customer.id,
+    customerId: customer?.id || undefined,
   });
 
   // Calculate visible steps count for navigation
@@ -104,29 +108,21 @@ export default function FormularioStraddleCarrierAnalisis({
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
 
-    return (
-      <>
-        {/* Step 1: Instrucciones */}
-        <div className={cn(currentStep !== 1 && "hidden")}>
-          <Step1Content {...stepProps} />
-        </div>
-        {/* Step 2: Contenedores (condicional) */}
-        <div className={cn(currentStep !== 2 && "hidden")}>
-          <Step2Content {...stepProps} />
-        </div>
-        {/* Step 3: Carga especial (condicional) */}
-        <div className={cn(currentStep !== 3 && "hidden")}>
-          <Step3Content {...stepProps} />
-        </div>
-        {/* Step 4: Otros */}
-        <div className={cn(currentStep !== 4 && "hidden")}>
-          <Step4Content {...stepProps} />
-        </div>
-        {/* Step 5: Archivos */}
-        <div className={cn(currentStep !== 5 && "hidden")}>
+    // Render only the current step to avoid HTML validation issues with hidden required fields
+    switch (currentStep) {
+      case 1:
+        return <Step1Content {...stepProps} />;
+      case 2:
+        return <Step2Content {...stepProps} />;
+      case 3:
+        return <Step3Content {...stepProps} />;
+      case 4:
+        return <Step4Content {...stepProps} />;
+      case 5:
+        return (
           <Step5Content
             form={form}
-            customerId={customer.id}
+            customerId={customer?.id || ""}
             isUploading={isUploading}
             uploadProgress={uploadProgress}
             uploadingFiles={uploadingFiles}
@@ -138,9 +134,10 @@ export default function FormularioStraddleCarrierAnalisis({
             cameraPhotoRef={cameraPhotoRef}
             cameraVideoRef={cameraVideoRef}
           />
-        </div>
-      </>
-    );
+        );
+      default:
+        return null;
+    }
   };
 
   // ==================== MAIN RENDER ====================

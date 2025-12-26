@@ -9,7 +9,8 @@ import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 
 interface UseStraddleCarrierAnalisisFormProps {
   form: UseFormReturn<FormularioStraddleCarrierSchema>;
-  customerId: string;
+  customerId?: string; // Opcional: para visitas de cliente
+  zohoTaskId?: string; // Opcional: para visitas de tarea
   isEditing: boolean;
   existingVisit?: any;
   onSuccess: () => void;
@@ -18,6 +19,7 @@ interface UseStraddleCarrierAnalisisFormProps {
 export function useStraddleCarrierAnalisisForm({
   form,
   customerId,
+  zohoTaskId,
   isEditing,
   existingVisit,
   onSuccess,
@@ -276,6 +278,7 @@ export function useStraddleCarrierAnalisisForm({
         const payload = {
           visitData: {
             customerId,
+            zohoTaskId,
             formType: "ANALISIS_STRADDLE_CARRIER",
             status: visitStatus,
           },
@@ -304,7 +307,7 @@ export function useStraddleCarrierAnalisisForm({
         throw error;
       }
     },
-    [form, customerId, isEditing, existingVisit, onSuccess]
+    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess]
   );
 
   const onSubmit = useCallback(

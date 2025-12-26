@@ -18,6 +18,15 @@ import {
   TipoArchivo,
 } from "@prisma/client";
 
+// Re-export enums for easier import
+export {
+  VisitFormType,
+  VisitStatus,
+  ContenedorTipo,
+  ContenedorMedida,
+  TipoArchivo,
+};
+
 // ==================== CUSTOMER INTERFACES ====================
 export interface Customer {
   id: string;
@@ -101,7 +110,8 @@ export interface Customer {
 // ==================== VISIT INTERFACES ====================
 export interface Visit {
   id: string;
-  customerId: string;
+  customerId?: string; // Opcional: visita asociada a cliente
+  zohoTaskId?: string; // Opcional: visita asociada a tarea de Zoho
   userId: string;
   formType: VisitFormType;
   status: VisitStatus;
@@ -459,7 +469,8 @@ export interface CreateCustomerData {
 }
 
 export interface CreateVisitData {
-  customerId: string;
+  customerId?: string; // Opcional: visita de cliente
+  zohoTaskId?: string; // Opcional: visita de tarea
   formType: VisitFormType;
   status?: VisitStatus;
   visitDate?: Date;
@@ -630,21 +641,27 @@ export const VISIT_STATUS_LABELS: Record<VisitStatus, string> = {
 export const STATUS_CONFIG: Record<
   VisitStatus,
   {
+    label: string;
+    icon: React.ElementType;
     variant: "default" | "secondary" | "success" | "warning" | "destructive";
     bgColor: string;
     textColor: string;
   }
 > = {
   BORRADOR: {
+    label: "Borrador",
+    icon: Timer,
     variant: "warning",
     bgColor: "bg-amber-500/10",
     textColor: "text-amber-600 dark:text-amber-400",
   },
   COMPLETADA: {
+    label: "Completada",
+    icon: CheckCircle,
     variant: "success",
     bgColor: "bg-emerald-500/10",
     textColor: "text-emerald-600 dark:text-emerald-400",
-  }
+  },
 };
 
 export const VISIT_STATUS_ICONS: Record<VisitStatus, React.ElementType> = {
@@ -669,7 +686,8 @@ export const CONTENEDOR_MEDIDA_LABELS: Record<ContenedorMedida, string> = {
 };
 
 export interface FormularioCSSAnalisisProps {
-  customer: Customer;
+  customer?: Customer; // Opcional: para visitas de cliente
+  zohoTaskId?: string; // Opcional: para visitas de tarea
   onBack: () => void;
   onSuccess: () => void;
   existingVisit?: Visit;
@@ -687,7 +705,8 @@ export interface StepConfig {
 export interface VisitFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  customer: Customer;
+  customer?: Customer; // Opcional: para visitas de cliente
+  zohoTaskId?: string; // Opcional: para visitas de tarea
   onSuccess: () => void;
   existingVisit?: Visit;
 }

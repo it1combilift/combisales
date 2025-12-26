@@ -9,7 +9,8 @@ import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 
 interface UseIndustrialAnalisisFormProps {
   form: UseFormReturn<FormularioIndustrialSchema>;
-  customerId: string;
+  customerId?: string; // Opcional: para visitas de cliente
+  zohoTaskId?: string; // Opcional: para visitas de tarea
   isEditing: boolean;
   existingVisit?: any;
   onSuccess: () => void;
@@ -18,6 +19,7 @@ interface UseIndustrialAnalisisFormProps {
 export function useIndustrialAnalisisForm({
   form,
   customerId,
+  zohoTaskId,
   isEditing,
   existingVisit,
   onSuccess,
@@ -327,6 +329,7 @@ export function useIndustrialAnalisisForm({
         const payload = {
           visitData: {
             customerId,
+            zohoTaskId,
             formType: "ANALISIS_INDUSTRIAL",
             status: visitStatus,
           },
@@ -356,7 +359,7 @@ export function useIndustrialAnalisisForm({
         throw error;
       }
     },
-    [form, customerId, isEditing, existingVisit, onSuccess]
+    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess]
   );
 
   // ==================== FORM SUBMIT ====================

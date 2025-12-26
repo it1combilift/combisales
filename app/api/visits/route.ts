@@ -37,8 +37,8 @@ import {
 } from "@/lib/visit-notifications";
 
 /**
- * GET /api/visits?customerId=xxx
- * Get visits for a specific customer
+ * GET /api/visits?customerId=xxx OR GET /api/visits?zohoTaskId=xxx
+ * Get visits for a specific customer or task
  */
 export async function GET(req: NextRequest) {
   try {
@@ -49,13 +49,22 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const customerId = searchParams.get("customerId");
+    const zohoTaskId = searchParams.get("zohoTaskId");
 
-    if (!customerId) {
-      return badRequestResponse("CUSTOMER_ID");
+    if (!customerId && !zohoTaskId) {
+      return badRequestResponse("CUSTOMER_ID_OR_TASK_ID");
+    }
+
+    const whereClause: any = {};
+    if (customerId) {
+      whereClause.customerId = customerId;
+    }
+    if (zohoTaskId) {
+      whereClause.zohoTaskId = zohoTaskId;
     }
 
     const visits = await prisma.visit.findMany({
-      where: { customerId },
+      where: whereClause,
       include: VISIT_INCLUDE,
       orderBy: { visitDate: "desc" },
     });
@@ -87,16 +96,28 @@ export async function POST(req: NextRequest) {
         | CreateFormularioStraddleCarrierData;
     };
 
-    if (!visitData.customerId || !visitData.formType) {
+    // Validar que se proporcione customerId O zohoTaskId, pero no ambos
+    if (!visitData.customerId && !visitData.zohoTaskId) {
+      return badRequestResponse("CUSTOMER_ID_OR_TASK_ID");
+    }
+
+    if (visitData.customerId && visitData.zohoTaskId) {
+      return badRequestResponse("ONLY_ONE_ASSOCIATION");
+    }
+
+    if (!visitData.formType) {
       return badRequestResponse("FORM_TYPE");
     }
 
-    const customer = await prisma.customer.findUnique({
-      where: { id: visitData.customerId },
-    });
+    // Validar que el cliente existe si se proporciona customerId
+    if (visitData.customerId) {
+      const customer = await prisma.customer.findUnique({
+        where: { id: visitData.customerId },
+      });
 
-    if (!customer) {
-      return notFoundResponse("CUSTOMER");
+      if (!customer) {
+        return notFoundResponse("CUSTOMER");
+      }
     }
 
     if (
@@ -156,6 +177,7 @@ export async function POST(req: NextRequest) {
     const visit = await prisma.visit.create({
       data: {
         customerId: visitData.customerId,
+        zohoTaskId: visitData.zohoTaskId,
         userId: session.user.id,
         formType: visitData.formType,
         status: visitData.status || VisitStatus.COMPLETADA,
@@ -167,6 +189,14 @@ export async function POST(req: NextRequest) {
 
     const finalStatus = visitData.status || VisitStatus.COMPLETADA;
     if (shouldSendVisitNotification(finalStatus) && formularioData) {
+      // Obtener nombre del contexto (cliente o tarea)
+      let contextName = "Sin especificar";
+      if (visitData.customerId && visit.customer) {
+        contextName = visit.customer.accountName;
+      } else if (visitData.zohoTaskId) {
+        contextName = `Tarea #${visitData.zohoTaskId}`;
+      }
+
       const emailData = buildVisitEmailData(
         visitData.formType,
         formularioData,
@@ -178,7 +208,7 @@ export async function POST(req: NextRequest) {
               email: visit.user.email || "",
             }
           : undefined,
-        customer.accountName
+        contextName
       );
 
       // Enviar notificacion de forma asincrona (no bloquea la respuesta)

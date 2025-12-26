@@ -9,7 +9,8 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 
 interface UseCSSAnalisisFormProps {
   form: UseFormReturn<FormularioCSSSchema>;
-  customerId: string;
+  customerId?: string; // Opcional: para visitas de cliente
+  zohoTaskId?: string; // Opcional: para visitas de tarea
   isEditing: boolean;
   existingVisit?: any;
   onSuccess: () => void;
@@ -18,6 +19,7 @@ interface UseCSSAnalisisFormProps {
 export function useCSSAnalisisForm({
   form,
   customerId,
+  zohoTaskId,
   isEditing,
   existingVisit,
   onSuccess,
@@ -171,6 +173,7 @@ export function useCSSAnalisisForm({
         response = await axios.post("/api/visits", {
           visitData: {
             customerId,
+            zohoTaskId,
             formType: VisitFormType.ANALISIS_CSS,
             visitDate: new Date(),
             status,

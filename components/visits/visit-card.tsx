@@ -5,7 +5,6 @@ import { formatDate } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { VisitStatus, VisitFormType } from "@prisma/client";
 import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
 
@@ -35,7 +34,6 @@ import {
   User,
 } from "lucide-react";
 
-
 const STATUS_VARIANTS: Record<
   VisitStatus,
   "default" | "secondary" | "success" | "warning" | "destructive"
@@ -60,8 +58,6 @@ interface VisitCardProps {
 
 export const VisitCard = ({
   visit,
-  onSelect,
-  isSelected,
   onView,
   onEdit,
   onDelete,
@@ -72,16 +68,11 @@ export const VisitCard = ({
   return (
     <Card
       className={`p-4 hover:shadow-lg transition-all duration-200 active:scale-[0.98] border-l-4 ${STATUS_COLORS[status]}`}
+      onClick={() => onView && onView(visit)}
     >
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
-            <Checkbox
-              checked={isSelected}
-              onCheckedChange={onSelect}
-              aria-label={`Seleccionar visita ${visit.id}`}
-              className="mt-1"
-            />
             <div className="flex justify-start w-full items-start">
               <Badge variant="info" className="text-xs">
                 {FORM_TYPE_ICONS[formType] && (

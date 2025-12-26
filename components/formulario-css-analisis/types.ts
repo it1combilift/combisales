@@ -5,7 +5,8 @@ import { TipoArchivo, VisitStatus } from "@prisma/client";
 
 // ==================== FORM PROPS ====================
 export interface FormularioCSSAnalisisProps {
-  customer: Customer;
+  customer?: Customer; // Opcional: para visitas de cliente
+  zohoTaskId?: string; // Opcional: para visitas de tarea
   onBack: () => void;
   onSuccess: () => void;
   existingVisit?: any;

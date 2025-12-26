@@ -186,6 +186,7 @@ export interface ZohoTask {
   Subject: string;
 
   Tipo_de_Tarea?: string;
+  Ubicaci_n?: string;
 
   // Estado y prioridad
   Status?:

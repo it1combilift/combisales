@@ -23,6 +23,7 @@ export default function VisitFormDialog({
   open,
   onOpenChange,
   customer,
+  zohoTaskId,
   onSuccess,
   existingVisit,
 }: VisitFormDialogProps) {
@@ -163,6 +164,7 @@ export default function VisitFormDialog({
             {selectedFormType === VisitFormType.ANALISIS_CSS && (
               <FormularioCSSAnalisis
                 customer={customer}
+                zohoTaskId={zohoTaskId}
                 onBack={handleBack}
                 onSuccess={handleSuccess}
                 existingVisit={existingVisit}
@@ -171,6 +173,7 @@ export default function VisitFormDialog({
             {selectedFormType === VisitFormType.ANALISIS_INDUSTRIAL && (
               <FormularioIndustrialAnalisis
                 customer={customer}
+                zohoTaskId={zohoTaskId}
                 onBack={handleBack}
                 onSuccess={handleSuccess}
                 existingVisit={existingVisit}
@@ -179,6 +182,7 @@ export default function VisitFormDialog({
             {selectedFormType === VisitFormType.ANALISIS_LOGISTICA && (
               <FormularioLogisticaAnalisis
                 customer={customer}
+                zohoTaskId={zohoTaskId}
                 onBack={handleBack}
                 onSuccess={handleSuccess}
                 existingVisit={existingVisit}
@@ -187,6 +191,7 @@ export default function VisitFormDialog({
             {selectedFormType === VisitFormType.ANALISIS_STRADDLE_CARRIER && (
               <FormularioStraddleCarrierAnalisis
                 customer={customer}
+                zohoTaskId={zohoTaskId}
                 onBack={handleBack}
                 onSuccess={handleSuccess}
                 existingVisit={existingVisit}

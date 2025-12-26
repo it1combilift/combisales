@@ -24,6 +24,7 @@ import { VisitStatus } from "@prisma/client";
 
 export default function FormularioCSSAnalisis({
   customer,
+  zohoTaskId,
   onBack,
   onSuccess,
   existingVisit,
@@ -38,7 +39,9 @@ export default function FormularioCSSAnalisis({
     defaultValues:
       isEditing && formulario
         ? getDefaultValuesForEdit(formulario)
-        : getDefaultValuesForNew(customer),
+        : customer
+        ? getDefaultValuesForNew(customer)
+        : getDefaultValuesForNew({} as any),
   });
 
   // ==================== CUSTOM HOOKS ====================
@@ -62,7 +65,8 @@ export default function FormularioCSSAnalisis({
     VisitIsCompleted,
   } = useCSSAnalisisForm({
     form,
-    customerId: customer.id,
+    customerId: customer?.id,
+    zohoTaskId,
     isEditing,
     existingVisit,
     onSuccess,
@@ -81,32 +85,26 @@ export default function FormularioCSSAnalisis({
     handleDrop,
   } = useFileUploader({
     form,
-    customerId: customer.id,
+    customerId: customer?.id || "",
   });
 
   // ==================== RENDER STEP CONTENT ====================
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
 
-    return (
-      <>
-        {/* Step 1: Producto y Fecha de cierre */}
-        <div className={cn(currentStep !== 1 && "hidden")}>
-          <Step1Content {...stepProps} />
-        </div>
-        {/* Step 2: Contenedor */}
-        <div className={cn(currentStep !== 2 && "hidden")}>
-          <Step2Content {...stepProps} />
-        </div>
-        {/* Step 3: Medidas */}
-        <div className={cn(currentStep !== 3 && "hidden")}>
-          <Step3Content {...stepProps} />
-        </div>
-        {/* Step 4: Archivos */}
-        <div className={cn(currentStep !== 4 && "hidden")}>
+    // Render only the current step to avoid HTML validation issues with hidden required fields
+    switch (currentStep) {
+      case 1:
+        return <Step1Content {...stepProps} />;
+      case 2:
+        return <Step2Content {...stepProps} />;
+      case 3:
+        return <Step3Content {...stepProps} />;
+      case 4:
+        return (
           <Step4Content
             form={form}
-            customerId={customer.id}
+            customerId={customer?.id || ""}
             isUploading={isUploading}
             uploadProgress={uploadProgress}
             uploadingFiles={uploadingFiles}
@@ -118,9 +116,10 @@ export default function FormularioCSSAnalisis({
             cameraPhotoRef={cameraPhotoRef}
             cameraVideoRef={cameraVideoRef}
           />
-        </div>
-      </>
-    );
+        );
+      default:
+        return null;
+    }
   };
 
   // ==================== MAIN RENDER ====================
