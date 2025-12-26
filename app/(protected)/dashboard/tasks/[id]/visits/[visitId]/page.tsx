@@ -30,6 +30,7 @@ import {
   FormularioStraddleCarrierDetail,
 } from "@/components/visit-detail";
 import Image from "next/image";
+import { CopyButton } from "@/components/copy-button";
 
 interface VisitDetailPageProps {
   params: Promise<{ id: string; visitId: string }>;
@@ -137,7 +138,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
       ) : (
         <div className="space-y-6">
           {/* Header */}
-          <header className="flex flex-row gap-4 px-4 items-center justify-between">
+          <header className="flex flex-row gap-2 px-4 items-center justify-between flex-wrap">
             <div className="relative">
               <div className="flex items-center gap-3">
                 <H1>Detalle de visita</H1>
@@ -155,7 +156,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
               </Paragraph>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center">
               <Button
                 variant="secondary"
                 size="sm"
@@ -164,7 +165,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 }
               >
                 <ArrowLeft className="size-4" />
-                Volver
+                <span className="hidden md:block">Volver</span>
               </Button>
             </div>
           </header>
@@ -235,21 +236,32 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 {/* Visit Context (Task) */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Asociada a</Label>
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
-                    <FileText className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">
-                      Tarea #{visit.zohoTaskId}
-                    </span>
-                    <Badge variant="outline-success" className="ml-auto">
-                      Tarea de Zoho
-                      <Image
-                        src="/zoho-logo.svg"
-                        alt="Zoho"
-                        width={30}
-                        height={30}
-                        className="object-contain"
+                  <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-lg bg-muted/50">
+                    <div className="flex items-center gap-2">
+                      <FileText className="size-4 text-muted-foreground inline" />
+                      <span className="text-sm font-medium inline">
+                        Tarea #{visit.zohoTaskId}
+                      </span>
+                      <CopyButton
+                        size="icon"
+                        variant="outline"
+                        value={visit.zohoTaskId}
+                        content={visit.zohoTaskId}
+                        title="Copiar ID de tarea de Zoho"
                       />
-                    </Badge>
+                    </div>
+                    <div>
+                      <Badge variant="outline-info" className="w-fit h-fit">
+                        Tarea de Zoho
+                        <Image
+                          src="/zoho-logo.svg"
+                          alt="Zoho"
+                          width={30}
+                          height={30}
+                          className="object-contain"
+                        />
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </CardContent>

@@ -88,59 +88,80 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
       <InfoSection title="Datos del cliente" icon={Contact}>
         <div className="space-y-4">
           {/* Primary info */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <InfoField label="Razón Social" value={formulario.razonSocial} />
-            <InfoField
-              label="Persona de contacto"
-              value={formulario.personaContacto}
-            />
-          </div>
+          {formulario.razonSocial && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <InfoField
+                  label="Razón Social"
+                  value={formulario.razonSocial}
+                />
+                <InfoField
+                  label="Persona de contacto"
+                  value={formulario.personaContacto}
+                />
+              </div>
 
-          <Separator />
+              <Separator />
+            </>
+          )}
 
           {/* Contact info */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <InfoField label="Email" value={formulario.email} icon={Mail} />
-            <InfoField
-              label="Website"
-              value={formulario.website}
-              icon={Globe}
-              isLink
-            />
-            <InfoField
-              label="NIF/CIF"
-              value={formulario.numeroIdentificacionFiscal}
-              icon={Hash}
-            />
-          </div>
+          {formulario.email ||
+            (formulario.website && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <InfoField
+                    label="Email"
+                    value={formulario.email}
+                    icon={Mail}
+                  />
+                  <InfoField
+                    label="Website"
+                    value={formulario.website}
+                    icon={Globe}
+                    isLink
+                  />
+                  <InfoField
+                    label="NIF/CIF"
+                    value={formulario.numeroIdentificacionFiscal}
+                    icon={Hash}
+                  />
+                </div>
 
-          <Separator />
+                <Separator />
+              </>
+            ))}
 
           {/* Address */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-              <MapPin className="size-3" />
-              Dirección
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <InfoField label="Dirección" value={formulario.direccion} />
-              <InfoField label="Localidad" value={formulario.localidad} />
-              <InfoField
-                label="Provincia/Estado"
-                value={formulario.provinciaEstado}
-              />
-              <InfoField label="País" value={formulario.pais} />
-              <InfoField
-                label="Código postal"
-                value={formulario.codigoPostal}
-              />
-            </div>
-          </div>
+          {formulario.direccion ||
+            (formulario.codigoPostal && (
+              <>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                    <MapPin className="size-3" />
+                    Dirección
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <InfoField label="Dirección" value={formulario.direccion} />
+                    <InfoField label="Localidad" value={formulario.localidad} />
+                    <InfoField
+                      label="Provincia/Estado"
+                      value={formulario.provinciaEstado}
+                    />
+                    <InfoField label="País" value={formulario.pais} />
+                    <InfoField
+                      label="Código postal"
+                      value={formulario.codigoPostal}
+                    />
+                  </div>
+                </div>
+                <Separator />
+              </>
+            ))}
 
           {/* Distributor info */}
           {(formulario.distribuidor || formulario.contactoDistribuidor) && (
             <>
-              <Separator />
               <div className="space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <Truck className="size-3" />
@@ -157,14 +178,14 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                   />
                 </div>
               </div>
+              <Separator />
             </>
           )}
 
           {/* Dates */}
           {(formulario.fechaCierre || formulario.fechaEstimadaDefinicion) && (
             <>
-              <Separator />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex justify-start items-center gap-2">
                 {formulario.fechaCierre && (
                   <InfoField
                     label="Fecha de cierre"
@@ -182,6 +203,22 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
               </div>
             </>
           )}
+
+          {/* if not info, set a messagge */}
+          {(!formulario.razonSocial &&
+            !formulario.personaContacto &&
+            !formulario.email &&
+            !formulario.website &&
+            !formulario.direccion &&
+            !formulario.codigoPostal &&
+            !formulario.distribuidor &&
+            !formulario.fechaCierre) ||
+            (!formulario.fechaEstimadaDefinicion &&
+              !formulario.contactoDistribuidor && (
+                <p className="text-sm text-muted-foreground italic">
+                  No se proporcionó información del cliente.
+                </p>
+              ))}
         </div>
       </InfoSection>
 
@@ -468,24 +505,40 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 </Badge>
               </div>
             )}
+
             <NumberDisplay label="Voltaje" value={equipos.voltaje} unit="V" />
+
             <NumberDisplay
               label="Frecuencia"
               value={equipos.frecuencia}
               unit="Hz"
             />
+
             <NumberDisplay label="Amperaje" value={equipos.amperaje} unit="A" />
+
             <NumberDisplay
               label="Temperatura ambiente"
               value={equipos.temperaturaAmbiente}
               unit="°C"
             />
+
             <NumberDisplay
               label="Horas trabajo/día"
               value={equipos.horasTrabajoPorDia}
               unit="h"
             />
           </div>
+
+          {!equipos.tipoCorriente &&
+            equipos.voltaje === undefined &&
+            equipos.frecuencia === undefined &&
+            equipos.amperaje === undefined &&
+            equipos.temperaturaAmbiente === undefined &&
+            equipos.horasTrabajoPorDia === undefined && (
+              <div className="text-sm text-muted-foreground italic">
+                No se proporcionó información sobre equipos eléctricos.
+              </div>
+            )}
         </InfoSection>
       )}
 

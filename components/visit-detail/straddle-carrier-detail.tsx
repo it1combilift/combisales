@@ -187,10 +187,7 @@ export function StraddleCarrierDetail({
       <InfoSection title="Tipo de operación" icon={Forklift}>
         <div className="space-y-4">
           <div className="flex flex-wrap gap-3">
-            <Badge
-              variant={formulario.manejaContenedores ? "default" : "secondary"}
-              className="text-xs"
-            >
+            <Badge variant="secondary" className="text-xs">
               {formulario.manejaContenedores ? (
                 <Check className="size-3" />
               ) : (
@@ -198,10 +195,7 @@ export function StraddleCarrierDetail({
               )}
               Maneja Contenedores
             </Badge>
-            <Badge
-              variant={formulario.manejaCargaEspecial ? "default" : "secondary"}
-              className="text-xs"
-            >
+            <Badge variant="secondary" className="text-xs">
               {formulario.manejaCargaEspecial ? (
                 <Check className="size-3" />
               ) : (
@@ -255,12 +249,7 @@ export function StraddleCarrierDetail({
             {/* Additional container options */}
             <div className="flex justify-start items-center gap-2">
               <div className="flex items-center gap-2">
-                <Badge
-                  variant={
-                    formulario.dobleApilamiento ? "default" : "secondary"
-                  }
-                  className="text-xs"
-                >
+                <Badge variant="secondary" className="text-xs">
                   {formulario.dobleApilamiento ? (
                     <Check className="size-3" />
                   ) : (
@@ -270,12 +259,7 @@ export function StraddleCarrierDetail({
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
-                <Badge
-                  variant={
-                    formulario.manejaContenedoresIndiv ? "default" : "secondary"
-                  }
-                  className="text-xs"
-                >
+                <Badge variant="secondary" className="text-xs">
                   {formulario.manejaContenedoresIndiv ? (
                     <Check className="size-3" />
                   ) : (
@@ -403,10 +387,7 @@ export function StraddleCarrierDetail({
           {/* Condiciones del piso */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Badge
-                variant={formulario.pisoPlano ? "default" : "secondary"}
-                className="text-xs"
-              >
+              <Badge variant="secondary" className="text-xs">
                 {formulario.pisoPlano ? (
                   <Check className="size-3" />
                 ) : (
