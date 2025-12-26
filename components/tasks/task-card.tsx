@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import { ZohoTask } from "@/interfaces/zoho";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import {
@@ -188,18 +187,13 @@ export const TaskCard = ({
       )}
       onClick={() => router.push(TASK_DETAIL_URL(task.id))}
     >
-      <div className="p-5 space-y-4">
+      <div className="px-5 space-y-4">
         {/* Header */}
         <div className="flex items-start gap-3">
           <div
             className="flex items-start gap-3 flex-1 min-w-0"
             onClick={(e) => e.stopPropagation()}
           >
-            <Checkbox
-              checked={isSelected}
-              onCheckedChange={onSelect}
-              className="mt-1.5"
-            />
             <div className="flex-1 min-w-0 space-y-2">
               <div className="flex items-start justify-between gap-2 min-w-0">
                 <h3 className="font-semibold text-base leading-tight text-foreground line-clamp-2 truncate text-pretty">
@@ -207,7 +201,7 @@ export const TaskCard = ({
                 </h3>
               </div>
               {task.Description && (
-                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed text-pretty">
+                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed text-balance">
                   {task.Description}
                 </p>
               )}
@@ -342,22 +336,15 @@ export const TaskCard = ({
         {/* Footer */}
         <div className="flex flex-col items-start justify-center pt-2 border-t border-border/50">
           {task.Modified_Time && (
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Clock className="size-3.5 shrink-0" />
-              Modificada
-              <span>
-                {formatRelativeTime(task.Modified_Time) ||
-                  "Modificada hace poco"}
-              </span>
+            <div className="flex items-center text-xs text-muted-foreground">
+              Modificada{" "}
+              {formatRelativeTime(task.Modified_Time) || "Modificada hace poco"}
             </div>
           )}
           {task.Closed_Time && (
-            <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400">
-              <CheckCircle2 className="size-3.5 shrink-0" />
-              Completada
-              <span>
-                {formatRelativeTime(task.Closed_Time) || "Completada"}
-              </span>
+            <div className="flex items-center text-xs text-muted-foreground">
+              Completada{" "}
+              {formatRelativeTime(task.Closed_Time) || "Completada"}
             </div>
           )}
         </div>

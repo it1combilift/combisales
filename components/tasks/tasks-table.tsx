@@ -12,7 +12,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { TasksTableProps } from "@/interfaces/zoho";
 import { useIsMobile } from "@/components/ui/use-mobile";
 import { COMMERCIAL_TASK_TYPES } from "@/constants/constants";
-import { AccountsCardsPageSkeleton, TasksCardsSkeleton } from "../dashboard-skeleton";
+import { TasksCardsSkeleton } from "../dashboard-skeleton";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { ListTodo, X, Loader2, Filter, FilterX } from "lucide-react";
 
@@ -306,6 +306,92 @@ export function TasksTable({
           </div>
         </div>
 
+        <div className="flex flex-row items-center justify-between gap-4">
+          <div className="flex flex-row items-center justify-between gap-4 w-full">
+            <div className="flex items-center gap-2">
+              <p className="text-xs sm:text-sm font-medium whitespace-nowrap hidden lg:block">
+                Por página
+              </p>
+              <Select
+                value={`${table.getState().pagination.pageSize}`}
+                onValueChange={(value) => {
+                  setPageSize(Number(value));
+                  setPageIndex(1);
+                }}
+              >
+                <SelectTrigger className="h-8 w-[70px]">
+                  <SelectValue
+                    placeholder={table.getState().pagination.pageSize}
+                  />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  {[10, 20, 30, 40, 50].map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                      {pageSize}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center justify-center text-xs sm:text-sm font-medium whitespace-nowrap">
+              Página {table.getState().pagination.pageIndex + 1} de{" "}
+              {table.getPageCount()}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="hidden size-8 p-0 lg:flex"
+                onClick={() => {
+                  table.setPageIndex(0);
+                  setPageIndex(1);
+                }}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <span className="sr-only">Ir a la primera página</span>
+                <IconChevronsLeft className="size-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="size-8 p-0"
+                onClick={() => {
+                  table.previousPage();
+                  setPageIndex(pageIndex - 1);
+                }}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <span className="sr-only">Ir a la página anterior</span>
+                <IconChevronLeft className="size-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="size-8 p-0"
+                onClick={() => {
+                  table.nextPage();
+                  setPageIndex(pageIndex + 1);
+                }}
+                disabled={!table.getCanNextPage()}
+              >
+                <span className="sr-only">Ir a la página siguiente</span>
+                <IconChevronRight className="size-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="hidden size-8 p-0 lg:flex"
+                onClick={() => {
+                  table.setPageIndex(table.getPageCount() - 1);
+                  setPageIndex(table.getPageCount());
+                }}
+                disabled={!table.getCanNextPage()}
+              >
+                <span className="sr-only">Ir a la última página</span>
+                <IconChevronsRight className="size-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
         {/* Filters Panel */}
         {showFilters && (
           <div className="flex justify-start items-center gap-3 p-3 border rounded-lg bg-muted/30 flex-wrap">
@@ -379,8 +465,10 @@ export function TasksTable({
 
       {isMobile ? (
         <div className="space-y-4">
-          {!isLoading ? (
-            <TasksCardsSkeleton />
+          {isLoading || isRefreshing ? (
+            Array.from({ length: pageSize }).map((_, index) => (
+              <TasksCardsSkeleton key={index} />
+            ))
           ) : table.getRowModel().rows?.length ? (
             table
               .getRowModel()
@@ -474,15 +562,11 @@ export function TasksTable({
       )}
 
       {/* Pagination */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex-1 text-xs sm:text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} de{" "}
-          {table.getFilteredRowModel().rows.length} fila(s) seleccionada(s).
-        </div>
-        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 lg:gap-8">
+      <div className="flex flex-row items-center justify-between gap-4">
+        <div className="flex flex-row items-center justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
-            <p className="text-xs sm:text-sm font-medium whitespace-nowrap">
-              Filas por página
+            <p className="text-xs sm:text-sm font-medium whitespace-nowrap hidden lg:block">
+              Por página
             </p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
@@ -505,10 +589,12 @@ export function TasksTable({
               </SelectContent>
             </Select>
           </div>
+
           <div className="flex items-center justify-center text-xs sm:text-sm font-medium whitespace-nowrap">
             Página {table.getState().pagination.pageIndex + 1} de{" "}
             {table.getPageCount()}
           </div>
+
           <div className="flex items-center gap-2">
             <Button
               variant="outline"

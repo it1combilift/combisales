@@ -427,7 +427,7 @@ export function TasksCardsSkeleton() {
   return (
     <div className="relative rounded-lg border bg-card overflow-hidden">
       {/* left accent */}
-      <div className="absolute left-0 top-0 h-full w-1 bg-rose-600 rounded-l-lg" />
+      <div className="absolute left-0 top-0 h-full w-1 bg-muted rounded-l-lg" />
 
       <div className="p-4 space-y-4">
         {/* Title / description / tags */}

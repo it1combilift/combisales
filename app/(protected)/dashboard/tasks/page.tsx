@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { ZohoTask } from "@/interfaces/zoho";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { RefreshCw, ListTodo } from "lucide-react";
 import { EmptyCard } from "@/components/empty-card";
 import { columns } from "@/components/tasks/columns";
@@ -205,10 +206,22 @@ export default function TasksPage() {
               Aquí puedes ver todas las tareas configuradas en el sistema.
             </Paragraph>
 
-            <Badge variant="secondary" size="sm">
-              <ListTodo />
-              {tasks.length} tarea{tasks.length !== 1 ? "s" : ""} cargada
-              {tasks.length !== 1 ? "s" : ""}
+            <Badge variant="secondary" size="sm" className="mt-1">
+              {isLoading || isRefreshing ? (
+                <>
+                  <Spinner variant="circle" size="sm" />
+                  <span className="text-xs">Cargando tareas...</span>
+                </>
+              ) : isRefreshing ? (
+                "Actualizando tareas..."
+              ) : (
+                <>
+                  <ListTodo className="size-4" />
+                  {tasks.length === 1
+                    ? "1 tarea cargada"
+                    : `${tasks.length} tareas cargadas`}
+                </>
+              )}
             </Badge>
           </div>
         </div>
