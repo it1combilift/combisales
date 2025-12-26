@@ -34,15 +34,15 @@ export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
   };
 
   return (
-    <Card className="group overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary/20 bg-card flex flex-col">
-      <div className="relative aspect-16/10 overflow-hidden bg-muted">
+    <Card className="group overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary/20 bg-card flex flex-col pt-0">
+      <div className="relative h-72 overflow-hidden bg-muted">
         <Image
           src={machine.image || "/placeholder.svg"}
           alt={machine.description}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover transition-transform duration-300 group-hover:scale-105 object-center"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+          fill
+          />
         <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute top-2 left-2 right-2 flex items-start justify-between gap-1.5">
           <Badge

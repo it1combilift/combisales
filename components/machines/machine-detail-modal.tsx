@@ -94,7 +94,7 @@ export function MachineDetailModal({
               src={machine.image || "/placeholder.svg"}
               alt={machine.description}
               fill
-              className="object-cover"
+              className="object-cover object-center"
               sizes="(max-width: 512px) 100vw, 512px"
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
