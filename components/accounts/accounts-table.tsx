@@ -201,7 +201,7 @@ export function AccountsTable({
       <div className="flex flex-row items-center justify-between gap-3">
         <div className="flex flex-1 items-center gap-2">
           <div className="relative flex-1 max-w-full sm:max-w-sm">
-            <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Buscar clientes..."
               value={localSearchValue}
@@ -210,7 +210,7 @@ export function AccountsTable({
             />
             {/* Clear button or loading indicator */}
             {isSearching ? (
-              <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground animate-spin" />
+              <Loader2 className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground animate-spin" />
             ) : localSearchValue ? (
               <button
                 type="button"
@@ -218,7 +218,7 @@ export function AccountsTable({
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="Limpiar búsqueda"
               >
-                <X className="h-4 w-4" />
+                <X className="size-4" />
               </button>
             ) : null}
           </div>
@@ -233,11 +233,11 @@ export function AccountsTable({
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="w-auto h-10 text-xs sm:text-sm"
+              size="sm"
             >
-              <IconLayoutColumns className="h-4 w-4" />
+              <IconLayoutColumns className="size-4" />
               <span className="sm:hidden md:inline">Columnas</span>
-              <IconChevronDown className="ml-2 size-3.5 sm:size-4" />
+              <IconChevronDown className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
@@ -430,7 +430,7 @@ export function AccountsTable({
               disabled={!table.getCanPreviousPage()}
             >
               <span className="sr-only">Ir a la primera página</span>
-              <IconChevronsLeft className="h-4 w-4" />
+              <IconChevronsLeft className="size-4" />
             </Button>
             <Button
               variant="outline"
@@ -441,7 +441,7 @@ export function AccountsTable({
               disabled={!table.getCanPreviousPage()}
             >
               <span className="sr-only">Ir a la página anterior</span>
-              <IconChevronLeft className="h-4 w-4" />
+              <IconChevronLeft className="size-4" />
             </Button>
             <Button
               variant="outline"
@@ -452,7 +452,7 @@ export function AccountsTable({
               disabled={!table.getCanNextPage()}
             >
               <span className="sr-only">Ir a la página siguiente</span>
-              <IconChevronRight className="h-4 w-4" />
+              <IconChevronRight className="size-4" />
             </Button>
             <Button
               variant="outline"
@@ -463,7 +463,7 @@ export function AccountsTable({
               disabled={!table.getCanNextPage()}
             >
               <span className="sr-only">Ir a la última página</span>
-              <IconChevronsRight className="h-4 w-4" />
+              <IconChevronsRight className="size-4" />
             </Button>
           </div>
         </div>

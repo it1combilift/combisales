@@ -291,13 +291,27 @@ export function TasksTable({
                     return (
                       <DropdownMenuCheckboxItem
                         key={column.id}
-                        className="capitalize"
+                        className="whitespace-nowrap cursor-pointer"
                         checked={column.getIsVisible()}
                         onCheckedChange={(value) =>
                           column.toggleVisibility(!!value)
                         }
                       >
-                        {column.id}
+                        {column.id === "Subject"
+                          ? "Asunto"
+                          : column.id === "Tipo_de_Tarea"
+                          ? "Tipo"
+                          : column.id === "Status"
+                          ? "Estado"
+                          : column.id === "Priority"
+                          ? "Prioridad"
+                          : column.id === "Due_Date"
+                          ? "Fecha vencimiento"
+                          : column.id === "Owner"
+                          ? "Responsable"
+                          : column.id === "What_Id"
+                          ? "Relacionado con"
+                          : column.id}
                       </DropdownMenuCheckboxItem>
                     );
                   })}
