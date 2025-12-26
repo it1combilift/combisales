@@ -1,6 +1,7 @@
 "use client";
 
 import useSWR from "swr";
+import { Badge } from "../ui/badge";
 import { AlertMessage } from "../alert";
 import { MachineCard } from "./machine-card";
 import { H1, Paragraph } from "../fonts/fonts";
@@ -12,7 +13,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MachineDetailModal } from "./machine-detail-modal";
 import { Machine, MachinesResponse } from "@/interfaces/machine";
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { Badge } from "../ui/badge";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -177,9 +177,9 @@ export function MachinesPageComponent() {
                   Aquí puedes ver todas las máquinas disponibles en el sistema.
                 </Paragraph>
 
-                <Paragraph>
-                  {data?.metadata.totalMachines || 0} máquinas en el sistema
-                </Paragraph>
+                <Badge variant="secondary" size="sm" className="mt-1">
+                  {data?.metadata.totalMachines || 0} equipos encontrados
+                </Badge>
               </div>
             </div>
 

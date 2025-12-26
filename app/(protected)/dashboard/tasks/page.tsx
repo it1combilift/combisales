@@ -216,7 +216,6 @@ export default function TasksPage() {
                 "Actualizando tareas..."
               ) : (
                 <>
-                  <ListTodo className="size-4" />
                   {tasks.length === 1
                     ? "1 tarea cargada"
                     : `${tasks.length} tareas cargadas`}

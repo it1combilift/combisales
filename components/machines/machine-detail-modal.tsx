@@ -204,12 +204,12 @@ export function MachineDetailModal({
                       {active ? (
                         <CheckCircle2
                           className={cn(
-                            "size-3.5 shrink-0",
+                            "size-3 shrink-0",
                             `text-${color}-500`
                           )}
                         />
                       ) : (
-                        <XCircle className="size-3.5 shrink-0 text-muted-foreground/30" />
+                        <XCircle className="size-3 shrink-0 text-muted-foreground/30" />
                       )}
                     </div>
                   )

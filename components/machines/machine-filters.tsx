@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Label } from "../ui/label";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Label } from "../ui/label";
 
 interface MachineFiltersProps {
   searchQuery: string;
@@ -198,7 +198,7 @@ export function MachineFilters({
             placeholder="Buscar por descripción, S/N o distribuidor..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-background h-11"
+            className="pl-10 bg-background h-11 max-w-md"
           />
         </div>
 
