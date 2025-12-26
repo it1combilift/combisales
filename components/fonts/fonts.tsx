@@ -11,7 +11,7 @@ export function H1({
   return (
     <h1
       className={cn(
-        "text-lg xs:text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-primary",
+        "text-lg xs:text-xl sm:text-2xl font-extrabold tracking-tight text-primary truncate text-balance",
         "drop-shadow-sm",
         "transition-all duration-200",
         "hover:text-primary/90 hover:scale-[1.02]",

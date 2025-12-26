@@ -25,7 +25,7 @@ export default function DashboardCatchAll() {
         actions={
           <div className="flex flex-col sm:flex-row gap-2">
             <Button asChild>
-              <Link href="/dashboard/clients" className="gap-2">
+              <Link href="/dashboard/tasks" className="gap-2">
                 <Home className="size-4" />
                 Regresar
               </Link>

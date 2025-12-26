@@ -72,10 +72,7 @@ export function AccountsTable({
   isSearching = false,
   searchQuery: externalSearchQuery,
   onClearSearch,
-  // Props para paginación progresiva
-  isLoadingMore = false,
-  hasMoreRecords = false,
-  totalLoaded = 0,
+  
 }: AccountsTableProps) {
   const isMobile = useIsMobile();
   const router = useRouter();

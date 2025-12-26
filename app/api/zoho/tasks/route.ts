@@ -1,6 +1,7 @@
 import { Role } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { COMMERCIAL_TASK_TYPES } from "@/constants/constants";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
@@ -74,6 +75,12 @@ export async function GET(request: NextRequest) {
     }
 
     let filteredTasks = tasksResponse.data;
+
+    // Filter by commercial task types only
+    filteredTasks = filteredTasks.filter((task) => {
+      if (!task.Tipo_de_Tarea) return false;
+      return COMMERCIAL_TASK_TYPES.includes(task.Tipo_de_Tarea);
+    });
 
     // SELLER users can only see tasks they own
     if (session.user.role === Role.SELLER) {

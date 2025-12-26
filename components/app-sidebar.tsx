@@ -7,6 +7,7 @@ import { Session } from "next-auth";
 import { Role } from "@prisma/client";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
+import { Forklift, ListTodo } from "lucide-react";
 import { NavDocuments } from "@/components/nav-documents";
 import { NavSecondary } from "@/components/nav-secondary";
 
@@ -21,8 +22,7 @@ import {
   IconSettings,
   IconUsers,
   IconFileWord,
-  IconForklift,
-  IconBuilding,
+  IconBuildings,
 } from "@tabler/icons-react";
 
 import {
@@ -43,22 +43,27 @@ const data = {
   },
   navMain: [
     {
+      title: "Tareas",
+      url: "/dashboard/tasks",
+      icon: ListTodo,
+    },
+    {
       title: "Clientes",
       url: "/dashboard/clients",
-      icon: IconBuilding,
+      icon: IconBuildings,
     },
-
+    {
+      title: "Equipos",
+      url: "/dashboard/equipment",
+      icon: Forklift,
+    },
     {
       title: "Usuarios",
       url: "/dashboard/users",
       icon: IconUsers,
     },
-    {
-      title: "Equipos",
-      url: "/dashboard/equipment",
-      icon: IconForklift,
-    },
   ],
+
   navClouds: [
     {
       title: "Capture",

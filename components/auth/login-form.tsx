@@ -92,7 +92,7 @@ export function LoginForm({
       } else if (result?.ok) {
         toast.success("Has iniciado sesión correctamente.");
         await new Promise((resolve) => setTimeout(resolve, 800));
-        router.push("/dashboard/clients");
+        router.push("/dashboard/tasks");
         router.refresh();
       } else {
         toast.error("Error inesperado al iniciar sesión.");
@@ -108,7 +108,7 @@ export function LoginForm({
   async function handleZohoLogin() {
     setIsLoading(true);
     try {
-      await signIn("zoho", { callbackUrl: "/dashboard/clients" });
+      await signIn("zoho", { callbackUrl: "/dashboard/tasks" });
     } catch (error) {
       toast.error("Error de autenticación con Zoho. Intenta nuevamente.");
       setIsLoading(false);

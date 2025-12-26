@@ -61,3 +61,12 @@ export const NOTIFICATION_CONFIG = {
     enabled: true,
   },
 } as const;
+
+export const COMMERCIAL_TASK_TYPES = [
+  "Propuesta de Visita",
+  "Visita Comercial",
+  "Demostración",
+  "Oferta / Cotización",
+  "Oferta",
+  "Cotización",
+];

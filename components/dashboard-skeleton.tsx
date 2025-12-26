@@ -423,6 +423,62 @@ export function AccountsCardsPageSkeleton() {
   );
 }
 
+export function TasksCardsSkeleton() {
+  return (
+    <div className="relative rounded-lg border bg-card overflow-hidden">
+      {/* left accent */}
+      <div className="absolute left-0 top-0 h-full w-1 bg-rose-600 rounded-l-lg" />
+
+      <div className="p-4 space-y-4">
+        {/* Title / description / tags */}
+        <div className="flex items-start gap-4">
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-6 w-64 max-w-full" /> {/* Title */}
+            <Skeleton className="h-4 w-full max-w-md" /> {/* Subtitle */}
+            <div className="flex items-center gap-2 mt-2">
+              <Skeleton className="h-7 w-24 rounded-full" /> {/* tag */}
+              <Skeleton className="h-7 w-24 rounded-full" /> {/* tag */}
+              <Skeleton className="h-7 w-16 rounded-full" /> {/* tag */}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-end gap-2">
+            <Skeleton className="h-9 w-9 rounded-full" /> {/* avatar */}
+            <Skeleton className="h-4 w-20" /> {/* small meta */}
+          </div>
+        </div>
+
+        {/* Buttons / status row */}
+        <div className="flex flex-wrap items-center gap-3">
+          <Skeleton className="h-10 w-28" />
+          <Skeleton className="h-10 w-24" />
+          <Skeleton className="h-10 w-20" />
+        </div>
+
+        {/* due / details section */}
+        <div className="pt-3 border-t">
+          <div className="flex items-start gap-4">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-8 rounded-full" /> {/* icon */}
+              <div className="space-y-1">
+                <Skeleton className="h-4 w-40" /> {/* label line */}
+                <Skeleton className="h-3 w-28" /> {/* subline */}
+              </div>
+            </div>
+
+            <div className="flex-1" />
+
+            <div className="space-y-1 text-right">
+              <Skeleton className="h-4 w-28" /> {/* related / contact */}
+              <Skeleton className="h-3 w-28" /> {/* modified/completed */}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function VisitCardSkeleton() {
   return (
     <>

@@ -8,6 +8,7 @@ export async function proxy(request: NextRequest) {
     "/dashboard/clients",
     "/dashboard/users",
     "/dashboard/equipment",
+    "/dashboard/tasks",
   ];
   const adminOnlyPaths = ["/dashboard/users"];
 
@@ -46,7 +47,7 @@ export async function proxy(request: NextRequest) {
 
     if (isAdminOnlyPath && token.role !== Role.ADMIN) {
       console.log("Access denied: ADMIN role required");
-      const forbiddenUrl = new URL("/dashboard/clients", request.url);
+      const forbiddenUrl = new URL("/dashboard/tasks", request.url);
       return NextResponse.redirect(forbiddenUrl);
     }
   }

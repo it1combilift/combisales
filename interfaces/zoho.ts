@@ -185,6 +185,8 @@ export interface ZohoTask {
   id: string;
   Subject: string;
 
+  Tipo_de_Tarea?: string;
+
   // Estado y prioridad
   Status?:
     | "Not Started"
@@ -307,4 +309,29 @@ export interface AccountsTableProps {
   hasMoreRecords?: boolean;
   onLoadMore?: () => void;
   totalLoaded?: number;
+}
+
+export interface TasksTableProps {
+  columns: ColumnDef<ZohoTask>[];
+  data: ZohoTask[];
+  isLoading?: boolean;
+  rowSelection?: Record<string, boolean>;
+  setRowSelection?: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
+  globalFilter?: string;
+  setGlobalFilter?: (value: string) => void;
+  columnFilters?: ColumnFiltersState;
+  setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
+  // Props para búsqueda remota
+  onSearch?: (searchText: string) => void;
+  isSearching?: boolean;
+  searchQuery?: string;
+  onClearSearch?: () => void;
+  // Props para paginación progresiva
+  isLoadingMore?: boolean;
+  hasMoreRecords?: boolean;
+  onLoadMore?: () => void;
+  totalLoaded?: number;
+  isRefreshing?: boolean;
 }
