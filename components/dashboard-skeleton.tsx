@@ -2,7 +2,7 @@ import { Skeleton } from "./ui/skeleton";
 
 export function DashboardPageSkeleton() {
   return (
-    <div className="mx-auto space-y-6 animate-in fade-in duration-300 w-full">
+    <div className="mx-auto space-y-3 animate-in fade-in duration-300 w-full px-4">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-2">
         {/* Title and Description */}

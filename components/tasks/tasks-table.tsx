@@ -222,7 +222,7 @@ export function TasksTable({
       {/* Search and Filter Bar */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-row items-center justify-between gap-3">
-          <div className="flex flex-1 items-center gap-2">
+          <div className="flex flex-col items-start justify-center gap-2">
             <div className="relative flex-1 max-w-full sm:max-w-sm">
               <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -244,12 +244,14 @@ export function TasksTable({
                 </button>
               ) : null}
             </div>
+
             {externalSearchQuery && !isSearching && (
               <span className="hidden sm:inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary whitespace-nowrap">
                 Resultados para &quot;{externalSearchQuery}&quot;
               </span>
             )}
           </div>
+
           <div className="flex items-center gap-2">
             {(statusFilter || priorityFilter || tipoFilter) && (
               <Button
