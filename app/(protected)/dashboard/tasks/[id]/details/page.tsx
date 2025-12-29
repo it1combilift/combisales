@@ -326,15 +326,19 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
             </div>
           </div>
 
-          <Button variant="outline" size="sm" onClick={() => router.back()}>
-            <ArrowLeft className="size-4" />
-            <span className="text-muted-foreground">Volver</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => router.back()}>
+              <ArrowLeft className="size-4" />
+              <span className="text-muted-foreground hidden sm:inline">
+                Volver
+              </span>
+            </Button>
 
-          <Button onClick={handleNewVisit} size="sm">
-            <Plus className="size-4" />
-            Nueva visita
-          </Button>
+            <Button onClick={handleNewVisit} size="sm">
+              <Plus className="size-4" />
+              <span className="hidden sm:inline">Nueva visita</span>
+            </Button>
+          </div>
         </div>
 
         {/* Task summary card - información esencial */}
@@ -430,7 +434,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                   <Badge variant="secondary">{visits.length}</Badge>
                 )}
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground text-pretty">
                 Registro de todas las visitas realizadas para esta tarea
               </p>
             </div>
@@ -668,9 +672,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteVisit}
-            >
+            <AlertDialogAction onClick={handleDeleteVisit}>
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
