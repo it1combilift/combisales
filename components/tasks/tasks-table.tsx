@@ -508,6 +508,29 @@ export function TasksTable({
                 <span className="sr-only">Ir a la última página</span>
                 <IconChevronsRight className="size-4" />
               </Button>
+
+              {/* Load More Button - Integrated in pagination */}
+              {isOnLastPage && hasMoreRecords && onLoadMore && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onLoadMore}
+                  disabled={isLoadingMore}
+                  className="ml-2 gap-2"
+                  title="Cargar más registros"
+                >
+                  {isLoadingMore ? (
+                    <>
+                      <Spinner variant="bars" className="size-3" />
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="size-4" />
+                      <span className="hidden sm:inline">Cargar más</span>
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </div>
