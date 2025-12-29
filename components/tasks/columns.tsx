@@ -146,6 +146,10 @@ export const columns: ColumnDef<ZohoTask>[] = [
         </span>
       );
     },
+    filterFn: (row, id, value) => {
+      const cellValue = row.getValue(id) as string;
+      return cellValue === value;
+    },
   },
   {
     accessorKey: "Status",

@@ -310,6 +310,10 @@ export interface AccountsTableProps {
   hasMoreRecords?: boolean;
   onLoadMore?: () => void;
   totalLoaded?: number;
+  // Props para tracking de paginación
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  isOnLastPage?: boolean;
 }
 
 export interface TasksTableProps {
@@ -335,4 +339,8 @@ export interface TasksTableProps {
   onLoadMore?: () => void;
   totalLoaded?: number;
   isRefreshing?: boolean;
+  // Props para tracking de paginación
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  isOnLastPage?: boolean;
 }

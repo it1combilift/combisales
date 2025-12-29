@@ -14,6 +14,7 @@ import { TasksTable } from "@/components/tasks/tasks-table";
 import { useState, useCallback, useRef, useEffect } from "react";
 
 const PER_PAGE = 200;
+const INITIAL_LOAD_ONLY_FIRST_PAGE = true; // Set to false to load all pages initially
 
 interface PaginationState {
   currentPage: number;
@@ -30,6 +31,8 @@ export default function TasksPage() {
   const [error, setError] = useState<string | null>(null);
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [currentTablePage, setCurrentTablePage] = useState(1);
+  const [tablePageSize, setTablePageSize] = useState(10);
 
   const [pagination, setPagination] = useState<PaginationState>({
     currentPage: 1,
@@ -74,9 +77,50 @@ export default function TasksPage() {
   }, []);
 
   /**
-   * Fetch all tasks progressively
+   * Load remaining tasks in background (optional, for auto-loading all)
    */
-  const fetchAllTasks = useCallback(
+  const loadMoreTasksInBackground = useCallback(
+    async (startPage: number) => {
+      let currentPage = startPage;
+      let hasMoreRecords = true;
+
+      while (hasMoreRecords) {
+        try {
+          const { tasks: pageTasks, hasMore } = await fetchTasksPage(
+            currentPage
+          );
+
+          const updatedTasks = [...allTasksRef.current, ...pageTasks];
+          allTasksRef.current = updatedTasks;
+          setTasks([...updatedTasks]);
+
+          hasMoreRecords = hasMore;
+          setPagination({
+            currentPage,
+            hasMoreRecords: hasMore,
+            isLoadingMore: hasMore,
+          });
+
+          if (hasMore) {
+            currentPage++;
+            // Add small delay to avoid overwhelming the API
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+        } catch (err) {
+          console.error("Error loading tasks in background:", err);
+          break;
+        }
+      }
+
+      setPagination((prev) => ({ ...prev, isLoadingMore: false }));
+    },
+    [fetchTasksPage]
+  );
+
+  /**
+   * Fetch initial tasks (only first page for better performance)
+   */
+  const fetchInitialTasks = useCallback(
     async (options: { isRefresh?: boolean } = {}) => {
       if (isLoadingRef.current) return;
 
@@ -91,41 +135,25 @@ export default function TasksPage() {
         }
 
         setError(null);
-        allTasksRef.current = [];
 
-        let currentPage = 1;
-        let hasMoreRecords = true;
-        let allFetchedTasks: ZohoTask[] = [];
+        // Load only first page initially for performance
+        const { tasks: initialTasks, hasMore } = await fetchTasksPage(1);
 
-        while (hasMoreRecords) {
-          const { tasks: pageTasks, hasMore } = await fetchTasksPage(
-            currentPage
-          );
+        allTasksRef.current = initialTasks;
+        setTasks(initialTasks);
 
-          allFetchedTasks = [...allFetchedTasks, ...pageTasks];
-          allTasksRef.current = allFetchedTasks;
-
-          setTasks([...allFetchedTasks]);
-
-          hasMoreRecords = hasMore;
-
-          setPagination({
-            currentPage,
-            hasMoreRecords: hasMore,
-            isLoadingMore: hasMore,
-          });
-
-          if (hasMore) {
-            currentPage++;
-          }
-        }
-
-        setPagination((prev) => ({
-          ...prev,
+        setPagination({
+          currentPage: 1,
+          hasMoreRecords: hasMore,
           isLoadingMore: false,
-        }));
+        });
+
+        if (hasMore && !INITIAL_LOAD_ONLY_FIRST_PAGE) {
+          // If configured to load all, continue loading in background
+          loadMoreTasksInBackground(2);
+        }
       } catch (err) {
-        console.error("Error fetching all tasks:", err);
+        console.error("Error fetching initial tasks:", err);
         setError(
           err instanceof Error ? err.message : "Error al cargar las tareas"
         );
@@ -136,8 +164,41 @@ export default function TasksPage() {
         isLoadingRef.current = false;
       }
     },
-    [fetchTasksPage]
+    [fetchTasksPage, loadMoreTasksInBackground]
   );
+
+  /**
+   * Load more tasks (for "Load More" button)
+   */
+  const loadMoreTasks = useCallback(async () => {
+    if (isLoadingRef.current || !pagination.hasMoreRecords) return;
+
+    isLoadingRef.current = true;
+    setPagination((prev) => ({ ...prev, isLoadingMore: true }));
+
+    try {
+      const nextPage = pagination.currentPage + 1;
+      const { tasks: newTasks, hasMore } = await fetchTasksPage(nextPage);
+
+      const updatedTasks = [...allTasksRef.current, ...newTasks];
+      allTasksRef.current = updatedTasks;
+      setTasks(updatedTasks);
+
+      setPagination({
+        currentPage: nextPage,
+        hasMoreRecords: hasMore,
+        isLoadingMore: false,
+      });
+
+      toast.success(`${newTasks.length} tareas más cargadas`);
+    } catch (err) {
+      console.error("Error loading more tasks:", err);
+      toast.error("Error al cargar más tareas");
+      setPagination((prev) => ({ ...prev, isLoadingMore: false }));
+    } finally {
+      isLoadingRef.current = false;
+    }
+  }, [fetchTasksPage, pagination]);
 
   /**
    * Search tasks
@@ -148,7 +209,7 @@ export default function TasksPage() {
 
       if (!searchText || searchText.trim().length === 0) {
         setSearchQuery("");
-        await fetchAllTasks();
+        await fetchInitialTasks();
         return;
       }
 
@@ -176,25 +237,39 @@ export default function TasksPage() {
         isLoadingRef.current = false;
       }
     },
-    [fetchTasksPage, fetchAllTasks]
+    [fetchTasksPage, fetchInitialTasks]
   );
 
   const handleRefresh = () => {
     if (searchQuery) {
       searchTasks(searchQuery);
     } else {
-      fetchAllTasks({ isRefresh: true });
+      fetchInitialTasks({ isRefresh: true });
     }
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
-    fetchAllTasks();
+    fetchInitialTasks();
   };
 
   useEffect(() => {
-    fetchAllTasks();
-  }, [fetchAllTasks]);
+    fetchInitialTasks();
+  }, [fetchInitialTasks]);
+
+  // Calculate if user is on the last page of currently loaded data
+  const filteredTasksCount =
+    columnFilters.length > 0
+      ? tasks.filter((task) => {
+          return columnFilters.every((filter) => {
+            const value = task[filter.id as keyof ZohoTask];
+            return value === filter.value;
+          });
+        }).length
+      : tasks.length;
+
+  const totalPages = Math.ceil(filteredTasksCount / tablePageSize);
+  const isOnLastPage = currentTablePage >= totalPages;
 
   return (
     <section className="mx-auto px-4 space-y-3 w-full h-full">
@@ -255,23 +330,29 @@ export default function TasksPage() {
           }
         />
       ) : (
-        <TasksTable
-          columns={columns}
-          data={tasks}
-          isLoading={isLoading}
-          rowSelection={rowSelection}
-          setRowSelection={setRowSelection}
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
-          onSearch={searchTasks}
-          isSearching={isSearching}
-          searchQuery={searchQuery}
-          onClearSearch={handleClearSearch}
-          isLoadingMore={pagination.isLoadingMore}
-          hasMoreRecords={pagination.hasMoreRecords}
-          totalLoaded={tasks.length}
-          isRefreshing={isRefreshing}
-        />
+        <>
+          <TasksTable
+            columns={columns}
+            data={tasks}
+            isLoading={isLoading}
+            rowSelection={rowSelection}
+            setRowSelection={setRowSelection}
+            columnFilters={columnFilters}
+            setColumnFilters={setColumnFilters}
+            onSearch={searchTasks}
+            isSearching={isSearching}
+            searchQuery={searchQuery}
+            onClearSearch={handleClearSearch}
+            isLoadingMore={pagination.isLoadingMore}
+            hasMoreRecords={pagination.hasMoreRecords}
+            totalLoaded={tasks.length}
+            isRefreshing={isRefreshing}
+            onLoadMore={loadMoreTasks}
+            onPageChange={setCurrentTablePage}
+            onPageSizeChange={setTablePageSize}
+            isOnLastPage={isOnLastPage && !searchQuery}
+          />
+        </>
       )}
     </section>
   );

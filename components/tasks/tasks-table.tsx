@@ -3,18 +3,20 @@
 import * as React from "react";
 import { Label } from "../ui/label";
 import { TaskCard } from "./task-card";
+import { Spinner } from "../ui/spinner";
 import { EmptyCard } from "../empty-card";
 import { Skeleton } from "../ui/skeleton";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useDebouncedCallback } from "use-debounce";
 import { TasksTableProps } from "@/interfaces/zoho";
 import { useIsMobile } from "@/components/ui/use-mobile";
-import { COMMERCIAL_TASK_TYPES } from "@/constants/constants";
 import { TasksCardsSkeleton } from "../dashboard-skeleton";
+import { COMMERCIAL_TASK_TYPES } from "@/constants/constants";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
-import { ListTodo, X, Loader2, Filter, FilterX } from "lucide-react";
+import { ListTodo, X, Loader2, Filter, FilterX, RefreshCw } from "lucide-react";
 
 import {
   ColumnFiltersState,
@@ -62,6 +64,33 @@ import {
   SelectValue,
 } from "../ui/select";
 
+// Helper function to get readable filter labels
+const getFilterLabel = (type: "status" | "priority", value: string): string => {
+  if (type === "status") {
+    const statusLabels: Record<string, string> = {
+      "Not Started": "No iniciada",
+      "In Progress": "En progreso",
+      Completed: "Completada",
+      Deferred: "Diferida",
+      "Waiting for Input": "Esperando entrada",
+    };
+    return statusLabels[value] || value;
+  }
+
+  if (type === "priority") {
+    const priorityLabels: Record<string, string> = {
+      Highest: "Máxima",
+      High: "Alta",
+      Normal: "Normal",
+      Low: "Baja",
+      Lowest: "Mínima",
+    };
+    return priorityLabels[value] || value;
+  }
+
+  return value;
+};
+
 export function TasksTable({
   columns,
   data,
@@ -75,6 +104,13 @@ export function TasksTable({
   searchQuery: externalSearchQuery,
   onClearSearch,
   isRefreshing = false,
+  onLoadMore,
+  hasMoreRecords = false,
+  isLoadingMore = false,
+  totalLoaded = 0,
+  onPageChange,
+  onPageSizeChange,
+  isOnLastPage,
 }: TasksTableProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -179,7 +215,18 @@ export function TasksTable({
     }
 
     setColumnFilters(filters);
-  }, [statusFilter, priorityFilter, tipoFilter, setColumnFilters]);
+
+    // Reset to first page when filters change
+    if (statusFilter || priorityFilter || tipoFilter) {
+      setPageIndex(1);
+    }
+  }, [
+    statusFilter,
+    priorityFilter,
+    tipoFilter,
+    setColumnFilters,
+    setPageIndex,
+  ]);
 
   const table = useReactTable({
     data,
@@ -217,6 +264,19 @@ export function TasksTable({
     }
   }, [pageIndex, pageSize, table]);
 
+  // Notify parent of page changes
+  React.useEffect(() => {
+    if (onPageChange) {
+      onPageChange(pageIndex);
+    }
+  }, [pageIndex, onPageChange]);
+
+  React.useEffect(() => {
+    if (onPageSizeChange) {
+      onPageSizeChange(pageSize);
+    }
+  }, [pageSize, onPageSizeChange]);
+
   return (
     <div className="w-full space-y-4">
       {/* Search and Filter Bar */}
@@ -253,6 +313,44 @@ export function TasksTable({
           </div>
 
           <div className="flex items-center gap-2">
+            {(statusFilter || priorityFilter || tipoFilter) && (
+              <div className="flex items-center gap-2 flex-wrap">
+                {statusFilter && (
+                  <Badge variant="secondary" className="text-xs">
+                    Estado: {getFilterLabel("status", statusFilter)}
+                    <button
+                      onClick={() => setStatusFilter("")}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </Badge>
+                )}
+                {priorityFilter && (
+                  <Badge variant="secondary" className="text-xs">
+                    Prioridad: {getFilterLabel("priority", priorityFilter)}
+                    <button
+                      onClick={() => setPriorityFilter("")}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </Badge>
+                )}
+                {tipoFilter && (
+                  <Badge variant="secondary" className="text-xs">
+                    Tipo: {tipoFilter}
+                    <button
+                      onClick={() => setTipoFilter("")}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </Badge>
+                )}
+              </div>
+            )}
+
             {(statusFilter || priorityFilter || tipoFilter) && (
               <Button
                 variant="outline"
@@ -348,6 +446,12 @@ export function TasksTable({
                   ))}
                 </SelectContent>
               </Select>
+              {(statusFilter || priorityFilter || tipoFilter) && (
+                <p className="text-xs text-muted-foreground whitespace-nowrap hidden sm:block">
+                  ({table.getFilteredRowModel().rows.length} de {data.length}{" "}
+                  resultados)
+                </p>
+              )}
             </div>
 
             <div className="flex items-center justify-center text-xs sm:text-sm font-medium whitespace-nowrap">
@@ -415,66 +519,121 @@ export function TasksTable({
               <Label className="text-xs font-medium text-muted-foreground">
                 Estado
               </Label>
-              <Select
-                value={statusFilter || undefined}
-                onValueChange={(value) => setStatusFilter(value)}
-              >
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue placeholder="Todos los estados" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Not Started">No iniciada</SelectItem>
-                  <SelectItem value="In Progress">En progreso</SelectItem>
-                  <SelectItem value="Completed">Completada</SelectItem>
-                  <SelectItem value="Deferred">Diferida</SelectItem>
-                  <SelectItem value="Waiting for Input">
-                    Esperando entrada
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={statusFilter || undefined}
+                  onValueChange={(value) => setStatusFilter(value)}
+                >
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Todos los estados" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Not Started">No iniciada</SelectItem>
+                    <SelectItem value="In Progress">En progreso</SelectItem>
+                    <SelectItem value="Completed">Completada</SelectItem>
+                    <SelectItem value="Deferred">Diferida</SelectItem>
+                    <SelectItem value="Waiting for Input">
+                      Esperando entrada
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {statusFilter && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => setStatusFilter("")}
+                  >
+                    <X className="size-4" />
+                    <span className="sr-only">Limpiar filtro de estado</span>
+                  </Button>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">
                 Prioridad
               </Label>
-              <Select
-                value={priorityFilter || undefined}
-                onValueChange={(value) => setPriorityFilter(value)}
-              >
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue placeholder="Todas las prioridades" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Highest">Máxima</SelectItem>
-                  <SelectItem value="High">Alta</SelectItem>
-                  <SelectItem value="Normal">Normal</SelectItem>
-                  <SelectItem value="Low">Baja</SelectItem>
-                  <SelectItem value="Lowest">Mínima</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={priorityFilter || undefined}
+                  onValueChange={(value) => setPriorityFilter(value)}
+                >
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Todas las prioridades" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Highest">Máxima</SelectItem>
+                    <SelectItem value="High">Alta</SelectItem>
+                    <SelectItem value="Normal">Normal</SelectItem>
+                    <SelectItem value="Low">Baja</SelectItem>
+                    <SelectItem value="Lowest">Mínima</SelectItem>
+                  </SelectContent>
+                </Select>
+                {priorityFilter && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => setPriorityFilter("")}
+                  >
+                    <X className="size-4" />
+                    <span className="sr-only">Limpiar filtro de prioridad</span>
+                  </Button>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">
                 Tipo de tarea
               </Label>
-              <Select
-                value={tipoFilter || undefined}
-                onValueChange={(value) => setTipoFilter(value)}
-              >
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue placeholder="Todos los tipos" />
-                </SelectTrigger>
-                <SelectContent>
-                  {COMMERCIAL_TASK_TYPES.map((tipo) => (
-                    <SelectItem key={tipo} value={tipo}>
-                      {tipo}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={tipoFilter || undefined}
+                  onValueChange={(value) => setTipoFilter(value)}
+                >
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Todos los tipos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COMMERCIAL_TASK_TYPES.map((tipo) => (
+                      <SelectItem key={tipo} value={tipo}>
+                        {tipo}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {tipoFilter && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => setTipoFilter("")}
+                  >
+                    <X className="size-4" />
+                    <span className="sr-only">Limpiar filtro de tipo</span>
+                  </Button>
+                )}
+              </div>
             </div>
+
+            {(statusFilter || priorityFilter || tipoFilter) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setStatusFilter("");
+                  setPriorityFilter("");
+                  setTipoFilter("");
+                }}
+                className="h-9 ml-auto"
+              >
+                <X className="size-4 mr-2" />
+                Limpiar todos los filtros
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -660,6 +819,29 @@ export function TasksTable({
               <span className="sr-only">Ir a la última página</span>
               <IconChevronsRight className="size-4" />
             </Button>
+
+            {/* Load More Button - Integrated in pagination */}
+            {isOnLastPage && hasMoreRecords && onLoadMore && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onLoadMore}
+                disabled={isLoadingMore}
+                className="ml-2 gap-2"
+                title="Cargar más registros"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <Spinner variant="bars" className="size-3" />
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="size-4" />
+                    <span className="hidden sm:inline">Cargar más</span>
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>

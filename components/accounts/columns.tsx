@@ -32,40 +32,18 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
 
   return [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Seleccionar todo"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Seleccionar fila"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: "Account_Name",
       header: "Cliente",
       cell: ({ row }) => {
         const name = row.getValue("Account_Name") as string;
         const accountType = row.original.Account_Type;
         return (
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2 max-w-sm">
+          <div className="flex flex-col gap-1 max-w-60">
+            <div className="flex items-center gap-2">
               <span className="font-medium truncate">{name}</span>
             </div>
             {accountType && (
-              <span className="text-xs font-medium text-muted-foreground">
+              <span className="text-xs font-medium text-muted-foreground truncate">
                 {accountType}
               </span>
             )}
@@ -215,7 +193,8 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => router.push(ACCOUNT_ID_URL(account.id))}
-                className="cursor-pointer">
+                className="cursor-pointer"
+              >
                 <Building2 className="size-4" />
                 Visitas
               </DropdownMenuItem>

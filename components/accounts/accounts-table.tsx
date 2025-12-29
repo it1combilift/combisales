@@ -1,15 +1,16 @@
 "use client";
 
 import * as React from "react";
+import { Spinner } from "../ui/spinner";
 import { EmptyCard } from "../empty-card";
 import { useRouter } from "next/navigation";
 import { AccountCard } from "./accounts-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useDebouncedCallback } from "use-debounce";
-import { Building2, X, Loader2 } from "lucide-react";
 import { AccountsTableProps } from "@/interfaces/zoho";
 import { useIsMobile } from "@/components/ui/use-mobile";
+import { Building2, X, Loader2, RefreshCw } from "lucide-react";
 import { AccountsCardsPageSkeleton } from "../dashboard-skeleton";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 
@@ -72,7 +73,14 @@ export function AccountsTable({
   isSearching = false,
   searchQuery: externalSearchQuery,
   onClearSearch,
-  
+  // Props para paginación progresiva
+  isLoadingMore = false,
+  hasMoreRecords = false,
+  onLoadMore,
+  // Props para paginación
+  onPageChange,
+  onPageSizeChange,
+  isOnLastPage = false,
 }: AccountsTableProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -196,6 +204,19 @@ export function AccountsTable({
     }
   }, [pageIndex, pageSize, table]);
 
+  // Notify parent of page changes
+  React.useEffect(() => {
+    if (onPageChange) {
+      onPageChange(pageIndex);
+    }
+  }, [pageIndex, onPageChange]);
+
+  React.useEffect(() => {
+    if (onPageSizeChange) {
+      onPageSizeChange(pageSize);
+    }
+  }, [pageSize, onPageSizeChange]);
+
   return (
     <div className="w-full space-y-4">
       <div className="flex flex-row items-center justify-between gap-3">
@@ -231,10 +252,7 @@ export function AccountsTable({
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-            >
+            <Button variant="outline" size="sm">
               <IconLayoutColumns className="size-4" />
               <span className="sm:hidden md:inline">Columnas</span>
               <IconChevronDown className="size-4" />
@@ -465,6 +483,29 @@ export function AccountsTable({
               <span className="sr-only">Ir a la última página</span>
               <IconChevronsRight className="size-4" />
             </Button>
+
+            {/* Load More Button - Integrated in pagination */}
+            {isOnLastPage && hasMoreRecords && onLoadMore && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onLoadMore}
+                disabled={isLoadingMore}
+                className="ml-2 gap-2"
+                title="Cargar más registros"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <Spinner variant="bars" className="size-3" />
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="size-4" />
+                    <span className="hidden sm:inline">Cargar más</span>
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ import { RefreshCw, Building2, AlertCircle, Search } from "lucide-react";
 import { DashboardProjectsPageSkeleton } from "@/components/dashboard-skeleton";
 
 const PER_PAGE = 200;
+const INITIAL_LOAD_ONLY_FIRST_PAGE = true;
 
 interface PaginationState {
   currentPage: number;
@@ -30,6 +31,8 @@ export default function ClientsPage() {
   const [error, setError] = useState<string | null>(null);
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [currentTablePage, setCurrentTablePage] = useState(1);
+  const [tablePageSize, setTablePageSize] = useState(10);
 
   const [pagination, setPagination] = useState<PaginationState>({
     currentPage: 1,
@@ -38,12 +41,10 @@ export default function ClientsPage() {
   });
 
   const allAccountsRef = useRef<ZohoAccount[]>([]);
-
   const isLoadingRef = useRef(false);
 
   /**
    * Fetch accounts from a specific page
-   * Returns the accounts and pagination info
    */
   const fetchAccountsPage = useCallback(
     async (page: number, search?: string) => {
@@ -76,9 +77,52 @@ export default function ClientsPage() {
   );
 
   /**
-   * Fetch all accounts progressively (all pages)
+   * Load remaining accounts in background (optional)
    */
-  const fetchAllAccounts = useCallback(
+  const loadMoreAccountsInBackground = useCallback(
+    async (startPage: number) => {
+      let currentPage = startPage;
+      let hasMore = true;
+
+      while (hasMore) {
+        try {
+          const result = await fetchAccountsPage(currentPage);
+
+          const existingIds = new Set(allAccountsRef.current.map((a) => a.id));
+          const newAccounts = result.accounts.filter(
+            (a: ZohoAccount) => !existingIds.has(a.id)
+          );
+
+          const updatedAccounts = [...allAccountsRef.current, ...newAccounts];
+          allAccountsRef.current = updatedAccounts;
+          setAccounts([...updatedAccounts]);
+
+          hasMore = result.pagination.more_records;
+          setPagination({
+            currentPage,
+            hasMoreRecords: hasMore,
+            isLoadingMore: hasMore,
+          });
+
+          if (hasMore) {
+            currentPage++;
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+        } catch (err) {
+          console.error("Error loading accounts in background:", err);
+          break;
+        }
+      }
+
+      setPagination((prev) => ({ ...prev, isLoadingMore: false }));
+    },
+    [fetchAccountsPage]
+  );
+
+  /**
+   * Fetch initial accounts (only first page for performance)
+   */
+  const fetchInitialAccounts = useCallback(
     async (options: { isRefresh?: boolean } = {}) => {
       const { isRefresh = false } = options;
 
@@ -93,45 +137,26 @@ export default function ClientsPage() {
         }
         setError(null);
 
-        let allAccounts: ZohoAccount[] = [];
-        let currentPage = 1;
-        let hasMore = true;
+        // Load only first page initially for performance
+        const result = await fetchAccountsPage(1);
 
-        while (hasMore) {
-          const result = await fetchAccountsPage(currentPage);
+        allAccountsRef.current = result.accounts;
+        setAccounts(result.accounts);
 
-          const existingIds = new Set(allAccounts.map((a) => a.id));
-          const newAccounts = result.accounts.filter(
-            (a: ZohoAccount) => !existingIds.has(a.id)
-          );
-          allAccounts = [...allAccounts, ...newAccounts];
-
-          setAccounts([...allAccounts]);
-          setPagination({
-            currentPage,
-            hasMoreRecords: result.pagination.more_records,
-            isLoadingMore: result.pagination.more_records,
-          });
-
-          hasMore = result.pagination.more_records;
-          currentPage++;
-
-          if (hasMore) {
-            await new Promise((resolve) => setTimeout(resolve, 100));
-          }
-        }
-
-        allAccountsRef.current = allAccounts;
-
-        setPagination((prev) => ({
-          ...prev,
+        setPagination({
+          currentPage: 1,
+          hasMoreRecords: result.pagination.more_records,
           isLoadingMore: false,
-          hasMoreRecords: false,
-        }));
+        });
+
+        if (result.pagination.more_records && !INITIAL_LOAD_ONLY_FIRST_PAGE) {
+          // If configured to load all, continue loading in background
+          loadMoreAccountsInBackground(2);
+        }
 
         if (isRefresh) {
           toast.success(
-            `${allAccounts.length} clientes actualizados correctamente`,
+            `${result.accounts.length} clientes cargados correctamente`,
             { closeButton: true }
           );
         }
@@ -146,8 +171,47 @@ export default function ClientsPage() {
         isLoadingRef.current = false;
       }
     },
-    [fetchAccountsPage]
+    [fetchAccountsPage, loadMoreAccountsInBackground]
   );
+
+  /**
+   * Load more accounts (for "Load More" button)
+   */
+  const loadMoreAccounts = useCallback(async () => {
+    if (isLoadingRef.current || !pagination.hasMoreRecords) return;
+
+    isLoadingRef.current = true;
+    setPagination((prev) => ({ ...prev, isLoadingMore: true }));
+
+    try {
+      const nextPage = pagination.currentPage + 1;
+      const result = await fetchAccountsPage(nextPage);
+
+      const existingIds = new Set(allAccountsRef.current.map((a) => a.id));
+      const newAccounts = result.accounts.filter(
+        (a: ZohoAccount) => !existingIds.has(a.id)
+      );
+
+      const updatedAccounts = [...allAccountsRef.current, ...newAccounts];
+      allAccountsRef.current = updatedAccounts;
+      setAccounts(updatedAccounts);
+
+      setPagination({
+        currentPage: nextPage,
+        hasMoreRecords: result.pagination.more_records,
+        isLoadingMore: false,
+      });
+
+      toast.success(`${newAccounts.length} clientes más cargados`);
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.error || err.message || "Error al cargar más";
+      toast.error(errorMessage);
+      setPagination((prev) => ({ ...prev, isLoadingMore: false }));
+    } finally {
+      isLoadingRef.current = false;
+    }
+  }, [fetchAccountsPage, pagination]);
 
   /**
    * Search accounts (single page search - Zoho handles the search)
@@ -179,10 +243,10 @@ export default function ClientsPage() {
     [fetchAccountsPage]
   );
 
-  // Initial load - fetch all pages
+  // Initial load - fetch first page only
   useEffect(() => {
-    fetchAllAccounts();
-  }, [fetchAllAccounts]);
+    fetchInitialAccounts();
+  }, [fetchInitialAccounts]);
 
   // Handle remote search
   const handleSearch = useCallback(
@@ -219,16 +283,30 @@ export default function ClientsPage() {
     });
   }, []);
 
-  // Handle refresh - reload all pages
+  // Handle refresh - reload first page
   const handleRefresh = useCallback(() => {
     setSearchQuery("");
     allAccountsRef.current = [];
-    fetchAllAccounts({ isRefresh: true });
-  }, [fetchAllAccounts]);
+    fetchInitialAccounts({ isRefresh: true });
+  }, [fetchInitialAccounts]);
 
   const columns = createColumns();
   const hasData = accounts.length > 0;
   const showLoader = isLoading && !isRefreshing;
+
+  // Calculate if user is on the last page of currently loaded data
+  const filteredAccountsCount =
+    columnFilters.length > 0
+      ? accounts.filter((account) => {
+          return columnFilters.every((filter) => {
+            const value = account[filter.id as keyof ZohoAccount];
+            return value === filter.value;
+          });
+        }).length
+      : accounts.length;
+
+  const totalPages = Math.ceil(filteredAccountsCount / tablePageSize);
+  const isOnLastPage = currentTablePage >= totalPages;
 
   return (
     <section className="mx-auto px-4 space-y-6 w-full h-full">
@@ -240,7 +318,7 @@ export default function ClientsPage() {
           description={error}
           icon={<AlertCircle className="h-12 w-12" />}
           actions={
-            <Button onClick={() => fetchAllAccounts()} variant="outline">
+            <Button onClick={() => fetchInitialAccounts()} variant="outline">
               <RefreshCw className="size-4" /> Reintentar
             </Button>
           }
@@ -323,6 +401,10 @@ export default function ClientsPage() {
               isLoadingMore={pagination.isLoadingMore}
               hasMoreRecords={pagination.hasMoreRecords}
               totalLoaded={accounts.length}
+              onPageChange={setCurrentTablePage}
+              onPageSizeChange={setTablePageSize}
+              onLoadMore={loadMoreAccounts}
+              isOnLastPage={isOnLastPage && !searchQuery}
             />
 
             {/* Empty state for search with no results */}

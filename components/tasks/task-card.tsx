@@ -21,9 +21,7 @@ import {
 } from "lucide-react";
 
 export const TaskCard = ({
-  task,
-  onSelect,
-  isSelected,
+  task
 }: {
   task: ZohoTask;
   onSelect: (selected: boolean) => void;
