@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { ZohoTask } from "@/interfaces/zoho";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -18,14 +19,17 @@ import {
   CheckCircle2,
   FileText,
   Timer,
+  Plus,
 } from "lucide-react";
 
 export const TaskCard = ({
-  task
+  task,
+  onCreateVisit,
 }: {
   task: ZohoTask;
   onSelect: (selected: boolean) => void;
   isSelected: boolean;
+  onCreateVisit?: () => void;
 }) => {
   const router = useRouter();
   const TASK_DETAIL_URL = (taskId: string) =>
@@ -332,18 +336,36 @@ export const TaskCard = ({
         )}
 
         {/* Footer */}
-        <div className="flex flex-col items-start justify-center pt-2 border-t border-border/50">
-          {task.Modified_Time && (
-            <div className="flex items-center text-xs text-muted-foreground">
-              Modificada{" "}
-              {formatRelativeTime(task.Modified_Time) || "Modificada hace poco"}
-            </div>
-          )}
-          {task.Closed_Time && (
-            <div className="flex items-center text-xs text-muted-foreground">
-              Completada{" "}
-              {formatRelativeTime(task.Closed_Time) || "Completada"}
-            </div>
+        <div className="pt-3 border-t border-border/50 space-y-3">
+          <div className="flex flex-col items-start justify-center">
+            {task.Modified_Time && (
+              <div className="flex items-center text-xs text-muted-foreground">
+                Modificada{" "}
+                {formatRelativeTime(task.Modified_Time) ||
+                  "Modificada hace poco"}
+              </div>
+            )}
+            {task.Closed_Time && (
+              <div className="flex items-center text-xs text-muted-foreground">
+                Completada{" "}
+                {formatRelativeTime(task.Closed_Time) || "Completada"}
+              </div>
+            )}
+          </div>
+
+          {onCreateVisit && (
+            <Button
+              variant="default"
+              size="sm"
+              className="w-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCreateVisit();
+              }}
+            >
+              <Plus className="size-4" />
+              Crear visita
+            </Button>
           )}
         </div>
       </div>

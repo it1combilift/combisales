@@ -12,6 +12,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { AccountsTable } from "@/components/accounts/accounts-table";
 import { RefreshCw, Building2, AlertCircle, Search } from "lucide-react";
 import { DashboardProjectsPageSkeleton } from "@/components/dashboard-skeleton";
+import VisitFormDialog from "@/components/visits/visit-form-dialog";
+import { Customer } from "@/interfaces/visits";
 
 const PER_PAGE = 200;
 const INITIAL_LOAD_ONLY_FIRST_PAGE = true;
@@ -33,6 +35,11 @@ export default function ClientsPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [currentTablePage, setCurrentTablePage] = useState(1);
   const [tablePageSize, setTablePageSize] = useState(10);
+
+  // Visit dialog state
+  const [isVisitDialogOpen, setIsVisitDialogOpen] = useState(false);
+  const [selectedAccountForVisit, setSelectedAccountForVisit] =
+    useState<ZohoAccount | null>(null);
 
   const [pagination, setPagination] = useState<PaginationState>({
     currentPage: 1,
@@ -308,6 +315,76 @@ export default function ClientsPage() {
   const totalPages = Math.ceil(filteredAccountsCount / tablePageSize);
   const isOnLastPage = currentTablePage >= totalPages;
 
+  // Handle create visit from account card
+  const handleCreateVisitFromAccount = useCallback((account: ZohoAccount) => {
+    setSelectedAccountForVisit(account);
+    setIsVisitDialogOpen(true);
+  }, []);
+
+  const handleVisitSuccess = useCallback(() => {
+    setIsVisitDialogOpen(false);
+    setSelectedAccountForVisit(null);
+    toast.success("Visita creada exitosamente");
+  }, []);
+
+  const handleDialogClose = useCallback((open: boolean) => {
+    setIsVisitDialogOpen(open);
+    if (!open) {
+      setSelectedAccountForVisit(null);
+    }
+  }, []);
+
+  // Prepare customer data from account
+  const customerFromAccount: Customer | undefined = selectedAccountForVisit
+    ? {
+        id: selectedAccountForVisit.id,
+        zohoAccountId: selectedAccountForVisit.id,
+        accountName: selectedAccountForVisit.Account_Name,
+        razonSocial: selectedAccountForVisit.Razon_Social || null,
+        accountNumber: selectedAccountForVisit.Account_Number || null,
+        cif: selectedAccountForVisit.CIF || null,
+        codigoCliente: selectedAccountForVisit.C_digo_Cliente || null,
+        accountType: selectedAccountForVisit.Account_Type || null,
+        industry: selectedAccountForVisit.Industry || null,
+        subSector: selectedAccountForVisit.Sub_Sector || null,
+        phone: selectedAccountForVisit.Phone || null,
+        fax: selectedAccountForVisit.Fax || null,
+        email: selectedAccountForVisit.Email || null,
+        website: selectedAccountForVisit.Website || null,
+        billingStreet: selectedAccountForVisit.Billing_Street || null,
+        billingCity: selectedAccountForVisit.Billing_City || null,
+        billingState: selectedAccountForVisit.Billing_State || null,
+        billingCode: selectedAccountForVisit.Billing_Code || null,
+        billingCountry: selectedAccountForVisit.Billing_Country || null,
+        shippingStreet: selectedAccountForVisit.Shipping_Street || null,
+        shippingCity: selectedAccountForVisit.Shipping_City || null,
+        shippingState: selectedAccountForVisit.Shipping_State || null,
+        shippingCode: selectedAccountForVisit.Shipping_Code || null,
+        shippingCountry: selectedAccountForVisit.Shipping_Country || null,
+        latitude: selectedAccountForVisit.dealsingooglemaps__Latitude || null,
+        longitude: selectedAccountForVisit.dealsingooglemaps__Longitude || null,
+        zohoOwnerId: selectedAccountForVisit.Owner?.id || null,
+        zohoOwnerName: selectedAccountForVisit.Owner?.name || null,
+        zohoOwnerEmail: selectedAccountForVisit.Owner?.email || null,
+        zohoCreatedById: selectedAccountForVisit.Created_By?.id || null,
+        zohoCreatedByName: selectedAccountForVisit.Created_By?.name || null,
+        zohoCreatedByEmail: selectedAccountForVisit.Created_By?.email || null,
+        parentAccountId: selectedAccountForVisit.Parent_Account?.id || null,
+        parentAccountName: selectedAccountForVisit.Parent_Account?.name || null,
+        clienteConEquipo: selectedAccountForVisit.Cliente_con_Equipo || false,
+        cuentaNacional: selectedAccountForVisit.Cuenta_Nacional || false,
+        clienteBooks: selectedAccountForVisit.Cliente_Books || false,
+        condicionesEspeciales:
+          selectedAccountForVisit.Condiciones_Especiales || false,
+        proyectoAbierto: selectedAccountForVisit.Proyecto_abierto || false,
+        revisado: selectedAccountForVisit.Revisado || false,
+        localizacionesMultiples:
+          selectedAccountForVisit.Localizaciones_multiples || false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+    : undefined;
+
   return (
     <section className="mx-auto px-4 space-y-6 w-full h-full">
       {showLoader ? (
@@ -405,7 +482,18 @@ export default function ClientsPage() {
               onPageSizeChange={setTablePageSize}
               onLoadMore={loadMoreAccounts}
               isOnLastPage={isOnLastPage && !searchQuery}
+              onCreateVisit={handleCreateVisitFromAccount}
             />
+
+            {/* Visit Form Dialog */}
+            {selectedAccountForVisit && customerFromAccount && (
+              <VisitFormDialog
+                open={isVisitDialogOpen}
+                onOpenChange={handleDialogClose}
+                customer={customerFromAccount}
+                onSuccess={handleVisitSuccess}
+              />
+            )}
 
             {/* Empty state for search with no results */}
             {searchQuery && !hasData && !isSearching && (

@@ -82,6 +82,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   onView,
   onEdit,
   onDelete,
+  onCreateVisit,
 }: DataTableProps<TData, TValue>) {
   const isMobile = useIsMobile();
 
@@ -365,6 +366,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                   onView={onView}
                   onEdit={onEdit}
                   onDelete={onDelete}
+                  onCreateVisit={onCreateVisit}
                 />
               ))
           ) : (
@@ -422,7 +424,6 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                  
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (

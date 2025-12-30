@@ -111,6 +111,7 @@ export function TasksTable({
   onPageChange,
   onPageSizeChange,
   isOnLastPage,
+  onCreateVisit,
 }: TasksTableProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -653,8 +654,8 @@ export function TasksTable({
                 }}
                 className="h-9 ml-auto"
               >
-                <X className="size-4 mr-2" />
-                Limpiar todos los filtros
+                <X className="size-4" />
+                Limpiar filtros
               </Button>
             )}
           </div>
@@ -676,6 +677,11 @@ export function TasksTable({
                   task={row.original}
                   onSelect={(selected) => row.toggleSelected(selected)}
                   isSelected={row.getIsSelected()}
+                  onCreateVisit={
+                    onCreateVisit
+                      ? () => onCreateVisit(row.original)
+                      : undefined
+                  }
                 />
               ))
           ) : (

@@ -267,6 +267,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           onView={handleViewVisit}
           onEdit={handleEditVisit}
           onDelete={(visit) => setVisitToDelete(visit)}
+          onCreateVisit={handleNewVisit}
           customerName={account?.Account_Name}
         />
       )}

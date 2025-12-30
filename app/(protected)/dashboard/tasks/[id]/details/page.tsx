@@ -471,6 +471,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                   onView={handleViewVisit}
                   onEdit={handleEditVisit}
                   onDelete={(visit) => setVisitToDelete(visit)}
+                  onCreateVisit={handleNewVisit}
                 />
               ))}
             </div>
@@ -490,6 +491,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
               onView={handleViewVisit}
               onEdit={handleEditVisit}
               onDelete={(visit) => setVisitToDelete(visit)}
+              onCreateVisit={handleNewVisit}
             />
           )}
         </CardContent>

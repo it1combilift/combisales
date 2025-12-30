@@ -314,6 +314,8 @@ export interface AccountsTableProps {
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (pageSize: number) => void;
   isOnLastPage?: boolean;
+  // Props para crear visita desde card
+  onCreateVisit?: (account: ZohoAccount) => void;
 }
 
 export interface TasksTableProps {
@@ -343,4 +345,6 @@ export interface TasksTableProps {
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (pageSize: number) => void;
   isOnLastPage?: boolean;
+  // Props para crear visita desde card
+  onCreateVisit?: (task: ZohoTask) => void;
 }

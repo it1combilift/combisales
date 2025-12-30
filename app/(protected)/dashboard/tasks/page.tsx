@@ -12,6 +12,8 @@ import { H1, Paragraph } from "@/components/fonts/fonts";
 import { ColumnFiltersState } from "@tanstack/react-table";
 import { TasksTable } from "@/components/tasks/tasks-table";
 import { useState, useCallback, useRef, useEffect } from "react";
+import VisitFormDialog from "@/components/visits/visit-form-dialog";
+import { Customer } from "@/interfaces/visits";
 
 const PER_PAGE = 200;
 const INITIAL_LOAD_ONLY_FIRST_PAGE = true; // Set to false to load all pages initially
@@ -33,6 +35,11 @@ export default function TasksPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [currentTablePage, setCurrentTablePage] = useState(1);
   const [tablePageSize, setTablePageSize] = useState(10);
+
+  // Visit dialog state
+  const [isVisitDialogOpen, setIsVisitDialogOpen] = useState(false);
+  const [selectedTaskForVisit, setSelectedTaskForVisit] =
+    useState<ZohoTask | null>(null);
 
   const [pagination, setPagination] = useState<PaginationState>({
     currentPage: 1,
@@ -271,6 +278,69 @@ export default function TasksPage() {
   const totalPages = Math.ceil(filteredTasksCount / tablePageSize);
   const isOnLastPage = currentTablePage >= totalPages;
 
+  // Handle create visit from task card
+  const handleCreateVisitFromTask = useCallback((task: ZohoTask) => {
+    setSelectedTaskForVisit(task);
+    setIsVisitDialogOpen(true);
+  }, []);
+
+  const handleVisitSuccess = useCallback(() => {
+    setIsVisitDialogOpen(false);
+    setSelectedTaskForVisit(null);
+    toast.success("Visita creada exitosamente");
+  }, []);
+
+  const handleDialogClose = useCallback((open: boolean) => {
+    setIsVisitDialogOpen(open);
+    if (!open) {
+      setSelectedTaskForVisit(null);
+    }
+  }, []);
+
+  // Prepare customer data from task
+  const customerFromTask: Customer | undefined = selectedTaskForVisit?.What_Id
+    ? {
+        id: selectedTaskForVisit.What_Id.id,
+        zohoAccountId: selectedTaskForVisit.What_Id.id,
+        accountName: selectedTaskForVisit.What_Id.name,
+        razonSocial: null,
+        accountNumber: null,
+        cif: null,
+        codigoCliente: null,
+        accountType: null,
+        industry: null,
+        subSector: null,
+        phone: null,
+        fax: null,
+        email: null,
+        website: null,
+        billingStreet: null,
+        billingCity: null,
+        billingState: null,
+        billingCode: null,
+        billingCountry: null,
+        shippingStreet: null,
+        shippingCity: null,
+        shippingState: null,
+        shippingCode: null,
+        shippingCountry: null,
+        latitude: null,
+        longitude: null,
+        zohoOwnerId: null,
+        zohoOwnerName: null,
+        zohoOwnerEmail: null,
+        clienteConEquipo: false,
+        cuentaNacional: false,
+        clienteBooks: false,
+        condicionesEspeciales: false,
+        proyectoAbierto: false,
+        revisado: false,
+        localizacionesMultiples: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+    : undefined;
+
   return (
     <section className="mx-auto px-4 space-y-3 w-full h-full">
       <div className="flex flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-0">
@@ -351,7 +421,19 @@ export default function TasksPage() {
             onPageChange={setCurrentTablePage}
             onPageSizeChange={setTablePageSize}
             isOnLastPage={isOnLastPage && !searchQuery}
+            onCreateVisit={handleCreateVisitFromTask}
           />
+
+          {/* Visit Form Dialog */}
+          {selectedTaskForVisit && customerFromTask && (
+            <VisitFormDialog
+              open={isVisitDialogOpen}
+              onOpenChange={handleDialogClose}
+              customer={customerFromTask}
+              zohoTaskId={selectedTaskForVisit.id}
+              onSuccess={handleVisitSuccess}
+            />
+          )}
         </>
       )}
     </section>

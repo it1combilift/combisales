@@ -81,6 +81,8 @@ export function AccountsTable({
   onPageChange,
   onPageSizeChange,
   isOnLastPage = false,
+  // Props para crear visita
+  onCreateVisit,
 }: AccountsTableProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -319,6 +321,11 @@ export function AccountsTable({
                   account={row.original}
                   isSelected={row.getIsSelected()}
                   onSelect={(selected) => row.toggleSelected(selected)}
+                  onCreateVisit={
+                    onCreateVisit
+                      ? () => onCreateVisit(row.original)
+                      : undefined
+                  }
                 />
               ))
           ) : (

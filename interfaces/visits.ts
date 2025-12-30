@@ -760,6 +760,7 @@ export interface DataTableProps<TData, TValue> {
   onView?: (visit: Visit) => void;
   onEdit?: (visit: Visit) => void;
   onDelete?: (visit: Visit) => void;
+  onCreateVisit?: () => void;
   customerName?: string;
 }
 

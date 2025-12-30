@@ -24,14 +24,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {
-  ArrowUpRight,
+  Building,
   Calendar,
-  ClipboardList,
-  Copy,
   MoreVertical,
-  PencilLine,
+  Eye,
+  Pencil,
   Trash2,
+  ArrowUpRight,
+  Briefcase,
   User,
+  Plus,
+  Copy,
+  PencilLine,
+  ClipboardList,
 } from "lucide-react";
 
 const STATUS_VARIANTS: Record<
@@ -54,6 +59,7 @@ interface VisitCardProps {
   onView?: (visit: Visit) => void;
   onEdit?: (visit: Visit) => void;
   onDelete?: (visit: Visit) => void;
+  onCreateVisit?: () => void;
 }
 
 export const VisitCard = ({
@@ -61,6 +67,7 @@ export const VisitCard = ({
   onView,
   onEdit,
   onDelete,
+  onCreateVisit,
 }: VisitCardProps) => {
   const status = visit.status as VisitStatus;
   const formType = visit.formType as VisitFormType;
@@ -201,17 +208,37 @@ export const VisitCard = ({
             </div>
           )}
 
-          {onView && (
-            <Button
-              variant="default"
-              size="sm"
-              className="w-full mt-2"
-              onClick={() => onView(visit)}
-            >
-              Ver detalles
-              <ArrowUpRight className="size-4" />
-            </Button>
-          )}
+          <div className="space-y-2 w-full">
+            {onView && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onView(visit);
+                }}
+              >
+                Ver detalles
+                <ArrowUpRight className="size-4" />
+              </Button>
+            )}
+
+            {onCreateVisit && (
+              <Button
+                variant="default"
+                size="sm"
+                className="w-full"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCreateVisit();
+                }}
+              >
+                <Plus className="size-4" />
+                Crear visita
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </Card>

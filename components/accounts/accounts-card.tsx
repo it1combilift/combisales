@@ -27,16 +27,17 @@ import {
   Phone,
   Trash2,
   User,
+  Plus,
 } from "lucide-react";
 
 export const AccountCard = ({
   account,
-  onSelect,
-  isSelected,
+  onCreateVisit,
 }: {
   account: ZohoAccount;
   onSelect: (selected: boolean) => void;
   isSelected: boolean;
+  onCreateVisit?: () => void;
 }) => {
   const router = useRouter();
   const ACCOUNT_ID_URL = (accountId: string) =>
@@ -50,12 +51,6 @@ export const AccountCard = ({
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
-            <Checkbox
-              checked={isSelected}
-              onCheckedChange={onSelect}
-              aria-label={`Seleccionar cuenta ${account.Account_Name}`}
-              className="mt-1"
-            />
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-base text-foreground line-clamp-2 leading-tight">
                 {account.Account_Name}
@@ -204,6 +199,21 @@ export const AccountCard = ({
                 Modificado: {formatDateShort(account.Modified_Time)}
               </span>
             </div>
+          )}
+
+          {onCreateVisit && (
+            <Button
+              variant="default"
+              size="sm"
+              className="w-full mt-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCreateVisit();
+              }}
+            >
+              <Plus className="size-4" />
+              Crear visita
+            </Button>
           )}
         </div>
       </div>
