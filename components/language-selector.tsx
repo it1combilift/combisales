@@ -15,14 +15,12 @@ import {
 interface LanguageSelectorProps {
   showFlag?: boolean;
   showFullName?: boolean;
-  variant?: "default" | "ghost" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
 }
 
 export function LanguageSelector({
   showFlag = true,
   showFullName = false,
-  variant = "ghost",
   size = "default",
 }: LanguageSelectorProps) {
   const { locale, setLocale, localeConfig, t } = useI18n();
@@ -35,7 +33,7 @@ export function LanguageSelector({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant={variant}
+          variant="outline"
           size={size}
           className="gap-2"
           aria-label={t("header.selectLanguage")}
