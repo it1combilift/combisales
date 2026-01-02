@@ -2,14 +2,13 @@
 
 import { cn, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useI18n } from "@/lib/i18n/context";
 import { Separator } from "@/components/ui/separator";
 import { InfoField, InfoSection, NumberDisplay } from "./shared";
-import { useI18n } from "@/lib/i18n/context";
 import AttachmentsGallery from "@/components/attachments-gallery";
 
 import {
   FormularioCSSAnalisis,
-  CONTENEDOR_TIPO_LABELS,
   CONTENEDOR_MEDIDA_LABELS,
 } from "@/interfaces/visits";
 
@@ -219,7 +218,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
                   className="gap-1.5 py-1.5 px-3 bg-primary/5 border-primary/20"
                 >
                   <CheckCircle2 className="size-3 text-primary" />
-                  {CONTENEDOR_TIPO_LABELS[tipo] || tipo}
+                  {t(`visits.containerTypes.${tipo}`)}
                 </Badge>
               ))}
             </div>
@@ -271,7 +270,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
                     >
                       <Layers className="size-3.5 text-primary" />
                       <span className="text-xs md:text-sm font-medium text-foreground">
-                        {CONTENEDOR_MEDIDA_LABELS[medida]}
+                        {t(`visits.containerMeasures.${medida}` as string)}
                       </span>
                     </div>
                   ))}

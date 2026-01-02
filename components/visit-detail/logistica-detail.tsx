@@ -313,10 +313,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 <span className="text-xs font-medium">
                   {t("forms.fields.ramps")}
                 </span>
-                <Badge
-                  variant={formulario.tieneRampas ? "default" : "secondary"}
-                  className="text-[10px] ml-auto"
-                >
+                <Badge variant="secondary" className="text-[10px] ml-auto">
                   {formulario.tieneRampas
                     ? t("forms.fields.yes")
                     : t("forms.fields.no")}
@@ -350,12 +347,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 <span className="text-xs font-medium">
                   {t("forms.fields.doorways")}
                 </span>
-                <Badge
-                  variant={
-                    formulario.tienePasosPuertas ? "default" : "secondary"
-                  }
-                  className="text-[10px] ml-auto"
-                >
+                <Badge variant="secondary" className="text-[10px] ml-auto">
                   {formulario.tienePasosPuertas
                     ? t("forms.fields.yes")
                     : t("forms.fields.no")}
@@ -389,12 +381,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 <span className="text-xs font-medium">
                   {t("forms.fields.restrictions")}
                 </span>
-                <Badge
-                  variant={
-                    formulario.tieneRestricciones ? "destructive" : "secondary"
-                  }
-                  className="text-[10px] ml-auto"
-                >
+                <Badge variant="secondary" className="text-[10px] ml-auto">
                   {formulario.tieneRestricciones
                     ? t("forms.fields.yes")
                     : t("forms.fields.no")}

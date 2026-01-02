@@ -193,9 +193,16 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                         return Icon ? <Icon className="size-3" /> : null;
                       })()}
 
-                      {FORM_TYPE_LABELS[
-                        visit.formType as keyof typeof FORM_TYPE_LABELS
-                      ] || visit.formType}
+                      {visit.formType === VisitFormType.ANALISIS_CSS
+                        ? t("visits.formTypes.css")
+                        : visit.formType === VisitFormType.ANALISIS_INDUSTRIAL
+                        ? t("visits.formTypes.industrial")
+                        : visit.formType === VisitFormType.ANALISIS_LOGISTICA
+                        ? t("visits.formTypes.logistica")
+                        : visit.formType ===
+                          VisitFormType.ANALISIS_STRADDLE_CARRIER
+                        ? t("visits.formTypes.straddleCarrier")
+                        : FORM_TYPE_LABELS[visit.formType]}
                     </Badge>
                   </div>
 
