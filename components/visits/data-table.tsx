@@ -1,17 +1,17 @@
 "use client";
 
 import * as React from "react";
+import { VisitStatus } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/empty-card";
 import { useIsMobile } from "@/components/ui/use-mobile";
+import { VISIT_STATUS_LABELS } from "@/interfaces/visits";
 import { VisitCardSkeleton } from "../dashboard-skeleton";
 import { VisitCard } from "@/components/visits/visit-card";
-import { VisitFormType, VisitStatus } from "@prisma/client";
 import { GalleryHorizontalEnd, History, X } from "lucide-react";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
-import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
 import { Visit, DataTableProps, VISIT_STATUS_ICONS } from "@/interfaces/visits";
 
 import {
@@ -242,7 +242,9 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[180px]">
-              <DropdownMenuLabel>{t("visits.filterByStatus")}</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {t("visits.filterByStatus")}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuCheckboxItem
                 checked={!statusFilter}
@@ -255,7 +257,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                 <GalleryHorizontalEnd className="size-3.5 inline-flex" />
                 {t("visits.filters.all")}
               </DropdownMenuCheckboxItem>
-              {Object.entries(VISIT_STATUS_LABELS).map(([key, label]) => (
+              {Object.keys(VISIT_STATUS_LABELS).map((key) => (
                 <DropdownMenuCheckboxItem
                   key={key}
                   checked={statusFilter === key}
@@ -275,7 +277,11 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                       )}
                     </span>
                   )}
-                  {label}
+                  {t(
+                    `visits.statuses.${
+                      key === "BORRADOR" ? "draft" : "completed"
+                    }`
+                  )}
                 </DropdownMenuCheckboxItem>
               ))}
             </DropdownMenuContent>
@@ -286,7 +292,9 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
                   <IconLayoutColumns className="size-4" />
-                  <span className="hidden md:inline">{t("table.hideColumn")}</span>
+                  <span className="hidden md:inline">
+                    {t("table.hideColumn")}
+                  </span>
                   <IconChevronDown className="size-3.5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -327,12 +335,28 @@ export function VisitsDataTable<TData extends Visit, TValue>({
           )}
           {statusFilter && (
             <Badge variant="secondary" className="text-xs">
-              {t("visits.status")}: {VISIT_STATUS_LABELS[statusFilter as VisitStatus]}
+              {t("visits.status")}:{" "}
+              {t(
+                `visits.statuses.${
+                  statusFilter === "BORRADOR" ? "draft" : "completed"
+                }`
+              )}
             </Badge>
           )}
           {formTypeFilter && (
             <Badge variant="secondary" className="text-xs">
-              {t("visits.formType")}: {FORM_TYPE_LABELS[formTypeFilter as VisitFormType]}
+              {t("visits.formType")}:{" "}
+              {t(
+                `visits.formTypes.${
+                  formTypeFilter === "ANALISIS_CSS"
+                    ? "css"
+                    : formTypeFilter === "ANALISIS_INDUSTRIAL"
+                    ? "industrial"
+                    : formTypeFilter === "ANALISIS_LOGISTICA"
+                    ? "logistica"
+                    : "straddleCarrier"
+                }`
+              )}
             </Badge>
           )}
           <Button
@@ -406,9 +430,9 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -508,7 +532,8 @@ export function VisitsDataTable<TData extends Visit, TValue>({
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium text-primary whitespace-nowrap">
-            {t("pagination.page")} {pageIndex} {t("pagination.of")} {table.getPageCount() || 1}
+            {t("pagination.page")} {pageIndex} {t("pagination.of")}{" "}
+            {table.getPageCount() || 1}
           </div>
           <div className="flex items-center space-x-2">
             <Button

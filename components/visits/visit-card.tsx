@@ -25,14 +25,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {
-  Building,
   Calendar,
   MoreVertical,
-  Eye,
-  Pencil,
   Trash2,
   ArrowUpRight,
-  Briefcase,
   User,
   Plus,
   Copy,

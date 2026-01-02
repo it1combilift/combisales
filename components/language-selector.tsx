@@ -44,7 +44,7 @@ export function LanguageSelector({
               {showFullName ? localeConfig.name : localeConfig.shortName}
             </span>
           )}
-          {size === "icon" && <Globe className="h-4 w-4" />}
+          {size === "icon" && <Globe className="size-4" />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[140px]">
@@ -60,7 +60,7 @@ export function LanguageSelector({
               <span>{localeOption.name}</span>
             </div>
             {locale === localeOption.code && (
-              <Check className="h-4 w-4 text-primary" aria-hidden="true" />
+              <Check className="size-4 text-primary" aria-hidden="true" />
             )}
           </DropdownMenuItem>
         ))}

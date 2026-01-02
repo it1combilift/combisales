@@ -77,18 +77,17 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
 
         const response = await fetch(`/api/zoho/tasks/${resolvedParams.id}`);
 
-        if (!response.ok) {
-          throw new Error("Error al obtener la tarea");
+        if (response.ok) {
+          throw new Error(t("tasks.taskNotFound"));
         }
 
         const result = await response.json();
         setTask(result.task);
 
-        // Fetch visits for this task
         await fetchVisits(resolvedParams.id);
       } catch (error) {
         console.error("Error fetching task:", error);
-        toast.error("Error al cargar los detalles de la tarea");
+        toast.error(t("tasks.taskNotFoundDescription"));
       } finally {
         setIsLoading(false);
       }
@@ -102,13 +101,13 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
       setIsLoadingVisits(true);
       const response = await fetch(`/api/visits?zohoTaskId=${taskId}`);
       if (!response.ok) {
-        throw new Error("Error al obtener las visitas");
+        throw new Error(t("messages.error"));
       }
       const result = await response.json();
       setVisits(result.visits || []);
     } catch (error) {
       console.error("Error fetching visits:", error);
-      toast.error("Error al cargar las visitas");
+      toast.error(t("messages.error"));
     } finally {
       setIsLoadingVisits(false);
     }
@@ -152,78 +151,101 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
       });
 
       if (!response.ok) {
-        throw new Error("Error al eliminar la visita");
+        throw new Error(t("messages.error"));
       }
 
-      toast.success("Visita eliminada exitosamente");
+      toast.success(t("messages.deleted"));
       if (taskId) {
         fetchVisits(taskId);
       }
     } catch (error) {
       console.error("Error deleting visit:", error);
-      toast.error("Error al eliminar la visita");
+      toast.error(t("messages.error"));
     } finally {
       setVisitToDelete(null);
     }
   };
 
   const getStatusConfig = (status?: string) => {
+    const STATUS_KEYS: Record<string, string> = {
+      Completada: "tasks.statuses.completed",
+      Completed: "tasks.statuses.completed",
+      "In Progress": "tasks.statuses.inProgress",
+      "En progreso": "tasks.statuses.inProgress",
+      "Not Started": "tasks.statuses.notStarted",
+      "No iniciada": "tasks.statuses.notStarted",
+      Deferred: "tasks.statuses.deferred",
+      Diferida: "tasks.statuses.deferred",
+      "Waiting for Input": "tasks.statuses.waitingInput",
+      "Esperando entrada": "tasks.statuses.waitingInput",
+    };
+
     switch (status) {
       case "Completada":
       case "Completed":
         return {
-          label: "Completada",
+          label: t(STATUS_KEYS[status]),
           className:
             "bg-green-500/10 text-green-700 dark:text-green-400 w-fit h-7",
         };
       case "In Progress":
       case "En progreso":
         return {
-          label: "En progreso",
+          label: t(STATUS_KEYS[status]),
           className:
             "bg-blue-500/10 text-blue-700 dark:text-blue-400 w-fit h-7",
         };
       case "Not Started":
       case "No iniciada":
         return {
-          label: "No iniciada",
+          label: t(STATUS_KEYS[status]),
           className:
             "bg-gray-500/10 text-gray-700 dark:text-gray-400 w-fit h-7",
         };
       case "Deferred":
       case "Diferida":
         return {
-          label: "Diferida",
+          label: t(STATUS_KEYS[status]),
           className:
             "bg-orange-500/10 text-orange-700 dark:text-orange-400 w-fit h-7",
         };
       case "Waiting for Input":
       case "Esperando entrada":
         return {
-          label: "Esperando entrada",
+          label: t(STATUS_KEYS[status]),
           className:
             "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 w-fit h-7",
         };
       default:
         return {
-          label: status || "Sin estado",
+          label: status || t("tasks.noState"),
           className: "w-fit h-7",
         };
     }
   };
 
   const getPriorityConfig = (priority?: string) => {
+    const PRIORITY_KEYS: Record<string, string> = {
+      Highest: "tasks.priorities.highest",
+      High: "tasks.priorities.high",
+      Alta: "tasks.priorities.high",
+      Normal: "tasks.priorities.normal",
+      Low: "tasks.priorities.low",
+      Baja: "tasks.priorities.low",
+      Lowest: "tasks.priorities.lowest",
+    };
+
     switch (priority) {
       case "Highest":
       case "Alta":
       case "High":
         return {
-          label: "Alta",
+          label: t(PRIORITY_KEYS[priority]),
           className: "bg-red-500/10 text-red-700 dark:text-red-400 w-fit h-7",
         };
       case "Normal":
         return {
-          label: "Normal",
+          label: t(PRIORITY_KEYS[priority]),
           className:
             "bg-blue-500/10 text-blue-700 dark:text-blue-400 w-fit h-7",
         };
@@ -231,23 +253,23 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
       case "Baja":
       case "Lowest":
         return {
-          label: "Baja",
+          label: t(PRIORITY_KEYS[priority]),
           className:
             "bg-gray-500/10 text-gray-700 dark:text-gray-400 w-fit h-7",
         };
       default:
         return {
-          label: priority || "Normal",
+          label: priority || t("tasks.priorities.normal"),
           className: "w-fit h-7",
         };
     }
   };
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "No especificada";
+    if (!dateString) return t("tasks.notSpecified");
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString("es-ES", {
+      return date.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
         day: "2-digit",
         month: "long",
         year: "numeric",
@@ -255,7 +277,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
         minute: "2-digit",
       });
     } catch {
-      return "Fecha inválida";
+      return t("tasks.invalidDate");
     }
   };
 
@@ -263,7 +285,10 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     if (!dateString) return null;
     try {
       const date = new Date(dateString);
-      return formatDistanceToNow(date, { addSuffix: true, locale: es });
+      return formatDistanceToNow(date, {
+        addSuffix: true,
+        locale: locale === "es" ? es : undefined,
+      });
     } catch {
       return null;
     }
@@ -277,15 +302,15 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     return (
       <section className="mx-auto w-full min-h-full px-4">
         <EmptyCard
-          icon={<ListTodo className="size-16 text-muted-foreground" />}
-          title="Tarea no encontrada"
-          description="La tarea que buscas no existe o no tienes permisos para verla."
+          icon={<ListTodo />}
+          title={t("tasks.taskNotFound")}
+          description={t("tasks.taskNotFoundDescription")}
           actions={
             <Button
               onClick={() => router.push("/dashboard/tasks")}
               variant="default"
             >
-              <ArrowLeft className="size-4" />
+              <ArrowLeft />
               {t("common.back")}
             </Button>
           }
@@ -299,7 +324,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
 
   return (
     <section className="space-y-6 px-3 sm:px-4 w-full">
-      {/* Header con información clave */}
+      {/* Header information */}
       <header className="space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
           <div className="flex-1 min-w-0 space-y-2">
@@ -316,13 +341,22 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
 
               <Badge className={priorityConfig.className} variant="outline">
                 <Flag className="size-3" />
-                {priorityConfig.label}
+                {task.Priority === "Highest"
+                  ? t("tasks.priority.highest")
+                  : task.Priority === "High"
+                  ? t("tasks.priority.high")
+                  : task.Priority === "Low"
+                  ? t("tasks.priority.low")
+                  : task.Priority === "Lowest"
+                  ? t("tasks.priority.lowest")
+                  : t("tasks.priority.normal")}
               </Badge>
 
               {task.Due_Date && (
                 <Badge variant="outline">
-                  <Calendar className="size-3 mr-1" />
-                  Vence: {new Date(task.Due_Date).toLocaleDateString("es-ES")}
+                  <Calendar className="size-3" />
+
+                  {new Date(task.Due_Date).toLocaleDateString("es-ES")}
                 </Badge>
               )}
             </div>
@@ -339,9 +373,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
             <Button onClick={handleNewVisit} size="sm">
               <Plus className="size-4" />
               <span className="hidden sm:inline">
-                {
-                  t("visits.createVisit")
-                }
+                {t("visits.createVisit")}
               </span>
             </Button>
           </div>
@@ -434,17 +466,13 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
             <div className="space-y-1">
               <CardTitle className="flex items-center gap-2 text-base">
                 <FileCheck className="size-4 text-primary" />
-                {
-                  t("visits.registeredVisitsTitleSection")
-                }
+                {t("visits.registeredVisitsTitleSection")}
                 {visits.length > 0 && (
                   <Badge variant="secondary">{visits.length}</Badge>
                 )}
               </CardTitle>
               <p className="text-sm text-muted-foreground text-pretty">
-                {
-                  t("visits.registeredVisitsDescriptionSection")
-                }
+                {t("visits.registeredVisitsDescriptionSection")}
               </p>
             </div>
           </div>
@@ -465,9 +493,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
               actions={
                 <Button onClick={handleNewVisit} size="sm">
                   <Plus className="size-4" />
-                  {
-                    t("visits.createVisit")
-                  }
+                  {t("visits.createVisit")}
                 </Button>
               }
             />
@@ -477,7 +503,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                 <VisitCard
                   key={visit.id}
                   visit={visit}
-                  onSelect={() => { }}
+                  onSelect={() => {}}
                   isSelected={false}
                   onView={handleViewVisit}
                   onEdit={handleEditVisit}
@@ -551,7 +577,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                     </p>
                   </div>
                   <Badge variant="outline" className="bg-amber-500/10">
-                    Activo
+                    {t("tasks.active")}
                   </Badge>
                 </div>
               </CardContent>
@@ -679,15 +705,15 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("visits.deleteVisitModalTitle")}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("visits.deleteVisitModalTitle")}
+            </AlertDialogTitle>
             <AlertDialogDescription className="text-pretty">
               {t("visits.deleteVisitModalDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>
-              {t("common.cancel")}
-            </AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteVisit}>
               {t("common.delete")}
             </AlertDialogAction>
