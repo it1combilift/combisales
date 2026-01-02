@@ -77,7 +77,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
 
         const response = await fetch(`/api/zoho/tasks/${resolvedParams.id}`);
 
-        if (response.ok) {
+        if (!response.ok) {
           throw new Error(t("tasks.taskNotFound"));
         }
 
