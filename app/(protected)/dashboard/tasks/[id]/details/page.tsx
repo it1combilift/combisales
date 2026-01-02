@@ -3,6 +3,7 @@
 import { toast } from "sonner";
 import { es } from "date-fns/locale";
 import { Visit } from "@/interfaces/visits";
+import { useI18n } from "@/lib/i18n/context";
 import { useRouter } from "next/navigation";
 import { ZohoTask } from "@/interfaces/zoho";
 import { Label } from "@/components/ui/label";
@@ -23,7 +24,6 @@ import { VisitsDataTable } from "@/components/visits/data-table";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   ArrowLeft,
@@ -32,7 +32,6 @@ import {
   User,
   Building2,
   Flag,
-  CheckCircle2,
   FileText,
   ListTodo,
   Plus,
@@ -166,64 +165,6 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     }
   };
 
-  const getStatusConfig = (status?: string) => {
-    const STATUS_KEYS: Record<string, string> = {
-      Completada: "tasks.statuses.completed",
-      Completed: "tasks.statuses.completed",
-      "In Progress": "tasks.statuses.inProgress",
-      "En progreso": "tasks.statuses.inProgress",
-      "Not Started": "tasks.statuses.notStarted",
-      "No iniciada": "tasks.statuses.notStarted",
-      Deferred: "tasks.statuses.deferred",
-      Diferida: "tasks.statuses.deferred",
-      "Waiting for Input": "tasks.statuses.waitingInput",
-      "Esperando entrada": "tasks.statuses.waitingInput",
-    };
-
-    switch (status) {
-      case "Completada":
-      case "Completed":
-        return {
-          label: t(STATUS_KEYS[status]),
-          className:
-            "bg-green-500/10 text-green-700 dark:text-green-400 w-fit h-7",
-        };
-      case "In Progress":
-      case "En progreso":
-        return {
-          label: t(STATUS_KEYS[status]),
-          className:
-            "bg-blue-500/10 text-blue-700 dark:text-blue-400 w-fit h-7",
-        };
-      case "Not Started":
-      case "No iniciada":
-        return {
-          label: t(STATUS_KEYS[status]),
-          className:
-            "bg-gray-500/10 text-gray-700 dark:text-gray-400 w-fit h-7",
-        };
-      case "Deferred":
-      case "Diferida":
-        return {
-          label: t(STATUS_KEYS[status]),
-          className:
-            "bg-orange-500/10 text-orange-700 dark:text-orange-400 w-fit h-7",
-        };
-      case "Waiting for Input":
-      case "Esperando entrada":
-        return {
-          label: t(STATUS_KEYS[status]),
-          className:
-            "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 w-fit h-7",
-        };
-      default:
-        return {
-          label: status || t("tasks.noState"),
-          className: "w-fit h-7",
-        };
-    }
-  };
-
   const getPriorityConfig = (priority?: string) => {
     const PRIORITY_KEYS: Record<string, string> = {
       Highest: "tasks.priorities.highest",
@@ -319,9 +260,6 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     );
   }
 
-  const statusConfig = getStatusConfig(task.Status);
-  const priorityConfig = getPriorityConfig(task.Priority);
-
   return (
     <section className="space-y-6 px-3 sm:px-4 w-full">
       {/* Header information */}
@@ -334,29 +272,20 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
               </div>
             </div>
             <div className="flex flex-wrap items-center justify-start gap-2">
-              <Badge className={statusConfig.className} variant="outline">
-                <CheckCircle2 className="size-3" />
-                {statusConfig.label}
-              </Badge>
-
-              <Badge className={priorityConfig.className} variant="outline">
+              <Badge
+                className={getPriorityConfig(task.Priority).className}
+                variant="outline"
+              >
                 <Flag className="size-3" />
-                {task.Priority === "Highest"
-                  ? t("tasks.priority.highest")
-                  : task.Priority === "High"
-                  ? t("tasks.priority.high")
-                  : task.Priority === "Low"
-                  ? t("tasks.priority.low")
-                  : task.Priority === "Lowest"
-                  ? t("tasks.priority.lowest")
-                  : t("tasks.priority.normal")}
+                {getPriorityConfig(task.Priority).label}
               </Badge>
 
               {task.Due_Date && (
                 <Badge variant="outline">
                   <Calendar className="size-3" />
-
-                  {new Date(task.Due_Date).toLocaleDateString("es-ES")}
+                  {new Date(task.Due_Date).toLocaleDateString(
+                    locale === "es" ? "es-ES" : "en-US"
+                  )}
                 </Badge>
               )}
             </div>
