@@ -1,25 +1,26 @@
 "use client";
 
 import { toast } from "sonner";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, FileText, User, Tag } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { H1, Paragraph } from "@/components/fonts/fonts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { useI18n } from "@/lib/i18n/context";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/empty-card";
+import { Separator } from "@/components/ui/separator";
+import { CopyButton } from "@/components/copy-button";
+import { H1, Paragraph } from "@/components/fonts/fonts";
+import { ArrowLeft, Calendar, FileText, User, Tag } from "lucide-react";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import {
   Visit,
   STATUS_CONFIG,
   FORM_TYPE_LABELS,
   VisitFormType,
-  VisitStatus,
   FORM_TYPE_ICONS,
 } from "@/interfaces/visits";
 
@@ -29,8 +30,6 @@ import {
   FormularioLogisticaDetail,
   FormularioStraddleCarrierDetail,
 } from "@/components/visit-detail";
-import Image from "next/image";
-import { CopyButton } from "@/components/copy-button";
 
 interface VisitDetailPageProps {
   params: Promise<{ id: string; visitId: string }>;
@@ -41,6 +40,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [taskId, setTaskId] = useState<string>("");
   const router = useRouter();
+  const { t, locale } = useI18n();
 
   useEffect(() => {
     const fetchVisitDetail = async () => {
@@ -50,13 +50,13 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
 
         const response = await fetch(`/api/visits/${resolvedParams.visitId}`);
         if (!response.ok) {
-          throw new Error("Error al obtener la visita");
+          throw new Error(t("errors.fetchingData"));
         }
         const result = await response.json();
         setVisit(result.visit);
       } catch (error) {
         console.error("Error fetching visit:", error);
-        toast.error("Error al cargar los detalles de la visita");
+        toast.error(t("visits.errorLoadingVisit"));
       } finally {
         setIsLoading(false);
       }
@@ -102,8 +102,8 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
       default:
         return (
           <EmptyCard
-            title="Formulario no disponible"
-            description="El tipo de formulario no es reconocido"
+            title={t("visits.formNotAvailable")}
+            description={t("visits.formNotRecognized")}
             icon={<FileText />}
           />
         );
@@ -119,8 +119,8 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
       ) : !visit ? (
         <div className="container px-4 py-8">
           <EmptyCard
-            title="Visita no encontrada"
-            description="No se pudo encontrar la visita solicitada"
+            title={t("visits.visitNotFound")}
+            description={t("visits.visitNotFoundDescription")}
             icon={<FileText />}
             actions={
               <Button
@@ -130,7 +130,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 variant="default"
               >
                 <ArrowLeft className="size-4" />
-                Volver a la tarea
+                {t("common.back")}
               </Button>
             }
           />
@@ -141,7 +141,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
           <header className="flex flex-row gap-2 px-4 items-center justify-between flex-wrap">
             <div className="relative">
               <div className="flex items-center gap-3">
-                <H1>Detalle de visita</H1>
+                <H1>{t("visits.detailTitle")}</H1>
 
                 {statusConfig && (
                   <Badge variant={statusConfig.variant} size="sm">
@@ -151,9 +151,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 )}
               </div>
 
-              <Paragraph>
-                Información completa de la visita documentada
-              </Paragraph>
+              <Paragraph>{t("visits.detailDescription")}</Paragraph>
             </div>
 
             <div className="flex items-center">
@@ -165,7 +163,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 }
               >
                 <ArrowLeft className="size-4" />
-                <span className="hidden md:block">Volver</span>
+                <span className="hidden md:block">{t("common.back")}</span>
               </Button>
             </div>
           </header>
@@ -174,7 +172,9 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
           <div className="px-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Información general</CardTitle>
+                <CardTitle className="text-lg">
+                  {t("visits.generalInfo")}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -182,7 +182,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                   <div className="space-y-2">
                     <Label className="text-sm font-medium flex items-center gap-2">
                       <Tag className="size-4 text-muted-foreground" />
-                      Tipo de formulario
+                      {t("visits.formType")}
                     </Label>
                     <Badge variant="secondary">
                       {(() => {
@@ -203,10 +203,10 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                   <div className="space-y-2">
                     <Label className="text-sm font-medium flex items-center gap-2">
                       <Calendar className="size-4 text-muted-foreground" />
-                      Fecha de visita
+                      {t("visits.visitDate")}
                     </Label>
                     <Badge variant="secondary">
-                      {new Date(visit.visitDate).toLocaleDateString("es-ES", {
+                      {new Date(visit.visitDate).toLocaleDateString(locale, {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
@@ -219,7 +219,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                     <div className="space-y-2">
                       <Label className="text-sm font-medium flex items-center gap-2">
                         <User className="size-4 text-muted-foreground" />
-                        Vendedor
+                        {t("visits.seller")}
                       </Label>
                       <div className="space-y-1">
                         <p className="text-sm font-medium">{visit.user.name}</p>
@@ -235,12 +235,15 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
 
                 {/* Visit Context (Task) */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Asociada a</Label>
+                  <Label className="text-sm font-medium">
+                    {t("visits.associatedTask")}
+                  </Label>
                   <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-2">
                       <FileText className="size-4 text-muted-foreground inline" />
                       <span className="text-sm font-medium inline">
-                        Tarea #{visit.zohoTaskId}
+                        {t("visits.taskNumber")}
+                        {visit.zohoTaskId}
                       </span>
                       <CopyButton
                         size="icon"
@@ -252,7 +255,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                     </div>
                     <div>
                       <Badge variant="outline-info" className="w-fit h-fit">
-                        Tarea de Zoho
+                        {t("visits.zohoTask")}
                         <Image
                           src="/zoho-logo.svg"
                           alt="Zoho"

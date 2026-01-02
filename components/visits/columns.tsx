@@ -2,7 +2,7 @@
 
 import React from "react";
 import { formatDate } from "@/lib/utils";
-import { VisitStatus } from "@prisma/client";
+import { VisitStatus, VisitFormType } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
@@ -11,9 +11,8 @@ import {
   ColumnsConfig,
   Visit,
   VISIT_STATUS_ICONS,
-  FORM_TYPE_LABELS,
-  VISIT_STATUS_LABELS,
   FORM_TYPE_ICONS,
+  VISIT_STATUS_LABELS,
 } from "@/interfaces/visits";
 
 import {
@@ -35,8 +34,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
-  const { onView, onEdit, onDelete } = config || {};
+interface ColumnsConfigWithI18n extends ColumnsConfig {
+  t: (key: string) => string;
+  locale: string;
+}
+
+export function createColumns(config: ColumnsConfigWithI18n): ColumnDef<Visit>[] {
+  const { onView, onEdit, onDelete, t, locale } = config;
+
+  const formTypeKeys: Record<VisitFormType, string> = {
+    ANALISIS_CSS: "css",
+    ANALISIS_INDUSTRIAL: "industrial",
+    ANALISIS_LOGISTICA: "logistica",
+    ANALISIS_STRADDLE_CARRIER: "straddleCarrier",
+  };
+
+  const statusKeys: Record<VisitStatus, string> = {
+    BORRADOR: "draft",
+    COMPLETADA: "completed",
+  };
 
   return [
     {
@@ -48,7 +64,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="-ml-4 h-8"
           >
-            Tipo de Formulario
+            {t("visits.formType")}
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="size-3" />
             ) : column.getIsSorted() === "desc" ? (
@@ -60,9 +76,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
         );
       },
       cell: ({ row }) => {
-        const formType = row.getValue(
-          "formType"
-        ) as keyof typeof FORM_TYPE_LABELS;
+        const formType = row.getValue("formType") as VisitFormType;
         return (
           <div className="flex items-center gap-2">
             {FORM_TYPE_ICONS[formType] && (
@@ -71,7 +85,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
               </span>
             )}
             <span className="text-xs sm:text-sm leading-relaxed text-primary">
-              {FORM_TYPE_LABELS[formType]}
+              {t(`visits.formTypes.${formTypeKeys[formType]}`)}
             </span>
           </div>
         );
@@ -86,7 +100,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="-ml-4 h-8"
           >
-            Fecha
+            {t("visits.visitDate")}
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="size-3" />
             ) : column.getIsSorted() === "desc" ? (
@@ -100,12 +114,11 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
       cell: ({ row }) => {
         return (
           <span className="text-xs sm:text-sm leading-relaxed text-primary">
-            {formatDate(row.getValue("visitDate"))}
+            {formatDate(row.getValue("visitDate"), locale)}
           </span>
         );
       },
     },
-
     {
       accessorKey: "status",
       header: ({ column }) => {
@@ -115,7 +128,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="-ml-4 h-8"
           >
-            Estado
+            {t("visits.status")}
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="size-3" />
             ) : column.getIsSorted() === "desc" ? (
@@ -144,7 +157,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
                 })}
               </span>
             )}
-            {VISIT_STATUS_LABELS[status]}
+            {t(`visits.statuses.${statusKeys[status]}`)}
           </Badge>
         );
       },
@@ -158,7 +171,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="-ml-4 h-8"
           >
-            Vendedor
+            {t("visits.seller")}
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="size-3" />
             ) : column.getIsSorted() === "desc" ? (
@@ -187,7 +200,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
     },
     {
       id: "actions",
-      header: "Acciones",
+      header: t("table.actions"),
       cell: ({ row }) => {
         const visit = row.original;
 
@@ -197,14 +210,14 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
               <Button
                 variant="ghost"
                 className="size-8 p-0"
-                aria-label="Abrir menú"
+                aria-label={t("table.actions")}
               >
-                <span className="sr-only">Abrir menú</span>
+                <span className="sr-only">{t("table.actions")}</span>
                 <MoreVertical className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("table.actions")}</DropdownMenuLabel>
               <DropdownMenuSeparator />
 
               {onEdit && (
@@ -213,7 +226,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
                   className="cursor-pointer"
                 >
                   <PencilLine className="size-4" />
-                  Editar
+                  {t("visits.editVisit")}
                 </DropdownMenuItem>
               )}
 
@@ -223,7 +236,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
                   className="cursor-pointer"
                 >
                   <ArrowUpRight className="size-4" />
-                  Detalles
+                  {t("visits.viewDetails")}
                 </DropdownMenuItem>
               )}
 
@@ -235,7 +248,7 @@ export function createColumns(config?: ColumnsConfig): ColumnDef<Visit>[] {
                   className="text-destructive focus:text-destructive cursor-pointer"
                 >
                   <Trash2 className="size-4 text-destructive" />
-                  Eliminar
+                  {t("visits.deleteVisit")}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>

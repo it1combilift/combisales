@@ -8,6 +8,7 @@ import { ZohoTask } from "@/interfaces/zoho";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
+import { useTranslation } from "@/lib/i18n/context";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import {
@@ -32,6 +33,7 @@ export const TaskCard = ({
   onCreateVisit?: () => void;
 }) => {
   const router = useRouter();
+  const { t } = useTranslation();
   const TASK_DETAIL_URL = (taskId: string) =>
     `/dashboard/tasks/${taskId}/details`;
 
@@ -40,7 +42,7 @@ export const TaskCard = ({
       case "Completada":
       case "Completed":
         return {
-          label: "Completada",
+          label: t("tasks.statuses.completed"),
           variant: "default" as const,
           className:
             "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20",
@@ -49,7 +51,7 @@ export const TaskCard = ({
       case "In Progress":
       case "En progreso":
         return {
-          label: "En progreso",
+          label: t("tasks.statuses.inProgress"),
           variant: "secondary" as const,
           className:
             "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
@@ -58,7 +60,7 @@ export const TaskCard = ({
       case "Not Started":
       case "No iniciada":
         return {
-          label: "No iniciada",
+          label: t("tasks.statuses.notStarted"),
           variant: "outline" as const,
           className:
             "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
@@ -67,7 +69,7 @@ export const TaskCard = ({
       case "Deferred":
       case "Diferida":
         return {
-          label: "Diferida",
+          label: t("tasks.statuses.deferred"),
           variant: "outline" as const,
           className:
             "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20",
@@ -76,7 +78,7 @@ export const TaskCard = ({
       case "Waiting for Input":
       case "Esperando entrada":
         return {
-          label: "Esperando entrada",
+          label: t("tasks.statuses.waitingInput"),
           variant: "outline" as const,
           className:
             "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20",
@@ -84,7 +86,7 @@ export const TaskCard = ({
         };
       default:
         return {
-          label: status || "Sin estado",
+          label: status || t("common.status"),
           variant: "outline" as const,
           className: "border-border/50",
           icon: FileText,
@@ -98,14 +100,14 @@ export const TaskCard = ({
       case "Alta":
       case "High":
         return {
-          label: "Alta",
+          label: t("tasks.priorities.high"),
           className:
             "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
           dotColor: "bg-red-500",
         };
       case "Normal":
         return {
-          label: "Normal",
+          label: t("tasks.priorities.normal"),
           className:
             "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
           dotColor: "bg-blue-500",
@@ -114,14 +116,14 @@ export const TaskCard = ({
       case "Baja":
       case "Lowest":
         return {
-          label: "Baja",
+          label: t("tasks.priorities.low"),
           className:
             "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
           dotColor: "bg-gray-500",
         };
       default:
         return {
-          label: priority || "Normal",
+          label: priority || t("tasks.priorities.normal"),
           className: "border-border/50",
           dotColor: "bg-gray-400",
         };
@@ -237,7 +239,7 @@ export const TaskCard = ({
               variant="outline"
             >
               <Timer className="size-3" />
-              Vencida
+              {t("tasks.overdue")}
             </Badge>
           )}
         </div>
@@ -263,7 +265,7 @@ export const TaskCard = ({
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-xs text-muted-foreground font-medium">
-                  Vencimiento
+                  {t("tasks.dueDate")}
                 </span>
                 <span
                   className={cn(
@@ -288,7 +290,7 @@ export const TaskCard = ({
               </Avatar>
               <div className="flex flex-col min-w-0">
                 <span className="text-xs text-muted-foreground font-medium">
-                  Responsable
+                  {t("tasks.assignedTo")}
                 </span>
                 <span className="text-xs md:text-sm font-medium text-foreground truncate">
                   {task.Owner.name}
@@ -308,7 +310,7 @@ export const TaskCard = ({
                 </div>
                 <div className="flex flex-col min-w-0 flex-1">
                   <span className="text-xs text-muted-foreground">
-                    Relacionado con
+                    {t("tasks.relatedTo")}
                   </span>
                   <span className="font-medium text-foreground truncate text-xs md:text-sm">
                     {task.What_Id.name}
@@ -324,7 +326,7 @@ export const TaskCard = ({
                 </div>
                 <div className="flex flex-col min-w-0 flex-1">
                   <span className="text-xs text-muted-foreground">
-                    Contacto
+                    {t("tasks.contact")}
                   </span>
                   <span className="font-medium text-foreground truncate">
                     {task.Who_Id.name}
@@ -340,15 +342,15 @@ export const TaskCard = ({
           <div className="flex flex-col items-start justify-center">
             {task.Modified_Time && (
               <div className="flex items-center text-xs text-muted-foreground">
-                Modificada{" "}
+                {t("tasks.modified")}{" "}
                 {formatRelativeTime(task.Modified_Time) ||
-                  "Modificada hace poco"}
+                  t("tasks.modifiedRecently")}
               </div>
             )}
             {task.Closed_Time && (
               <div className="flex items-center text-xs text-muted-foreground">
-                Completada{" "}
-                {formatRelativeTime(task.Closed_Time) || "Completada"}
+                {t("tasks.completed")}{" "}
+                {formatRelativeTime(task.Closed_Time) || t("tasks.completed")}
               </div>
             )}
           </div>
@@ -364,7 +366,7 @@ export const TaskCard = ({
               }}
             >
               <Plus className="size-4" />
-              Crear visita
+              {t("tasks.createVisit")}
             </Button>
           )}
         </div>

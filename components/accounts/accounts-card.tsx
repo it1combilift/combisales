@@ -5,6 +5,7 @@ import { Checkbox } from "../ui/checkbox";
 import { useRouter } from "next/navigation";
 import { formatDateShort } from "@/lib/utils";
 import { ZohoAccount } from "@/interfaces/zoho";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   DropdownMenu,
@@ -40,6 +41,7 @@ export const AccountCard = ({
   onCreateVisit?: () => void;
 }) => {
   const router = useRouter();
+  const { t } = useI18n();
   const ACCOUNT_ID_URL = (accountId: string) =>
     `/dashboard/clients/visits/${accountId}`;
 
@@ -68,32 +70,32 @@ export const AccountCard = ({
               <Button
                 variant="ghost"
                 className="h-9 w-9 p-0 hover:bg-accent"
-                aria-label="Abrir menú de acciones"
+                aria-label={t("common.actions")}
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-52">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
               <DropdownMenuItem
                 className="cursor-pointer"
                 onClick={() => navigator.clipboard.writeText(account.id)}
               >
                 <Copy className="h-4 w-4" />
-                Copiar ID
+                {t("clients.copyId")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer"
                 onClick={() => router.push(ACCOUNT_ID_URL(account.id))}
               >
                 <ArrowUpRight className="h-4 w-4" />
-                Detalles
+                {t("clients.details")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 
               <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive">
                 <Trash2 className="h-4 w-4 text-destructive" />
-                Eliminar
+                {t("common.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -170,7 +172,9 @@ export const AccountCard = ({
               <div className="h-8 w-8 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
                 <Globe className="h-4 w-4 text-blue-600" />
               </div>
-              <span className="font-medium truncate">Visitar sitio web</span>
+              <span className="font-medium truncate">
+                {t("clients.visitWebsite")}
+              </span>
             </a>
           )}
         </div>
@@ -196,7 +200,8 @@ export const AccountCard = ({
             <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4 shrink-0" />
               <span className="text-xs">
-                Modificado: {formatDateShort(account.Modified_Time)}
+                {t("clients.modified")}:{" "}
+                {formatDateShort(account.Modified_Time)}
               </span>
             </div>
           )}
@@ -212,7 +217,7 @@ export const AccountCard = ({
               }}
             >
               <Plus className="size-4" />
-              Crear visita
+              {t("clients.createVisit")}
             </Button>
           )}
         </div>

@@ -200,7 +200,8 @@ export function buildVisitEmailData(
   visitDate: Date,
   status: VisitStatus | string,
   vendedor?: { name: string; email: string },
-  customerName?: string
+  customerName?: string,
+  locale: string = "es"
 ): VisitEmailData {
   const baseData = formularioData as CreateFormularioCSSData;
 
@@ -223,6 +224,7 @@ export function buildVisitEmailData(
     status: status as "BORRADOR" | "COMPLETADA" | "EN_PROGRESO",
     archivos: baseData.archivos || [],
     vendedor,
+    locale,
   };
 
   // Add form-specific data based on form type

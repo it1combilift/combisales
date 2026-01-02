@@ -7,7 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { StepContentProps, TIPO_OPERACION_OPTIONS } from "../types";
+import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -47,6 +48,7 @@ import {
  * Includes fechaCierre and additional fields for ramps, doors, restrictions, etc.
  */
 export function Step1Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   const tieneRampas = form.watch("tieneRampas");
   const tienePasosPuertas = form.watch("tienePasosPuertas");
   const tieneRestricciones = form.watch("tieneRestricciones");
@@ -61,7 +63,7 @@ export function Step1Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem className="max-w-xs">
               <FormLabel className="text-[11px] font-medium">
-                Fecha estimada de cierre
+                {t("forms.logistica.fields.operation.closingDate.label")}
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -76,7 +78,7 @@ export function Step1Content({ form }: StepContentProps) {
                       <CalendarIcon className="size-3.5" />
                       {field.value
                         ? format(new Date(field.value), "PPP", { locale: es })
-                        : "Seleccionar fecha"}
+                        : t("common.selectDate")}
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
@@ -105,12 +107,12 @@ export function Step1Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                Notas sobre la operación
+                {t("forms.logistica.fields.operation.notes.label")}
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Describe las condiciones generales de la operación logística, flujos de trabajo, frecuencias, etc."
+                  placeholder={t("forms.logistica.fields.operation.notes.placeholder")}
                   className="min-h-[100px] text-xs bg-background/50 resize-none leading-relaxed"
                   {...field}
                 />
@@ -129,7 +131,7 @@ export function Step1Content({ form }: StepContentProps) {
             <div className="flex items-center justify-between">
               <Label className="text-[11px] font-medium flex items-center gap-2">
                 <ArrowUpDown className="size-3.5 text-muted-foreground" />
-                ¿Existen rampas?
+                {t("forms.logistica.fields.operation.ramps.label")}
               </Label>
               <FormField
                 control={form.control}
@@ -154,7 +156,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormItem>
                     <FormControl>
                       <Textarea
-                        placeholder="Describe las rampas: ubicación, pendiente, dimensiones..."
+                        placeholder={t("forms.logistica.fields.operation.ramps.placeholder")}
                         className="min-h-[60px] text-xs bg-background/50 resize-none"
                         {...field}
                       />
@@ -171,7 +173,7 @@ export function Step1Content({ form }: StepContentProps) {
             <div className="flex items-center justify-between">
               <Label className="text-[11px] font-medium flex items-center gap-2">
                 <DoorOpen className="size-3.5 text-muted-foreground" />
-                ¿Hay pasos por puertas?
+                {t("forms.logistica.fields.operation.doors.label")}
               </Label>
               <FormField
                 control={form.control}
@@ -196,7 +198,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormItem>
                     <FormControl>
                       <Textarea
-                        placeholder="Describe los pasos por puertas: dimensiones, altura, ancho..."
+                        placeholder={t("forms.logistica.fields.operation.doors.placeholder")}
                         className="min-h-[60px] text-xs bg-background/50 resize-none"
                         {...field}
                       />
@@ -213,7 +215,7 @@ export function Step1Content({ form }: StepContentProps) {
             <div className="flex items-center justify-between">
               <Label className="text-[11px] font-medium flex items-center gap-2">
                 <AlertTriangle className="size-3.5 text-muted-foreground" />
-                ¿Hay otras restricciones?
+                {t("forms.logistica.fields.operation.restrictions.label")}
               </Label>
               <FormField
                 control={form.control}
@@ -238,7 +240,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormItem>
                     <FormControl>
                       <Textarea
-                        placeholder="Describe otras restricciones: obstáculos, columnas, zonas de tránsito limitado..."
+                        placeholder={t("forms.logistica.fields.operation.restrictions.placeholder")}
                         className="min-h-[60px] text-xs bg-background/50 resize-none"
                         {...field}
                       />
@@ -265,7 +267,7 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-[11px] font-medium flex items-center gap-1">
                     <Building className="size-3 text-muted-foreground" />
-                    Altura nave (m)
+                    {t("forms.logistica.fields.operation.maxHeight.label")} (m)
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -295,7 +297,7 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-[11px] font-medium flex items-center gap-1">
                     <Route className="size-3 text-muted-foreground" />
-                    Ancho pasillo (m)
+                    {t("forms.logistica.fields.operation.aisleWidth.label")} (m)
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -325,7 +327,7 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem className="col-span-2 sm:col-span-1">
                   <FormLabel className="text-[11px] font-medium flex items-center gap-1">
                     <Layers className="size-3 text-muted-foreground" />
-                    Superficie (m²)
+                    {t("forms.logistica.fields.operation.surface.label")} (m²)
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -357,7 +359,7 @@ export function Step1Content({ form }: StepContentProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[11px] font-medium">
-                    Tipo de operación
+                    {t("forms.logistica.fields.operation.type.label")}
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}
@@ -365,19 +367,28 @@ export function Step1Content({ form }: StepContentProps) {
                   >
                     <FormControl>
                       <SelectTrigger className="h-9 text-sm w-full">
-                        <SelectValue placeholder="Seleccionar..." />
+                        <SelectValue placeholder={t("common.select")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {TIPO_OPERACION_OPTIONS.map((option) => (
-                        <SelectItem
-                          key={option.value}
-                          value={option.value}
-                          className="text-sm"
-                        >
-                          {option.label}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="almacenamiento" className="text-sm">
+                        {t("forms.logistica.options.operationType.storage")}
+                      </SelectItem>
+                      <SelectItem value="cross-docking" className="text-sm">
+                        {t("forms.logistica.options.operationType.crossDocking")}
+                      </SelectItem>
+                      <SelectItem value="picking" className="text-sm">
+                        {t("forms.logistica.options.operationType.picking")}
+                      </SelectItem>
+                      <SelectItem value="carga-descarga" className="text-sm">
+                        {t("forms.logistica.options.operationType.loadingUnloading")}
+                      </SelectItem>
+                      <SelectItem value="preparacion-pedidos" className="text-sm">
+                        {t("forms.logistica.options.operationType.orderPrep")}
+                      </SelectItem>
+                      <SelectItem value="mixto" className="text-sm">
+                        {t("forms.logistica.options.operationType.mixed")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage className="text-[10px]" />
@@ -392,11 +403,11 @@ export function Step1Content({ form }: StepContentProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[11px] font-medium">
-                    Condiciones del suelo
+                    {t("forms.logistica.fields.operation.floor.label")}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Hormigón, resina, irregular..."
+                      placeholder={t("forms.logistica.fields.operation.floor.placeholder")}
                       className="text-sm h-9"
                       {...field}
                     />

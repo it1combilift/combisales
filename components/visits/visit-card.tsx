@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { VisitStatus, VisitFormType } from "@prisma/client";
 import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FORM_TYPE_ICONS,
@@ -69,8 +70,21 @@ export const VisitCard = ({
   onDelete,
   onCreateVisit,
 }: VisitCardProps) => {
+  const { t, locale } = useI18n();
   const status = visit.status as VisitStatus;
   const formType = visit.formType as VisitFormType;
+
+  const formTypeKeys: Record<VisitFormType, string> = {
+    ANALISIS_CSS: "css",
+    ANALISIS_INDUSTRIAL: "industrial",
+    ANALISIS_LOGISTICA: "logistica",
+    ANALISIS_STRADDLE_CARRIER: "straddleCarrier",
+  };
+
+  const statusKeys: Record<VisitStatus, string> = {
+    BORRADOR: "draft",
+    COMPLETADA: "completed",
+  };
 
   return (
     <Card
@@ -87,7 +101,7 @@ export const VisitCard = ({
                     {React.createElement(FORM_TYPE_ICONS[formType])}
                   </span>
                 )}
-                {FORM_TYPE_LABELS[formType]}
+                {t(`visits.formTypes.${formTypeKeys[formType]}` as any)}
               </Badge>
 
               <Badge variant={STATUS_VARIANTS[status]} className="ml-2 text-xs">
@@ -98,7 +112,7 @@ export const VisitCard = ({
                     })}
                   </span>
                 )}
-                {VISIT_STATUS_LABELS[status]}
+                {t(`visits.statuses.${statusKeys[status]}` as any)}
               </Badge>
             </div>
           </div>
@@ -108,19 +122,19 @@ export const VisitCard = ({
               <Button
                 variant="ghost"
                 className="h-9 w-9 p-0 hover:bg-accent"
-                aria-label="Abrir menú de acciones"
+                aria-label={t("common.actions")}
               >
                 <MoreVertical className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-52">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
               <DropdownMenuItem
                 className="cursor-pointer"
                 onClick={() => navigator.clipboard.writeText(visit.id)}
               >
                 <Copy className="size-4" />
-                Copiar ID
+                {t("visits.copy")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               {onEdit && (
@@ -129,7 +143,7 @@ export const VisitCard = ({
                   onClick={() => onEdit(visit)}
                 >
                   <PencilLine className="size-4" />
-                  Editar
+                  {t("common.edit")}
                 </DropdownMenuItem>
               )}
               {onView && (
@@ -138,7 +152,7 @@ export const VisitCard = ({
                   onClick={() => onView(visit)}
                 >
                   <ArrowUpRight className="size-4" />
-                  Detalles
+                  {t("visits.viewDetails")}
                 </DropdownMenuItem>
               )}
               {onDelete && (
@@ -149,7 +163,7 @@ export const VisitCard = ({
                     onClick={() => onDelete(visit)}
                   >
                     <Trash2 className="size-4 text-destructive" />
-                    Eliminar
+                    {t("common.delete")}
                   </DropdownMenuItem>
                 </>
               )}
@@ -166,10 +180,10 @@ export const VisitCard = ({
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-foreground font-semibold text-sm">
-                {formatDate(visit.visitDate)}
+                {formatDate(visit.visitDate, locale)}
               </span>
               <span className="text-muted-foreground text-xs">
-                Fecha de la visita
+                {t("visits.visitDate")}
               </span>
             </div>
           </div>
@@ -181,10 +195,10 @@ export const VisitCard = ({
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-foreground font-medium truncate text-sm">
-                {FORM_TYPE_LABELS[formType]}
+                {t(`visits.formTypes.${formTypeKeys[formType]}` as any)}
               </span>
               <span className="text-muted-foreground text-xs">
-                Tipo de formulario
+                {t("visits.formType")}
               </span>
             </div>
           </div>
@@ -199,7 +213,7 @@ export const VisitCard = ({
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-foreground font-semibold truncate text-sm">
-                  {visit.user.name || "Sin nombre"}
+                  {visit.user.name || t("users.card.noName")}
                 </span>
                 <span className="text-muted-foreground text-xs truncate">
                   {visit.user.email}
@@ -219,7 +233,7 @@ export const VisitCard = ({
                   onView(visit);
                 }}
               >
-                Ver detalles
+                {t("visits.viewDetails")}
                 <ArrowUpRight className="size-4" />
               </Button>
             )}
@@ -235,7 +249,7 @@ export const VisitCard = ({
                 }}
               >
                 <Plus className="size-4" />
-                Crear visita
+                {t("visits.createVisit")}
               </Button>
             )}
           </div>

@@ -5,6 +5,7 @@ import type React from "react";
 import { cn } from "@/lib/utils";
 import { Spinner } from "./ui/spinner";
 import { TipoArchivo } from "@prisma/client";
+import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState, useCallback, useMemo, useEffect } from "react";
@@ -67,174 +68,174 @@ const FILE_TYPE_CONFIG = {
     icon: ImageIcon,
     color: "text-emerald-500",
     bg: "bg-emerald-500/10",
-    label: "Imagen JPG",
+    labelKey: "attachments.fileTypes.jpg",
   },
   jpeg: {
     icon: ImageIcon,
     color: "text-emerald-500",
     bg: "bg-emerald-500/10",
-    label: "Imagen JPEG",
+    labelKey: "attachments.fileTypes.jpeg",
   },
   png: {
     icon: ImageIcon,
     color: "text-emerald-500",
     bg: "bg-emerald-500/10",
-    label: "Imagen PNG",
+    labelKey: "attachments.fileTypes.png",
   },
   gif: {
     icon: ImageIcon,
     color: "text-emerald-500",
     bg: "bg-emerald-500/10",
-    label: "GIF",
+    labelKey: "attachments.fileTypes.gif",
   },
   webp: {
     icon: ImageIcon,
     color: "text-emerald-500",
     bg: "bg-emerald-500/10",
-    label: "WebP",
+    labelKey: "attachments.fileTypes.webp",
   },
   svg: {
     icon: ImageIcon,
     color: "text-emerald-500",
     bg: "bg-emerald-500/10",
-    label: "SVG",
+    labelKey: "attachments.fileTypes.svg",
   },
   heic: {
     icon: ImageIcon,
     color: "text-emerald-500",
     bg: "bg-emerald-500/10",
-    label: "HEIC",
+    labelKey: "attachments.fileTypes.heic",
   },
   heif: {
     icon: ImageIcon,
     color: "text-emerald-500",
     bg: "bg-emerald-500/10",
-    label: "HEIF",
+    labelKey: "attachments.fileTypes.heif",
   },
   // Videos
   mp4: {
     icon: Video,
     color: "text-blue-500",
     bg: "bg-blue-500/10",
-    label: "Video MP4",
+    labelKey: "attachments.fileTypes.mp4",
   },
   webm: {
     icon: Video,
     color: "text-blue-500",
     bg: "bg-blue-500/10",
-    label: "Video WebM",
+    labelKey: "attachments.fileTypes.webm",
   },
   mov: {
     icon: Video,
     color: "text-blue-500",
     bg: "bg-blue-500/10",
-    label: "Video MOV",
+    labelKey: "attachments.fileTypes.mov",
   },
   avi: {
     icon: Video,
     color: "text-blue-500",
     bg: "bg-blue-500/10",
-    label: "Video AVI",
+    labelKey: "attachments.fileTypes.avi",
   },
   wmv: {
     icon: Video,
     color: "text-blue-500",
     bg: "bg-blue-500/10",
-    label: "Video WMV",
+    labelKey: "attachments.fileTypes.wmv",
   },
   // Documents
   pdf: {
     icon: FileText,
     color: "text-red-500",
     bg: "bg-red-500/10",
-    label: "PDF",
+    labelKey: "attachments.fileTypes.pdf",
   },
   doc: {
     icon: FileText,
     color: "text-blue-600",
     bg: "bg-blue-600/10",
-    label: "Word",
+    labelKey: "attachments.fileTypes.word",
   },
   docx: {
     icon: FileText,
     color: "text-blue-600",
     bg: "bg-blue-600/10",
-    label: "Word",
+    labelKey: "attachments.fileTypes.word",
   },
   xls: {
     icon: FileSpreadsheet,
     color: "text-green-600",
     bg: "bg-green-600/10",
-    label: "Excel",
+    labelKey: "attachments.fileTypes.excel",
   },
   xlsx: {
     icon: FileSpreadsheet,
     color: "text-green-600",
     bg: "bg-green-600/10",
-    label: "Excel",
+    labelKey: "attachments.fileTypes.excel",
   },
   ppt: {
     icon: Presentation,
     color: "text-orange-500",
     bg: "bg-orange-500/10",
-    label: "PowerPoint",
+    labelKey: "attachments.fileTypes.powerpoint",
   },
   pptx: {
     icon: Presentation,
     color: "text-orange-500",
     bg: "bg-orange-500/10",
-    label: "PowerPoint",
+    labelKey: "attachments.fileTypes.powerpoint",
   },
   txt: {
     icon: FileText,
     color: "text-gray-500",
     bg: "bg-gray-500/10",
-    label: "Texto",
+    labelKey: "attachments.fileTypes.text",
   },
   // Code
   js: {
     icon: FileCode,
     color: "text-yellow-500",
     bg: "bg-yellow-500/10",
-    label: "JavaScript",
+    labelKey: "attachments.fileTypes.javascript",
   },
   ts: {
     icon: FileCode,
     color: "text-blue-500",
     bg: "bg-blue-500/10",
-    label: "TypeScript",
+    labelKey: "attachments.fileTypes.typescript",
   },
   json: {
     icon: FileCode,
     color: "text-amber-500",
     bg: "bg-amber-500/10",
-    label: "JSON",
+    labelKey: "attachments.fileTypes.json",
   },
   // Archives
   zip: {
     icon: FileArchive,
     color: "text-amber-600",
     bg: "bg-amber-600/10",
-    label: "ZIP",
+    labelKey: "attachments.fileTypes.zip",
   },
   rar: {
     icon: FileArchive,
     color: "text-amber-600",
     bg: "bg-amber-600/10",
-    label: "RAR",
+    labelKey: "attachments.fileTypes.rar",
   },
   // Audio
   mp3: {
     icon: Music,
     color: "text-pink-500",
     bg: "bg-pink-500/10",
-    label: "Audio MP3",
+    labelKey: "attachments.fileTypes.mp3",
   },
   wav: {
     icon: Music,
     color: "text-pink-500",
     bg: "bg-pink-500/10",
-    label: "Audio WAV",
+    labelKey: "attachments.fileTypes.wav",
   },
 };
 
@@ -242,7 +243,7 @@ const DEFAULT_FILE_CONFIG = {
   icon: File,
   color: "text-muted-foreground",
   bg: "bg-muted",
-  label: "Archivo",
+  labelKey: "attachments.fileTypes.archivo",
 };
 
 // ==================== HELPER FUNCTIONS ====================
@@ -282,10 +283,12 @@ const FileThumbnail = ({
   archivo,
   isHovered,
   size = "normal",
+  t,
 }: {
   archivo: Archivo;
   isHovered: boolean;
   size?: "compact" | "normal" | "large";
+  t: (key: string) => string;
 }) => {
   const config = getFileConfig(archivo);
   const FileIcon = config.icon;
@@ -374,7 +377,7 @@ const FileThumbnail = ({
               variant="secondary"
               className="text-[9px] uppercase tracking-wider font-medium px-1.5 py-0.5"
             >
-              {config.label}
+              {t(config.labelKey)}
             </Badge>
           )}
         </div>
@@ -447,11 +450,13 @@ const FileCard = ({
   index,
   onClick,
   compact = false,
+  t,
 }: {
   archivo: Archivo;
   index: number;
   onClick: () => void;
   compact?: boolean;
+  t: (key: string) => string;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const config = getFileConfig(archivo);
@@ -479,6 +484,7 @@ const FileCard = ({
             archivo={archivo}
             isHovered={isHovered}
             size="compact"
+            t={t}
           />
         </div>
 
@@ -494,7 +500,7 @@ const FileCard = ({
                 config.color
               )}
             >
-              {config.label}
+              {t(config.labelKey)}
             </span>
             {archivo.tamanio && (
               <>
@@ -530,7 +536,7 @@ const FileCard = ({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                <p className="text-xs">Ver</p>
+                <p className="text-xs">{t("attachments.actions.view")}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -547,7 +553,7 @@ const FileCard = ({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                <p className="text-xs">Descargar</p>
+                <p className="text-xs">{t("attachments.actions.download")}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -568,7 +574,7 @@ const FileCard = ({
       onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
     >
-      <FileThumbnail archivo={archivo} isHovered={isHovered} />
+      <FileThumbnail archivo={archivo} isHovered={isHovered} t={t} />
 
       {/* Footer */}
       <div className="p-2.5 sm:p-3 border-t bg-card">
@@ -593,7 +599,7 @@ const FileCard = ({
                   config.color
                 )}
               >
-                {config.label}
+                {t(config.labelKey)}
               </span>
               {archivo.tamanio && (
                 <>
@@ -626,7 +632,7 @@ const FileCard = ({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="text-xs">Descargar</p>
+                  <p className="text-xs">{t("attachments.actions.download")}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -648,6 +654,7 @@ const PreviewModal = ({
   hasNext,
   currentIndex,
   totalCount,
+  t,
 }: {
   archivo: Archivo | null;
   isOpen: boolean;
@@ -658,6 +665,7 @@ const PreviewModal = ({
   hasNext: boolean;
   currentIndex: number;
   totalCount: number;
+  t: (key: string) => string;
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isImageZoomed, setIsImageZoomed] = useState(false);
@@ -740,7 +748,7 @@ const PreviewModal = ({
         onTouchEnd={handleTouchEnd}
       >
         <DialogTitle className="sr-only">
-          Vista previa de {archivo.nombre}
+          {t("attachments.actions.view")} - {archivo.nombre}
         </DialogTitle>
 
         {/* Header - Clean, accessible design */}
@@ -766,7 +774,7 @@ const PreviewModal = ({
                 {archivo.nombre}
               </p>
               <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground mt-0.5">
-                <span>{config.label}</span>
+                <span>{t(config.labelKey)}</span>
                 <span className="size-0.5 sm:size-1 rounded-full bg-muted-foreground/50" />
                 <span>{formatFileSize(archivo.tamanio)}</span>
                 {totalCount > 1 && (
@@ -797,7 +805,7 @@ const PreviewModal = ({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  <p className="text-xs">Descargar</p>
+                  <p className="text-xs">{t("attachments.actions.download")}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -817,7 +825,7 @@ const PreviewModal = ({
               <div className="flex flex-col items-center gap-3">
                 <Spinner variant="bars" className="size-5 md:size-6" />
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  Cargando imagen...
+                  {t("attachments.preview.loadingImage")}
                 </p>
               </div>
             </div>
@@ -854,7 +862,7 @@ const PreviewModal = ({
                   "focus:outline-none focus:ring-2 focus:ring-primary/50"
                 )}
               >
-                Tu navegador no soporta la reproducción de video.
+                {t("attachments.preview.videoNotSupported")}
               </video>
             </div>
           )}
@@ -887,7 +895,7 @@ const PreviewModal = ({
                     {archivo.nombre}
                   </p>
                   <p className="text-xs text-muted-foreground text-balance">
-                    {config.label} • {formatFileSize(archivo.tamanio)}
+                    {t(config.labelKey)} • {formatFileSize(archivo.tamanio)}
                   </p>
                 </div>
                 <Button
@@ -897,7 +905,7 @@ const PreviewModal = ({
                   onClick={handleDownload}
                 >
                   <Download className="size-4" />
-                  Descargar archivo
+                  {t("attachments.actions.downloadFile")}
                 </Button>
               </div>
             </div>
@@ -1074,20 +1082,20 @@ const PreviewModal = ({
                 <kbd className="px-1.5 py-0.5 rounded bg-muted border border-border font-mono text-[9px]">
                   →
                 </kbd>
-                <span className="ml-1">Navegar</span>
+                <span className="ml-1">{t("attachments.actions.navigate")}</span>
               </span>
               <span className="flex items-center gap-1">
                 <kbd className="px-1.5 py-0.5 rounded bg-muted border border-border font-mono text-[9px]">
                   Esc
                 </kbd>
-                <span className="ml-1">Cerrar</span>
+                <span className="ml-1">{t("attachments.actions.close")}</span>
               </span>
               {isImage && (
                 <span className="flex items-center gap-1">
                   <kbd className="px-1.5 py-0.5 rounded bg-muted border border-border font-mono text-[9px]">
                     Click
                   </kbd>
-                  <span className="ml-1">Zoom</span>
+                  <span className="ml-1">{t("attachments.actions.zoom")}</span>
                 </span>
               )}
             </div>
@@ -1108,14 +1116,14 @@ const PreviewModal = ({
                 <kbd className="px-1.5 py-0.5 rounded bg-muted border border-border font-mono text-[9px]">
                   Esc
                 </kbd>
-                <span className="ml-1">Cerrar</span>
+                <span className="ml-1">{t("attachments.actions.close")}</span>
               </span>
               {isImage && (
                 <span className="flex items-center gap-1">
                   <kbd className="px-1.5 py-0.5 rounded bg-muted border border-border font-mono text-[9px]">
                     Click
                   </kbd>
-                  <span className="ml-1">Zoom</span>
+                  <span className="ml-1">{t("attachments.actions.zoom")}</span>
                 </span>
               )}
             </div>
@@ -1130,12 +1138,15 @@ const PreviewModal = ({
 export const AttachmentsGallery = ({
   archivos,
   className,
-  title = "Archivos adjuntos",
+  title,
   showHeader = true,
   compact = false,
 }: AttachmentsGalleryProps) => {
+  const { t } = useI18n();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  const actualTitle = title || t("attachments.title");
 
   const handleOpenPreview = useCallback((index: number) => {
     setSelectedIndex(index);
@@ -1185,11 +1196,10 @@ export const AttachmentsGallery = ({
               </div>
               <div>
                 <CardTitle className="text-sm sm:text-base font-semibold">
-                  {title}
+                  {actualTitle}
                 </CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {fileStats.total} archivo{fileStats.total !== 1 ? "s" : ""}{" "}
-                  adjunto{fileStats.total !== 1 ? "s" : ""}
+                  {fileStats.total} {t("attachments.filesAttached")}
                 </p>
               </div>
             </div>
@@ -1245,7 +1255,7 @@ export const AttachmentsGallery = ({
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">Vista cuadrícula</p>
+                      <p className="text-xs">{t("attachments.viewMode.grid")}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -1265,7 +1275,7 @@ export const AttachmentsGallery = ({
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">Vista lista</p>
+                      <p className="text-xs">{t("attachments.viewMode.list")}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -1292,6 +1302,7 @@ export const AttachmentsGallery = ({
                 archivo={archivo}
                 index={index}
                 onClick={() => handleOpenPreview(index)}
+                t={t}
               />
             ))}
           </div>
@@ -1307,6 +1318,7 @@ export const AttachmentsGallery = ({
                 index={index}
                 onClick={() => handleOpenPreview(index)}
                 compact
+                t={t}
               />
             ))}
           </div>
@@ -1324,6 +1336,7 @@ export const AttachmentsGallery = ({
         hasNext={selectedIndex !== null && selectedIndex < archivos.length - 1}
         currentIndex={selectedIndex ?? 0}
         totalCount={archivos.length}
+        t={t}
       />
     </Card>
   );

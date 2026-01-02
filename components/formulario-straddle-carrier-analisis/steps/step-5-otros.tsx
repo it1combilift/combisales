@@ -5,6 +5,7 @@ import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   ArrowUpDown,
@@ -105,24 +106,28 @@ function DimensionInput({
  * Additional conditions and restrictions
  */
 export function Step5Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   const pisoPlano = form.watch("pisoPlano");
 
   return (
     <div className="space-y-4">
       {/* ==================== ZONAS DE PASO ==================== */}
       <section>
-        <SectionHeader icon={Route} title="Zonas de Paso" />
+        <SectionHeader
+          icon={Route}
+          title={t("forms.straddleCarrier.fields.others.passageAreas.title")}
+        />
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <DimensionInput
             control={form.control}
             name="zonasPasoAncho"
-            label="Ancho"
+            label={t("forms.straddleCarrier.fields.others.passageAreas.width")}
             icon={MoveHorizontal}
           />
           <DimensionInput
             control={form.control}
             name="zonasPasoAlto"
-            label="Alto"
+            label={t("forms.straddleCarrier.fields.others.passageAreas.height")}
             icon={ArrowUpDown}
           />
         </div>
@@ -130,7 +135,10 @@ export function Step5Content({ form }: StepContentProps) {
 
       {/* ==================== CONDICIONES DEL PISO ==================== */}
       <section>
-        <SectionHeader icon={Route} title="Condiciones del Piso" />
+        <SectionHeader
+          icon={Route}
+          title={t("forms.straddleCarrier.fields.others.floorConditions.title")}
+        />
         <div className="space-y-3">
           {/* Piso plano toggle - Visual card */}
           <FormField
@@ -162,12 +170,18 @@ export function Step5Content({ form }: StepContentProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <FormLabel className="text-xs font-medium cursor-pointer">
-                    ¿El piso es plano?
+                    {t(
+                      "forms.straddleCarrier.fields.others.floorConditions.isFlat.label"
+                    )}
                   </FormLabel>
                   <FormDescription className="text-[12px]">
                     {field.value
-                      ? "Piso plano y uniforme"
-                      : "Piso con irregularidades"}
+                      ? t(
+                          "forms.straddleCarrier.fields.others.floorConditions.isFlat.flatDescription"
+                        )
+                      : t(
+                          "forms.straddleCarrier.fields.others.floorConditions.isFlat.irregularDescription"
+                        )}
                   </FormDescription>
                 </div>
                 <FormControl>
@@ -189,14 +203,20 @@ export function Step5Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">
-                  Descripción del piso
+                  {t(
+                    "forms.straddleCarrier.fields.others.floorConditions.description.label"
+                  )}
                 </FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder={
                       pisoPlano
-                        ? "Añada detalles adicionales si es necesario..."
-                        : "Describa las irregularidades, desniveles, tipo de superficie..."
+                        ? t(
+                            "forms.straddleCarrier.fields.others.floorConditions.description.placeholderFlat"
+                          )
+                        : t(
+                            "forms.straddleCarrier.fields.others.floorConditions.description.placeholderIrregular"
+                          )
                     }
                     className="min-h-16 sm:min-h-20 text-xs sm:text-sm resize-none"
                     {...field}
@@ -211,18 +231,21 @@ export function Step5Content({ form }: StepContentProps) {
 
       {/* ==================== RESTRICCIONES ==================== */}
       <section>
-        <SectionHeader icon={AlertTriangle} title="Restricciones" />
+        <SectionHeader
+          icon={AlertTriangle}
+          title={t("forms.straddleCarrier.fields.others.restrictions.title")}
+        />
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <DimensionInput
             control={form.control}
             name="restriccionesAltura"
-            label="Restricción altura"
+            label={t("forms.straddleCarrier.fields.others.restrictions.height")}
             icon={ArrowUpDown}
           />
           <DimensionInput
             control={form.control}
             name="restriccionesAnchura"
-            label="Restricción anchura"
+            label={t("forms.straddleCarrier.fields.others.restrictions.width")}
             icon={MoveHorizontal}
           />
         </div>
@@ -230,7 +253,10 @@ export function Step5Content({ form }: StepContentProps) {
 
       {/* ==================== NOTAS ADICIONALES ==================== */}
       <section>
-        <SectionHeader icon={FileText} title="Notas Adicionales" />
+        <SectionHeader
+          icon={FileText}
+          title={t("forms.straddleCarrier.fields.others.additionalNotes.title")}
+        />
         <FormField
           control={form.control}
           name="notasAdicionales"
@@ -238,7 +264,9 @@ export function Step5Content({ form }: StepContentProps) {
             <FormItem>
               <FormControl>
                 <Textarea
-                  placeholder="Añada cualquier otra información relevante..."
+                  placeholder={t(
+                    "forms.straddleCarrier.fields.others.additionalNotes.placeholder"
+                  )}
                   className="min-h-20 sm:min-h-24 text-xs sm:text-sm resize-none"
                   {...field}
                 />

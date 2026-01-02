@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n/context";
+
 import {
   IconDots,
   IconFolder,
@@ -35,10 +37,11 @@ export function NavDocuments({
   }[];
 }) {
   const { isMobile } = useSidebar();
+  const { t } = useTranslation();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Archivos</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("common.files")}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
@@ -55,7 +58,7 @@ export function NavDocuments({
                   className="data-[state=open]:bg-accent rounded-sm"
                 >
                   <IconDots />
-                  <span className="sr-only">Más</span>
+                  <span className="sr-only">{t("common.more")}</span>
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -83,7 +86,7 @@ export function NavDocuments({
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
             <IconDots className="text-sidebar-foreground/70" />
-            <span>Más</span>
+            <span>{t("common.more")}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

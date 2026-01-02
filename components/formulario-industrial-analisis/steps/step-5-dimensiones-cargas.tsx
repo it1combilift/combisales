@@ -5,6 +5,7 @@ import { FormMessage } from "@/components/ui/form";
 import { Progress } from "@/components/ui/progress";
 import { StepContentProps, DimensionCarga } from "../types";
 import { Plus, Trash2, Package, Ruler } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 // ==================== SECTION HEADER ====================
 function SectionHeader({
@@ -43,11 +44,32 @@ function CargaRow({
   onUpdate: (field: keyof DimensionCarga, value: any) => void;
   onRemove: () => void;
 }) {
+  const { t } = useI18n();
   const fields = [
-    { key: "largo", label: "Largo", unit: "m", placeholder: "0.00" },
-    { key: "fondo", label: "Fondo", unit: "m", placeholder: "0.00" },
-    { key: "alto", label: "Alto", unit: "m", placeholder: "0.00" },
-    { key: "peso", label: "Peso", unit: "kg", placeholder: "0" },
+    {
+      key: "largo",
+      label: t("forms.industrial.fields.loads.length"),
+      unit: "m",
+      placeholder: "0.00",
+    },
+    {
+      key: "fondo",
+      label: t("forms.industrial.fields.loads.depth"),
+      unit: "m",
+      placeholder: "0.00",
+    },
+    {
+      key: "alto",
+      label: t("forms.industrial.fields.loads.height"),
+      unit: "m",
+      placeholder: "0.00",
+    },
+    {
+      key: "peso",
+      label: t("forms.industrial.fields.loads.weight"),
+      unit: "kg",
+      placeholder: "0",
+    },
     { key: "porcentaje", label: "%", unit: "%", placeholder: "0" },
   ];
 
@@ -58,7 +80,7 @@ function CargaRow({
           {index + 1}
         </span>
         <Input
-          placeholder="Nombre del producto"
+          placeholder={t("forms.industrial.fields.loads.productName")}
           value={carga.producto}
           onChange={(e) => onUpdate("producto", e.target.value)}
           className="h-9 text-sm flex-1"
@@ -110,6 +132,7 @@ function CargaRow({
  * Dynamic table for load dimensions with mobile card view
  */
 export function Step5Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   const dimensionesCargas = form.watch("dimensionesCargas") || [];
 
   const handleAddRow = () => {
@@ -158,7 +181,7 @@ export function Step5Content({ form }: StepContentProps) {
       {/* Header with add button */}
       <SectionHeader
         icon={Package}
-        title="Dimensiones de Cargas"
+        title={t("forms.industrial.fields.loads.header")}
         action={
           <Button
             type="button"
@@ -168,7 +191,7 @@ export function Step5Content({ form }: StepContentProps) {
             onClick={handleAddRow}
           >
             <Plus className="size-3.5" />
-            Agregar
+            {t("forms.industrial.fields.loads.add")}
           </Button>
         }
       />
@@ -178,7 +201,7 @@ export function Step5Content({ form }: StepContentProps) {
         <div className="border border-dashed rounded-lg p-6 text-center">
           <Ruler className="size-6 mx-auto text-muted-foreground/50 mb-2" />
           <p className="text-sm text-muted-foreground text-balance">
-            No hay cargas agregadas
+            {t("forms.industrial.fields.loads.empty")}
           </p>
           <Button
             type="button"
@@ -188,7 +211,7 @@ export function Step5Content({ form }: StepContentProps) {
             onClick={handleAddRow}
           >
             <Plus className="size-3.5" />
-            Agregar primera carga
+            {t("forms.industrial.fields.loads.addFirst")}
           </Button>
         </div>
       ) : (
@@ -212,7 +235,7 @@ export function Step5Content({ form }: StepContentProps) {
           <div className="space-y-2 pt-2 border-t">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground font-medium">
-                Total porcentaje:
+                {t("forms.industrial.fields.loads.totalPercentage")}
               </span>
               <span
                 className={cn(
@@ -235,7 +258,7 @@ export function Step5Content({ form }: StepContentProps) {
             {!isValid && dimensionesCargas.length > 0 && (
               <p className="text-xs text-destructive flex items-center gap-1">
                 <span className="size-1 rounded-full bg-destructive inline-block" />
-                Los porcentajes deben sumar exactamente 100%
+                {t("forms.industrial.fields.loads.percentageError")}
               </p>
             )}
           </div>

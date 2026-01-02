@@ -5,6 +5,7 @@ import { ZohoTask } from "@/interfaces/zoho";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
+import { useTranslation } from "@/lib/i18n/context";
 
 const getStatusConfig = (status?: string) => {
   switch (status) {
@@ -93,13 +94,15 @@ export const columns: ColumnDef<ZohoTask>[] = [
   {
     accessorKey: "Subject",
     header: ({ column }) => {
+      const { t } = useTranslation();
+
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-1"
         >
-          Asunto
+          {t("taskPage.columns.matter")}
           <ArrowUpDown className="size-4" />
         </Button>
       );
@@ -127,13 +130,14 @@ export const columns: ColumnDef<ZohoTask>[] = [
   {
     accessorKey: "Tipo_de_Tarea",
     header: ({ column }) => {
+      const { t } = useTranslation();
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-4 mx-auto"
         >
-          Tipo
+          {t("taskPage.columns.type")}
           <ArrowUpDown className="size-4" />
         </Button>
       );
@@ -154,13 +158,14 @@ export const columns: ColumnDef<ZohoTask>[] = [
   {
     accessorKey: "Status",
     header: ({ column }) => {
+      const { t } = useTranslation();
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-4"
         >
-          Estado
+          {t("taskPage.columns.status")}
           <ArrowUpDown className="size-4" />
         </Button>
       );
@@ -182,13 +187,14 @@ export const columns: ColumnDef<ZohoTask>[] = [
   {
     accessorKey: "Priority",
     header: ({ column }) => {
+      const { t } = useTranslation();
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-4"
         >
-          Prioridad
+          {t("taskPage.columns.priority")}
           <ArrowUpDown className="size-4" />
         </Button>
       );
@@ -210,13 +216,14 @@ export const columns: ColumnDef<ZohoTask>[] = [
   {
     accessorKey: "Due_Date",
     header: ({ column }) => {
+      const { t } = useTranslation();
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-4"
         >
-          Vencimiento
+          {t("taskPage.columns.dueDate")}
           <ArrowUpDown className="size-4" />
         </Button>
       );
@@ -231,13 +238,14 @@ export const columns: ColumnDef<ZohoTask>[] = [
   {
     accessorKey: "Owner",
     header: ({ column }) => {
+      const { t } = useTranslation();
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-4"
         >
-          Responsable
+          {t("taskPage.columns.assignedTo")}
           <ArrowUpDown className="size-4" />
         </Button>
       );
@@ -267,13 +275,14 @@ export const columns: ColumnDef<ZohoTask>[] = [
   {
     accessorKey: "What_Id",
     header: ({ column }) => {
+      const { t } = useTranslation();
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-1"
         >
-          Relacionado con
+          {t("taskPage.columns.relatedTo")}
           <ArrowUpDown className="size-4" />
         </Button>
       );
@@ -300,13 +309,14 @@ export const columns: ColumnDef<ZohoTask>[] = [
   // {
   //   accessorKey: "Modified_Time",
   //   header: ({ column }) => {
+  //     const { t } = useTranslation();
   //     return (
   //       <Button
   //         variant="ghost"
   //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
   //         className="-ml-4"
   //       >
-  //         Últ. modificación
+  //         {t("taskPage.columns.lastModified")}
   //         <ArrowUpDown className="size-4" />
   //       </Button>
   //     );

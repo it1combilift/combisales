@@ -19,6 +19,7 @@ import { EditUserForm } from "@/components/users/edit-user-form";
 import { CreateUserForm } from "@/components/users/create-user-form";
 import { UserPlus, RefreshCw, Trash, UsersIcon } from "lucide-react";
 import { DashboardUsersPageSkeleton } from "@/components/dashboard-skeleton";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Dialog,
@@ -41,6 +42,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function UsersPage() {
+  const { t, locale } = useI18n();
   const { data: session } = useSession();
   const [users, setUsers] = useState<UserListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -220,6 +222,8 @@ export default function UsersPage() {
     onEdit: openEditDialog,
     onDelete: openDeleteDialog,
     onRevokeSession: handleRevokeSession,
+    t,
+    locale,
   });
 
   const selectedUserIds = Object.keys(rowSelection).filter(
@@ -291,8 +295,8 @@ export default function UsersPage() {
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
-              <H1>Gestión de usuarios</H1>
-              <Paragraph>Administra los usuarios del sistema</Paragraph>
+              <H1>{t("users.title")}</H1>
+              <Paragraph>{t("users.description")}</Paragraph>
             </div>
 
             <div className="flex gap-2">
@@ -305,7 +309,7 @@ export default function UsersPage() {
                     className="gap-2"
                   >
                     <Trash className="size-4" />
-                    Eliminar ({selectedUserIds.length})
+                    {t("users.deleteMultiple")} ({selectedUserIds.length})
                   </Button>
                 </div>
               )}
@@ -320,7 +324,7 @@ export default function UsersPage() {
                 <RefreshCw
                   className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}
                 />
-                Actualizar
+                {isRefreshing ? t("common.refreshing") : t("common.refresh")}
               </Button>
 
               <Dialog
@@ -330,16 +334,20 @@ export default function UsersPage() {
                 <DialogTrigger asChild>
                   <Button size="sm" className="gap-2" disabled={isRefreshing}>
                     <UserPlus className="size-4" />
-                    Agregar
+                    {t("users.createUser")}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[95vw] xs:max-w-3xl max-h-[85vh] p-0 gap-0">
                   <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
                     <DialogTitle className="text-left text-base sm:text-lg">
-                      Crear nuevo usuario
+                      {
+                        t("users.createUser")
+                      }
                     </DialogTitle>
                     <DialogDescription className="text-left text-xs sm:text-sm">
-                      Completa el formulario para agregar un nuevo usuario
+                      {
+                        t("users.createUserDescription")
+                      }
                     </DialogDescription>
                   </DialogHeader>
                   <div className="overflow-y-auto px-4 sm:px-6 py-4">
@@ -485,10 +493,14 @@ export default function UsersPage() {
             <DialogContent className="max-w-[95vw] xs:max-w-3xl max-h-[85vh] p-0 gap-0">
               <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
                 <DialogTitle className="text-left text-base sm:text-lg">
-                  Editar usuario
+                  {
+                    t("users.editUser")
+                  }
                 </DialogTitle>
                 <DialogDescription className="text-left text-xs sm:text-sm">
-                  Modifica la información del usuario seleccionado
+                  {
+                    t("users.editUserDescription")
+                  }
                 </DialogDescription>
               </DialogHeader>
               <div className="overflow-y-auto px-4 sm:px-6 py-4">

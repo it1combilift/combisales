@@ -182,6 +182,8 @@ export interface VisitEmailData {
     email: string;
   };
 
+  locale?: string;
+
   // Datos especificos por tipo de formulario (solo uno estara presente)
   formularioCSS?: FormularioCSSEmailData;
   formularioIndustrial?: FormularioIndustrialEmailData;

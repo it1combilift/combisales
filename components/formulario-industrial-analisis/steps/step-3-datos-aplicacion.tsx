@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { TipoAlimentacion, ALIMENTACION_LABELS } from "../types";
 import { CalendarIcon, Package, Ruler, Clock } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -57,22 +58,29 @@ function SectionHeader({
  * Optimized layout with grouped fields
  */
 export function Step3Content({ form }: StepContentProps) {
+  const { t, locale } = useI18n();
   return (
     <div className="space-y-4">
       {/* ==================== PRODUCTO ==================== */}
       <section>
-        <SectionHeader icon={Package} title="Descripción del Producto" />
+        <SectionHeader
+          icon={Package}
+          title={t("forms.industrial.fields.productDescription.header")}
+        />
         <FormField
           control={form.control}
           name="descripcionProducto"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                Producto a manipular <span className="text-destructive">*</span>
+                {t("forms.industrial.fields.productDescription.label")}{" "}
+                <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Descripción del producto"
+                  placeholder={t(
+                    "forms.industrial.fields.productDescription.placeholder"
+                  )}
                   className="text-sm h-8 pr-7"
                   {...field}
                 />
@@ -85,7 +93,10 @@ export function Step3Content({ form }: StepContentProps) {
 
       {/* ==================== ALTURAS, PESOS Y ÁREA EN UNA SOLA SECCIÓN ==================== */}
       <section>
-        <SectionHeader icon={Ruler} title="Dimensiones y Pesos" />
+        <SectionHeader
+          icon={Ruler}
+          title={t("forms.industrial.fields.dimensionsAndWeights.header")}
+        />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {/* Altura último nivel estantería */}
           <FormField
@@ -94,7 +105,10 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Alt. últ. nivel <span className="text-destructive">*</span>
+                  {t(
+                    "forms.industrial.fields.dimensionsAndWeights.lastLevelHeight"
+                  )}{" "}
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -126,7 +140,10 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Máx. elevación <span className="text-destructive">*</span>
+                  {t(
+                    "forms.industrial.fields.dimensionsAndWeights.maxElevation"
+                  )}{" "}
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -158,7 +175,10 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Peso máx. alt. <span className="text-destructive">*</span>
+                  {t(
+                    "forms.industrial.fields.dimensionsAndWeights.maxHeightLoadWeight"
+                  )}{" "}
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -190,7 +210,10 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Peso 1er niv. <span className="text-destructive">*</span>
+                  {t(
+                    "forms.industrial.fields.dimensionsAndWeights.firstLevelLoadWeight"
+                  )}{" "}
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -222,7 +245,8 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Ancho área <span className="text-destructive">*</span>
+                  {t("forms.industrial.fields.dimensionsAndWeights.areaWidth")}{" "}
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -254,7 +278,8 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Fondo área <span className="text-destructive">*</span>
+                  {t("forms.industrial.fields.dimensionsAndWeights.areaDepth")}{" "}
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -283,7 +308,10 @@ export function Step3Content({ form }: StepContentProps) {
 
       {/* ==================== OPERACIÓN Y ALIMENTACIÓN ==================== */}
       <section>
-        <SectionHeader icon={Clock} title="Operación y Alimentación" />
+        <SectionHeader
+          icon={Clock}
+          title={t("forms.industrial.fields.operationAndPower.header")}
+        />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           <FormField
             control={form.control}
@@ -291,7 +319,8 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Turnos <span className="text-destructive">*</span>
+                  {t("forms.industrial.fields.operationAndPower.shifts")}{" "}
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -315,7 +344,7 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium">
-                  Fecha definición
+                  {t("forms.industrial.fields.operationAndPower.definitionDate")}
                 </FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -329,9 +358,13 @@ export function Step3Content({ form }: StepContentProps) {
                       >
                         <CalendarIcon className="size-3" />
                         {field.value ? (
-                          format(field.value, "dd/MM/yy", { locale: es })
+                          format(field.value, "dd/MM/yy", {
+                            locale: locale === "en" ? undefined : es,
+                          })
                         ) : (
-                          <span className="text-xs">Seleccionar</span>
+                          <span className="text-xs">
+                            {t("forms.selectOption")}
+                          </span>
                         )}
                       </Button>
                     </FormControl>
@@ -341,7 +374,7 @@ export function Step3Content({ form }: StepContentProps) {
                       mode="single"
                       selected={field.value || undefined}
                       onSelect={field.onChange}
-                      locale={es}
+                      locale={locale === "en" ? undefined : es}
                       initialFocus
                     />
                   </PopoverContent>
@@ -357,18 +390,19 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Alimentación <span className="text-destructive">*</span>
+                  {t("forms.industrial.fields.operationAndPower.powerSource")}{" "}
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="h-8 text-sm w-full">
-                      <SelectValue placeholder="Seleccionar" />
+                      <SelectValue placeholder={t("forms.selectOption")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {Object.values(TipoAlimentacion).map((tipo) => (
                       <SelectItem key={tipo} value={tipo}>
-                        {ALIMENTACION_LABELS[tipo]}
+                        {t(`visits.powerTypes.${tipo}` as any)}
                       </SelectItem>
                     ))}
                   </SelectContent>

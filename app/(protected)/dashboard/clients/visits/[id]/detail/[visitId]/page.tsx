@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertMessage } from "@/components/alert";
@@ -47,6 +48,7 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [accountId, setAccountId] = useState<string>("");
   const router = useRouter();
+  const { t } = useI18n();
 
   useEffect(() => {
     const fetchVisitDetail = async () => {
@@ -111,10 +113,10 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
         return (
           <AlertMessage
             variant="info"
-            title="Tipo de formulario no soportado"
-            description={`El tipo de formulario "${
-              FORM_TYPE_LABELS[visit.formType] || visit.formType
-            }" aún no tiene vista de detalle implementada.`}
+            title={t("visits.unsupportedFormType")}
+            description={t("visits.unsupportedFormTypeDesc", {
+              type: FORM_TYPE_LABELS[visit.formType] || visit.formType,
+            })}
           />
         );
     }
@@ -129,13 +131,13 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
       ) : !visit ? (
         <div className="px-4 py-8">
           <EmptyCard
-            icon={<FileX className="size-10 text-muted-foreground" />}
-            title="Visita no encontrada"
-            description="La visita que buscas no existe o fue eliminada."
+            icon={<FileX />}
+            title={t("visits.visitNotFound")}
+            description={t("visits.visitNotFoundDescription")}
             actions={
               <Button onClick={() => router.back()} variant="outline" size="sm">
                 <ArrowLeft className="size-4" />
-                Volver
+                {t("common.back")}
               </Button>
             }
           />
@@ -146,7 +148,9 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
             <div>
               <div className="flex flex-row justify-between items-center gap-2 sm:gap-3">
                 <div className="flex items-center gap-3 w-fit">
-                  <H1>{visit.customer?.accountName || "Detalle de visita"}</H1>
+                  <H1>
+                    {visit.customer?.accountName || t("visits.detailTitle")}
+                  </H1>
                   <Badge
                     variant={statusConfig?.variant}
                     className="text-xs font-medium w-fit"
@@ -165,7 +169,7 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                     className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2"
                   >
                     <ArrowLeft className="size-4" />
-                    <span className="hidden md:inline">Volver</span>
+                    <span className="hidden md:inline">{t("common.back")}</span>
                   </Button>
 
                   <div className="flex items-center gap-2 w-fit">
@@ -176,7 +180,9 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                         onClick={() => console.log("Enviar datos")}
                         className="gap-1.5"
                       >
-                        <span className="hidden md:inline">Enviar</span>
+                        <span className="hidden md:inline">
+                          {t("common.submit")}
+                        </span>
                         <ArrowUpRight className="size-4" />
                       </Button>
                     )}
@@ -184,16 +190,14 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 </div>
               </div>
 
-              <Paragraph>
-                Información completa de la visita realizada al cliente.
-              </Paragraph>
+              <Paragraph>{t("visits.description")}</Paragraph>
             </div>
 
             {visit.status === VisitStatus.BORRADOR && (
               <AlertMessage
                 variant="warning"
-                title="Visita en estado de borrador"
-                description="Por favor, revisa todos los datos y envía el formulario cuando esté listo para su revisión y aprobación."
+                title={t("visits.visitWithDraftStateTitle")}
+                description={t("visits.visitWithDraftStateDescription")}
               />
             )}
           </header>
@@ -201,7 +205,7 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             <StatCard
               icon={ClipboardList}
-              label="Tipo"
+              label={t("tasks.type")}
               value={
                 FORM_TYPE_LABELS[visit.formType]?.replace("Formulario ", "") ||
                 visit.formType
@@ -209,17 +213,19 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
             />
             <StatCard
               icon={Calendar}
-              label="Fecha de visita"
+              label={t("visits.visitDate")}
               value={formatDate(visit.visitDate)}
             />
             <StatCard
               icon={User}
-              label="Vendedor"
-              value={visit.user?.name || visit.user?.email || "Sin asignar"}
+              label={t("visits.seller")}
+              value={
+                visit.user?.name || visit.user?.email || t("visits.unassigned")
+              }
             />
             <StatCard
               icon={Clock}
-              label="Creada"
+              label={t("tasks.createdDate")}
               value={visit.createdAt ? formatDate(visit.createdAt) : "N/A"}
             />
           </div>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Progress } from "@/components/ui/progress";
 import { FileUploadProps, ArchivoSubido } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Upload,
@@ -68,6 +69,7 @@ export function Step7Content({
   cameraPhotoRef,
   cameraVideoRef,
 }: FileUploadProps) {
+  const { t } = useI18n();
   const [isDragging, setIsDragging] = useState(false);
   const archivos = form.watch("archivos") || [];
 
@@ -76,7 +78,7 @@ export function Step7Content({
       {/* Section Header */}
       <SectionHeader
         icon={Paperclip}
-        title="Archivos Adjuntos"
+        title={t("forms.industrial.steps.files.title")}
         badge={
           <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
             {archivos.length}/{MAX_FILES}
@@ -131,7 +133,10 @@ export function Step7Content({
             <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
               <Camera className="size-4 text-blue-600" />
             </div>
-            <span className="text-xs font-medium">Foto</span>
+            <span className="text-xs font-medium">
+              {t("forms.files.takePhoto").split(" ")[1] ||
+                t("forms.files.takePhoto")}
+            </span>
           </Button>
 
           <Button
@@ -148,7 +153,10 @@ export function Step7Content({
             <div className="size-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
               <Video className="size-4 text-violet-600" />
             </div>
-            <span className="text-xs font-medium">Video</span>
+            <span className="text-xs font-medium">
+              {t("forms.files.recordVideo").split(" ")[1] ||
+                t("forms.files.recordVideo")}
+            </span>
           </Button>
 
           <Button
@@ -165,7 +173,9 @@ export function Step7Content({
             <div className="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
               <FolderOpen className="size-4 text-amber-600" />
             </div>
-            <span className="text-xs font-medium">Archivos</span>
+            <span className="text-xs font-medium">
+              {t("forms.files.browse")}
+            </span>
           </Button>
         </div>
 
@@ -174,7 +184,9 @@ export function Step7Content({
           <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
             <Spinner variant="bars" className="text-primary size-3.5" />
             <div className="flex-1 space-y-1.5">
-              <p className="text-xs font-medium">Subiendo archivos...</p>
+              <p className="text-xs font-medium">
+                {t("forms.files.uploading")}
+              </p>
               <Progress value={uploadProgress.total || 0} className="h-1.5" />
             </div>
             <span className="text-xs font-medium text-primary">
@@ -185,7 +197,7 @@ export function Step7Content({
 
         {/* Mobile file limits info */}
         <p className="text-[10px] text-center text-muted-foreground text-balance">
-          Imágenes 10MB • Videos 100MB • Docs 25MB • Máx. {MAX_FILES} archivos
+          {t("forms.files.limits", { max: MAX_FILES })}
         </p>
       </div>
 
@@ -206,7 +218,9 @@ export function Step7Content({
             disabled={isUploading || archivos.length >= MAX_FILES}
           >
             <Camera className="size-4 text-blue-600" />
-            <span className="text-xs font-medium">Tomar foto</span>
+            <span className="text-xs font-medium">
+              {t("forms.files.takePhoto")}
+            </span>
           </Button>
 
           <Button
@@ -222,7 +236,9 @@ export function Step7Content({
             disabled={isUploading || archivos.length >= MAX_FILES}
           >
             <Video className="size-4 text-violet-600" />
-            <span className="text-xs font-medium">Grabar video</span>
+            <span className="text-xs font-medium">
+              {t("forms.files.recordVideo")}
+            </span>
           </Button>
 
           <Button
@@ -238,7 +254,9 @@ export function Step7Content({
             disabled={isUploading || archivos.length >= MAX_FILES}
           >
             <FolderOpen className="size-4 text-amber-600" />
-            <span className="text-xs font-medium">Explorador</span>
+            <span className="text-xs font-medium">
+              {t("forms.files.browse")}
+            </span>
           </Button>
         </div>
 
@@ -278,7 +296,7 @@ export function Step7Content({
                       className="text-primary size-3 inline mr-2"
                     />
                     <p className="text-xs font-medium inline">
-                      Subiendo archivos...
+                      {t("forms.files.uploading")}
                     </p>
                     <div className="flex items-center gap-2">
                       <Progress
@@ -309,24 +327,27 @@ export function Step7Content({
                   <div className="space-y-1">
                     <p className="text-sm font-medium text-foreground">
                       {isDragging
-                        ? "¡Suelta los archivos aquí!"
-                        : "Arrastra y suelta archivos aquí"}
+                        ? t("forms.files.dropHere")
+                        : t("forms.files.dragDrop")}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      o haz clic para seleccionar
+                      {t("forms.files.orClick")}
                     </p>
                   </div>
 
-                  {/* File type limits */}
+                  {/* File type limits - using forms.files.limits which contains all info */}
                   <div className="flex flex-wrap gap-2 justify-center pt-1">
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                      <Camera className="size-3" /> Imágenes 10MB
+                      <Camera className="size-3" />{" "}
+                      {t("forms.files.limits.images")}
                     </span>
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400">
-                      <Video className="size-3" /> Videos 100MB
+                      <Video className="size-3" />{" "}
+                      {t("forms.files.limits.videos")}
                     </span>
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                      <FolderOpen className="size-3" /> Docs 25MB
+                      <FolderOpen className="size-3" />{" "}
+                      {t("forms.files.limits.docs")}
                     </span>
                   </div>
                 </>
@@ -343,7 +364,7 @@ export function Step7Content({
           <div className="flex items-center justify-between">
             <p className="text-xs font-medium text-foreground flex items-center gap-1.5">
               <Check className="size-3.5 text-green-500" />
-              Archivos subidos
+              {t("forms.files.uploadedFiles")}
             </p>
             <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
               {archivos.length}/{MAX_FILES}
@@ -431,7 +452,7 @@ export function Step7Content({
                       variant="ghost"
                       size="icon"
                       className="rounded-md opacity-70 hover:opacity-100 hover:bg-accent"
-                      title="Ver archivo"
+                      title={t("forms.files.viewFile")}
                       disabled={isUploading || isDeleting}
                       onClick={() =>
                         window.open(archivo.cloudinaryUrl, "_blank")
@@ -444,7 +465,7 @@ export function Step7Content({
                       variant="ghost"
                       size="icon"
                       className="rounded-md opacity-70 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-                      title="Eliminar"
+                      title={t("forms.files.deleteFile")}
                       onClick={() => onRemoveFile(archivo)}
                       disabled={isUploading || deletingFileId !== null}
                     >
@@ -465,7 +486,7 @@ export function Step7Content({
       {/* ===== EMPTY STATE ===== */}
       {archivos.length === 0 && !isUploading && (
         <p className="text-xs text-center text-muted-foreground py-2 text-balance italic">
-          Aún no has subido ningún archivo
+          {t("forms.files.noFiles")}
         </p>
       )}
     </div>

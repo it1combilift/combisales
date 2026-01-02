@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MachineDetailModal } from "./machine-detail-modal";
 import { Machine, MachinesResponse } from "@/interfaces/machine";
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { useI18n } from "@/lib/i18n/context";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -30,6 +31,7 @@ function useIsMobile() {
 }
 
 export function MachinesPageComponent() {
+  const { t } = useI18n();
   const { data, error, isLoading, mutate } = useSWR<MachinesResponse>(
     "/api/equipment",
     fetcher
@@ -162,8 +164,8 @@ export function MachinesPageComponent() {
       {error ? (
         <section className="mx-auto px-4 py-6 space-y-6 w-full max-w-7xl">
           <AlertMessage
-            title="Error al cargar las máquinas"
-            description="Hubo un problema al obtener los datos de las máquinas. Por favor, inténtalo de nuevo más tarde."
+            title={t("machines.errorLoading")}
+            description={t("machines.errorDescription")}
             variant="destructive"
           />
         </section>
@@ -171,14 +173,14 @@ export function MachinesPageComponent() {
         <section className="mx-auto px-4 space-y-6 w-full h-full">
           <div className="flex gap-4 flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
             <div>
-              <H1>Máquinas disponibles</H1>
+              <H1>{t("machines.pageTitle")}</H1>
               <div className="flex flex-col justify-start">
                 <Paragraph>
-                  Aquí puedes ver todas las máquinas disponibles en el sistema.
+                  {t("machines.pageDescription")}
                 </Paragraph>
 
                 <Badge variant="secondary" size="sm" className="mt-1">
-                  {data?.metadata.totalMachines || 0} equipos encontrados
+                  {data?.metadata.totalMachines || 0} {t("machines.equipmentFound")}
                 </Badge>
               </div>
             </div>
@@ -186,13 +188,13 @@ export function MachinesPageComponent() {
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                title="Actualizar datos"
+                title={t("common.refresh")}
                 size="sm"
                 onClick={handleRefresh}
                 disabled={isLoading}
               >
                 <RefreshCw className="size-4" />
-                <span className="hidden md:inline">Actualizar</span>
+                <span className="hidden md:inline">{t("common.refresh")}</span>
               </Button>
             </div>
           </div>
@@ -235,16 +237,16 @@ export function MachinesPageComponent() {
                   <span className="font-medium text-foreground">
                     {filteredMachines.length}
                   </span>
-                  {" de "}
+                  {` ${t("machines.of")} `}
                   <span className="font-medium text-foreground">
                     {data?.metadata.totalMachines || 0}
                   </span>
-                  {" máquinas"}
+                  {` ${t("machines.machinesLabel")}`}
                 </p>
                 {!isMobile && (
                   <Badge variant="secondary">
-                    Vista:{" "}
-                    <span>{viewMode === "grid" ? "Tarjetas" : "Tabla"}</span>
+                    {t("machines.view")}:{" "}
+                    <span>{viewMode === "grid" ? t("machines.viewCards") : t("machines.viewTable")}</span>
                   </Badge>
                 )}
               </div>
@@ -272,14 +274,14 @@ export function MachinesPageComponent() {
                     <Truck className="size-6 text-muted-foreground" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground mb-1">
-                    No se encontraron máquinas
+                    {t("machines.noMachinesFound")}
                   </h3>
                   <p className="text-xs text-muted-foreground mb-3 max-w-sm mx-auto">
-                    No hay máquinas que coincidan con los filtros aplicados.
+                    {t("machines.noMachinesMatchFilters")}
                   </p>
                   {hasActiveFilters && (
                     <Button variant="outline" size="sm" onClick={clearFilters}>
-                      Limpiar filtros
+                      {t("common.clearFilters")}
                     </Button>
                   )}
                 </div>

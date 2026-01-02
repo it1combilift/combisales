@@ -14,6 +14,7 @@ interface UseStraddleCarrierAnalisisFormProps {
   isEditing: boolean;
   existingVisit?: any;
   onSuccess: () => void;
+  t: (key: string) => string;
 }
 
 export function useStraddleCarrierAnalisisForm({
@@ -23,6 +24,7 @@ export function useStraddleCarrierAnalisisForm({
   isEditing,
   existingVisit,
   onSuccess,
+  t,
 }: UseStraddleCarrierAnalisisFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -241,7 +243,7 @@ export function useStraddleCarrierAnalisisForm({
     const isValid = await validateStep(currentStep);
 
     if (!isValid) {
-      toast.error("Por favor, completa todos los campos requeridos");
+      toast.error(t("toast.form.validationError"));
       return;
     }
 
@@ -294,20 +296,20 @@ export function useStraddleCarrierAnalisisForm({
         }
 
         const messages = {
-          submit: "Formulario enviado exitosamente",
-          draft: "Borrador guardado exitosamente",
-          changes: "Cambios guardados exitosamente",
+          submit: t("toast.form.submitSuccess"),
+          draft: t("toast.form.draftSuccess"),
+          changes: t("toast.form.changesSuccess"),
         };
 
         toast.success(messages[saveType]);
         onSuccess();
       } catch (error) {
         console.error(`Error al guardar (${saveType}):`, error);
-        toast.error("Error al guardar el formulario");
+        toast.error(t("toast.form.submitError"));
         throw error;
       }
     },
-    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess]
+    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess, t]
   );
 
   const onSubmit = useCallback(

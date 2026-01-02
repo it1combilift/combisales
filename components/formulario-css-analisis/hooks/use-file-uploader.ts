@@ -9,9 +9,10 @@ import { ALL_ALLOWED_TYPES, MAX_FILES } from "@/constants/constants";
 interface UseFileUploaderProps {
   form: UseFormReturn<FormularioCSSSchema>;
   customerId: string;
+  t: (key: string, values?: Record<string, string | number>) => string;
 }
 
-export function useFileUploader({ form, customerId }: UseFileUploaderProps) {
+export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
   // ==================== STATE ====================
   const [uploadingFiles, setUploadingFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
@@ -35,14 +36,16 @@ export function useFileUploader({ form, customerId }: UseFileUploaderProps) {
       const remainingSlots = MAX_FILES - currentArchivos.length;
 
       if (files.length > remainingSlots) {
-        toast.error(`Solo puedes subir ${remainingSlots} archivo(s) más`);
+        toast.error(
+          t("toast.file.onlyCanUpload", { remaining: remainingSlots })
+        );
         return;
       }
 
       const validFiles: File[] = [];
       for (const file of Array.from(files)) {
         if (!ALL_ALLOWED_TYPES.includes(file.type)) {
-          toast.error(`${file.name}: Tipo de archivo no permitido`);
+          toast.error(`${file.name}: ${t("toast.file.typeNotAllowed")}`);
           continue;
         }
         validFiles.push(file);
@@ -73,7 +76,9 @@ export function useFileUploader({ form, customerId }: UseFileUploaderProps) {
         if (response.data.files && response.data.files.length > 0) {
           const newArchivos = [...currentArchivos, ...response.data.files];
           form.setValue("archivos", newArchivos, { shouldValidate: true });
-          toast.success(response.data.message);
+          toast.success(
+            t("toast.file.uploadSuccess", { count: response.data.files.length })
+          );
         }
 
         if (response.data.errors && response.data.errors.length > 0) {
@@ -81,9 +86,7 @@ export function useFileUploader({ form, customerId }: UseFileUploaderProps) {
         }
       } catch (error: any) {
         console.error("Error uploading files:", error);
-        toast.error(
-          error.response?.data?.error || "Error al subir los archivos"
-        );
+        toast.error(error.response?.data?.error || t("toast.file.uploadError"));
       } finally {
         setIsUploading(false);
         setUploadingFiles([]);
@@ -93,7 +96,7 @@ export function useFileUploader({ form, customerId }: UseFileUploaderProps) {
         }
       }
     },
-    [form, customerId]
+    [form, customerId, t]
   );
 
   // ==================== FILE REMOVAL ====================
@@ -112,15 +115,15 @@ export function useFileUploader({ form, customerId }: UseFileUploaderProps) {
           (a) => a.cloudinaryId !== archivo.cloudinaryId
         );
         form.setValue("archivos", newArchivos, { shouldValidate: true });
-        toast.success("Archivo eliminado");
+        toast.success(t("toast.file.deleteSuccess"));
       } catch (error) {
         console.error("Error removing file:", error);
-        toast.error("Error al eliminar el archivo");
+        toast.error(t("toast.file.deleteError"));
       } finally {
         setDeletingFileId(null);
       }
     },
-    [form]
+    [form, t]
   );
 
   // ==================== DRAG & DROP ====================

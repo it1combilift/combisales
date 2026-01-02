@@ -1,5 +1,5 @@
 export {
-  formularioCSSSchema,
+  getFormularioCSSSchema,
   type FormularioCSSSchema,
   archivoSubidoSchema,
   type ArchivoSubido,

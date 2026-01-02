@@ -9,6 +9,7 @@ import { AlertMessage } from "@/components/alert";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Container, Weight, Box } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -19,15 +20,20 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 
-
 // ==================== CONTAINER SIZE CARD ====================
 interface ContainerSizeCardProps {
   form: UseFormReturn<any>;
   sizeKey: string;
   label: string;
+  quantityLabel: string;
 }
 
-function ContainerSizeCard({ form, sizeKey, label }: ContainerSizeCardProps) {
+function ContainerSizeCard({
+  form,
+  sizeKey,
+  label,
+  quantityLabel,
+}: ContainerSizeCardProps) {
   return (
     <FormField
       control={form.control}
@@ -76,7 +82,7 @@ function ContainerSizeCard({ form, sizeKey, label }: ContainerSizeCardProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[10px] text-muted-foreground">
-                    Cant/semana
+                    {quantityLabel}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -110,6 +116,7 @@ function ContainerSizeCard({ form, sizeKey, label }: ContainerSizeCardProps) {
  * Step 3: Cuadro 1 - Contenedores
  */
 export function Step3Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   const manejaContenedores = form.watch("manejaContenedores");
 
   if (!manejaContenedores) {
@@ -117,8 +124,10 @@ export function Step3Content({ form }: StepContentProps) {
       <div className="flex items-center justify-center py-6">
         <AlertMessage
           variant="info"
-          title="Paso no aplicable"
-          description="Este paso solo es necesario cuando el cliente maneja contenedores. Puedes continuar al siguiente paso."
+          title={t("forms.straddleCarrier.fields.notApplicable.title")}
+          description={t(
+            "forms.straddleCarrier.fields.notApplicable.containersDescription"
+          )}
         />
       </div>
     );
@@ -153,10 +162,14 @@ export function Step3Content({ form }: StepContentProps) {
                   onClick={() => field.onChange(!field.value)}
                 >
                   <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
-                    Manejo individual
+                    {t(
+                      "forms.straddleCarrier.fields.containers.individualHandling.label"
+                    )}
                   </FormLabel>
                   <FormDescription className="text-[11px] leading-tight text-pretty">
-                    Contenedores de forma individual
+                    {t(
+                      "forms.straddleCarrier.fields.containers.individualHandling.description"
+                    )}
                   </FormDescription>
                 </div>
               </FormItem>
@@ -187,10 +200,14 @@ export function Step3Content({ form }: StepContentProps) {
                   onClick={() => field.onChange(!field.value)}
                 >
                   <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
-                    Doble apilamiento
+                    {t(
+                      "forms.straddleCarrier.fields.containers.doubleStacking.label"
+                    )}
                   </FormLabel>
                   <FormDescription className="text-[11px] leading-tight text-pretty">
-                    Apilar dos contenedores
+                    {t(
+                      "forms.straddleCarrier.fields.containers.doubleStacking.description"
+                    )}
                   </FormDescription>
                 </div>
               </FormItem>
@@ -208,6 +225,9 @@ export function Step3Content({ form }: StepContentProps) {
               form={form}
               sizeKey={size.key}
               label={size.label}
+              quantityLabel={t(
+                "forms.straddleCarrier.fields.containers.quantityPerWeek"
+              )}
             />
           ))}
         </div>
@@ -221,7 +241,7 @@ export function Step3Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem className="max-w-xs">
               <FormLabel className="text-[11px] font-medium">
-                Peso máximo a manipular
+                {t("forms.straddleCarrier.fields.containers.maxWeight.label")}
               </FormLabel>
               <FormControl>
                 <div className="relative">
@@ -259,7 +279,9 @@ export function Step3Content({ form }: StepContentProps) {
             <FormItem>
               <FormControl>
                 <Textarea
-                  placeholder="Añada cualquier información adicional sobre los contenedores..."
+                  placeholder={t(
+                    "forms.straddleCarrier.fields.containers.additionalInfo.placeholder"
+                  )}
                   className="min-h-20 text-sm resize-none"
                   {...field}
                 />

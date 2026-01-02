@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { ContenedorMedida } from "@prisma/client";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CONTENEDOR_MEDIDA_LABELS } from "@/interfaces/visits";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -21,6 +22,7 @@ import {
  * Fields: contenedorMedidas, contenedorMedidaOtro
  */
 export function Step6Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   // Medidas estándar disponibles (sin TODOS que fue eliminado)
   const standardSizes = [
     ContenedorMedida.VEINTE_PIES,
@@ -56,7 +58,7 @@ export function Step6Content({ form }: StepContentProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-              Medidas del contenedor
+              {t("forms.css.fields.measurements.label")}
               <span className="text-destructive">*</span>
             </FormLabel>
             <FormControl>
@@ -90,7 +92,7 @@ export function Step6Content({ form }: StepContentProps) {
                             className="size-4"
                           />
                           <span className="text-xs sm:text-sm font-medium">
-                            {CONTENEDOR_MEDIDA_LABELS[medida]}
+                            {t(`visits.containerMeasures.${medida}` as any)}
                           </span>
                         </div>
                       </Label>
@@ -102,7 +104,7 @@ export function Step6Content({ form }: StepContentProps) {
                 <div className="flex items-center gap-3 py-1">
                   <div className="flex-1 h-px bg-border/60" />
                   <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                    Medida personalizada
+                    {t("forms.css.fields.measurements.customLabel")}
                   </span>
                   <div className="flex-1 h-px bg-border/60" />
                 </div>
@@ -132,10 +134,10 @@ export function Step6Content({ form }: StepContentProps) {
                     />
                     <div className="flex flex-col">
                       <span className="text-xs sm:text-sm font-medium">
-                        {CONTENEDOR_MEDIDA_LABELS[ContenedorMedida.OTRO]}
+                        {t(`visits.containerMeasures.${ContenedorMedida.OTRO}` as any)}
                       </span>
                       <span className="text-[10px] text-muted-foreground">
-                        Especificar dimensiones adicionales
+                        {t("forms.css.fields.measurements.specifyAdditional")}
                       </span>
                     </div>
                   </div>
@@ -154,18 +156,18 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem className="animate-in fade-in-50 slide-in-from-top-2 duration-300">
               <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                Especificar medida
+                {t("forms.css.fields.measurements.specifyLabel")}
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Ej: 45 pies, 12m x 2.5m x 2.9m..."
+                  placeholder={t("forms.css.fields.measurements.specifyPlaceholder")}
                   className="h-11 text-xs sm:text-sm bg-background border-input/80 focus:border-primary rounded-lg"
                   {...field}
                 />
               </FormControl>
               <FormDescription className="text-xs text-muted-foreground text-pretty">
-                Indique las dimensiones exactas (largo x ancho x alto)
+                {t("forms.css.fields.measurements.specifyDescription")}
               </FormDescription>
               <FormMessage className="text-xs" />
             </FormItem>

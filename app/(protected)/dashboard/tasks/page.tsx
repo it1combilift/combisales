@@ -3,6 +3,7 @@
 import { toast } from "sonner";
 import { ZohoTask } from "@/interfaces/zoho";
 import { Badge } from "@/components/ui/badge";
+import { Customer } from "@/interfaces/visits";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { RefreshCw, ListTodo } from "lucide-react";
@@ -13,10 +14,10 @@ import { ColumnFiltersState } from "@tanstack/react-table";
 import { TasksTable } from "@/components/tasks/tasks-table";
 import { useState, useCallback, useRef, useEffect } from "react";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
-import { Customer } from "@/interfaces/visits";
+import { useTranslation } from "@/lib/i18n/context";
 
 const PER_PAGE = 200;
-const INITIAL_LOAD_ONLY_FIRST_PAGE = true; // Set to false to load all pages initially
+const INITIAL_LOAD_ONLY_FIRST_PAGE = true;
 
 interface PaginationState {
   currentPage: number;
@@ -25,6 +26,7 @@ interface PaginationState {
 }
 
 export default function TasksPage() {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<ZohoTask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -110,7 +112,6 @@ export default function TasksPage() {
 
           if (hasMore) {
             currentPage++;
-            // Add small delay to avoid overwhelming the API
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
         } catch (err) {
@@ -143,7 +144,6 @@ export default function TasksPage() {
 
         setError(null);
 
-        // Load only first page initially for performance
         const { tasks: initialTasks, hasMore } = await fetchTasksPage(1);
 
         allTasksRef.current = initialTasks;
@@ -156,7 +156,6 @@ export default function TasksPage() {
         });
 
         if (hasMore && !INITIAL_LOAD_ONLY_FIRST_PAGE) {
-          // If configured to load all, continue loading in background
           loadMoreTasksInBackground(2);
         }
       } catch (err) {
@@ -264,7 +263,6 @@ export default function TasksPage() {
     fetchInitialTasks();
   }, [fetchInitialTasks]);
 
-  // Calculate if user is on the last page of currently loaded data
   const filteredTasksCount =
     columnFilters.length > 0
       ? tasks.filter((task) => {
@@ -278,7 +276,6 @@ export default function TasksPage() {
   const totalPages = Math.ceil(filteredTasksCount / tablePageSize);
   const isOnLastPage = currentTablePage >= totalPages;
 
-  // Handle create visit from task card
   const handleCreateVisitFromTask = useCallback((task: ZohoTask) => {
     setSelectedTaskForVisit(task);
     setIsVisitDialogOpen(true);
@@ -345,25 +342,21 @@ export default function TasksPage() {
     <section className="mx-auto px-4 space-y-3 w-full h-full">
       <div className="flex flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-0">
         <div>
-          <H1>Gestión de tareas</H1>
+          <H1>{t("taskPage.title")}</H1>
           <div className="flex flex-col justify-start">
-            <Paragraph>
-              Aquí puedes ver todas las tareas configuradas en el sistema.
-            </Paragraph>
+            <Paragraph>{t("taskPage.description")}</Paragraph>
 
             <Badge variant="secondary" size="sm" className="mt-1">
               {isLoading || isRefreshing ? (
                 <>
                   <Spinner variant="circle" size="sm" />
-                  <span className="text-xs">Cargando tareas...</span>
+                  <span className="text-xs">{t("common.refreshing")}</span>
                 </>
-              ) : isRefreshing ? (
-                "Actualizando tareas..."
               ) : (
                 <>
                   {tasks.length === 1
-                    ? "1 tarea cargada"
-                    : `${tasks.length} tareas cargadas`}
+                    ? t("plurals.items_one", { count: tasks.length })
+                    : t("plurals.items_other", { count: tasks.length })}
                 </>
               )}
             </Badge>
@@ -373,7 +366,7 @@ export default function TasksPage() {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            title="Actualizar datos"
+            title={t("common.refresh")}
             size="sm"
             onClick={handleRefresh}
             disabled={isRefreshing || isLoading}
@@ -383,19 +376,23 @@ export default function TasksPage() {
                 isRefreshing || isLoading ? "animate-spin" : ""
               }`}
             />
-            <span className="hidden md:inline">Actualizar</span>
+            <span className="hidden md:inline">{
+                isRefreshing || isLoading
+                  ? t("common.refreshing")
+                  : t("common.refresh")
+              }</span>
           </Button>
         </div>
       </div>
 
       {error ? (
         <EmptyCard
-          icon={<ListTodo className="size-16 text-muted-foreground" />}
-          title="Error al cargar tareas"
-          description={error}
+          icon={<ListTodo />}
+          title={t("errors.serverError")}
+          description={t("errors.unableToLoadData")}
           actions={
             <Button onClick={handleRefresh} variant="default">
-              Intentar de nuevo
+              {t("common.tryAgain")}
             </Button>
           }
         />

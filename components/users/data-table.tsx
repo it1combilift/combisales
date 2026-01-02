@@ -18,6 +18,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Table,
@@ -61,6 +62,7 @@ export function DataTable<TData, TValue>({
   columnFilters: externalColumnFilters,
   setColumnFilters: setExternalColumnFilters,
 }: DataTableProps<TData, TValue>) {
+  const { t } = useI18n();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [internalColumnFilters, setInternalColumnFilters] =
     React.useState<ColumnFiltersState>([]);
@@ -112,8 +114,10 @@ export function DataTable<TData, TValue>({
       {table.getFilteredSelectedRowModel().rows.length > 0 && (
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="gap-2">
-            {table.getFilteredSelectedRowModel().rows.length} de{" "}
-            {table.getFilteredRowModel().rows.length} fila(s) seleccionadas
+            {t("table.selectedRows", {
+              count: table.getFilteredSelectedRowModel().rows.length,
+              total: table.getFilteredRowModel().rows.length,
+            })}
           </Badge>
         </div>
       )}
@@ -130,9 +134,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
@@ -171,11 +175,11 @@ export function DataTable<TData, TValue>({
                       <EmptyMedia variant="icon">
                         <Users />
                       </EmptyMedia>
-                      <EmptyTitle>No se encontraron usuarios</EmptyTitle>
+                      <EmptyTitle>{t("table.empty.title")}</EmptyTitle>
                       <EmptyDescription>
                         {hasActiveFilters
-                          ? "Intenta ajustar tus filtros de búsqueda"
-                          : "No hay usuarios registrados en el sistema"}
+                          ? t("table.noResultsFound.description")
+                          : t("table.empty.description")}
                       </EmptyDescription>
                     </EmptyHeader>
                   </Empty>
@@ -189,12 +193,13 @@ export function DataTable<TData, TValue>({
       {/* Pagination */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm text-muted-foreground">
-          Mostrando{" "}
+          {t("pagination.showing")}{" "}
           <span className="font-medium text-foreground">
             {table.getFilteredRowModel().rows.length}
           </span>{" "}
-          de <span className="font-medium text-foreground">{data.length}</span>{" "}
-          usuario(s)
+          {t("pagination.of")}{" "}
+          <span className="font-medium text-foreground">{data.length}</span>{" "}
+          {t("pagination.users")}
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -203,14 +208,14 @@ export function DataTable<TData, TValue>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Anterior
+            {t("pagination.previous")}
           </Button>
           <div className="flex items-center gap-1 text-sm">
-            <span className="text-muted-foreground">Página</span>
+            <span className="text-muted-foreground">{t("pagination.page")}</span>
             <span className="font-medium">
               {table.getState().pagination.pageIndex + 1}
             </span>
-            <span className="text-muted-foreground">de</span>
+            <span className="text-muted-foreground">{t("pagination.of")}</span>
             <span className="font-medium">{table.getPageCount()}</span>
           </div>
           <Button
@@ -219,7 +224,7 @@ export function DataTable<TData, TValue>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Siguiente
+            {t("pagination.next")}
           </Button>
         </div>
       </div>

@@ -23,17 +23,39 @@ export const archivoSubidoSchema = z.object({
 export type ArchivoSubido = z.infer<typeof archivoSubidoSchema>;
 
 // ==================== DIMENSION CARGA SCHEMA ====================
-export const dimensionCargaSchema = z.object({
-  id: z.string(),
-  producto: z.string().min(1, "Producto es requerido"),
-  largo: z.number().positive("Debe ser positivo").nullable(),
-  fondo: z.number().positive("Debe ser positivo").nullable(),
-  alto: z.number().positive("Debe ser positivo").nullable(),
-  peso: z.number().positive("Debe ser positivo").nullable(),
-  porcentaje: z.number().min(0, "Mínimo 0%").max(100, "Máximo 100%").nullable(),
-});
+// ==================== DIMENSION CARGA SCHEMA ====================
+export const getDimensionCargaSchema = (t: any) =>
+  z.object({
+    id: z.string(),
+    producto: z
+      .string()
+      .min(1, t("forms.industrial.validation.productRequired")),
+    largo: z
+      .number()
+      .positive(t("forms.industrial.validation.positiveRequired"))
+      .nullable(),
+    fondo: z
+      .number()
+      .positive(t("forms.industrial.validation.positiveRequired"))
+      .nullable(),
+    alto: z
+      .number()
+      .positive(t("forms.industrial.validation.positiveRequired"))
+      .nullable(),
+    peso: z
+      .number()
+      .positive(t("forms.industrial.validation.positiveRequired"))
+      .nullable(),
+    porcentaje: z
+      .number()
+      .min(0, t("forms.industrial.validation.min0"))
+      .max(100, t("forms.industrial.validation.max100"))
+      .nullable(),
+  });
 
-export type DimensionCarga = z.infer<typeof dimensionCargaSchema>;
+export type DimensionCarga = z.infer<
+  ReturnType<typeof getDimensionCargaSchema>
+>;
 
 // ==================== ESPECIFICACIONES PASILLO SCHEMA ====================
 export const especificacionesPasilloSchema = z.object({
@@ -70,18 +92,27 @@ export const equiposElectricosSchema = z.object({
 export type EquiposElectricos = z.infer<typeof equiposElectricosSchema>;
 
 // ==================== MAIN FORM SCHEMA ====================
-export const formularioIndustrialSchema = z
-  .object({
+export const getFormularioIndustrialSchema = (t: any) =>
+  z
+    .object({
     // ==================== DATOS DEL CLIENTE (pre-llenados, opcionales) ====================
     razonSocial: z.string().optional().default(""),
     personaContacto: z.string().optional().default(""),
-    email: z.string().email("Email inválido").optional().or(z.literal("")),
+    email: z
+      .string()
+      .email(t("forms.industrial.validation.emailInvalid"))
+      .optional()
+      .or(z.literal("")),
     direccion: z.string().optional().default(""),
     localidad: z.string().optional().default(""),
     provinciaEstado: z.string().optional().default(""),
     pais: z.string().optional().default(""),
     codigoPostal: z.string().optional().default(""),
-    website: z.string().url("URL inválida").optional().or(z.literal("")),
+    website: z
+      .string()
+      .url(t("forms.industrial.validation.urlInvalid"))
+      .optional()
+      .or(z.literal("")),
     numeroIdentificacionFiscal: z.string().optional().default(""),
     distribuidor: z.string().optional(),
     contactoDistribuidor: z.string().optional(),
@@ -90,37 +121,40 @@ export const formularioIndustrialSchema = z
     // ==================== DESCRIPCION DE LA OPERACION ====================
     notasOperacion: z
       .string()
-      .min(1, "Notas sobre la operación son requeridas"),
+      .min(1, t("forms.industrial.validation.operationNotesRequired")),
 
     // ==================== DATOS DE LA APLICACION ====================
     descripcionProducto: z
       .string()
-      .min(1, "Descripción del producto es requerida"),
+      .min(1, t("forms.industrial.validation.productDescriptionRequired")),
     alturaUltimoNivelEstanteria: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.industrial.validation.positiveValueRequired"))
       .nullable(),
     maximaAlturaElevacion: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.industrial.validation.positiveValueRequired"))
       .nullable(),
     pesoCargaMaximaAltura: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.industrial.validation.positiveValueRequired"))
       .nullable(),
     pesoCargaPrimerNivel: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.industrial.validation.positiveValueRequired"))
       .nullable(),
     dimensionesAreaTrabajoAncho: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.industrial.validation.positiveValueRequired"))
       .nullable(),
     dimensionesAreaTrabajoFondo: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.industrial.validation.positiveValueRequired"))
       .nullable(),
-    turnosTrabajo: z.number().min(1, "Mínimo 1 turno").nullable(),
+    turnosTrabajo: z
+      .number()
+      .min(1, t("forms.industrial.validation.min1Shift"))
+      .nullable(),
     fechaEstimadaDefinicion: z.date().optional().nullable(),
     alimentacionDeseada: z.enum([
       TipoAlimentacion.ELECTRICO,
@@ -133,8 +167,8 @@ export const formularioIndustrialSchema = z
 
     // ==================== DIMENSIONES DE LAS CARGAS ====================
     dimensionesCargas: z
-      .array(dimensionCargaSchema)
-      .min(1, "Debe agregar al menos una carga"),
+      .array(getDimensionCargaSchema(t))
+      .min(1, t("forms.industrial.validation.loadRequired")),
 
     // ==================== ESPECIFICACIONES DEL PASILLO ====================
     especificacionesPasillo: especificacionesPasilloSchema,
@@ -149,7 +183,7 @@ export const formularioIndustrialSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
-            "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",
+            t("forms.industrial.validation.electricalRequired"),
           path: ["equiposElectricos"],
         });
       }
@@ -165,9 +199,10 @@ export const formularioIndustrialSchema = z
       if (Math.abs(totalPorcentaje - 100) > 0.01) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `Los porcentajes deben sumar 100% (actual: ${totalPorcentaje.toFixed(
-            1
-          )}%)`,
+          message: t("forms.industrial.validation.percentageSumError").replace(
+            "{{current}}",
+            totalPorcentaje.toFixed(1)
+          ),
           path: ["dimensionesCargas"],
         });
       }
@@ -175,5 +210,5 @@ export const formularioIndustrialSchema = z
   });
 
 export type FormularioIndustrialSchema = z.infer<
-  typeof formularioIndustrialSchema
+  ReturnType<typeof getFormularioIndustrialSchema>
 >;

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Machine } from "@/interfaces/machine";
 import { ScrollArea } from "../ui/scroll-area";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Dialog,
@@ -40,10 +41,12 @@ export function MachineDetailModal({
   open,
   onOpenChange,
 }: MachineDetailModalProps) {
+  const { t, locale } = useI18n();
+
   if (!machine) return null;
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("es-ES", {
+    return new Date(dateString).toLocaleDateString(locale, {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -51,34 +54,34 @@ export function MachineDetailModal({
   };
 
   const formatHours = (hours: number) => {
-    return hours.toLocaleString("es-ES", { maximumFractionDigits: 0 });
+    return hours.toLocaleString(locale, { maximumFractionDigits: 0 });
   };
 
   const certifications = [
     {
       key: "insured",
-      label: "Seguro",
+      label: t("machines.insurance"),
       icon: ShieldCheck,
       active: machine.insured,
       color: "emerald",
     },
     {
       key: "photos",
-      label: "Fotos",
+      label: t("machines.card.photos"),
       icon: Camera,
       active: machine.hasPhotos,
       color: "blue",
     },
     {
       key: "traveller",
-      label: "Traveller",
+      label: t("machines.card.traveller"),
       icon: Plane,
       active: machine.hasTraveller,
       color: "violet",
     },
     {
       key: "ce",
-      label: "CE",
+      label: t("machines.card.ce"),
       icon: FileText,
       active: machine.hasCE,
       color: "amber",
@@ -112,7 +115,7 @@ export function MachineDetailModal({
               <Badge
                 variant={machine.available ? "info" : "destructive"}
               >
-                {machine.available ? "Disponible" : "No disponible"}
+                {machine.available ? t("machines.availabilities.available") : t("machines.availabilities.notAvailable")}
               </Badge>
             </div>
             <div className="absolute bottom-3 left-3 right-3">
@@ -133,7 +136,7 @@ export function MachineDetailModal({
             {machine.options && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Settings2 className="size-3.5" />
-                <span>Opcionales:</span>
+                <span>{t("machines.card.options")}:</span>
                 <span className="text-foreground font-medium">
                   {machine.options}
                 </span>
@@ -143,26 +146,26 @@ export function MachineDetailModal({
             <div className="grid grid-cols-2 gap-2">
               <InfoItem
                 icon={MapPin}
-                label="Ubicación"
+                label={t("machines.location")}
                 value={machine.location}
               />
               <InfoItem
                 icon={Clock}
-                label="Horas"
+                label={t("machines.card.hours")}
                 value={`${formatHours(machine.usageHours)} h`}
               />
               <InfoItem
                 icon={Calendar}
-                label="Fecha"
+                label={t("machines.card.date")}
                 value={formatDate(machine.usageHoursDate)}
               />
               {machine.height && (
-                <InfoItem icon={Ruler} label="Altura" value={machine.height} />
+                <InfoItem icon={Ruler} label={t("machines.card.height")} value={machine.height} />
               )}
               {machine.dealer && (
                 <InfoItem
                   icon={Building2}
-                  label="Distribuidor"
+                  label={t("machines.dealer")}
                   value={machine.dealer}
                   className="col-span-2"
                 />
@@ -171,7 +174,7 @@ export function MachineDetailModal({
 
             <div>
               <h4 className="text-xs font-medium text-muted-foreground mb-2">
-                Documentación
+                {t("machines.card.documentation")}
               </h4>
               <div className="grid grid-cols-4 gap-1.5">
                 {certifications.map(
@@ -221,7 +224,7 @@ export function MachineDetailModal({
               <div>
                 <h4 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
                   <History className="size-3.5" />
-                  Historial
+                  {t("machines.card.history")}
                 </h4>
                 <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground leading-relaxed max-h-28 overflow-y-auto">
                   {machine.history}

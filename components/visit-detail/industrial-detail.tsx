@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import AttachmentsGallery from "@/components/attachments-gallery";
 import { InfoField, InfoSection, NumberDisplay } from "./shared";
 import { FormularioIndustrialAnalisis } from "@/interfaces/visits";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Calendar,
@@ -26,33 +27,39 @@ import {
   Layers,
 } from "lucide-react";
 
-// ==================== LABELS FOR DISPLAY ====================
-const ALIMENTACION_LABELS: Record<string, string> = {
-  ELECTRICO: "Eléctrico",
-  DIESEL: "Diésel",
-  GAS: "Gas",
-  MANUAL: "Manual",
+// ==================== VALUE TO KEY MAPPINGS ====================
+// Maps database values to i18n key paths
+const ALIMENTACION_KEYS: Record<string, string> = {
+  ELECTRICO: "common.powerSource.ELECTRICO",
+  DIESEL: "common.powerSource.DIESEL",
+  GAS: "common.powerSource.GLP",
+  GLP: "common.powerSource.GLP",
+  MANUAL: "common.powerSource.MANUAL",
 };
 
-const TIPO_CORRIENTE_LABELS: Record<string, string> = {
-  MONOFASICA: "Monofásica",
-  TRIFASICA: "Trifásica",
+const TIPO_CORRIENTE_KEYS: Record<string, string> = {
+  MONOFASICA: "visits.currentTypes.MONOFASICA",
+  TRIFASICA: "visits.currentTypes.TRIFASICA",
 };
 
-// Labels para especificaciones de pasillo
-const ESPECIFICACIONES_PASILLO_LABELS: Record<string, string> = {
-  profundidadProducto: "Profundidad del producto",
-  anchoLibreEntreProductos: "Ancho libre entre productos",
-  distanciaLibreEntreEstanterias: "Distancia libre entre estanterías",
-  fondoUtilEstanteria: "Fondo útil de estantería",
-  alturaBaseEstanteria: "Altura base de estantería",
-  distanciaBajoRielesGuia: "Distancia bajo rieles guía",
-  alturaSueloPrimerBrazo: "Altura suelo - primer brazo",
-  distanciaEntreRielesGuia: "Distancia entre rieles guía",
-  alturaLibreHastaGuia: "Altura libre hasta guía",
-  grosorPilarColumna: "Grosor pilar/columna",
-  alturaUltimoNivel: "Altura último nivel",
-  alturaMaximaInteriorEdificio: "Altura máxima interior edificio",
+// Labels para especificaciones de pasillo - these use translated keys
+const ESPECIFICACIONES_PASILLO_KEYS: Record<string, string> = {
+  profundidadProducto: "forms.industrial.fields.aisle.productDepth",
+  anchoLibreEntreProductos:
+    "forms.industrial.fields.aisle.widthBetweenProducts",
+  distanciaLibreEntreEstanterias:
+    "forms.industrial.fields.aisle.distBetweenRacks",
+  fondoUtilEstanteria: "forms.industrial.fields.aisle.rackUsefulDepth",
+  alturaBaseEstanteria: "forms.industrial.fields.aisle.rackBaseHeight",
+  distanciaBajoRielesGuia: "forms.industrial.fields.aisle.distUnderGuideRails",
+  alturaSueloPrimerBrazo: "forms.industrial.fields.aisle.floorToFirstArm",
+  distanciaEntreRielesGuia:
+    "forms.industrial.fields.aisle.distBetweenGuideRails",
+  alturaLibreHastaGuia: "forms.industrial.fields.aisle.clearHeightToGuide",
+  grosorPilarColumna: "forms.industrial.fields.aisle.columnThickness",
+  alturaUltimoNivel: "forms.industrial.fields.aisle.lastLevelHeight",
+  alturaMaximaInteriorEdificio:
+    "forms.industrial.fields.aisle.maxInteriorHeight",
 };
 
 interface IndustrialDetailProps {
@@ -60,6 +67,7 @@ interface IndustrialDetailProps {
 }
 
 export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
+  const { t } = useI18n();
   const equipos = formulario.equiposElectricos;
   const especificaciones = formulario.especificacionesPasillo;
   const cargas = formulario.dimensionesCargas || [];
@@ -73,25 +81,27 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
         </div>
         <div>
           <h2 className="text-sm sm:text-base font-semibold tracking-tight">
-            Detalles del formulario
+            {t("forms.detail.title")}
           </h2>
-          <p className="text-xs text-muted-foreground">Análisis Industrial</p>
+          <p className="text-xs text-muted-foreground">
+            {t("forms.formTypes.industrial")}
+          </p>
         </div>
       </div>
 
       {/* ==================== DATOS DEL CLIENTE ==================== */}
-      <InfoSection title="Datos del cliente" icon={Contact}>
+      <InfoSection title={t("forms.detail.clientData")} icon={Contact}>
         <div className="space-y-4">
           {/* Primary info */}
           {formulario.razonSocial && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InfoField
-                  label="Razón Social"
+                  label={t("forms.fields.legalName")}
                   value={formulario.razonSocial}
                 />
                 <InfoField
-                  label="Persona de contacto"
+                  label={t("forms.fields.contactPerson")}
                   value={formulario.personaContacto}
                 />
               </div>
@@ -106,18 +116,18 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <InfoField
-                    label="Email"
+                    label={t("forms.fields.email")}
                     value={formulario.email}
                     icon={Mail}
                   />
                   <InfoField
-                    label="Website"
+                    label={t("forms.fields.website")}
                     value={formulario.website}
                     icon={Globe}
                     isLink
                   />
                   <InfoField
-                    label="NIF/CIF"
+                    label={t("forms.fields.fiscalId")}
                     value={formulario.numeroIdentificacionFiscal}
                     icon={Hash}
                   />
@@ -134,18 +144,27 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
                 <div className="space-y-3">
                   <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                     <MapPin className="size-3" />
-                    Dirección
+                    {t("forms.sections.address")}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <InfoField label="Dirección" value={formulario.direccion} />
-                    <InfoField label="Localidad" value={formulario.localidad} />
                     <InfoField
-                      label="Provincia/Estado"
+                      label={t("forms.fields.address")}
+                      value={formulario.direccion}
+                    />
+                    <InfoField
+                      label={t("forms.fields.city")}
+                      value={formulario.localidad}
+                    />
+                    <InfoField
+                      label={t("forms.fields.state")}
                       value={formulario.provinciaEstado}
                     />
-                    <InfoField label="País" value={formulario.pais} />
                     <InfoField
-                      label="Código postal"
+                      label={t("forms.fields.country")}
+                      value={formulario.pais}
+                    />
+                    <InfoField
+                      label={t("forms.fields.postalCode")}
                       value={formulario.codigoPostal}
                     />
                   </div>
@@ -160,15 +179,15 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
               <div className="space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <Truck className="size-3" />
-                  Distribuidor
+                  {t("forms.fields.distributor")}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <InfoField
-                    label="Distribuidor"
+                    label={t("forms.fields.distributor")}
                     value={formulario.distribuidor}
                   />
                   <InfoField
-                    label="Contacto distribuidor"
+                    label={t("forms.fields.distributorContact")}
                     value={formulario.contactoDistribuidor}
                   />
                 </div>
@@ -183,14 +202,14 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
               <div className="flex justify-start items-center gap-2">
                 {formulario.fechaCierre && (
                   <InfoField
-                    label="Fecha de cierre"
+                    label={t("forms.fields.closingDate")}
                     value={formatDate(formulario.fechaCierre)}
                     icon={Calendar}
                   />
                 )}
                 {formulario.fechaEstimadaDefinicion && (
                   <InfoField
-                    label="Fecha estimada definición"
+                    label={t("forms.fields.estimatedDefinitionDate")}
                     value={formatDate(formulario.fechaEstimadaDefinicion)}
                     icon={Calendar}
                   />
@@ -211,14 +230,14 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
             (!formulario.fechaEstimadaDefinicion &&
               !formulario.contactoDistribuidor && (
                 <p className="text-sm text-muted-foreground italic">
-                  No se proporcionó información del cliente.
+                  {t("forms.fields.noClientInfo")}
                 </p>
               ))}
         </div>
       </InfoSection>
 
       {/* ==================== DESCRIPCION DE LA OPERACION ==================== */}
-      <InfoSection title="Descripción de la operación" icon={FileText}>
+      <InfoSection title={t("forms.detail.operationInfo")} icon={FileText}>
         <div className="bg-muted/40 rounded-xl p-3 sm:p-4 border border-border/50">
           <p
             className={cn(
@@ -226,18 +245,18 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
               !formulario.notasOperacion && "italic text-muted-foreground"
             )}
           >
-            {formulario.notasOperacion || "No proporcionada."}
+            {formulario.notasOperacion || t("forms.fields.notProvided")}
           </p>
         </div>
       </InfoSection>
 
       {/* ==================== DATOS DE LA APLICACION ==================== */}
-      <InfoSection title="Datos de la aplicación" icon={Settings}>
+      <InfoSection title={t("forms.detail.applicationData")} icon={Settings}>
         <div className="space-y-4">
           {/* Description */}
           <div className="space-y-2">
             <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-              Descripción del producto
+              {t("forms.fields.productDescription")}
             </p>
             <div className="bg-muted/40 rounded-xl p-3 sm:p-4 border border-border/50">
               <p
@@ -247,7 +266,8 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
                     "italic text-muted-foreground"
                 )}
               >
-                {formulario.descripcionProducto || "No proporcionada."}
+                {formulario.descripcionProducto ||
+                  t("forms.fields.notProvided")}
               </p>
             </div>
           </div>
@@ -257,43 +277,43 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
           {/* Measurements */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <NumberDisplay
-              label="Altura último nivel estantería"
+              label={t("forms.fields.lastShelfLevel")}
               value={formulario.alturaUltimoNivelEstanteria}
               unit="mm"
               icon={Ruler}
             />
             <NumberDisplay
-              label="Máxima altura elevación"
+              label={t("forms.fields.maxLiftHeight")}
               value={formulario.maximaAlturaElevacion}
               unit="mm"
               icon={Ruler}
             />
             <NumberDisplay
-              label="Peso carga máx. altura"
+              label={t("forms.fields.maxHeightLoad")}
               value={formulario.pesoCargaMaximaAltura}
               unit="kg"
               icon={Package}
             />
             <NumberDisplay
-              label="Peso carga primer nivel"
+              label={t("forms.fields.firstLevelLoad")}
               value={formulario.pesoCargaPrimerNivel}
               unit="kg"
               icon={Package}
             />
             <NumberDisplay
-              label="Área trabajo ancho"
+              label={t("forms.fields.workAreaWidth")}
               value={formulario.dimensionesAreaTrabajoAncho}
               unit="mm"
               icon={LayoutGrid}
             />
             <NumberDisplay
-              label="Área trabajo fondo"
+              label={t("forms.fields.workAreaDepth")}
               value={formulario.dimensionesAreaTrabajoFondo}
               unit="mm"
               icon={LayoutGrid}
             />
             <NumberDisplay
-              label="Turnos de trabajo"
+              label={t("forms.fields.workShifts")}
               value={formulario.turnosTrabajo}
               icon={Clock}
             />
@@ -308,11 +328,12 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">
-                Alimentación deseada
+                {t("forms.fields.desiredPower")}
               </p>
               <p className="text-sm font-semibold text-foreground">
-                {ALIMENTACION_LABELS[formulario.alimentacionDeseada] ||
-                  formulario.alimentacionDeseada}
+                {ALIMENTACION_KEYS[formulario.alimentacionDeseada]
+                  ? t(ALIMENTACION_KEYS[formulario.alimentacionDeseada])
+                  : formulario.alimentacionDeseada}
               </p>
             </div>
           </div>
@@ -321,32 +342,37 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
 
       {/* ==================== EQUIPOS ELECTRICOS ==================== */}
       {equipos && formulario.alimentacionDeseada === "ELECTRICO" && (
-        <InfoSection title="Equipos eléctricos" icon={Zap}>
+        <InfoSection title={t("forms.detail.equipmentData")} icon={Zap}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {equipos.tipoCorriente && (
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-border/50">
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Tipo corriente
+                  {t("forms.fields.currentType")}
                 </span>
                 <Badge variant="outline">
-                  {TIPO_CORRIENTE_LABELS[equipos.tipoCorriente] ||
-                    equipos.tipoCorriente}
+                  {TIPO_CORRIENTE_KEYS[equipos.tipoCorriente]
+                    ? t(TIPO_CORRIENTE_KEYS[equipos.tipoCorriente])
+                    : equipos.tipoCorriente}
                 </Badge>
               </div>
             )}
-            <NumberDisplay label="Voltaje" value={equipos.voltaje} unit="V" />
             <NumberDisplay
-              label="Frecuencia"
+              label={t("forms.fields.voltage")}
+              value={equipos.voltaje}
+              unit="V"
+            />
+            <NumberDisplay
+              label={t("forms.fields.frequency")}
               value={equipos.frecuencia}
               unit="Hz"
             />
             <NumberDisplay
-              label="Potencia disponible"
+              label={t("forms.fields.availablePower")}
               value={equipos.potenciaDisponible}
               unit="kW"
             />
             <NumberDisplay
-              label="Distancia punto recarga"
+              label={t("forms.fields.chargePointDistance")}
               value={equipos.distanciaPuntoRecarga}
               unit="m"
             />
@@ -356,7 +382,7 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
 
       {/* ==================== DIMENSIONES DE CARGAS ==================== */}
       {cargas.length > 0 && (
-        <InfoSection title="Dimensiones de las cargas" icon={Package}>
+        <InfoSection title={t("forms.detail.loadDimensions")} icon={Package}>
           <div className="space-y-3">
             {cargas.map((carga, index) => (
               <div
@@ -369,7 +395,8 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
                       {index + 1}
                     </div>
                     <span className="font-medium text-sm">
-                      {carga.producto || `Carga ${index + 1}`}
+                      {carga.producto ||
+                        `${t("forms.fields.loadNumber")} ${index + 1}`}
                     </span>
                   </div>
                   {carga.porcentaje !== undefined && (
@@ -381,25 +408,33 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                   {carga.largo !== undefined && (
                     <div className="flex justify-between p-2 rounded-lg bg-background/50">
-                      <span className="text-muted-foreground">Largo</span>
+                      <span className="text-muted-foreground">
+                        {t("forms.fields.length")}
+                      </span>
                       <span className="font-medium">{carga.largo} mm</span>
                     </div>
                   )}
                   {carga.ancho !== undefined && (
                     <div className="flex justify-between p-2 rounded-lg bg-background/50">
-                      <span className="text-muted-foreground">Ancho</span>
+                      <span className="text-muted-foreground">
+                        {t("forms.fields.width")}
+                      </span>
                       <span className="font-medium">{carga.ancho} mm</span>
                     </div>
                   )}
                   {carga.alto !== undefined && (
                     <div className="flex justify-between p-2 rounded-lg bg-background/50">
-                      <span className="text-muted-foreground">Alto</span>
+                      <span className="text-muted-foreground">
+                        {t("forms.fields.height")}
+                      </span>
                       <span className="font-medium">{carga.alto} mm</span>
                     </div>
                   )}
                   {carga.peso !== undefined && (
                     <div className="flex justify-between p-2 rounded-lg bg-background/50">
-                      <span className="text-muted-foreground">Peso</span>
+                      <span className="text-muted-foreground">
+                        {t("forms.fields.weight")}
+                      </span>
                       <span className="font-medium">{carga.peso} kg</span>
                     </div>
                   )}
@@ -412,23 +447,26 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
 
       {/* ==================== ESPECIFICACIONES DEL PASILLO ==================== */}
       {especificaciones && (
-        <InfoSection title="Especificaciones del pasillo" icon={Layers}>
+        <InfoSection
+          title={t("forms.detail.aisleSpecifications")}
+          icon={Layers}
+        >
           <div className="space-y-4">
             {/* Header descriptivo */}
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Ruler className="size-3.5" />
-              <span>Medidas y dimensiones registradas (en milímetros)</span>
+              <span>{t("forms.detail.aisleMeasurements")}</span>
             </div>
 
             {/* Grid responsive de especificaciones */}
             {(() => {
               // Crear array de campos con sus valores
               const especificacionesData = Object.entries(
-                ESPECIFICACIONES_PASILLO_LABELS
+                ESPECIFICACIONES_PASILLO_KEYS
               )
-                .map(([key, label]) => ({
+                .map(([key, i18nKey]) => ({
                   key,
-                  label,
+                  label: t(i18nKey),
                   value: (
                     especificaciones as Record<
                       string,
@@ -442,7 +480,7 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
                 return (
                   <div className="flex items-center justify-center p-6 rounded-xl bg-muted/30 border border-dashed border-border">
                     <p className="text-sm text-muted-foreground italic">
-                      No se han registrado especificaciones de pasillo.
+                      {t("forms.detail.noAisleSpecifications")}
                     </p>
                   </div>
                 );

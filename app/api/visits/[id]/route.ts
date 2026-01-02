@@ -174,7 +174,8 @@ export async function PUT(
               name: visit.user.name || "Sin nombre",
               email: visit.user.email || "",
             }
-          : undefined
+          : undefined,
+        req.headers.get("accept-language")?.startsWith("en") ? "en" : "es"
       );
 
       // Enviar notificacion de forma asincrona (no bloquea la respuesta)

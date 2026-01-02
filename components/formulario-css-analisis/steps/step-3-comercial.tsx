@@ -9,6 +9,7 @@ import { es } from "date-fns/locale";
 import { StepContentProps } from "../types";
 import { FieldWrapper } from "../ui/field-wrapper";
 import { Briefcase, Phone, CalendarDays } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Popover,
@@ -29,6 +30,8 @@ import {
  * Fields: distribuidor, contactoDistribuidor, fechaCierre, datosClienteUsuarioFinal
  */
 export function Step3Content({ form }: StepContentProps) {
+  const { t, locale } = useI18n();
+
   return (
     <div className="space-y-4 sm:space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -39,11 +42,11 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  Distribuidor
+                  {t("forms.fields.distributor")}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Nombre del distribuidor"
+                    placeholder={t("forms.fields.distributorPlaceholder")}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
@@ -61,11 +64,13 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  Contacto distribuidor
+                  {t("forms.fields.distributorContact")}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Email o teléfono"
+                    placeholder={t(
+                      "forms.fields.distributorContactPlaceholder"
+                    )}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
@@ -83,7 +88,7 @@ export function Step3Content({ form }: StepContentProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-              Fecha de cierre estimada
+              {t("forms.fields.closingDate")}
             </FormLabel>
             <Popover>
               <PopoverTrigger asChild>
@@ -97,8 +102,10 @@ export function Step3Content({ form }: StepContentProps) {
                   >
                     <CalendarDays className="size-4" />
                     {field.value
-                      ? format(field.value, "PPP", { locale: es })
-                      : "Seleccionar fecha"}
+                      ? format(field.value, "PPP", {
+                          locale: locale === "en" ? undefined : es,
+                        })
+                      : t("forms.selectDate")}
                   </Button>
                 </FormControl>
               </PopoverTrigger>
@@ -109,7 +116,7 @@ export function Step3Content({ form }: StepContentProps) {
                   onSelect={field.onChange}
                   disabled={(date) => date < new Date()}
                   initialFocus
-                  locale={es}
+                  locale={locale === "en" ? undefined : es}
                 />
               </PopoverContent>
             </Popover>
@@ -125,11 +132,11 @@ export function Step3Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                Notas del usuario final
+                {t("forms.fields.clientEndUserData")}
               </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Información adicional sobre el cliente o proyecto..."
+                  placeholder={t("forms.fields.clientEndUserDataPlaceholder")}
                   className="min-h-[100px] sm:min-h-[120px] text-xs sm:text-sm bg-background/50 resize-none border-input/80 focus:border-primary rounded-lg leading-relaxed"
                   {...field}
                 />

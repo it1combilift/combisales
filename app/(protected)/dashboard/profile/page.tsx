@@ -4,9 +4,11 @@ import { useSession } from "next-auth/react";
 import { Spinner } from "@/components/ui/spinner";
 import ProfileHeader from "@/components/profile-header";
 import ProfileContent from "@/components/profile-content";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
+  const { t } = useI18n();
 
   if (status === "loading") {
     return (
@@ -19,7 +21,7 @@ export default function ProfilePage() {
   if (!session) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <p>No autenticado</p>
+        <p>{t("common.notAuthenticated")}</p>
       </div>
     );
   }

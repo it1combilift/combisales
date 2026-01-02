@@ -22,6 +22,7 @@ import {
   Settings2,
   ArrowUpRight,
 } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 interface MachineCardProps {
   machine: Machine;
@@ -29,8 +30,10 @@ interface MachineCardProps {
 }
 
 export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
+  const { t, locale } = useI18n();
+
   const formatHours = (hours: number) => {
-    return hours.toLocaleString("es-ES", { maximumFractionDigits: 0 });
+    return hours.toLocaleString(locale, { maximumFractionDigits: 0 });
   };
 
   return (
@@ -42,7 +45,7 @@ export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
           className="object-cover transition-transform duration-300 group-hover:scale-105 object-center"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           fill
-          />
+        />
         <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute top-2 left-2 right-2 flex items-start justify-between gap-1.5">
           <Badge
@@ -56,7 +59,7 @@ export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
             {machine.status}
           </Badge>
           <Badge variant={machine.available ? "info" : "destructive"}>
-            {machine.available ? "Disponible" : "No disponible"}
+            {machine.available ? t("machines.availabilities.available") : t("machines.availabilities.notAvailable")}
           </Badge>
         </div>
         <div className="absolute bottom-2 left-2 right-2">
@@ -118,7 +121,7 @@ export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
               className="text-[10px] h-5 px-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-0"
             >
               <ShieldCheck className="size-2.5" />
-              Seguro
+              {t("machines.insurance")}
             </Badge>
           )}
           {machine.hasPhotos && (
@@ -127,7 +130,7 @@ export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
               className="text-[10px] h-5 px-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 border-0"
             >
               <Camera className="size-2.5" />
-              Fotos
+              {t("machines.card.photos")}
             </Badge>
           )}
           {machine.hasTraveller && (
@@ -158,7 +161,7 @@ export function MachineCard({ machine, onViewDetails }: MachineCardProps) {
               onClick={() => onViewDetails(machine)}
             >
               <ArrowUpRight className="size-4" />
-              Detalles
+              {t("machines.card.details")}
             </Button>
           )}
         </div>

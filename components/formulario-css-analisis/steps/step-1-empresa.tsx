@@ -2,6 +2,7 @@ import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
 import { FieldWrapper } from "../ui/field-wrapper";
 import { Building2, User, Mail, Hash, Link2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -16,6 +17,8 @@ import {
  * Fields: razonSocial, personaContacto, email, numeroIdentificacionFiscal, website
  */
 export function Step1Content({ form }: StepContentProps) {
+  const { t } = useI18n();
+
   return (
     <div className="space-y-4 sm:space-y-5">
       <FieldWrapper icon={Building2}>
@@ -25,12 +28,12 @@ export function Step1Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                Razón social
+                {t("forms.fields.legalName")}
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Nombre legal de la empresa"
+                  placeholder={t("forms.fields.legalNamePlaceholder")}
                   className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
                   {...field}
                 />
@@ -49,12 +52,12 @@ export function Step1Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  Persona de contacto
+                  {t("forms.fields.contactPerson")}
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Nombre completo"
+                    placeholder={t("forms.fields.fullNamePlaceholder")}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
@@ -72,13 +75,13 @@ export function Step1Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  Email
+                  {t("forms.fields.email")}
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="correo@empresa.com"
+                    placeholder={t("forms.fields.emailPlaceholder")}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
@@ -98,11 +101,11 @@ export function Step1Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  NIF/CIF
+                  {t("forms.fields.fiscalId")}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Identificación fiscal"
+                    placeholder={t("forms.fields.fiscalIdPlaceholder")}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
@@ -120,12 +123,12 @@ export function Step1Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  Sitio web
+                  {t("forms.fields.website")}
                 </FormLabel>
                 <FormControl>
                   <Input
                     type="url"
-                    placeholder="https://www.ejemplo.com"
+                    placeholder={t("forms.fields.websitePlaceholder")}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />

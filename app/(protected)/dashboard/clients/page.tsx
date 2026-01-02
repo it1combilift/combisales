@@ -14,6 +14,7 @@ import { RefreshCw, Building2, AlertCircle, Search } from "lucide-react";
 import { DashboardProjectsPageSkeleton } from "@/components/dashboard-skeleton";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { Customer } from "@/interfaces/visits";
+import { useI18n } from "@/lib/i18n/context";
 
 const PER_PAGE = 200;
 const INITIAL_LOAD_ONLY_FIRST_PAGE = true;
@@ -25,7 +26,9 @@ interface PaginationState {
 }
 
 export default function ClientsPage() {
+  const { t, locale } = useI18n();
   const [accounts, setAccounts] = useState<ZohoAccount[]>([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -209,10 +212,12 @@ export default function ClientsPage() {
         isLoadingMore: false,
       });
 
-      toast.success(`${newAccounts.length} clientes más cargados`);
+      toast.success(
+        t("clients.moreClientsLoaded", { count: newAccounts.length })
+      );
     } catch (err: any) {
       const errorMessage =
-        err.response?.data?.error || err.message || "Error al cargar más";
+        err.response?.data?.error || err.message || t("errors.loadingMore");
       toast.error(errorMessage);
       setPagination((prev) => ({ ...prev, isLoadingMore: false }));
     } finally {
@@ -297,7 +302,7 @@ export default function ClientsPage() {
     fetchInitialAccounts({ isRefresh: true });
   }, [fetchInitialAccounts]);
 
-  const columns = createColumns();
+  const columns = createColumns({ t, locale });
   const hasData = accounts.length > 0;
   const showLoader = isLoading && !isRefreshing;
 
@@ -305,11 +310,11 @@ export default function ClientsPage() {
   const filteredAccountsCount =
     columnFilters.length > 0
       ? accounts.filter((account) => {
-          return columnFilters.every((filter) => {
-            const value = account[filter.id as keyof ZohoAccount];
-            return value === filter.value;
-          });
-        }).length
+        return columnFilters.every((filter) => {
+          const value = account[filter.id as keyof ZohoAccount];
+          return value === filter.value;
+        });
+      }).length
       : accounts.length;
 
   const totalPages = Math.ceil(filteredAccountsCount / tablePageSize);
@@ -324,8 +329,8 @@ export default function ClientsPage() {
   const handleVisitSuccess = useCallback(() => {
     setIsVisitDialogOpen(false);
     setSelectedAccountForVisit(null);
-    toast.success("Visita creada exitosamente");
-  }, []);
+    toast.success(t("visits.visitCreated"));
+  }, [t]);
 
   const handleDialogClose = useCallback((open: boolean) => {
     setIsVisitDialogOpen(open);
@@ -337,52 +342,52 @@ export default function ClientsPage() {
   // Prepare customer data from account
   const customerFromAccount: Customer | undefined = selectedAccountForVisit
     ? {
-        id: selectedAccountForVisit.id,
-        zohoAccountId: selectedAccountForVisit.id,
-        accountName: selectedAccountForVisit.Account_Name,
-        razonSocial: selectedAccountForVisit.Razon_Social || null,
-        accountNumber: selectedAccountForVisit.Account_Number || null,
-        cif: selectedAccountForVisit.CIF || null,
-        codigoCliente: selectedAccountForVisit.C_digo_Cliente || null,
-        accountType: selectedAccountForVisit.Account_Type || null,
-        industry: selectedAccountForVisit.Industry || null,
-        subSector: selectedAccountForVisit.Sub_Sector || null,
-        phone: selectedAccountForVisit.Phone || null,
-        fax: selectedAccountForVisit.Fax || null,
-        email: selectedAccountForVisit.Email || null,
-        website: selectedAccountForVisit.Website || null,
-        billingStreet: selectedAccountForVisit.Billing_Street || null,
-        billingCity: selectedAccountForVisit.Billing_City || null,
-        billingState: selectedAccountForVisit.Billing_State || null,
-        billingCode: selectedAccountForVisit.Billing_Code || null,
-        billingCountry: selectedAccountForVisit.Billing_Country || null,
-        shippingStreet: selectedAccountForVisit.Shipping_Street || null,
-        shippingCity: selectedAccountForVisit.Shipping_City || null,
-        shippingState: selectedAccountForVisit.Shipping_State || null,
-        shippingCode: selectedAccountForVisit.Shipping_Code || null,
-        shippingCountry: selectedAccountForVisit.Shipping_Country || null,
-        latitude: selectedAccountForVisit.dealsingooglemaps__Latitude || null,
-        longitude: selectedAccountForVisit.dealsingooglemaps__Longitude || null,
-        zohoOwnerId: selectedAccountForVisit.Owner?.id || null,
-        zohoOwnerName: selectedAccountForVisit.Owner?.name || null,
-        zohoOwnerEmail: selectedAccountForVisit.Owner?.email || null,
-        zohoCreatedById: selectedAccountForVisit.Created_By?.id || null,
-        zohoCreatedByName: selectedAccountForVisit.Created_By?.name || null,
-        zohoCreatedByEmail: selectedAccountForVisit.Created_By?.email || null,
-        parentAccountId: selectedAccountForVisit.Parent_Account?.id || null,
-        parentAccountName: selectedAccountForVisit.Parent_Account?.name || null,
-        clienteConEquipo: selectedAccountForVisit.Cliente_con_Equipo || false,
-        cuentaNacional: selectedAccountForVisit.Cuenta_Nacional || false,
-        clienteBooks: selectedAccountForVisit.Cliente_Books || false,
-        condicionesEspeciales:
-          selectedAccountForVisit.Condiciones_Especiales || false,
-        proyectoAbierto: selectedAccountForVisit.Proyecto_abierto || false,
-        revisado: selectedAccountForVisit.Revisado || false,
-        localizacionesMultiples:
-          selectedAccountForVisit.Localizaciones_multiples || false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      id: selectedAccountForVisit.id,
+      zohoAccountId: selectedAccountForVisit.id,
+      accountName: selectedAccountForVisit.Account_Name,
+      razonSocial: selectedAccountForVisit.Razon_Social || null,
+      accountNumber: selectedAccountForVisit.Account_Number || null,
+      cif: selectedAccountForVisit.CIF || null,
+      codigoCliente: selectedAccountForVisit.C_digo_Cliente || null,
+      accountType: selectedAccountForVisit.Account_Type || null,
+      industry: selectedAccountForVisit.Industry || null,
+      subSector: selectedAccountForVisit.Sub_Sector || null,
+      phone: selectedAccountForVisit.Phone || null,
+      fax: selectedAccountForVisit.Fax || null,
+      email: selectedAccountForVisit.Email || null,
+      website: selectedAccountForVisit.Website || null,
+      billingStreet: selectedAccountForVisit.Billing_Street || null,
+      billingCity: selectedAccountForVisit.Billing_City || null,
+      billingState: selectedAccountForVisit.Billing_State || null,
+      billingCode: selectedAccountForVisit.Billing_Code || null,
+      billingCountry: selectedAccountForVisit.Billing_Country || null,
+      shippingStreet: selectedAccountForVisit.Shipping_Street || null,
+      shippingCity: selectedAccountForVisit.Shipping_City || null,
+      shippingState: selectedAccountForVisit.Shipping_State || null,
+      shippingCode: selectedAccountForVisit.Shipping_Code || null,
+      shippingCountry: selectedAccountForVisit.Shipping_Country || null,
+      latitude: selectedAccountForVisit.dealsingooglemaps__Latitude || null,
+      longitude: selectedAccountForVisit.dealsingooglemaps__Longitude || null,
+      zohoOwnerId: selectedAccountForVisit.Owner?.id || null,
+      zohoOwnerName: selectedAccountForVisit.Owner?.name || null,
+      zohoOwnerEmail: selectedAccountForVisit.Owner?.email || null,
+      zohoCreatedById: selectedAccountForVisit.Created_By?.id || null,
+      zohoCreatedByName: selectedAccountForVisit.Created_By?.name || null,
+      zohoCreatedByEmail: selectedAccountForVisit.Created_By?.email || null,
+      parentAccountId: selectedAccountForVisit.Parent_Account?.id || null,
+      parentAccountName: selectedAccountForVisit.Parent_Account?.name || null,
+      clienteConEquipo: selectedAccountForVisit.Cliente_con_Equipo || false,
+      cuentaNacional: selectedAccountForVisit.Cuenta_Nacional || false,
+      clienteBooks: selectedAccountForVisit.Cliente_Books || false,
+      condicionesEspeciales:
+        selectedAccountForVisit.Condiciones_Especiales || false,
+      proyectoAbierto: selectedAccountForVisit.Proyecto_abierto || false,
+      revisado: selectedAccountForVisit.Revisado || false,
+      localizacionesMultiples:
+        selectedAccountForVisit.Localizaciones_multiples || false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
     : undefined;
 
   return (
@@ -391,23 +396,23 @@ export default function ClientsPage() {
         <DashboardProjectsPageSkeleton />
       ) : error ? (
         <EmptyCard
-          title="Error al cargar los clientes"
+          title={t("clients.errorLoading")}
           description={error}
           icon={<AlertCircle className="h-12 w-12" />}
           actions={
             <Button onClick={() => fetchInitialAccounts()} variant="outline">
-              <RefreshCw className="size-4" /> Reintentar
+              <RefreshCw className="size-4" /> {t("common.tryAgain")}
             </Button>
           }
         />
       ) : !hasData && !searchQuery ? (
         <EmptyCard
-          title="No se encontraron clientes"
-          description="No hay clientes disponibles en Zoho CRM"
+          title={t("clients.noClientsFound")}
+          description={t("clients.noClientsAvailable")}
           icon={<Building2 className="h-12 w-12 text-muted-foreground" />}
           actions={
             <Button onClick={handleRefresh} variant="outline">
-              <RefreshCw className="size-4" /> Recargar
+              <RefreshCw className="size-4" /> {t("common.refresh")}
             </Button>
           }
         />
@@ -415,21 +420,23 @@ export default function ClientsPage() {
         <>
           <div className="flex gap-4 flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
             <div>
-              <H1>Gestión de clientes</H1>
+              <H1>{t("clients.title")}</H1>
               <div className="flex flex-col justify-start gap-2">
-                <Paragraph>Administra las visitas de tus clientes</Paragraph>
+                <Paragraph>{t("clients.description")}</Paragraph>
 
                 {!isLoading && !error && (
                   <div className="flex items-center gap-2">
                     <span className="w-fit hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground text-left">
                       {searchQuery
-                        ? `${accounts.length} resultados encontrados`
-                        : `${accounts.length} clientes cargados`}
+                        ? t("clients.resultsFound", { count: accounts.length })
+                        : t("clients.clientsLoaded", {
+                          count: accounts.length,
+                        })}
                     </span>
                     {pagination.isLoadingMore && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary animate-pulse">
                         <RefreshCw className="size-3 animate-spin" />
-                        Cargando...
+                        {t("common.loading")}
                       </span>
                     )}
                   </div>
@@ -447,17 +454,16 @@ export default function ClientsPage() {
                   isSearching ||
                   pagination.isLoadingMore
                 }
-                title="Actualizar datos"
+                title={t("common.refresh")}
                 size="sm"
               >
                 <RefreshCw
-                  className={`size-4 ${
-                    isRefreshing || pagination.isLoadingMore
-                      ? "animate-spin"
-                      : ""
-                  }`}
+                  className={`size-4 ${isRefreshing || pagination.isLoadingMore
+                    ? "animate-spin"
+                    : ""
+                    }`}
                 />
-                <span className="hidden md:inline">Actualizar</span>
+                <span className="hidden md:inline">{t("common.refresh")}</span>
               </Button>
             </div>
           </div>
@@ -498,12 +504,12 @@ export default function ClientsPage() {
             {/* Empty state for search with no results */}
             {searchQuery && !hasData && !isSearching && (
               <EmptyCard
-                title="Sin resultados"
-                description={`No se encontraron clientes que coincidan con "${searchQuery}"`}
+                title={t("common.noResults")}
+                description={t("clients.noResultsFor", { query: searchQuery })}
                 icon={<Search className="h-12 w-12 text-muted-foreground" />}
                 actions={
                   <Button onClick={handleClearSearch} variant="outline">
-                    <RefreshCw className="size-4" /> Limpiar búsqueda
+                    <RefreshCw className="size-4" /> {t("clients.clearSearch")}
                   </Button>
                 }
               />

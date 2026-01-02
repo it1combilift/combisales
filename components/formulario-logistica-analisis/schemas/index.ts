@@ -23,29 +23,69 @@ export const archivoSubidoSchema = z.object({
 export type ArchivoSubido = z.infer<typeof archivoSubidoSchema>;
 
 // ==================== DIMENSION CARGA SCHEMA ====================
-export const dimensionCargaSchema = z.object({
-  id: z.string(),
-  producto: z.string().min(1, "Producto es requerido"),
-  largo: z.number().positive("Debe ser positivo").nullable(),
-  fondo: z.number().positive("Debe ser positivo").nullable(),
-  alto: z.number().positive("Debe ser positivo").nullable(),
-  peso: z.number().positive("Debe ser positivo").nullable(),
-  porcentaje: z.number().min(0, "Mínimo 0%").max(100, "Máximo 100%").nullable(),
-});
+// ==================== DIMENSION CARGA SCHEMA ====================
+export const getDimensionCargaSchema = (t: any) =>
+  z.object({
+    id: z.string(),
+    producto: z
+      .string()
+      .min(1, t("forms.logistica.validation.productRequired")),
+    largo: z
+      .number()
+      .positive(t("forms.logistica.validation.positiveRequired"))
+      .nullable(),
+    fondo: z
+      .number()
+      .positive(t("forms.logistica.validation.positiveRequired"))
+      .nullable(),
+    alto: z
+      .number()
+      .positive(t("forms.logistica.validation.positiveRequired"))
+      .nullable(),
+    peso: z
+      .number()
+      .positive(t("forms.logistica.validation.positiveRequired"))
+      .nullable(),
+    porcentaje: z
+      .number()
+      .min(0, t("forms.logistica.validation.min0"))
+      .max(100, t("forms.logistica.validation.max100"))
+      .nullable(),
+  });
 
-export type DimensionCarga = z.infer<typeof dimensionCargaSchema>;
+export type DimensionCarga = z.infer<
+  ReturnType<typeof getDimensionCargaSchema>
+>;
 
 // ==================== PASILLO ACTUAL SCHEMA ====================
-export const pasilloActualSchema = z.object({
-  distanciaEntreEstanterias: z.number().positive().nullable(),
-  distanciaEntreProductos: z.number().positive().nullable(),
-  anchoPasilloDisponible: z.number().positive().nullable(),
-  tipoEstanterias: z.string().nullable().optional(),
-  nivelEstanterias: z.number().positive().nullable().optional(),
-  alturaMaximaEstanteria: z.number().positive().nullable(),
-});
+// ==================== PASILLO ACTUAL SCHEMA ====================
+export const getPasilloActualSchema = (t: any) =>
+  z.object({
+    distanciaEntreEstanterias: z
+      .number()
+      .positive(t("forms.logistica.validation.positiveRequired"))
+      .nullable(),
+    distanciaEntreProductos: z
+      .number()
+      .positive(t("forms.logistica.validation.positiveRequired"))
+      .nullable(),
+    anchoPasilloDisponible: z
+      .number()
+      .positive(t("forms.logistica.validation.positiveRequired"))
+      .nullable(),
+    tipoEstanterias: z.string().nullable().optional(),
+    nivelEstanterias: z
+      .number()
+      .positive(t("forms.logistica.validation.positiveRequired"))
+      .nullable()
+      .optional(),
+    alturaMaximaEstanteria: z
+      .number()
+      .positive(t("forms.logistica.validation.positiveRequired"))
+      .nullable(),
+  });
 
-export type PasilloActual = z.infer<typeof pasilloActualSchema>;
+export type PasilloActual = z.infer<ReturnType<typeof getPasilloActualSchema>>;
 
 // ==================== EQUIPOS ELECTRICOS SCHEMA ====================
 export const equiposElectricosSchema = z.object({
@@ -62,18 +102,23 @@ export const equiposElectricosSchema = z.object({
 export type EquiposElectricos = z.infer<typeof equiposElectricosSchema>;
 
 // ==================== MAIN FORM SCHEMA ====================
-export const formularioLogisticaSchema = z
-  .object({
+export const getFormularioLogisticaSchema = (t: any) =>
+  z
+    .object({
     // ==================== DATOS DEL CLIENTE (pre-llenados, opcionales) ====================
     razonSocial: z.string().optional().default(""),
     personaContacto: z.string().optional().default(""),
-    email: z.string().email("Email inválido").optional().or(z.literal("")),
+    email: z.string().email(t("forms.logistica.validation.emailInvalid")).optional().or(z.literal("")),
     direccion: z.string().optional().default(""),
     localidad: z.string().optional().default(""),
     provinciaEstado: z.string().optional().default(""),
     pais: z.string().optional().default(""),
     codigoPostal: z.string().optional().default(""),
-    website: z.string().url("URL inválida").optional().or(z.literal("")),
+    website: z
+      .string()
+      .url(t("forms.logistica.validation.urlInvalid"))
+      .optional()
+      .or(z.literal("")),
     numeroIdentificacionFiscal: z.string().optional().default(""),
     distribuidor: z.string().optional(),
     contactoDistribuidor: z.string().optional(),
@@ -82,7 +127,7 @@ export const formularioLogisticaSchema = z
     // ==================== DESCRIPCION DE LA OPERACION ====================
     notasOperacion: z
       .string()
-      .min(1, "Notas sobre la operación son requeridas"),
+      .min(1, t("forms.logistica.validation.operationNotesRequired")),
     tieneRampas: z.boolean().default(false),
     notasRampas: z.string().optional(),
     tienePasosPuertas: z.boolean().default(false),
@@ -98,32 +143,35 @@ export const formularioLogisticaSchema = z
     // ==================== DATOS DE LA APLICACION ====================
     descripcionProducto: z
       .string()
-      .min(1, "Descripción del producto es requerida"),
+      .min(1, t("forms.logistica.validation.productDescriptionRequired")),
     alturaUltimoNivelEstanteria: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.logistica.validation.positiveValueRequired"))
       .nullable(),
     maximaAlturaElevacion: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.logistica.validation.positiveValueRequired"))
       .nullable(),
     pesoCargaMaximaAltura: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.logistica.validation.positiveValueRequired"))
       .nullable(),
     pesoCargaPrimerNivel: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.logistica.validation.positiveValueRequired"))
       .nullable(),
     dimensionesAreaTrabajoAncho: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.logistica.validation.positiveValueRequired"))
       .nullable(),
     dimensionesAreaTrabajoFondo: z
       .number()
-      .positive("Debe ser un valor positivo")
+      .positive(t("forms.logistica.validation.positiveValueRequired"))
       .nullable(),
-    turnosTrabajo: z.number().min(1, "Mínimo 1 turno").nullable(),
+    turnosTrabajo: z
+      .number()
+      .min(1, t("forms.logistica.validation.min1Shift"))
+      .nullable(),
     fechaEstimadaDefinicion: z.date().optional().nullable(),
     alimentacionDeseada: z.enum([
       TipoAlimentacion.ELECTRICO,
@@ -135,12 +183,13 @@ export const formularioLogisticaSchema = z
     equiposElectricos: equiposElectricosSchema.optional(),
 
     // ==================== DIMENSIONES DE LAS CARGAS ====================
+    // ==================== DIMENSIONES DE LAS CARGAS ====================
     dimensionesCargas: z
-      .array(dimensionCargaSchema)
-      .min(1, "Debe agregar al menos una carga"),
+      .array(getDimensionCargaSchema(t))
+      .min(1, t("forms.logistica.validation.loadRequired")),
 
     // ==================== PASILLO ACTUAL ====================
-    pasilloActual: pasilloActualSchema,
+    pasilloActual: getPasilloActualSchema(t),
 
     // ==================== ARCHIVOS ====================
     archivos: z.array(archivoSubidoSchema).default([]),
@@ -152,7 +201,7 @@ export const formularioLogisticaSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
-            "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",
+            t("forms.logistica.validation.electricalRequired"),
           path: ["equiposElectricos"],
         });
       }
@@ -167,9 +216,18 @@ export const formularioLogisticaSchema = z
       if (Math.abs(totalPorcentaje - 100) > 0.01) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `Los porcentajes deben sumar 100% (actual: ${totalPorcentaje.toFixed(
-            1
-          )}%)`,
+          message: t("forms.logistica.validation.percentageSumError").replace(
+            "{{current}}",
+            totalPorcentaje.toFixed(1)
+          ),
+          path: ["dimensionesCargas"],
+        });
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("forms.logistica.validation.percentageSumError").replace(
+            "{{current}}",
+            totalPorcentaje.toFixed(1)
+          ),
           path: ["dimensionesCargas"],
         });
       }
@@ -177,5 +235,5 @@ export const formularioLogisticaSchema = z
   });
 
 export type FormularioLogisticaSchema = z.infer<
-  typeof formularioLogisticaSchema
+  ReturnType<typeof getFormularioLogisticaSchema>
 >;

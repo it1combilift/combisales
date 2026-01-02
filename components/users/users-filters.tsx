@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { ColumnFiltersState } from "@tanstack/react-table";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Users,
@@ -38,6 +39,7 @@ export function UsersFilters({
   columnFilters,
   setColumnFilters,
 }: UsersFiltersProps) {
+  const { t } = useI18n();
   const roleFilter =
     (columnFilters.find((f) => f.id === "role")?.value as string[]) || [];
   const statusFilter =
@@ -83,13 +85,13 @@ export function UsersFilters({
             htmlFor="search-users"
             className="text-xs font-medium text-muted-foreground"
           >
-            Búsqueda
+            {t("users.filters.search")}
           </Label>
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="search-users"
-              placeholder="Buscar..."
+              placeholder={t("users.filters.searchPlaceholder")}
               value={globalFilter}
               onChange={(event) => setGlobalFilter(event.target.value)}
               className="h-10 pl-9 text-xs sm:text-sm"
@@ -103,7 +105,7 @@ export function UsersFilters({
             htmlFor="filter-role"
             className="text-xs font-medium text-muted-foreground"
           >
-            Rol
+            {t("users.filters.role")}
           </Label>
           <Select
             value={roleFilter.length > 0 ? roleFilter[0] : "todos"}
@@ -113,25 +115,25 @@ export function UsersFilters({
               id="filter-role"
               className="h-10 w-full text-xs sm:text-sm"
             >
-              <SelectValue placeholder="Todos los roles" />
+              <SelectValue placeholder={t("users.filters.allRoles")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">
                 <div className="flex items-center gap-2">
                   <Users className="size-3.5" />
-                  <span>Todos</span>
+                  <span>{t("users.filters.all")}</span>
                 </div>
               </SelectItem>
               <SelectItem value={Role.ADMIN}>
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="size-3.5" />
-                  <span>Admin</span>
+                  <span>{t("users.roles.admin")}</span>
                 </div>
               </SelectItem>
               <SelectItem value={Role.SELLER}>
                 <div className="flex items-center gap-2">
                   <Package className="size-3.5" />
-                  <span>Vendedor</span>
+                  <span>{t("users.roles.seller")}</span>
                 </div>
               </SelectItem>
             </SelectContent>
@@ -144,7 +146,7 @@ export function UsersFilters({
             htmlFor="filter-status"
             className="text-xs font-medium text-muted-foreground"
           >
-            Estado
+            {t("users.filters.status")}
           </Label>
           <Select
             value={
@@ -160,25 +162,25 @@ export function UsersFilters({
               id="filter-status"
               className="h-10 w-full text-xs sm:text-sm"
             >
-              <SelectValue placeholder="Todos los estados" />
+              <SelectValue placeholder={t("users.filters.allStatuses")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">
                 <div className="flex items-center gap-2">
                   <CheckCheck className="size-3.5" />
-                  <span>Todos</span>
+                  <span>{t("users.filters.all")}</span>
                 </div>
               </SelectItem>
               <SelectItem value="active">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="size-3.5" />
-                  <span>Activos</span>
+                  <span>{t("users.filters.active")}</span>
                 </div>
               </SelectItem>
               <SelectItem value="inactive">
                 <div className="flex items-center gap-2">
                   <XCircle className="size-3.5" />
-                  <span>Inactivos</span>
+                  <span>{t("users.filters.inactive")}</span>
                 </div>
               </SelectItem>
             </SelectContent>
@@ -195,7 +197,7 @@ export function UsersFilters({
               className="h-10 gap-2 w-full lg:w-auto lg:px-4"
             >
               <X className="size-4" />
-              <span className="sm:inline">Limpiar filtros</span>
+              <span className="sm:inline">{t("users.filters.clear")}</span>
             </Button>
           </div>
         )}

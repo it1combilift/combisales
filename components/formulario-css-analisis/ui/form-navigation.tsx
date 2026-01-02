@@ -3,6 +3,7 @@ import { VisitStatus } from "@prisma/client";
 import { FormNavigationProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   ArrowLeft,
@@ -34,6 +35,7 @@ export function FormNavigation({
   onSaveChanges,
   visitIsCompleted,
 }: FormNavigationProps) {
+  const { t } = useI18n();
   const isDisabled =
     isSubmitting ||
     isSavingDraft ||
@@ -55,7 +57,9 @@ export function FormNavigation({
         >
           <ArrowLeft className="size-4" />
           <span className="hidden sm:inline text-xs font-medium">
-            {isFirstStep ? "Salir" : "Atrás"}
+            {isFirstStep
+              ? t("visits.formNavigation.backToSelection")
+              : t("visits.formNavigation.previousStep")}
           </span>
         </Button>
 
@@ -82,8 +86,8 @@ export function FormNavigation({
                     disabled={isDisabled}
                     title={
                       !allStepsComplete
-                        ? "Completa todos los pasos para guardar"
-                        : "Guardar cambios"
+                        ? t("visits.formNavigation.completeAllSteps")
+                        : t("visits.formNavigation.saveChanges")
                     }
                   >
                     {isSavingChanges ? (
@@ -93,7 +97,7 @@ export function FormNavigation({
                     )}
                     {!isSavingChanges && (
                       <span className="hidden sm:inline text-xs font-medium">
-                        Guardar
+                        {t("visits.formNavigation.saveChanges")}
                       </span>
                     )}
                   </Button>
@@ -104,8 +108,8 @@ export function FormNavigation({
                     disabled={isDisabled || !allStepsComplete}
                     title={
                       !allStepsComplete
-                        ? "Completa todos los pasos para guardar"
-                        : "Enviar"
+                        ? t("visits.formNavigation.completeAllSteps")
+                        : t("visits.formNavigation.submit")
                     }
                   >
                     {isSubmitting ? (
@@ -114,7 +118,7 @@ export function FormNavigation({
                       <>
                         <Send className="size-3.5" />
                         <span className="hidden sm:inline text-xs font-medium">
-                          Enviar
+                          {t("visits.formNavigation.submit")}
                         </span>
                       </>
                     )}
@@ -131,8 +135,8 @@ export function FormNavigation({
                     className={visitIsCompleted ? "hidden" : ""}
                     title={
                       !allStepsComplete
-                        ? "Completa todos los pasos para guardar"
-                        : "Guardar como borrador"
+                        ? t("visits.formNavigation.completeAllSteps")
+                        : t("visits.formNavigation.saveDraft")
                     }
                   >
                     {isSavingDraft ? (
@@ -141,7 +145,7 @@ export function FormNavigation({
                       <>
                         <FileDown className="size-3.5" />
                         <span className="hidden sm:inline text-xs font-medium">
-                          Borrador
+                          {t("visits.formNavigation.saveDraft")}
                         </span>
                       </>
                     )}
@@ -162,8 +166,8 @@ export function FormNavigation({
                     }
                     title={
                       !allStepsComplete
-                        ? "Completa todos los pasos para guardar"
-                        : "Enviar"
+                        ? t("visits.formNavigation.completeAllSteps")
+                        : t("visits.formNavigation.submit")
                     }
                   >
                     {isSubmitting ? (
@@ -174,14 +178,14 @@ export function FormNavigation({
                           <>
                             <CheckCircle className="size-3.5" />
                             <span className="hidden sm:inline text-xs font-medium">
-                              Completado
+                              {t("tasks.completed")}
                             </span>
                           </>
                         ) : (
                           <>
                             <Send className="size-3.5" />
                             <span className="hidden sm:inline text-xs font-medium">
-                              Enviar
+                              {t("visits.formNavigation.submit")}
                             </span>
                           </>
                         )}
@@ -198,7 +202,9 @@ export function FormNavigation({
               onClick={onNext}
               disabled={isDisabled}
             >
-              <span className="text-xs font-medium">Siguiente</span>
+              <span className="text-xs font-medium">
+                {t("visits.formNavigation.nextStep")}
+              </span>
               <ArrowRight className="size-3.5" />
             </Button>
           )}

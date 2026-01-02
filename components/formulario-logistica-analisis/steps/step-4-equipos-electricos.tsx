@@ -7,7 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertMessage } from "@/components/alert";
 import { TipoAlimentacion } from "@prisma/client";
-import { TipoCorriente, TIPO_CORRIENTE_LABELS } from "../types";
+import { TipoCorriente } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -30,6 +31,7 @@ import {
  * Step 4: Equipos Eléctricos
  */
 export function Step4Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   const alimentacion = form.watch("alimentacionDeseada");
   const noAplica = form.watch("equiposElectricos.noAplica") ?? false;
 
@@ -38,8 +40,10 @@ export function Step4Content({ form }: StepContentProps) {
       <div className="flex items-center justify-center py-8">
         <AlertMessage
           variant="info"
-          title="Paso no aplicable"
-          description="Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puedes continuar al siguiente paso."
+          title={t("forms.logistica.fields.electricEquipment.notApplicable")}
+          description={t(
+            "forms.logistica.fields.electricEquipment.notApplicableDescription"
+          )}
         />
       </div>
     );
@@ -54,7 +58,7 @@ export function Step4Content({ form }: StepContentProps) {
             <Zap className="size-3 text-primary" />
           </div>
           <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            Especificaciones Eléctricas
+            {t("forms.logistica.fields.electricEquipment.header")}
           </h3>
         </div>
       </div>
@@ -69,12 +73,15 @@ export function Step4Content({ form }: StepContentProps) {
               <div className="flex items-center gap-x-1.5">
                 <Ban className="size-3 text-muted-foreground" />
                 <FormLabel className="text-xs font-medium cursor-pointer text-pretty">
-                  No aplica
+                  {t(
+                    "forms.logistica.fields.electricEquipment.notApplicableToggle"
+                  )}
                 </FormLabel>
               </div>
               <FormDescription className="text-xs text-muted-foreground text-pretty max-w-sm border-l-2 border-muted-foreground/30 pl-2">
-                Activa esta opción si las especificaciones eléctricas no son
-                aplicables para esta visita.
+                {t(
+                  "forms.logistica.fields.electricEquipment.notApplicableToggleDescription"
+                )}
               </FormDescription>
             </div>
             <FormControl>
@@ -101,18 +108,18 @@ export function Step4Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel className="text-[11px] font-medium">
-                Tipo corriente
+                {t("forms.fields.currentType")}
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
                   <SelectTrigger className="h-8 text-sm w-full">
-                    <SelectValue placeholder="Selecciona" />
+                    <SelectValue placeholder={t("common.select")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {Object.values(TipoCorriente).map((tipo) => (
                     <SelectItem key={tipo} value={tipo}>
-                      {TIPO_CORRIENTE_LABELS[tipo]}
+                      {t(`visits.currentTypes.${tipo}` as any)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -128,7 +135,9 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.voltaje"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">Voltaje</FormLabel>
+              <FormLabel className="text-[11px] font-medium">
+                {t("forms.fields.voltage")}
+              </FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
@@ -156,7 +165,7 @@ export function Step4Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-[11px] font-medium">
-                Frecuencia
+                {t("forms.fields.frequency")}
               </FormLabel>
               <FormControl>
                 <div className="relative">
@@ -185,7 +194,7 @@ export function Step4Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-[11px] font-medium">
-                Amperaje
+                {t("forms.fields.amperage")}
               </FormLabel>
               <FormControl>
                 <div className="relative">
@@ -214,7 +223,7 @@ export function Step4Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-[11px] font-medium">
-                Temp. ambiente
+                {t("forms.fields.ambientTemperature")}
               </FormLabel>
               <FormControl>
                 <div className="relative">
@@ -243,7 +252,7 @@ export function Step4Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-[11px] font-medium">
-                Horas/día
+                {t("forms.fields.workHoursPerDay")}
               </FormLabel>
               <FormControl>
                 <div className="relative">
@@ -280,11 +289,13 @@ export function Step4Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-[11px] font-medium">
-                Observaciones (opcional)
+                {t("forms.logistica.fields.electricEquipment.notesLabel")}
               </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Notas adicionales sobre los equipos eléctricos..."
+                  placeholder={t(
+                    "forms.logistica.fields.electricEquipment.notesPlaceholder"
+                  )}
                   className="text-sm min-h-[60px] resize-none"
                   {...field}
                   value={field.value ?? ""}

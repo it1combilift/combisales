@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { FileText, CalendarDays } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Popover,
@@ -28,6 +29,7 @@ import {
  * Este paso ahora es el primero del formulario tras la optimización.
  */
 export function Step1Content({ form }: StepContentProps) {
+  const { t, locale } = useI18n();
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -36,7 +38,7 @@ export function Step1Content({ form }: StepContentProps) {
           <FileText className="size-3 text-primary" />
         </div>
         <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Descripción de la Operación
+          {t("forms.industrial.steps.operation.title")}
         </h3>
       </div>
 
@@ -46,12 +48,14 @@ export function Step1Content({ form }: StepContentProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-              Notas sobre la operación
+              {t("forms.industrial.fields.operationNotes.label")}
               <span className="text-destructive">*</span>
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Describe las condiciones y restricciones del área de trabajo..."
+                placeholder={t(
+                  "forms.industrial.fields.operationNotes.placeholder"
+                )}
                 className="min-h-[120px] sm:min-h-40 text-xs bg-background/50 resize-none leading-relaxed"
                 {...field}
               />
@@ -68,9 +72,9 @@ export function Step1Content({ form }: StepContentProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-              Fecha de cierre estimada
+              {t("forms.industrial.fields.closingDate.label")}
               <span className="text-muted-foreground text-[10px] ml-1">
-                (opcional)
+                {t("forms.industrial.fields.closingDate.optional")}
               </span>
             </FormLabel>
             <Popover>
@@ -85,8 +89,10 @@ export function Step1Content({ form }: StepContentProps) {
                   >
                     <CalendarDays className="size-4" />
                     {field.value
-                      ? format(field.value, "PPP", { locale: es })
-                      : "Seleccionar fecha"}
+                      ? format(field.value, "PPP", {
+                          locale: locale === "en" ? undefined : es,
+                        })
+                      : t("forms.industrial.fields.closingDate.placeholder")}
                   </Button>
                 </FormControl>
               </PopoverTrigger>
@@ -97,7 +103,7 @@ export function Step1Content({ form }: StepContentProps) {
                   onSelect={field.onChange}
                   disabled={(date) => date < new Date()}
                   initialFocus
-                  locale={es}
+                  locale={locale === "en" ? undefined : es}
                 />
               </PopoverContent>
             </Popover>

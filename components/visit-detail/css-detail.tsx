@@ -4,6 +4,7 @@ import { cn, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { InfoField, InfoSection, NumberDisplay } from "./shared";
+import { useI18n } from "@/lib/i18n/context";
 import AttachmentsGallery from "@/components/attachments-gallery";
 
 import {
@@ -34,6 +35,8 @@ interface CSSDetailProps {
 }
 
 export function CSSDetail({ formulario }: CSSDetailProps) {
+  const { t } = useI18n();
+
   return (
     <div className="space-y-4">
       {/* Section Header */}
@@ -43,25 +46,25 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
         </div>
         <div>
           <h2 className="text-sm sm:text-base font-semibold tracking-tight">
-            Detalles del formulario
+            {t("forms.detail.title")}
           </h2>
-          <Badge variant="outline-warning">Análisis CSS</Badge>
+          <Badge variant="outline-warning">{t("forms.formTypes.css")}</Badge>
         </div>
       </div>
 
       {/* ==================== DATOS DEL CLIENTE ==================== */}
-      <InfoSection title="Datos del cliente" icon={Contact}>
+      <InfoSection title={t("forms.detail.clientData")} icon={Contact}>
         <div className="space-y-4">
           {/* Primary info */}
           {formulario.razonSocial && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InfoField
-                  label="Razón Social"
+                  label={t("forms.fields.legalName")}
                   value={formulario.razonSocial}
                 />
                 <InfoField
-                  label="Persona de contacto"
+                  label={t("forms.fields.contactPerson")}
                   value={formulario.personaContacto}
                 />
               </div>
@@ -74,15 +77,19 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
           {formulario.email && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <InfoField label="Email" value={formulario.email} icon={Mail} />
                 <InfoField
-                  label="Website"
+                  label={t("forms.fields.email")}
+                  value={formulario.email}
+                  icon={Mail}
+                />
+                <InfoField
+                  label={t("forms.fields.website")}
                   value={formulario.website}
                   icon={Globe}
                   isLink
                 />
                 <InfoField
-                  label="NIF/CIF"
+                  label={t("forms.fields.fiscalId")}
                   value={formulario.numeroIdentificacionFiscal}
                   icon={Hash}
                 />
@@ -97,18 +104,27 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
               <div className="space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <MapPin className="size-3" />
-                  Dirección
+                  {t("forms.sections.address")}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <InfoField label="Dirección" value={formulario.direccion} />
-                  <InfoField label="Localidad" value={formulario.localidad} />
                   <InfoField
-                    label="Provincia/Estado"
+                    label={t("forms.fields.address")}
+                    value={formulario.direccion}
+                  />
+                  <InfoField
+                    label={t("forms.fields.city")}
+                    value={formulario.localidad}
+                  />
+                  <InfoField
+                    label={t("forms.fields.state")}
                     value={formulario.provinciaEstado}
                   />
-                  <InfoField label="País" value={formulario.pais} />
                   <InfoField
-                    label="Código postal"
+                    label={t("forms.fields.country")}
+                    value={formulario.pais}
+                  />
+                  <InfoField
+                    label={t("forms.fields.postalCode")}
                     value={formulario.codigoPostal}
                   />
                 </div>
@@ -123,15 +139,15 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
               <div className="space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <Truck className="size-3" />
-                  Distribuidor
+                  {t("forms.fields.distributor")}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <InfoField
-                    label="Distribuidor"
+                    label={t("forms.fields.distributor")}
                     value={formulario.distribuidor}
                   />
                   <InfoField
-                    label="Contacto distribuidor"
+                    label={t("forms.fields.distributorContact")}
                     value={formulario.contactoDistribuidor}
                   />
                 </div>
@@ -146,7 +162,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {formulario.fechaCierre && (
                   <InfoField
-                    label="Fecha de cierre"
+                    label={t("forms.fields.closingDate")}
                     value={formatDate(formulario.fechaCierre)}
                     icon={Calendar}
                   />
@@ -155,7 +171,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
               {formulario.datosClienteUsuarioFinal && (
                 <div className="space-y-2 mt-2">
                   <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                    Datos cliente/Usuario final
+                    {t("forms.fields.clientEndUserData")}
                   </p>
                   <div className="text-sm text-foreground bg-muted/40 rounded-xl p-3 sm:p-4 border border-border/50">
                     {formulario.datosClienteUsuarioFinal}
@@ -168,7 +184,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
       </InfoSection>
 
       {/* ==================== DESCRIPCION DEL PRODUCTO ==================== */}
-      <InfoSection title="Descripción del producto" icon={FileText}>
+      <InfoSection title={t("forms.detail.productInfo")} icon={FileText}>
         <div className="space-y-4">
           <div className="bg-muted/40 rounded-xl p-3 sm:p-4 border border-border/50">
             <p
@@ -178,7 +194,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
                   "italic text-muted-foreground"
               )}
             >
-              {formulario.descripcionProducto || "No proporcionada."}
+              {formulario.descripcionProducto || t("forms.detail.notSpecified")}
             </p>
           </div>
         </div>
@@ -192,7 +208,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
       {/* ==================== CONTENEDOR INFO ==================== */}
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         {/* Tipo de contenedor */}
-        <InfoSection title="Tipo de contenedor" icon={Package}>
+        <InfoSection title={t("forms.fields.containerType")} icon={Package}>
           <div className="space-y-4">
             {/* Container types badges */}
             <div className="flex flex-wrap gap-2">
@@ -215,13 +231,13 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
                 <Separator />
                 <div className="space-y-4">
                   <NumberDisplay
-                    label="Contenedores por semana"
+                    label={t("forms.css.fields.containersPerWeek.label")}
                     value={formulario.contenedoresPorSemana}
                   />
                   {formulario.condicionesSuelo && (
                     <div className="space-y-2">
                       <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                        Condiciones del suelo
+                        {t("forms.fields.groundConditions")}
                       </p>
                       <div className="text-sm text-foreground bg-muted/40 rounded-xl p-3 border border-border/50">
                         {formulario.condicionesSuelo}
@@ -235,12 +251,15 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
         </InfoSection>
 
         {/* Medidas del contenedor */}
-        <InfoSection title="Medidas del contenedor" icon={Ruler}>
+        <InfoSection
+          title={t("forms.css.fields.measurements.label")}
+          icon={Ruler}
+        >
           <div className="space-y-4">
             {/* Selected measurements */}
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
-                Medidas seleccionadas
+                {t("forms.fields.selectedMeasurements")}
               </p>
               {formulario.contenedorMedidas &&
               formulario.contenedorMedidas.length > 0 ? (
@@ -259,7 +278,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
                 </div>
               ) : (
                 <p className="text-xs text-muted-foreground italic">
-                  No especificadas
+                  {t("forms.detail.notSpecified")}
                 </p>
               )}
             </div>
@@ -271,7 +290,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
                 <div className="space-y-2">
                   <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                     <Info className="size-3" />
-                    Especificación adicional
+                    {t("forms.detail.additionalInfo")}
                   </p>
                   <div className="text-sm text-foreground bg-muted/40 rounded-xl p-3 border border-border/50">
                     {formulario.contenedorMedidaOtro}

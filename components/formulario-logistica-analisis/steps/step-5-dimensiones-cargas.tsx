@@ -5,6 +5,7 @@ import { FormMessage } from "@/components/ui/form";
 import { Progress } from "@/components/ui/progress";
 import { StepContentProps, DimensionCarga } from "../types";
 import { Plus, Trash2, Package, Ruler } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 // ==================== SECTION HEADER ====================
 function SectionHeader({
@@ -37,18 +38,32 @@ function CargaRow({
   index,
   onUpdate,
   onRemove,
+  labels,
 }: {
   carga: DimensionCarga;
   index: number;
   onUpdate: (field: keyof DimensionCarga, value: any) => void;
   onRemove: () => void;
+  labels: {
+    length: string;
+    depth: string;
+    height: string;
+    weight: string;
+    percentage: string;
+    productPlaceholder: string;
+  };
 }) {
   const fields = [
-    { key: "largo", label: "Largo", unit: "m", placeholder: "0.00" },
-    { key: "fondo", label: "Fondo", unit: "m", placeholder: "0.00" },
-    { key: "alto", label: "Alto", unit: "m", placeholder: "0.00" },
-    { key: "peso", label: "Peso", unit: "kg", placeholder: "0" },
-    { key: "porcentaje", label: "%", unit: "%", placeholder: "0" },
+    { key: "largo", label: labels.length, unit: "m", placeholder: "0.00" },
+    { key: "fondo", label: labels.depth, unit: "m", placeholder: "0.00" },
+    { key: "alto", label: labels.height, unit: "m", placeholder: "0.00" },
+    { key: "peso", label: labels.weight, unit: "kg", placeholder: "0" },
+    {
+      key: "porcentaje",
+      label: labels.percentage,
+      unit: "%",
+      placeholder: "0",
+    },
   ];
 
   return (
@@ -58,7 +73,7 @@ function CargaRow({
           {index + 1}
         </span>
         <Input
-          placeholder="Nombre del producto"
+          placeholder={labels.productPlaceholder}
           value={carga.producto}
           onChange={(e) => onUpdate("producto", e.target.value)}
           className="h-9 text-sm flex-1"
@@ -109,7 +124,17 @@ function CargaRow({
  * Step 5: Dimensiones de las Cargas
  */
 export function Step5Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   const dimensionesCargas = form.watch("dimensionesCargas") || [];
+
+  const labels = {
+    length: t("forms.fields.length"),
+    depth: t("forms.fields.depth"),
+    height: t("forms.fields.height"),
+    weight: t("forms.fields.weight"),
+    percentage: t("forms.logistica.fields.loads.percentage"),
+    productPlaceholder: t("forms.logistica.fields.loads.productPlaceholder"),
+  };
 
   const handleAddRow = () => {
     const newRow: DimensionCarga = {
@@ -157,7 +182,7 @@ export function Step5Content({ form }: StepContentProps) {
       {/* Header with add button */}
       <SectionHeader
         icon={Package}
-        title="Dimensiones de Cargas"
+        title={t("forms.logistica.fields.loads.header")}
         action={
           <Button
             type="button"
@@ -167,7 +192,7 @@ export function Step5Content({ form }: StepContentProps) {
             onClick={handleAddRow}
           >
             <Plus className="size-3.5" />
-            Agregar
+            {t("common.add")}
           </Button>
         }
       />
@@ -177,7 +202,7 @@ export function Step5Content({ form }: StepContentProps) {
         <div className="border border-dashed rounded-lg p-6 text-center">
           <Ruler className="size-6 mx-auto text-muted-foreground/50 mb-2" />
           <p className="text-sm text-muted-foreground text-balance">
-            No hay cargas agregadas
+            {t("forms.logistica.fields.loads.empty")}
           </p>
           <Button
             type="button"
@@ -187,7 +212,7 @@ export function Step5Content({ form }: StepContentProps) {
             onClick={handleAddRow}
           >
             <Plus className="size-3.5" />
-            Agregar primera carga
+            {t("forms.logistica.fields.loads.addFirst")}
           </Button>
         </div>
       ) : (
@@ -199,6 +224,7 @@ export function Step5Content({ form }: StepContentProps) {
                 key={carga.id}
                 carga={carga}
                 index={index}
+                labels={labels}
                 onUpdate={(field, value) =>
                   handleUpdateRow(carga.id, field, value)
                 }
@@ -211,7 +237,7 @@ export function Step5Content({ form }: StepContentProps) {
           <div className="space-y-2 pt-2 border-t">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground font-medium">
-                Total porcentaje:
+                {t("forms.logistica.fields.loads.totalPercentage")}
               </span>
               <span
                 className={cn(
@@ -234,7 +260,7 @@ export function Step5Content({ form }: StepContentProps) {
             {!isValid && dimensionesCargas.length > 0 && (
               <p className="text-xs text-destructive flex items-center gap-1">
                 <span className="size-1 rounded-full bg-destructive inline-block" />
-                Los porcentajes deben sumar exactamente 100%
+                {t("forms.logistica.fields.loads.percentageError")}
               </p>
             )}
           </div>

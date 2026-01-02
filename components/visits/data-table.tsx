@@ -34,6 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   DropdownMenu,
@@ -63,12 +64,15 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 
-const COLUMN_LABELS: Record<string, string> = {
-  formType: "Tipo de formulario",
-  visitDate: "Fecha",
-  status: "Estado",
-  user: "Vendedor",
-  actions: "Acciones",
+const getColumnLabelKey = (id: string) => {
+  const map: Record<string, string> = {
+    formType: "visits.formType",
+    visitDate: "visits.visitDate",
+    status: "visits.status",
+    user: "visits.seller",
+    actions: "table.actions",
+  };
+  return map[id] || id;
 };
 
 export function VisitsDataTable<TData extends Visit, TValue>({
@@ -84,6 +88,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   onDelete,
   onCreateVisit,
 }: DataTableProps<TData, TValue>) {
+  const { t } = useI18n();
   const isMobile = useIsMobile();
 
   const [searchQuery, setSearchQuery] = useQueryState(
@@ -210,7 +215,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
           <div className="relative flex-1 max-w-full sm:max-w-sm">
             <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Buscar formulario..."
+              placeholder={t("visits.searchPlaceholder")}
               value={searchQuery}
               onChange={(event) => {
                 const value = event.target.value;
@@ -227,7 +232,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <IconFilter className="size-4" />
-                <span className="hidden sm:inline">Estado</span>
+                <span className="hidden sm:inline">{t("visits.status")}</span>
                 {statusFilter && (
                   <Badge variant="secondary" className="ml-1 px-1.5 text-xs">
                     1
@@ -237,7 +242,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[180px]">
-              <DropdownMenuLabel>Filtrar por estado</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("visits.filterByStatus")}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuCheckboxItem
                 checked={!statusFilter}
@@ -248,7 +253,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                 className="cursor-pointer"
               >
                 <GalleryHorizontalEnd className="size-3.5 inline-flex" />
-                Todos
+                {t("visits.filters.all")}
               </DropdownMenuCheckboxItem>
               {Object.entries(VISIT_STATUS_LABELS).map(([key, label]) => (
                 <DropdownMenuCheckboxItem
@@ -281,12 +286,12 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
                   <IconLayoutColumns className="size-4" />
-                  <span className="hidden md:inline">Columnas</span>
+                  <span className="hidden md:inline">{t("table.hideColumn")}</span>
                   <IconChevronDown className="size-3.5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuLabel>Mostrar columnas</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("table.hideColumn")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {table
                   .getAllColumns()
@@ -300,7 +305,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                         column.toggleVisibility(!!value)
                       }
                     >
-                      {COLUMN_LABELS[column.id] || column.id}
+                      {t(getColumnLabelKey(column.id))}
                     </DropdownMenuCheckboxItem>
                   ))}
               </DropdownMenuContent>
@@ -313,21 +318,21 @@ export function VisitsDataTable<TData extends Visit, TValue>({
       {hasActiveFilters && (
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-muted-foreground">
-            Filtros activos:
+            {t("machines.filters.activeFilters")}:
           </span>
           {searchQuery && (
             <Badge variant="secondary" className="text-xs">
-              Búsqueda: "{searchQuery}"
+              {t("users.filters.search")}: "{searchQuery}"
             </Badge>
           )}
           {statusFilter && (
             <Badge variant="secondary" className="text-xs">
-              Estado: {VISIT_STATUS_LABELS[statusFilter as VisitStatus]}
+              {t("visits.status")}: {VISIT_STATUS_LABELS[statusFilter as VisitStatus]}
             </Badge>
           )}
           {formTypeFilter && (
             <Badge variant="secondary" className="text-xs">
-              Tipo: {FORM_TYPE_LABELS[formTypeFilter as VisitFormType]}
+              {t("visits.formType")}: {FORM_TYPE_LABELS[formTypeFilter as VisitFormType]}
             </Badge>
           )}
           <Button
@@ -337,7 +342,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
             onClick={clearAllFilters}
           >
             <X className="size-3" />
-            Limpiar
+            {t("machines.filters.clearFilters")}
           </Button>
         </div>
       )}
@@ -371,18 +376,18 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               ))
           ) : (
             <EmptyCard
-              title="No se encontraron visitas"
+              title={t("visits.noVisitsFound")}
               description={
                 hasActiveFilters
-                  ? "Intenta ajustar tus filtros de búsqueda"
-                  : "No hay visitas registradas"
+                  ? t("table.noResultsFound.description")
+                  : t("visits.noVisitsFound")
               }
               icon={<History className="h-12 w-12" />}
               actions={
                 hasActiveFilters && (
                   <Button variant="outline" onClick={clearAllFilters}>
                     <X className="size-4" />
-                    Limpiar filtros
+                    {t("machines.filters.clearFilters")}
                   </Button>
                 )
               }
@@ -401,9 +406,9 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -443,11 +448,11 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                     className="h-24 text-center"
                   >
                     <EmptyCard
-                      title="No se encontraron visitas"
+                      title={t("visits.noVisitsFound")}
                       description={
                         hasActiveFilters
-                          ? "Intenta ajustar tus filtros de búsqueda"
-                          : "No hay visitas registradas"
+                          ? t("table.noResultsFound.description")
+                          : t("visits.noVisitsFound")
                       }
                       icon={<History className="h-12 w-12" />}
                     />
@@ -464,20 +469,22 @@ export function VisitsDataTable<TData extends Visit, TValue>({
         <div className="flex-1 text-sm text-muted-foreground order-2 sm:order-1">
           {table.getFilteredSelectedRowModel().rows.length > 0 && (
             <>
-              {table.getFilteredSelectedRowModel().rows.length} de{" "}
-              {table.getFilteredRowModel().rows.length} fila(s) seleccionada(s).
+              {t("table.selectedRows", {
+                count: table.getFilteredSelectedRowModel().rows.length,
+                total: table.getFilteredRowModel().rows.length,
+              })}
             </>
           )}
           {table.getFilteredSelectedRowModel().rows.length === 0 && (
             <>
-              {table.getFilteredRowModel().rows.length} visita(s) encontrada(s).
+              {t("visits.title")}: {table.getFilteredRowModel().rows.length}
             </>
           )}
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:space-x-6 lg:space-x-8 order-1 sm:order-2">
           <div className="flex items-center justify-between sm:justify-start space-x-2">
             <p className="text-sm font-medium whitespace-nowrap">
-              Filas por página
+              {t("table.rowsPerPage")}
             </p>
             <Select
               value={pageSize.toString()}
@@ -501,7 +508,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium text-primary whitespace-nowrap">
-            Página {pageIndex} de {table.getPageCount() || 1}
+            {t("pagination.page")} {pageIndex} {t("pagination.of")} {table.getPageCount() || 1}
           </div>
           <div className="flex items-center space-x-2">
             <Button
@@ -510,7 +517,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               onClick={() => setPageIndex(1)}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Ir a la primera página</span>
+              <span className="sr-only">{t("pagination.gotToFirstPage")}</span>
               <IconChevronsLeft className="size-4" />
             </Button>
             <Button
@@ -519,7 +526,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               onClick={() => setPageIndex(pageIndex - 1)}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Ir a la página anterior</span>
+              <span className="sr-only">{t("pagination.previous")}</span>
               <IconChevronLeft className="size-4" />
             </Button>
             <Button
@@ -528,7 +535,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               onClick={() => setPageIndex(pageIndex + 1)}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Ir a la página siguiente</span>
+              <span className="sr-only">{t("pagination.next")}</span>
               <IconChevronRight className="size-4" />
             </Button>
             <Button
@@ -537,7 +544,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               onClick={() => setPageIndex(table.getPageCount())}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Ir a la última página</span>
+              <span className="sr-only">{t("pagination.goToLastPage")}</span>
               <IconChevronsRight className="size-4" />
             </Button>
           </div>

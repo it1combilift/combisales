@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import AttachmentsGallery from "@/components/attachments-gallery";
 import { InfoField, InfoSection, NumberDisplay } from "./shared";
 import { FormularioLogisticaAnalisis } from "@/interfaces/visits";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Calendar,
@@ -29,35 +30,51 @@ import {
   ArrowUpFromLine,
 } from "lucide-react";
 
-// ==================== LABELS FOR DISPLAY ====================
-const ALIMENTACION_LABELS: Record<string, string> = {
-  ELECTRICO: "Eléctrico",
-  DIESEL: "Diésel",
-  GAS: "Gas",
-  MANUAL: "Manual",
+// ==================== VALUE TO KEY MAPPINGS ====================
+// Maps database values to i18n key paths
+const ALIMENTACION_KEYS: Record<string, string> = {
+  ELECTRICO: "common.powerSource.ELECTRICO",
+  DIESEL: "common.powerSource.DIESEL",
+  GAS: "common.powerSource.GLP",
+  GLP: "common.powerSource.GLP",
+  MANUAL: "common.powerSource.MANUAL",
 };
 
-const TIPO_CORRIENTE_LABELS: Record<string, string> = {
-  MONOFASICA: "Monofásica",
-  TRIFASICA: "Trifásica",
+const TIPO_CORRIENTE_KEYS: Record<string, string> = {
+  MONOFASICA: "visits.currentTypes.MONOFASICA",
+  TRIFASICA: "visits.currentTypes.TRIFASICA",
 };
 
-const TIPO_OPERACION_LABELS: Record<string, string> = {
-  carga_descarga: "Carga/Descarga",
-  almacenaje: "Almacenaje",
-  picking: "Picking",
-  cross_docking: "Cross-Docking",
-  mixta: "Mixta",
+const TIPO_OPERACION_KEYS: Record<string, string> = {
+  almacenamiento: "forms.logistica.options.operationType.storage",
+  "cross-docking": "forms.logistica.options.operationType.crossDocking",
+  picking: "forms.logistica.options.operationType.picking",
+  "carga-descarga": "forms.logistica.options.operationType.loadingUnloading",
+  "preparacion-pedidos": "forms.logistica.options.operationType.orderPrep",
+  mixto: "forms.logistica.options.operationType.mixed",
+  // Legacy values for backward compatibility
+  carga_descarga: "forms.logistica.options.operationType.loadingUnloading",
+  almacenaje: "forms.logistica.options.operationType.storage",
+  cross_docking: "forms.logistica.options.operationType.crossDocking",
+  mixta: "forms.logistica.options.operationType.mixed",
 };
 
-const TIPO_ESTANTERIAS_LABELS: Record<string, string> = {
-  convencional: "Convencional",
-  "drive-in": "Drive-in",
-  "push-back": "Push-back",
-  dinamica: "Dinámica",
-  cantilever: "Cantilever",
-  movil: "Móvil",
-  otra: "Otra",
+const TIPO_ESTANTERIAS_KEYS: Record<string, string> = {
+  CONVENCIONAL: "visits.shelfTypes.CONVENCIONAL",
+  DRIVE_IN: "visits.shelfTypes.DRIVE_IN",
+  PUSH_BACK: "visits.shelfTypes.PUSH_BACK",
+  DINAMICA: "visits.shelfTypes.DINAMICA",
+  CANTILEVER: "visits.shelfTypes.CANTILEVER",
+  MOVIL: "visits.shelfTypes.MOVIL",
+  OTRA: "visits.shelfTypes.OTRA",
+  // Legacy values for backward compatibility
+  convencional: "visits.shelfTypes.CONVENCIONAL",
+  "drive-in": "visits.shelfTypes.DRIVE_IN",
+  "push-back": "visits.shelfTypes.PUSH_BACK",
+  dinamica: "visits.shelfTypes.DINAMICA",
+  cantilever: "visits.shelfTypes.CANTILEVER",
+  movil: "visits.shelfTypes.MOVIL",
+  otra: "visits.shelfTypes.OTRA",
 };
 
 interface LogisticaDetailProps {
@@ -65,6 +82,7 @@ interface LogisticaDetailProps {
 }
 
 export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
+  const { t } = useI18n();
   const equipos = formulario.equiposElectricos;
   const pasilloActual = formulario.pasilloActual;
   const cargas = formulario.dimensionesCargas || [];
@@ -78,25 +96,27 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
         </div>
         <div>
           <h2 className="text-sm sm:text-base font-semibold tracking-tight">
-            Detalles del formulario
+            {t("forms.detail.title")}
           </h2>
-          <p className="text-xs text-muted-foreground">Análisis Logística</p>
+          <p className="text-xs text-muted-foreground">
+            {t("forms.formTypes.logistica")}
+          </p>
         </div>
       </div>
 
       {/* ==================== DATOS DEL CLIENTE ==================== */}
-      <InfoSection title="Datos del cliente" icon={Contact}>
+      <InfoSection title={t("forms.detail.clientData")} icon={Contact}>
         <div className="space-y-4">
           {/* Primary info */}
           {formulario.razonSocial && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InfoField
-                  label="Razón Social"
+                  label={t("forms.fields.legalName")}
                   value={formulario.razonSocial}
                 />
                 <InfoField
-                  label="Persona de contacto"
+                  label={t("forms.fields.contactPerson")}
                   value={formulario.personaContacto}
                 />
               </div>
@@ -111,18 +131,18 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <InfoField
-                    label="Email"
+                    label={t("forms.fields.email")}
                     value={formulario.email}
                     icon={Mail}
                   />
                   <InfoField
-                    label="Website"
+                    label={t("forms.fields.website")}
                     value={formulario.website}
                     icon={Globe}
                     isLink
                   />
                   <InfoField
-                    label="NIF/CIF"
+                    label={t("forms.fields.fiscalId")}
                     value={formulario.numeroIdentificacionFiscal}
                     icon={Hash}
                   />
@@ -139,18 +159,27 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 <div className="space-y-3">
                   <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                     <MapPin className="size-3" />
-                    Dirección
+                    {t("forms.sections.address")}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <InfoField label="Dirección" value={formulario.direccion} />
-                    <InfoField label="Localidad" value={formulario.localidad} />
                     <InfoField
-                      label="Provincia/Estado"
+                      label={t("forms.fields.address")}
+                      value={formulario.direccion}
+                    />
+                    <InfoField
+                      label={t("forms.fields.city")}
+                      value={formulario.localidad}
+                    />
+                    <InfoField
+                      label={t("forms.fields.state")}
                       value={formulario.provinciaEstado}
                     />
-                    <InfoField label="País" value={formulario.pais} />
                     <InfoField
-                      label="Código postal"
+                      label={t("forms.fields.country")}
+                      value={formulario.pais}
+                    />
+                    <InfoField
+                      label={t("forms.fields.postalCode")}
                       value={formulario.codigoPostal}
                     />
                   </div>
@@ -165,15 +194,15 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
               <div className="space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <Truck className="size-3" />
-                  Distribuidor
+                  {t("forms.fields.distributor")}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <InfoField
-                    label="Distribuidor"
+                    label={t("forms.fields.distributor")}
                     value={formulario.distribuidor}
                   />
                   <InfoField
-                    label="Contacto distribuidor"
+                    label={t("forms.fields.distributorContact")}
                     value={formulario.contactoDistribuidor}
                   />
                 </div>
@@ -188,14 +217,14 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
               <div className="flex justify-start items-center gap-2">
                 {formulario.fechaCierre && (
                   <InfoField
-                    label="Fecha de cierre"
+                    label={t("forms.fields.closingDate")}
                     value={formatDate(formulario.fechaCierre)}
                     icon={Calendar}
                   />
                 )}
                 {formulario.fechaEstimadaDefinicion && (
                   <InfoField
-                    label="Fecha estimada definición"
+                    label={t("forms.fields.estimatedDefinitionDate")}
                     value={formatDate(formulario.fechaEstimadaDefinicion)}
                     icon={Calendar}
                   />
@@ -216,14 +245,17 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
             (!formulario.fechaEstimadaDefinicion &&
               !formulario.contactoDistribuidor && (
                 <p className="text-sm text-muted-foreground italic">
-                  No se proporcionó información del cliente.
+                  {t("forms.detail.noClientInfoProvided")}
                 </p>
               ))}
         </div>
       </InfoSection>
 
       {/* ==================== DESCRIPCION DE LA OPERACION ==================== */}
-      <InfoSection title="Descripción de la operación" icon={FileText}>
+      <InfoSection
+        title={t("forms.detail.operationDescription")}
+        icon={FileText}
+      >
         <div className="space-y-4">
           {/* Notas generales */}
           <div className="bg-muted/40 rounded-xl p-3 sm:p-4 border border-border/50">
@@ -233,7 +265,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 !formulario.notasOperacion && "italic text-muted-foreground"
               )}
             >
-              {formulario.notasOperacion || "No proporcionada."}
+              {formulario.notasOperacion || t("forms.detail.notProvided")}
             </p>
           </div>
 
@@ -245,11 +277,12 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">
-                  Tipo de operación
+                  {t("forms.fields.operationType")}
                 </p>
                 <p className="text-sm font-semibold text-foreground">
-                  {TIPO_OPERACION_LABELS[formulario.tipoOperacion] ||
-                    formulario.tipoOperacion}
+                  {TIPO_OPERACION_KEYS[formulario.tipoOperacion]
+                    ? t(TIPO_OPERACION_KEYS[formulario.tipoOperacion])
+                    : formulario.tipoOperacion}
                 </p>
               </div>
             </div>
@@ -277,12 +310,16 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                       : "text-muted-foreground"
                   )}
                 />
-                <span className="text-xs font-medium">Rampas</span>
+                <span className="text-xs font-medium">
+                  {t("forms.fields.ramps")}
+                </span>
                 <Badge
                   variant={formulario.tieneRampas ? "default" : "secondary"}
                   className="text-[10px] ml-auto"
                 >
-                  {formulario.tieneRampas ? "Sí" : "No"}
+                  {formulario.tieneRampas
+                    ? t("forms.fields.yes")
+                    : t("forms.fields.no")}
                 </Badge>
               </div>
               {formulario.tieneRampas && formulario.notasRampas && (
@@ -310,14 +347,18 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                       : "text-muted-foreground"
                   )}
                 />
-                <span className="text-xs font-medium">Pasos/Puertas</span>
+                <span className="text-xs font-medium">
+                  {t("forms.fields.doorways")}
+                </span>
                 <Badge
                   variant={
                     formulario.tienePasosPuertas ? "default" : "secondary"
                   }
                   className="text-[10px] ml-auto"
                 >
-                  {formulario.tienePasosPuertas ? "Sí" : "No"}
+                  {formulario.tienePasosPuertas
+                    ? t("forms.fields.yes")
+                    : t("forms.fields.no")}
                 </Badge>
               </div>
               {formulario.tienePasosPuertas && formulario.notasPasosPuertas && (
@@ -345,14 +386,18 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                       : "text-muted-foreground"
                   )}
                 />
-                <span className="text-xs font-medium">Restricciones</span>
+                <span className="text-xs font-medium">
+                  {t("forms.fields.restrictions")}
+                </span>
                 <Badge
                   variant={
                     formulario.tieneRestricciones ? "destructive" : "secondary"
                   }
                   className="text-[10px] ml-auto"
                 >
-                  {formulario.tieneRestricciones ? "Sí" : "No"}
+                  {formulario.tieneRestricciones
+                    ? t("forms.fields.yes")
+                    : t("forms.fields.no")}
                 </Badge>
               </div>
               {formulario.tieneRestricciones &&
@@ -369,19 +414,19 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
           {/* Dimensiones de la nave */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <NumberDisplay
-              label="Altura máxima nave"
+              label={t("forms.fields.maxBuildingHeight")}
               value={formulario.alturaMaximaNave}
               unit="m"
               icon={Ruler}
             />
             <NumberDisplay
-              label="Ancho pasillo actual"
+              label={t("forms.fields.currentAisleWidth")}
               value={formulario.anchoPasilloActual}
               unit="m"
               icon={Ruler}
             />
             <NumberDisplay
-              label="Superficie trabajo"
+              label={t("forms.fields.workSurface")}
               value={formulario.superficieTrabajo}
               unit="m²"
               icon={LayoutGrid}
@@ -392,7 +437,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
           {formulario.condicionesSuelo && (
             <div className="p-3 rounded-xl bg-muted/40 border border-border/50">
               <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
-                Condiciones del suelo
+                {t("forms.fields.floorConditions")}
               </p>
               <p className="text-sm text-foreground">
                 {formulario.condicionesSuelo}
@@ -403,12 +448,12 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
       </InfoSection>
 
       {/* ==================== DATOS DE LA APLICACION ==================== */}
-      <InfoSection title="Datos de la aplicación" icon={Settings}>
+      <InfoSection title={t("forms.detail.applicationData")} icon={Settings}>
         <div className="space-y-4">
           {/* Description */}
           <div className="space-y-2">
             <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-              Descripción del producto
+              {t("forms.fields.productDescription")}
             </p>
             <div className="bg-muted/40 rounded-xl p-3 sm:p-4 border border-border/50">
               <p
@@ -418,7 +463,8 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                     "italic text-muted-foreground"
                 )}
               >
-                {formulario.descripcionProducto || "No proporcionada."}
+                {formulario.descripcionProducto ||
+                  t("forms.detail.notProvided")}
               </p>
             </div>
           </div>
@@ -428,43 +474,43 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
           {/* Measurements */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <NumberDisplay
-              label="Altura último nivel estantería"
+              label={t("forms.fields.lastShelfLevel")}
               value={formulario.alturaUltimoNivelEstanteria}
               unit="mm"
               icon={Ruler}
             />
             <NumberDisplay
-              label="Máxima altura elevación"
+              label={t("forms.fields.maxLiftHeight")}
               value={formulario.maximaAlturaElevacion}
               unit="mm"
               icon={Ruler}
             />
             <NumberDisplay
-              label="Peso carga máx. altura"
+              label={t("forms.fields.maxHeightLoad")}
               value={formulario.pesoCargaMaximaAltura}
               unit="kg"
               icon={Package}
             />
             <NumberDisplay
-              label="Peso carga primer nivel"
+              label={t("forms.fields.firstLevelLoad")}
               value={formulario.pesoCargaPrimerNivel}
               unit="kg"
               icon={Package}
             />
             <NumberDisplay
-              label="Área trabajo ancho"
+              label={t("forms.fields.workAreaWidth")}
               value={formulario.dimensionesAreaTrabajoAncho}
               unit="mm"
               icon={LayoutGrid}
             />
             <NumberDisplay
-              label="Área trabajo fondo"
+              label={t("forms.fields.workAreaDepth")}
               value={formulario.dimensionesAreaTrabajoFondo}
               unit="mm"
               icon={LayoutGrid}
             />
             <NumberDisplay
-              label="Turnos de trabajo"
+              label={t("forms.fields.workShifts")}
               value={formulario.turnosTrabajo}
               icon={Clock}
             />
@@ -479,11 +525,12 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">
-                Alimentación deseada
+                {t("forms.fields.desiredPower")}
               </p>
               <p className="text-sm font-semibold text-foreground">
-                {ALIMENTACION_LABELS[formulario.alimentacionDeseada] ||
-                  formulario.alimentacionDeseada}
+                {ALIMENTACION_KEYS[formulario.alimentacionDeseada]
+                  ? t(ALIMENTACION_KEYS[formulario.alimentacionDeseada])
+                  : formulario.alimentacionDeseada}
               </p>
             </div>
           </div>
@@ -492,38 +539,47 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
 
       {/* ==================== EQUIPOS ELECTRICOS ==================== */}
       {equipos && formulario.alimentacionDeseada === "ELECTRICO" && (
-        <InfoSection title="Equipos eléctricos" icon={Zap}>
+        <InfoSection title={t("forms.detail.electricalEquipment")} icon={Zap}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {equipos.tipoCorriente && (
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-border/50">
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Tipo corriente
+                  {t("forms.fields.currentType")}
                 </span>
                 <Badge variant="outline">
-                  {TIPO_CORRIENTE_LABELS[equipos.tipoCorriente] ||
-                    equipos.tipoCorriente}
+                  {TIPO_CORRIENTE_KEYS[equipos.tipoCorriente]
+                    ? t(TIPO_CORRIENTE_KEYS[equipos.tipoCorriente])
+                    : equipos.tipoCorriente}
                 </Badge>
               </div>
             )}
 
-            <NumberDisplay label="Voltaje" value={equipos.voltaje} unit="V" />
+            <NumberDisplay
+              label={t("forms.fields.voltage")}
+              value={equipos.voltaje}
+              unit="V"
+            />
 
             <NumberDisplay
-              label="Frecuencia"
+              label={t("forms.fields.frequency")}
               value={equipos.frecuencia}
               unit="Hz"
             />
 
-            <NumberDisplay label="Amperaje" value={equipos.amperaje} unit="A" />
+            <NumberDisplay
+              label={t("forms.fields.amperage")}
+              value={equipos.amperaje}
+              unit="A"
+            />
 
             <NumberDisplay
-              label="Temperatura ambiente"
+              label={t("forms.fields.ambientTemperature")}
               value={equipos.temperaturaAmbiente}
               unit="°C"
             />
 
             <NumberDisplay
-              label="Horas trabajo/día"
+              label={t("forms.fields.workHoursPerDay")}
               value={equipos.horasTrabajoPorDia}
               unit="h"
             />
@@ -536,7 +592,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
             equipos.temperaturaAmbiente === undefined &&
             equipos.horasTrabajoPorDia === undefined && (
               <div className="text-sm text-muted-foreground italic">
-                No se proporcionó información sobre equipos eléctricos.
+                {t("forms.detail.noElectricalInfoProvided")}
               </div>
             )}
         </InfoSection>
@@ -544,7 +600,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
 
       {/* ==================== DIMENSIONES DE CARGAS ==================== */}
       {cargas.length > 0 && (
-        <InfoSection title="Dimensiones de las cargas" icon={Package}>
+        <InfoSection title={t("forms.detail.loadDimensions")} icon={Package}>
           <div className="space-y-3">
             {cargas.map((carga, index) => (
               <div
@@ -557,7 +613,8 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                       {index + 1}
                     </div>
                     <span className="font-medium text-sm">
-                      {carga.producto || `Carga ${index + 1}`}
+                      {carga.producto ||
+                        `${t("forms.fields.loadNumber")} ${index + 1}`}
                     </span>
                   </div>
                   {carga.porcentaje !== undefined && (
@@ -569,25 +626,33 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                   {carga.largo !== undefined && (
                     <div className="flex justify-between p-2 rounded-lg bg-background/50">
-                      <span className="text-muted-foreground">Largo</span>
+                      <span className="text-muted-foreground">
+                        {t("forms.fields.length")}
+                      </span>
                       <span className="font-medium">{carga.largo} mm</span>
                     </div>
                   )}
                   {carga.fondo !== undefined && (
                     <div className="flex justify-between p-2 rounded-lg bg-background/50">
-                      <span className="text-muted-foreground">Fondo</span>
+                      <span className="text-muted-foreground">
+                        {t("forms.fields.depth")}
+                      </span>
                       <span className="font-medium">{carga.fondo} mm</span>
                     </div>
                   )}
                   {carga.alto !== undefined && (
                     <div className="flex justify-between p-2 rounded-lg bg-background/50">
-                      <span className="text-muted-foreground">Alto</span>
+                      <span className="text-muted-foreground">
+                        {t("forms.fields.height")}
+                      </span>
                       <span className="font-medium">{carga.alto} mm</span>
                     </div>
                   )}
                   {carga.peso !== undefined && (
                     <div className="flex justify-between p-2 rounded-lg bg-background/50">
-                      <span className="text-muted-foreground">Peso</span>
+                      <span className="text-muted-foreground">
+                        {t("forms.fields.weight")}
+                      </span>
                       <span className="font-medium">{carga.peso} kg</span>
                     </div>
                   )}
@@ -600,43 +665,43 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
 
       {/* ==================== PASILLO ACTUAL ==================== */}
       {pasilloActual && (
-        <InfoSection title="Pasillo actual" icon={Layers}>
+        <InfoSection title={t("forms.detail.currentAisle")} icon={Layers}>
           <div className="space-y-4">
             {/* Header descriptivo */}
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Ruler className="size-3.5" />
-              <span>Medidas y configuración del pasillo actual</span>
+              <span>{t("forms.detail.currentAisleMeasurements")}</span>
             </div>
 
             {/* Grid de medidas */}
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               <NumberDisplay
-                label="Distancia entre estanterías"
+                label={t("forms.fields.distBetweenRacks")}
                 value={pasilloActual.distanciaEntreEstanterias}
                 unit="m"
                 icon={Ruler}
               />
               <NumberDisplay
-                label="Distancia entre productos"
+                label={t("forms.fields.distBetweenProducts")}
                 value={pasilloActual.distanciaEntreProductos}
                 unit="m"
                 icon={Ruler}
               />
               <NumberDisplay
-                label="Ancho pasillo disponible"
+                label={t("forms.fields.availableAisleWidth")}
                 value={pasilloActual.anchoPasilloDisponible}
                 unit="m"
                 icon={Ruler}
               />
               {pasilloActual.nivelEstanterias && (
                 <NumberDisplay
-                  label="Niveles de estanterías"
+                  label={t("forms.fields.rackLevels")}
                   value={pasilloActual.nivelEstanterias}
                   icon={Layers}
                 />
               )}
               <NumberDisplay
-                label="Altura máx. estantería"
+                label={t("forms.fields.maxRackHeight")}
                 value={pasilloActual.alturaMaximaEstanteria}
                 unit="m"
                 icon={Ruler}
@@ -651,11 +716,12 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">
-                    Tipo de estanterías
+                    {t("forms.detail.rackType")}
                   </p>
                   <p className="text-sm font-semibold text-foreground">
-                    {TIPO_ESTANTERIAS_LABELS[pasilloActual.tipoEstanterias] ||
-                      pasilloActual.tipoEstanterias}
+                    {TIPO_ESTANTERIAS_KEYS[pasilloActual.tipoEstanterias]
+                      ? t(TIPO_ESTANTERIAS_KEYS[pasilloActual.tipoEstanterias])
+                      : pasilloActual.tipoEstanterias}
                   </p>
                 </div>
               </div>

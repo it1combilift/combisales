@@ -30,6 +30,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useI18n } from "@/lib/i18n/context";
 
 interface MachineFiltersProps {
   searchQuery: string;
@@ -74,6 +75,7 @@ export function MachineFilters({
   activeFilterCount,
   showViewToggle = true,
 }: MachineFiltersProps) {
+  const { t } = useI18n();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const FilterControls = ({ inSheet = false }: { inSheet?: boolean }) => (
@@ -85,17 +87,17 @@ export function MachineFilters({
       <div
         className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
       >
-        <Label className={inSheet ? "sr-only" : "w-fit"}>Estados</Label>
+        <Label className={inSheet ? "sr-only" : "w-fit"}>{t("machines.filters.status")}</Label>
         <Select value={statusFilter} onValueChange={onStatusChange}>
           <SelectTrigger
             className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
           >
-            <SelectValue placeholder="Estado" />
+            <SelectValue placeholder={t("machines.filters.status")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="Operativa">Operativa</SelectItem>
-            <SelectItem value="NO Operativa">No Operativa</SelectItem>
+            <SelectItem value="all">{t("machines.filters.all")}</SelectItem>
+            <SelectItem value="Operativa">{t("machines.statuses.operational")}</SelectItem>
+            <SelectItem value="NO Operativa">{t("machines.availabilities.notAvailable")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -103,17 +105,17 @@ export function MachineFilters({
       <div
         className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
       >
-        <Label className={inSheet ? "sr-only" : "w-full"}>Disponibilidad</Label>
+        <Label className={inSheet ? "sr-only" : "w-full"}>{t("machines.filters.availability")}</Label>
         <Select value={availabilityFilter} onValueChange={onAvailabilityChange}>
           <SelectTrigger
             className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
           >
-            <SelectValue placeholder="Disponibilidad" />
+            <SelectValue placeholder={t("machines.filters.availability")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="available">Disponibles</SelectItem>
-            <SelectItem value="unavailable">No disponibles</SelectItem>
+            <SelectItem value="all">{t("machines.filters.all")}</SelectItem>
+            <SelectItem value="available">{t("machines.availabilities.available")}</SelectItem>
+            <SelectItem value="unavailable">{t("machines.availabilities.notAvailable")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -121,15 +123,15 @@ export function MachineFilters({
       <div
         className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
       >
-        <Label className={inSheet ? "sr-only" : "w-full"}>Ubicación</Label>
+        <Label className={inSheet ? "sr-only" : "w-full"}>{t("machines.filters.location")}</Label>
         <Select value={locationFilter} onValueChange={onLocationChange}>
           <SelectTrigger
             className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
           >
-            <SelectValue placeholder="Ubicación" />
+            <SelectValue placeholder={t("machines.filters.location")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">{t("machines.filters.all")}</SelectItem>
             {locations.map((loc) => (
               <SelectItem key={loc} value={loc}>
                 {loc}
@@ -142,17 +144,17 @@ export function MachineFilters({
       <div
         className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
       >
-        <Label className={inSheet ? "sr-only" : "w-full"}>Seguro</Label>
+        <Label className={inSheet ? "sr-only" : "w-full"}>{t("machines.filters.insurance")}</Label>
         <Select value={insuranceFilter} onValueChange={onInsuranceChange}>
           <SelectTrigger
             className={inSheet ? "w-full" : "w-full sm:w-40 bg-background"}
           >
-            <SelectValue placeholder="Seguro" />
+            <SelectValue placeholder={t("machines.filters.insurance")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="insured">Aseguradas</SelectItem>
-            <SelectItem value="not-insured">Sin seguro</SelectItem>
+            <SelectItem value="all">{t("machines.filters.all")}</SelectItem>
+            <SelectItem value="insured">{t("machines.filters.insured")}</SelectItem>
+            <SelectItem value="not-insured">{t("machines.filters.notInsured")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -160,19 +162,19 @@ export function MachineFilters({
       <div
         className={inSheet ? "" : "flex flex-col w-full sm:w-auto space-y-1.5"}
       >
-        <Label className={inSheet ? "sr-only" : "w-full"}>Horas de uso</Label>
+        <Label className={inSheet ? "sr-only" : "w-full"}>{t("machines.filters.hoursRange")}</Label>
         <Select value={hoursRangeFilter} onValueChange={onHoursRangeChange}>
           <SelectTrigger
             className={inSheet ? "w-full" : "w-full sm:w-[180px] bg-background"}
           >
-            <SelectValue placeholder="Horas de uso" />
+            <SelectValue placeholder={t("machines.filters.hoursRange")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="0-1000">0 - 1,000 h</SelectItem>
-            <SelectItem value="1000-5000">1,000 - 5,000 h</SelectItem>
-            <SelectItem value="5000-10000">5,000 - 10,000 h</SelectItem>
-            <SelectItem value="10000+">Más de 10,000 h</SelectItem>
+            <SelectItem value="all">{t("machines.filters.all")}</SelectItem>
+            <SelectItem value="0-1000">{t("machines.filters.0-1000")}</SelectItem>
+            <SelectItem value="1000-5000">{t("machines.filters.1000-5000")}</SelectItem>
+            <SelectItem value="5000-10000">{t("machines.filters.5000-10000")}</SelectItem>
+            <SelectItem value="10000+">{t("machines.filters.10000+")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -187,7 +189,7 @@ export function MachineFilters({
           className="text-muted-foreground hover:text-foreground w-full sm:w-auto"
         >
           <X className="size-4" />
-          Limpiar filtros
+          {t("machines.filters.clearFilters")}
         </Button>
       )}
     </div>
@@ -199,7 +201,7 @@ export function MachineFilters({
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por descripción, S/N o distribuidor..."
+            placeholder={t("machines.filters.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10 bg-background h-11 max-w-md"
@@ -225,7 +227,7 @@ export function MachineFilters({
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2">
                 <Filter className="size-5" />
-                Filtros avanzados
+                {t("machines.filters.advancedFilters")}
               </SheetTitle>
             </SheetHeader>
             <div className="mt-6">
@@ -264,7 +266,7 @@ export function MachineFilters({
         <div className="flex flex-wrap gap-2">
           {statusFilter !== "all" && (
             <Badge variant="secondary" className="gap-1.5 pr-1">
-              Estado: {statusFilter}
+              {t("machines.filters.status")}: {statusFilter}
               <Button
                 variant="ghost"
                 size="icon"
@@ -278,8 +280,8 @@ export function MachineFilters({
           {availabilityFilter !== "all" && (
             <Badge variant="secondary" className="gap-1.5 pr-1">
               {availabilityFilter === "available"
-                ? "Disponibles"
-                : "No disponibles"}
+                ? t("machines.availabilities.available")
+                : t("machines.availabilities.notAvailable")}
               <Button
                 variant="ghost"
                 size="icon"
@@ -292,7 +294,7 @@ export function MachineFilters({
           )}
           {locationFilter !== "all" && (
             <Badge variant="secondary" className="gap-1.5 pr-1">
-              Ubicación: {locationFilter}
+              {t("machines.filters.location")}: {locationFilter}
               <Button
                 variant="ghost"
                 size="icon"
@@ -305,7 +307,7 @@ export function MachineFilters({
           )}
           {insuranceFilter !== "all" && (
             <Badge variant="secondary" className="gap-1.5 pr-1">
-              {insuranceFilter === "insured" ? "Aseguradas" : "Sin seguro"}
+              {insuranceFilter === "insured" ? t("machines.filters.insured") : t("machines.filters.notInsured")}
               <Button
                 variant="ghost"
                 size="icon"
@@ -318,7 +320,7 @@ export function MachineFilters({
           )}
           {hoursRangeFilter !== "all" && (
             <Badge variant="secondary" className="gap-1.5 pr-1">
-              Horas: {hoursRangeFilter}
+              {t("machines.card.hours")}: {hoursRangeFilter}
               <Button
                 variant="ghost"
                 size="icon"

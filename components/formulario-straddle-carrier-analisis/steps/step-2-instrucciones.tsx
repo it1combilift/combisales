@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useI18n } from "@/lib/i18n/context";
 import {
   Collapsible,
   CollapsibleContent,
@@ -48,6 +49,7 @@ import {
  * Includes fechaCierre field
  */
 export function Step1Content({ form }: StepContentProps) {
+  const { t, locale } = useI18n();
   const isMobile = useIsMobile();
   const [isInstructionsOpen, setIsInstructionsOpen] = React.useState(!isMobile);
   const manejaContenedores = form.watch("manejaContenedores");
@@ -69,7 +71,7 @@ export function Step1Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem className="max-w-xs">
               <FormLabel className="text-[11px] font-medium flex items-center gap-1.5">
-                Fecha estimada de cierre
+                {t("forms.straddleCarrier.fields.closingDate.label")}
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -83,8 +85,12 @@ export function Step1Content({ form }: StepContentProps) {
                     >
                       <CalendarDays className="size-3.5" />
                       {field.value
-                        ? format(new Date(field.value), "PPP", { locale: es })
-                        : "Seleccionar fecha"}
+                        ? format(new Date(field.value), "PPP", {
+                            locale: locale === "en" ? undefined : es,
+                          })
+                        : t(
+                            "forms.straddleCarrier.fields.closingDate.placeholder"
+                          )}
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
@@ -95,7 +101,7 @@ export function Step1Content({ form }: StepContentProps) {
                     onSelect={(date) => field.onChange(date ?? null)}
                     disabled={(date) => date < new Date()}
                     initialFocus
-                    locale={es}
+                    locale={locale === "en" ? undefined : es}
                   />
                 </PopoverContent>
               </Popover>
@@ -120,7 +126,7 @@ export function Step1Content({ form }: StepContentProps) {
               <Info className="size-3.5" />
             </div>
             <h3 className="flex-1 text-xs sm:text-sm font-semibold">
-              Instrucciones
+              {t("forms.straddleCarrier.fields.instructions.title")}
             </h3>
             <ChevronDown
               className={cn(
@@ -136,15 +142,21 @@ export function Step1Content({ form }: StepContentProps) {
               {[
                 {
                   num: "1",
-                  text: <>Complete cuadro 1 si maneja contenedores</>,
+                  text: (
+                    <>{t("forms.straddleCarrier.fields.instructions.step1")}</>
+                  ),
                 },
                 {
                   num: "2",
-                  text: <>Complete cuadro 2 si es carga especial</>,
+                  text: (
+                    <>{t("forms.straddleCarrier.fields.instructions.step2")}</>
+                  ),
                 },
                 {
                   num: "3",
-                  text: <>Complete ambos si trabaja ambos tipos</>,
+                  text: (
+                    <>{t("forms.straddleCarrier.fields.instructions.step3")}</>
+                  ),
                 },
               ].map((item) => (
                 <div
@@ -165,7 +177,7 @@ export function Step1Content({ form }: StepContentProps) {
       {/* ==================== SELECCIÓN DE TIPO DE CARGA ==================== */}
       <div className="space-y-3">
         <h4 className="text-xs font-semibold text-foreground">
-          ¿Qué tipo de carga maneja el cliente?
+          {t("forms.straddleCarrier.fields.handlesContainers.question")}
         </h4>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -195,10 +207,12 @@ export function Step1Content({ form }: StepContentProps) {
                 </div>
                 <div className="flex-1 min-w-0 space-y-0.5">
                   <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
-                    Contenedores
+                    {t("forms.straddleCarrier.fields.handlesContainers.label")}
                   </FormLabel>
                   <FormDescription className="text-[10px] leading-tight text-pretty">
-                    Cuadro 1: Contenedores estándar
+                    {t(
+                      "forms.straddleCarrier.fields.handlesContainers.description"
+                    )}
                   </FormDescription>
                 </div>
                 <FormControl>
@@ -239,10 +253,12 @@ export function Step1Content({ form }: StepContentProps) {
                 </div>
                 <div className="flex-1 min-w-0 space-y-0.5">
                   <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
-                    Carga especial
+                    {t("forms.straddleCarrier.fields.handlesSpecialLoad.label")}
                   </FormLabel>
                   <FormDescription className="text-[10px] leading-tight text-pretty">
-                    Cuadro 2: Dimensiones específicas
+                    {t(
+                      "forms.straddleCarrier.fields.handlesSpecialLoad.description"
+                    )}
                   </FormDescription>
                 </div>
                 <FormControl>
@@ -262,7 +278,9 @@ export function Step1Content({ form }: StepContentProps) {
         {!hasSelection && (
           <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 text-[11px] sm:text-xs bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg px-3 py-2">
             <AlertCircle className="size-3.5 shrink-0" />
-            <span>Seleccione al menos una opción para continuar.</span>
+            <span>
+              {t("forms.straddleCarrier.fields.handlesContainers.warning")}
+            </span>
           </div>
         )}
 
@@ -272,7 +290,9 @@ export function Step1Content({ form }: StepContentProps) {
             <div className="flex items-center gap-1.5 mb-2">
               <CheckCircle2 className="size-3.5 text-green-600 dark:text-green-400" />
               <span className="text-[11px] sm:text-xs font-medium text-foreground">
-                Pasos a completar:
+                {t(
+                  "forms.straddleCarrier.fields.handlesContainers.stepsToComplete"
+                )}
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-balance">
@@ -280,7 +300,7 @@ export function Step1Content({ form }: StepContentProps) {
                 <>
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                     <Container className="size-2.5 sm:size-3" />
-                    Contenedores
+                    {t("forms.straddleCarrier.fields.handlesContainers.label")}
                   </span>
                   <ChevronRight className="size-3 text-muted-foreground shrink-0" />
                 </>
@@ -289,14 +309,18 @@ export function Step1Content({ form }: StepContentProps) {
                 <>
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                     <Package className="size-2.5 sm:size-3" />
-                    Carga especial
+                    {t("forms.straddleCarrier.fields.handlesSpecialLoad.label")}
                   </span>
                   <ChevronRight className="size-3 text-muted-foreground shrink-0" />
                 </>
               )}
-              <span className="text-muted-foreground">Otros</span>
+              <span className="text-muted-foreground">
+                {t("forms.straddleCarrier.steps.others.shortTitle")}
+              </span>
               <ChevronRight className="size-3 text-muted-foreground shrink-0" />
-              <span className="text-muted-foreground">Archivos</span>
+              <span className="text-muted-foreground">
+                {t("forms.straddleCarrier.steps.files.shortTitle")}
+              </span>
             </div>
           </div>
         )}

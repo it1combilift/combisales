@@ -63,6 +63,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useTranslation } from "@/lib/i18n/context";
 
 // Helper function to get readable filter labels
 const getFilterLabel = (type: "status" | "priority", value: string): string => {
@@ -115,6 +116,7 @@ export function TasksTable({
 }: TasksTableProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [localSearchValue, setLocalSearchValue] = React.useState(
     externalSearchQuery || ""
@@ -199,7 +201,6 @@ export function TasksTable({
     }
   }, [sortBy, sortOrder]);
 
-  // Apply filters when filter values change
   React.useEffect(() => {
     const filters: ColumnFiltersState = [];
 
@@ -287,7 +288,7 @@ export function TasksTable({
             <div className="relative flex-1 max-w-full sm:max-w-sm">
               <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Buscar tareas..."
+                placeholder={t("common.searchPlaceholder")}
                 value={localSearchValue}
                 onChange={(event) => handleSearchChange(event.target.value)}
                 className="pl-9 pr-9 h-10 text-xs sm:text-sm"
@@ -299,7 +300,7 @@ export function TasksTable({
                   type="button"
                   onClick={handleClearSearch}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Limpiar búsqueda"
+                  aria-label={t("common.clearFilters")}
                 >
                   <X className="size-4" />
                 </button>
@@ -308,7 +309,7 @@ export function TasksTable({
 
             {externalSearchQuery && !isSearching && (
               <span className="hidden sm:inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary whitespace-nowrap">
-                Resultados para &quot;{externalSearchQuery}&quot;
+                {t("common.resultsFor")} &quot;{externalSearchQuery}&quot;
               </span>
             )}
           </div>
@@ -318,7 +319,8 @@ export function TasksTable({
               <div className="flex items-center gap-2 flex-wrap">
                 {statusFilter && (
                   <Badge variant="secondary" className="text-xs">
-                    Estado: {getFilterLabel("status", statusFilter)}
+                    {t("common.status")}{" "}
+                    {getFilterLabel("status", statusFilter)}
                     <button
                       onClick={() => setStatusFilter("")}
                       className="ml-1 hover:text-destructive"
@@ -329,7 +331,7 @@ export function TasksTable({
                 )}
                 {priorityFilter && (
                   <Badge variant="secondary" className="text-xs">
-                    Prioridad: {getFilterLabel("priority", priorityFilter)}
+                    {t("taskPage.columns.priority")}: {getFilterLabel("priority", priorityFilter)}
                     <button
                       onClick={() => setPriorityFilter("")}
                       className="ml-1 hover:text-destructive"
@@ -340,7 +342,7 @@ export function TasksTable({
                 )}
                 {tipoFilter && (
                   <Badge variant="secondary" className="text-xs">
-                    Tipo: {tipoFilter}
+                    {t("taskPage.filters.type")}: {tipoFilter}
                     <button
                       onClick={() => setTipoFilter("")}
                       className="ml-1 hover:text-destructive"
@@ -363,7 +365,9 @@ export function TasksTable({
                 }}
               >
                 <FilterX className="size-4" />
-                <span className="hidden sm:inline">Limpiar filtros</span>
+                <span className="hidden sm:inline">
+                  {t("common.clearFilters")}
+                </span>
               </Button>
             )}
 
@@ -374,13 +378,15 @@ export function TasksTable({
               className={showFilters ? "bg-primary/10" : ""}
             >
               <Filter className="size-4" />
-              <span className="hidden sm:inline">Filtros</span>
+              <span className="hidden sm:inline">{t("common.filters")}</span>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
                   <IconLayoutColumns className="size-4" />
-                  <span className="hidden sm:inline">Columnas</span>
+                  <span className="hidden sm:inline">
+                    {t("common.columns")}
+                  </span>
                   <IconChevronDown className="size-3.5 sm:size-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -399,19 +405,19 @@ export function TasksTable({
                         }
                       >
                         {column.id === "Subject"
-                          ? "Asunto"
+                          ? t("taskPage.columns.matter")
                           : column.id === "Tipo_de_Tarea"
-                          ? "Tipo"
+                          ? t("taskPage.columns.type")
                           : column.id === "Status"
-                          ? "Estado"
+                          ? t("taskPage.columns.status")
                           : column.id === "Priority"
-                          ? "Prioridad"
+                          ? t("taskPage.columns.priority")
                           : column.id === "Due_Date"
-                          ? "Fecha vencimiento"
+                          ? t("taskPage.columns.dueDate")
                           : column.id === "Owner"
-                          ? "Responsable"
+                          ? t("taskPage.columns.assignedTo")
                           : column.id === "What_Id"
-                          ? "Relacionado con"
+                          ? t("taskPage.columns.relatedTo")
                           : column.id}
                       </DropdownMenuCheckboxItem>
                     );
@@ -425,7 +431,7 @@ export function TasksTable({
           <div className="flex flex-row items-center justify-between gap-4 w-full">
             <div className="flex items-center gap-2">
               <p className="text-xs sm:text-sm font-medium whitespace-nowrap hidden lg:block">
-                Por página
+                {t("pagination.itemsPerPage")}
               </p>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
@@ -449,15 +455,15 @@ export function TasksTable({
               </Select>
               {(statusFilter || priorityFilter || tipoFilter) && (
                 <p className="text-xs text-muted-foreground whitespace-nowrap hidden sm:block">
-                  ({table.getFilteredRowModel().rows.length} de {data.length}{" "}
-                  resultados)
+                  ({table.getFilteredRowModel().rows.length}{" "}
+                  {t("pagination.of")} {data.length} {t("common.results")})
                 </p>
               )}
             </div>
 
             <div className="flex items-center justify-center text-xs sm:text-sm font-medium whitespace-nowrap">
-              Página {table.getState().pagination.pageIndex + 1} de{" "}
-              {table.getPageCount()}
+              {t("pagination.page")} {table.getState().pagination.pageIndex + 1}{" "}
+              {t("pagination.of")} {table.getPageCount()}
             </div>
 
             <div className="flex items-center gap-2">
@@ -470,7 +476,9 @@ export function TasksTable({
                 }}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Ir a la primera página</span>
+                <span className="sr-only">
+                  {t("pagination.gotToFirstPage")}
+                </span>
                 <IconChevronsLeft className="size-4" />
               </Button>
               <Button
@@ -482,7 +490,7 @@ export function TasksTable({
                 }}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Ir a la página anterior</span>
+                <span className="sr-only">{t("pagination.previous")}</span>
                 <IconChevronLeft className="size-4" />
               </Button>
               <Button
@@ -494,7 +502,7 @@ export function TasksTable({
                 }}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Ir a la página siguiente</span>
+                <span className="sr-only">{t("pagination.next")}</span>
                 <IconChevronRight className="size-4" />
               </Button>
               <Button
@@ -506,7 +514,7 @@ export function TasksTable({
                 }}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Ir a la última página</span>
+                <span className="sr-only">{t("pagination.goToLastPage")}</span>
                 <IconChevronsRight className="size-4" />
               </Button>
 
@@ -518,7 +526,7 @@ export function TasksTable({
                   onClick={onLoadMore}
                   disabled={isLoadingMore}
                   className="ml-2 gap-2"
-                  title="Cargar más registros"
+                  title={t("common.loadMore")}
                 >
                   {isLoadingMore ? (
                     <>
@@ -527,7 +535,9 @@ export function TasksTable({
                   ) : (
                     <>
                       <RefreshCw className="size-4" />
-                      <span className="hidden sm:inline">Cargar más</span>
+                      <span className="hidden sm:inline">
+                        {t("common.loadMore")}
+                      </span>
                     </>
                   )}
                 </Button>
@@ -541,7 +551,7 @@ export function TasksTable({
           <div className="flex justify-start items-center gap-3 p-3 border rounded-lg bg-muted/30 flex-wrap">
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">
-                Estado
+                {t("taskPage.filters.status")}
               </Label>
               <div className="flex items-center gap-2">
                 <Select
@@ -549,7 +559,11 @@ export function TasksTable({
                   onValueChange={(value) => setStatusFilter(value)}
                 >
                   <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Todos los estados" />
+                    <SelectValue
+                      placeholder={t(
+                        "taskPage.filters.statusPlaceholderStatus"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Not Started">No iniciada</SelectItem>
@@ -569,7 +583,7 @@ export function TasksTable({
                     onClick={() => setStatusFilter("")}
                   >
                     <X className="size-4" />
-                    <span className="sr-only">Limpiar filtro de estado</span>
+                    <span>{t("taskPage.filters.status")}</span>
                   </Button>
                 )}
               </div>
@@ -577,7 +591,7 @@ export function TasksTable({
 
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">
-                Prioridad
+                {t("taskPage.filters.priority")}
               </Label>
               <div className="flex items-center gap-2">
                 <Select
@@ -585,7 +599,11 @@ export function TasksTable({
                   onValueChange={(value) => setPriorityFilter(value)}
                 >
                   <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Todas las prioridades" />
+                    <SelectValue
+                      placeholder={t(
+                        "taskPage.filters.priorityPlaceholderPriority"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Highest">Máxima</SelectItem>
@@ -603,7 +621,9 @@ export function TasksTable({
                     onClick={() => setPriorityFilter("")}
                   >
                     <X className="size-4" />
-                    <span className="sr-only">Limpiar filtro de prioridad</span>
+                    <span className="sr-only">
+                      {t("taskPage.filters.priority")}
+                    </span>
                   </Button>
                 )}
               </div>
@@ -611,7 +631,7 @@ export function TasksTable({
 
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">
-                Tipo de tarea
+                {t("taskPage.filters.type")}
               </Label>
               <div className="flex items-center gap-2">
                 <Select
@@ -619,7 +639,9 @@ export function TasksTable({
                   onValueChange={(value) => setTipoFilter(value)}
                 >
                   <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Todos los tipos" />
+                    <SelectValue
+                      placeholder={t("taskPage.filters.typePlaceholderType")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {COMMERCIAL_TASK_TYPES.map((tipo) => (
@@ -637,7 +659,9 @@ export function TasksTable({
                     onClick={() => setTipoFilter("")}
                   >
                     <X className="size-4" />
-                    <span className="sr-only">Limpiar filtro de tipo</span>
+                    <span className="sr-only">
+                      {t("taskPage.filters.type")}
+                    </span>
                   </Button>
                 )}
               </div>
@@ -655,7 +679,9 @@ export function TasksTable({
                 className="h-9 ml-auto"
               >
                 <X className="size-4" />
-                Limpiar filtros
+                <span className="hidden sm:inline">
+                  {t("common.clearFilters")}
+                </span>
               </Button>
             )}
           </div>
@@ -687,8 +713,8 @@ export function TasksTable({
           ) : (
             <EmptyCard
               icon={<ListTodo className="size-8 text-muted-foreground" />}
-              title="No se encontraron tareas"
-              description="No hay tareas disponibles en este momento. Intenta ajustar los filtros de búsqueda."
+              title={t("messages.noResults")}
+              description={t("messages.unableToLoadData")}
             />
           )}
         </div>
@@ -754,8 +780,8 @@ export function TasksTable({
                       icon={
                         <ListTodo className="size-8 text-muted-foreground" />
                       }
-                      title="No se encontraron tareas"
-                      description="No hay tareas disponibles en este momento. Intenta ajustar los filtros de búsqueda."
+                      title={t("messages.noResults")}
+                      description={t("messages.unableToLoadData")}
                     />
                   </TableCell>
                 </TableRow>
@@ -770,7 +796,7 @@ export function TasksTable({
         <div className="flex flex-row items-center justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
             <p className="text-xs sm:text-sm font-medium whitespace-nowrap hidden lg:block">
-              Por página
+              {t("pagination.itemsPerPage")}
             </p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
@@ -795,8 +821,8 @@ export function TasksTable({
           </div>
 
           <div className="flex items-center justify-center text-xs sm:text-sm font-medium whitespace-nowrap">
-            Página {table.getState().pagination.pageIndex + 1} de{" "}
-            {table.getPageCount()}
+            {t("pagination.page")} {table.getState().pagination.pageIndex + 1}{" "}
+            {t("pagination.of")} {table.getPageCount()}
           </div>
 
           <div className="flex items-center gap-2">
@@ -809,7 +835,7 @@ export function TasksTable({
               }}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Ir a la primera página</span>
+              <span className="sr-only">{t("pagination.gotToFirstPage")}</span>
               <IconChevronsLeft className="size-4" />
             </Button>
             <Button
@@ -821,7 +847,9 @@ export function TasksTable({
               }}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Ir a la página anterior</span>
+              <span className="sr-only">
+                {t("pagination.gotToPreviousPage")}
+              </span>
               <IconChevronLeft className="size-4" />
             </Button>
             <Button
@@ -833,7 +861,7 @@ export function TasksTable({
               }}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Ir a la página siguiente</span>
+              <span className="sr-only">{t("pagination.gotToNextPage")}</span>
               <IconChevronRight className="size-4" />
             </Button>
             <Button
@@ -845,7 +873,7 @@ export function TasksTable({
               }}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Ir a la última página</span>
+              <span className="sr-only">{t("pagination.gotToLastPage")}</span>
               <IconChevronsRight className="size-4" />
             </Button>
 
@@ -857,7 +885,7 @@ export function TasksTable({
                 onClick={onLoadMore}
                 disabled={isLoadingMore}
                 className="ml-2 gap-2"
-                title="Cargar más registros"
+                title={t("common.loadMore")}
               >
                 {isLoadingMore ? (
                   <>
@@ -866,7 +894,9 @@ export function TasksTable({
                 ) : (
                   <>
                     <RefreshCw className="size-4" />
-                    <span className="hidden sm:inline">Cargar más</span>
+                    <span className="hidden sm:inline">
+                      {t("common.loadMore")}
+                    </span>
                   </>
                 )}
               </Button>

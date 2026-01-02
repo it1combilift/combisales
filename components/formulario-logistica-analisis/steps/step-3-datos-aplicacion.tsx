@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -56,22 +57,23 @@ function SectionHeader({
  * Technical information about the application
  */
 export function Step3Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   return (
     <div className="space-y-4">
       {/* ==================== PRODUCTO ==================== */}
       <section>
-        <SectionHeader icon={Package} title="Descripción del Producto" />
+        <SectionHeader icon={Package} title={t("forms.logistica.fields.application.headers.productDescription")} />
         <FormField
           control={form.control}
           name="descripcionProducto"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                Producto a manipular <span className="text-destructive">*</span>
+                {t("forms.logistica.fields.application.productDescription.label")} <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Descripción del producto"
+                  placeholder={t("forms.logistica.fields.application.productDescription.placeholder")}
                   className="text-sm h-8 pr-7"
                   {...field}
                 />
@@ -84,7 +86,7 @@ export function Step3Content({ form }: StepContentProps) {
 
       {/* ==================== ALTURAS, PESOS Y ÁREA ==================== */}
       <section>
-        <SectionHeader icon={Ruler} title="Dimensiones y Pesos" />
+        <SectionHeader icon={Ruler} title={t("forms.logistica.fields.application.headers.dimensionsAndWeights")} />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {/* Altura último nivel estantería */}
           <FormField
@@ -93,7 +95,7 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Alt. últ. nivel <span className="text-destructive">*</span>
+                  {t("forms.logistica.fields.application.lastLevelHeight.label")} <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -125,7 +127,7 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Máx. elevación <span className="text-destructive">*</span>
+                  {t("forms.logistica.fields.application.maxLiftHeight.label")} <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -157,7 +159,7 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Peso máx. alt. <span className="text-destructive">*</span>
+                  {t("forms.logistica.fields.application.maxLoadWeight.label")} <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -189,7 +191,7 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Peso 1er niv. <span className="text-destructive">*</span>
+                  {t("forms.logistica.fields.application.firstLevelLoadWeight.label")} <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -221,7 +223,7 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Ancho área <span className="text-destructive">*</span>
+                  {t("forms.logistica.fields.application.workAreaWidth.label")} <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -253,7 +255,7 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Fondo área <span className="text-destructive">*</span>
+                  {t("forms.logistica.fields.application.workAreaDepth.label")} <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -282,7 +284,7 @@ export function Step3Content({ form }: StepContentProps) {
 
       {/* ==================== OPERACIÓN Y ALIMENTACIÓN ==================== */}
       <section>
-        <SectionHeader icon={Clock} title="Operación y Alimentación" />
+        <SectionHeader icon={Clock} title={t("forms.logistica.fields.application.headers.operationAndPower")} />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           <FormField
             control={form.control}
@@ -290,13 +292,13 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Turnos <span className="text-destructive">*</span>
+                  {t("forms.logistica.fields.application.shifts.label")} <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     min="1"
-                    placeholder="1"
+                    placeholder={t("forms.logistica.fields.application.shifts.placeholder")}
                     className="text-sm h-8"
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
@@ -314,7 +316,7 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium">
-                  Fecha definición
+                  {t("forms.logistica.fields.application.definitionDate.label")}
                 </FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -330,7 +332,7 @@ export function Step3Content({ form }: StepContentProps) {
                         {field.value ? (
                           format(field.value, "dd/MM/yy", { locale: es })
                         ) : (
-                          <span className="text-xs">Seleccionar</span>
+                          <span className="text-xs">{t("common.select")}</span>
                         )}
                       </Button>
                     </FormControl>
@@ -356,18 +358,18 @@ export function Step3Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium flex items-center gap-1">
-                  Alimentación <span className="text-destructive">*</span>
+                  {t("forms.logistica.fields.application.powerSource.label")} <span className="text-destructive">*</span>
                 </FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="h-8 text-sm w-full">
-                      <SelectValue placeholder="Seleccionar" />
+                      <SelectValue placeholder={t("common.select")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {Object.values(TipoAlimentacion).map((tipo) => (
                       <SelectItem key={tipo} value={tipo}>
-                        {ALIMENTACION_LABELS[tipo]}
+                        {t(`common.powerSource.${tipo}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>

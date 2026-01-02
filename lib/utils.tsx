@@ -18,9 +18,9 @@ export function getInitials(name: string | null): string {
     .slice(0, 2);
 }
 
-export function formatDate(date: string | Date): string {
+export function formatDate(date: string | Date, locale: string = "es-PA"): string {
   const d = new Date(date);
-  return d.toLocaleDateString("es-PA", {
+  return d.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -30,18 +30,18 @@ export function formatDate(date: string | Date): string {
   });
 }
 
-export function formatDateShort(date: string | Date): string {
+export function formatDateShort(date: string | Date, locale: string = "es-PA"): string {
   const d = new Date(date);
-  return d.toLocaleDateString("es-PA", {
+  return d.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
 }
 
-export function formatDateTime(date: string | Date): string {
+export function formatDateTime(date: string | Date, locale: string = "es-PA"): string {
   const d = new Date(date);
-  return d.toLocaleString("es-PA", {
+  return d.toLocaleString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -51,19 +51,19 @@ export function formatDateTime(date: string | Date): string {
   });
 }
 
-export function getRoleBadge(role: Role) {
+export function getRoleBadge(role: Role, label?: string) {
   if (role === Role.ADMIN) {
     return (
       <Badge variant="info">
         <ShieldCheck className="size-3.5" />
-        Admin
+        {label || "Admin"}
       </Badge>
     );
   }
   return (
     <Badge variant="success">
       <PackageCheck className="size-3.5" />
-      Vendedor
+      {label || "Vendedor"}
     </Badge>
   );
 }

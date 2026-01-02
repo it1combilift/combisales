@@ -3,18 +3,18 @@ import { Info, Container, Package, Settings, Paperclip } from "lucide-react";
 export const FORM_STEPS = [
   {
     number: 1,
-    title: "Instrucciones",
-    shortTitle: "Instrucciones",
-    description: "Detalles de las cargas",
+    title: "forms.straddleCarrier.steps.instructions.title",
+    shortTitle: "forms.straddleCarrier.steps.instructions.shortTitle",
+    description: "forms.straddleCarrier.steps.instructions.description",
     icon: Info,
     color: "primary" as const,
     fields: ["fechaCierre", "manejaContenedores", "manejaCargaEspecial"],
   },
   {
     number: 2,
-    title: "Contenedores",
-    shortTitle: "Contenedores",
-    description: "Cuadro 1 - Contenedores",
+    title: "forms.straddleCarrier.steps.containers.title",
+    shortTitle: "forms.straddleCarrier.steps.containers.shortTitle",
+    description: "forms.straddleCarrier.steps.containers.description",
     icon: Container,
     color: "blue" as const,
     fields: [
@@ -27,9 +27,9 @@ export const FORM_STEPS = [
   },
   {
     number: 3,
-    title: "Carga especial",
-    shortTitle: "Carg. Especial",
-    description: "Cuadro 2 - Dimensiones",
+    title: "forms.straddleCarrier.steps.specialLoad.title",
+    shortTitle: "forms.straddleCarrier.steps.specialLoad.shortTitle",
+    description: "forms.straddleCarrier.steps.specialLoad.description",
     icon: Package,
     color: "amber" as const,
     fields: [
@@ -46,9 +46,9 @@ export const FORM_STEPS = [
   },
   {
     number: 4,
-    title: "Otros",
-    shortTitle: "Otros",
-    description: "Condiciones adicionales",
+    title: "forms.straddleCarrier.steps.others.title",
+    shortTitle: "forms.straddleCarrier.steps.others.shortTitle",
+    description: "forms.straddleCarrier.steps.others.description",
     icon: Settings,
     color: "violet" as const,
     fields: [
@@ -63,9 +63,9 @@ export const FORM_STEPS = [
   },
   {
     number: 5,
-    title: "Archivos adjuntos",
-    shortTitle: "Archivos",
-    description: "Fotos, videos y documentos",
+    title: "forms.straddleCarrier.steps.files.title",
+    shortTitle: "forms.straddleCarrier.steps.files.shortTitle",
+    description: "forms.straddleCarrier.steps.files.description",
     icon: Paperclip,
     color: "emerald" as const,
     fields: ["archivos"],

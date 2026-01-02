@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import AttachmentsGallery from "@/components/attachments-gallery";
 import { InfoField, InfoSection, NumberDisplay } from "./shared";
 import { FormularioStraddleCarrierAnalisis } from "@/interfaces/visits";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FileText,
@@ -42,6 +43,7 @@ interface StraddleCarrierDetailProps {
 export function StraddleCarrierDetail({
   formulario,
 }: StraddleCarrierDetailProps) {
+  const { t } = useI18n();
   const archivos = formulario.archivos || [];
 
   // Parse contenedoresTamanios JSON
@@ -64,27 +66,27 @@ export function StraddleCarrierDetail({
         </div>
         <div>
           <h2 className="text-sm sm:text-base font-semibold tracking-tight">
-            Detalles del formulario
+            {t("forms.detail.title")}
           </h2>
           <p className="text-xs text-muted-foreground">
-            Análisis Straddle Carrier
+            {t("forms.formTypes.straddleCarrier")}
           </p>
         </div>
       </div>
 
       {/* ==================== DATOS DEL CLIENTE ==================== */}
-      <InfoSection title="Datos del cliente" icon={Contact}>
+      <InfoSection title={t("forms.detail.clientData")} icon={Contact}>
         <div className="space-y-4">
           {/* Primary info */}
           {formulario.razonSocial && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InfoField
-                  label="Razón Social"
+                  label={t("forms.fields.legalName")}
                   value={formulario.razonSocial}
                 />
                 <InfoField
-                  label="Persona de contacto"
+                  label={t("forms.fields.contactPerson")}
                   value={formulario.personaContacto}
                 />
               </div>
@@ -99,18 +101,18 @@ export function StraddleCarrierDetail({
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <InfoField
-                    label="Email"
+                    label={t("forms.fields.email")}
                     value={formulario.email}
                     icon={Mail}
                   />
                   <InfoField
-                    label="Website"
+                    label={t("forms.fields.website")}
                     value={formulario.website}
                     icon={Globe}
                     isLink
                   />
                   <InfoField
-                    label="NIF/CIF"
+                    label={t("forms.fields.fiscalId")}
                     value={formulario.numeroIdentificacionFiscal}
                     icon={Hash}
                   />
@@ -126,18 +128,27 @@ export function StraddleCarrierDetail({
               <div className="space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <MapPin className="size-3" />
-                  Dirección
+                  {t("forms.sections.address")}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <InfoField label="Dirección" value={formulario.direccion} />
-                  <InfoField label="Localidad" value={formulario.localidad} />
                   <InfoField
-                    label="Provincia/Estado"
+                    label={t("forms.fields.address")}
+                    value={formulario.direccion}
+                  />
+                  <InfoField
+                    label={t("forms.fields.city")}
+                    value={formulario.localidad}
+                  />
+                  <InfoField
+                    label={t("forms.fields.state")}
                     value={formulario.provinciaEstado}
                   />
-                  <InfoField label="País" value={formulario.pais} />
                   <InfoField
-                    label="Código postal"
+                    label={t("forms.fields.country")}
+                    value={formulario.pais}
+                  />
+                  <InfoField
+                    label={t("forms.fields.postalCode")}
                     value={formulario.codigoPostal}
                   />
                 </div>
@@ -151,15 +162,15 @@ export function StraddleCarrierDetail({
               <div className="space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <Truck className="size-3" />
-                  Distribuidor
+                  {t("forms.fields.distributor")}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <InfoField
-                    label="Distribuidor"
+                    label={t("forms.fields.distributor")}
                     value={formulario.distribuidor}
                   />
                   <InfoField
-                    label="Contacto distribuidor"
+                    label={t("forms.fields.distributorContact")}
                     value={formulario.contactoDistribuidor}
                   />
                 </div>
@@ -177,14 +188,14 @@ export function StraddleCarrierDetail({
             !formulario.distribuidor &&
             !formulario.contactoDistribuidor && (
               <p className="text-sm text-muted-foreground italic">
-                No se proporcionó información del cliente.
+                {t("forms.detail.noClientInfoProvided")}
               </p>
             )}
         </div>
       </InfoSection>
 
       {/* ==================== TIPO DE OPERACIÓN ==================== */}
-      <InfoSection title="Tipo de operación" icon={Forklift}>
+      <InfoSection title={t("forms.detail.operationType")} icon={Forklift}>
         <div className="space-y-4">
           <div className="flex flex-wrap gap-3">
             <Badge variant="secondary" className="text-xs">
@@ -193,7 +204,7 @@ export function StraddleCarrierDetail({
               ) : (
                 <X className="size-3" />
               )}
-              Maneja Contenedores
+              {t("forms.detail.handlesContainers")}
             </Badge>
             <Badge variant="secondary" className="text-xs">
               {formulario.manejaCargaEspecial ? (
@@ -201,7 +212,7 @@ export function StraddleCarrierDetail({
               ) : (
                 <X className="size-3" />
               )}
-              Maneja Carga Especial
+              {t("forms.detail.handlesSpecialLoad")}
             </Badge>
           </div>
         </div>
@@ -209,23 +220,23 @@ export function StraddleCarrierDetail({
 
       {/* ==================== CONTENEDORES ==================== */}
       {formulario.manejaContenedores && (
-        <InfoSection title="Contenedores" icon={Container}>
+        <InfoSection title={t("forms.detail.containers")} icon={Container}>
           <div className="space-y-4">
             {/* Container sizes table */}
             {selectedContainers.length > 0 && (
               <div className="space-y-2">
                 <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                  Tamaños de contenedores
+                  {t("forms.detail.containerSizes")}
                 </div>
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
                     <thead className="bg-muted/50">
                       <tr>
                         <th className="text-left px-3 py-2 text-xs font-medium">
-                          Tamaño
+                          {t("forms.detail.size")}
                         </th>
                         <th className="text-right px-3 py-2 text-xs font-medium">
-                          Cantidad/Semana
+                          {t("forms.detail.quantityPerWeek")}
                         </th>
                       </tr>
                     </thead>
@@ -255,7 +266,7 @@ export function StraddleCarrierDetail({
                   ) : (
                     <X className="size-3" />
                   )}
-                  Doble apilamiento
+                  {t("forms.detail.doubleStacking")}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
@@ -265,7 +276,7 @@ export function StraddleCarrierDetail({
                   ) : (
                     <X className="size-3" />
                   )}
-                  Contenedores individuales
+                  {t("forms.detail.individualContainers")}
                 </Badge>
               </div>
             </div>
@@ -275,32 +286,32 @@ export function StraddleCarrierDetail({
 
       {/* ==================== CARGA ESPECIAL ==================== */}
       {formulario.manejaCargaEspecial && (
-        <InfoSection title="Carga especial" icon={Package}>
+        <InfoSection title={t("forms.detail.specialLoad")} icon={Package}>
           <div className="space-y-4">
             {/* Longitudes */}
             <div className="space-y-3">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                 <Ruler className="size-3" />
-                Dimensiones de productos
+                {t("forms.detail.productDimensions")}
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <NumberDisplay
-                  label="Producto más largo"
+                  label={t("forms.detail.longestProduct")}
                   value={formulario.productoMasLargo}
                   unit="m"
                 />
                 <NumberDisplay
-                  label="Producto más corto"
+                  label={t("forms.detail.shortestProduct")}
                   value={formulario.productoMasCorto}
                   unit="m"
                 />
                 <NumberDisplay
-                  label="Producto más ancho"
+                  label={t("forms.detail.widestProduct")}
                   value={formulario.productoMasAncho}
                   unit="m"
                 />
                 <NumberDisplay
-                  label="Producto más estrecho"
+                  label={t("forms.detail.narrowestProduct")}
                   value={formulario.productoMasEstrecho}
                   unit="m"
                 />
@@ -313,16 +324,16 @@ export function StraddleCarrierDetail({
             <div className="space-y-3">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                 <ArrowUpDown className="size-3" />
-                Puntos de elevación
+                {t("forms.detail.liftingPoints")}
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <NumberDisplay
-                  label="Longitud"
+                  label={t("forms.detail.liftingPointLength")}
                   value={formulario.puntosElevacionLongitud}
                   unit="m"
                 />
                 <NumberDisplay
-                  label="Ancho"
+                  label={t("forms.detail.liftingPointWidth")}
                   value={formulario.puntosElevacionAncho}
                   unit="m"
                 />
@@ -335,21 +346,21 @@ export function StraddleCarrierDetail({
             <div className="space-y-3">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                 <Weight className="size-3" />
-                Pesos y altura
+                {t("forms.detail.weightsAndHeight")}
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <NumberDisplay
-                  label="Peso máx. prod. largo"
+                  label={t("forms.detail.maxWeightLongProduct")}
                   value={formulario.pesoMaximoProductoLargo}
                   unit="kg"
                 />
                 <NumberDisplay
-                  label="Peso máx. prod. corto"
+                  label={t("forms.detail.maxWeightShortProduct")}
                   value={formulario.pesoMaximoProductoCorto}
                   unit="kg"
                 />
                 <NumberDisplay
-                  label="Producto más alto"
+                  label={t("forms.detail.tallestProduct")}
                   value={formulario.productoMasAlto}
                   unit="m"
                 />
@@ -360,22 +371,22 @@ export function StraddleCarrierDetail({
       )}
 
       {/* ==================== OTROS ==================== */}
-      <InfoSection title="Otros" icon={Route}>
+      <InfoSection title={t("forms.detail.others")} icon={Route}>
         <div className="space-y-4">
           {/* Zonas de paso */}
           <div className="space-y-3">
             <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
               <Route className="size-3" />
-              Zonas de paso
+              {t("forms.detail.passageAreas")}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <NumberDisplay
-                label="Ancho"
+                label={t("forms.detail.width")}
                 value={formulario.zonasPasoAncho}
                 unit="m"
               />
               <NumberDisplay
-                label="Alto"
+                label={t("forms.detail.height")}
                 value={formulario.zonasPasoAlto}
                 unit="m"
               />
@@ -393,12 +404,12 @@ export function StraddleCarrierDetail({
                 ) : (
                   <X className="size-3" />
                 )}
-                Piso plano
+                {t("forms.detail.flatFloor")}
               </Badge>
             </div>
             {formulario.condicionesPiso && (
               <InfoField
-                label="Condiciones del piso"
+                label={t("forms.detail.floorConditions")}
                 value={formulario.condicionesPiso}
               />
             )}
@@ -410,16 +421,16 @@ export function StraddleCarrierDetail({
           <div className="space-y-3">
             <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
               <AlertTriangle className="size-3" />
-              Restricciones
+              {t("forms.detail.restrictions")}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <NumberDisplay
-                label="Restricción de altura"
+                label={t("forms.detail.restrictionHeight")}
                 value={formulario.restriccionesAltura}
                 unit="m"
               />
               <NumberDisplay
-                label="Restricción de anchura"
+                label={t("forms.detail.restrictionWidth")}
                 value={formulario.restriccionesAnchura}
                 unit="m"
               />
@@ -433,7 +444,7 @@ export function StraddleCarrierDetail({
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <FileText className="size-3" />
-                  Notas adicionales
+                  {t("forms.detail.additionalNotes")}
                 </div>
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                   {formulario.notasAdicionales}
@@ -446,7 +457,7 @@ export function StraddleCarrierDetail({
 
       {/* ==================== ARCHIVOS ==================== */}
       {archivos.length > 0 && (
-        <InfoSection title="Archivos adjuntos" icon={FileText}>
+        <InfoSection title={t("forms.detail.attachedFiles")} icon={FileText}>
           <AttachmentsGallery archivos={archivos} />
         </InfoSection>
       )}

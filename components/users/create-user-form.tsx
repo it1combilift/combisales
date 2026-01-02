@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { createUserSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUserFormProps } from "@/interfaces/user";
+import { useI18n } from "@/lib/i18n/context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
@@ -44,6 +45,7 @@ import {
 } from "@/components/ui/select";
 
 export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof createUserSchema>>({
@@ -64,7 +66,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
     try {
       await axios.post("/api/users/create", values);
 
-      toast.success("Usuario creado exitosamente");
+      toast.success(t("users.userCreated"));
 
       form.reset();
       onSuccess?.();
@@ -72,13 +74,13 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.error ||
-            "Hubo un problema al crear el usuario. Por favor, intenta nuevamente."
+          t("users.form.createError")
         );
       } else {
         toast.error(
           error instanceof Error
             ? error.message
-            : "Hubo un problema al crear el usuario. Por favor, intenta nuevamente."
+            : t("users.form.createError")
         );
       }
     } finally {
@@ -96,21 +98,21 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
               className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
             >
               <User className="size-4" />
-              <span className="hidden xs:inline">Personal</span>
+              <span className="hidden xs:inline">{t("users.form.tabs.personal")}</span>
             </TabsTrigger>
             <TabsTrigger
               value="security"
               className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
             >
               <Lock className="size-4" />
-              <span className="hidden xs:inline">Seguridad</span>
+              <span className="hidden xs:inline">{t("users.form.tabs.security")}</span>
             </TabsTrigger>
             <TabsTrigger
               value="config"
               className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
             >
               <Settings className="size-4" />
-              <span className="hidden xs:inline">Config</span>
+              <span className="hidden xs:inline">{t("users.form.tabs.config")}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -124,13 +126,13 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-sm font-semibold">
-                      Nombre completo
+                      {t("users.form.fullNameLabel")}
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                         <Input
-                          placeholder="Ej: Juan Pérez García"
+                          placeholder={t("users.form.fullNamePlaceholder")}
                           className="pl-10 h-11 transition-all focus-visible:ring-2 text-xs sm:text-sm"
                           disabled={isLoading}
                           autoComplete="name"
@@ -149,14 +151,14 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-sm font-semibold">
-                      Correo electrónico
+                      {t("users.form.emailLabel")}
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                         <Input
                           type="email"
-                          placeholder="usuario@combilift.es"
+                          placeholder={t("users.form.emailPlaceholder")}
                           className="pl-10 h-11 transition-all focus-visible:ring-2 text-xs sm:text-sm"
                           disabled={isLoading}
                           autoComplete="email"
@@ -180,7 +182,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-sm font-semibold">
-                      Contraseña
+                      {t("users.form.passwordLabel")}
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -205,7 +207,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-sm font-semibold">
-                      Confirmar contraseña
+                      {t("users.form.confirmPasswordLabel")}
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -235,7 +237,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-sm font-semibold">
-                      Rol del usuario
+                      {t("users.form.roleLabel")}
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -246,7 +248,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                         <SelectTrigger className="min-h-full transition-all focus:ring-2 text-xs sm:text-sm w-full">
                           <div className="flex items-center gap-2">
                             <Shield className="size-4 text-muted-foreground" />
-                            <SelectValue placeholder="Selecciona un rol" />
+                            <SelectValue placeholder={t("users.form.rolePlaceholder")} />
                           </div>
                         </SelectTrigger>
                       </FormControl>
@@ -257,7 +259,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                         >
                           <div className="flex items-center gap-2">
                             <div className="size-2 rounded-full bg-blue-500" />
-                            <span className="font-medium">Administrador</span>
+                            <span className="font-medium">{t("users.roles.admin")}</span>
                           </div>
                         </SelectItem>
                         <SelectItem
@@ -266,7 +268,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                         >
                           <div className="flex items-center gap-2">
                             <div className="size-2 rounded-full bg-emerald-500" />
-                            <span className="font-medium">Vendedor</span>
+                            <span className="font-medium">{t("users.roles.seller")}</span>
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -282,14 +284,14 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-sm font-semibold">
-                      País{" "}
-                      <span className="text-muted-foreground">(Opcional)</span>
+                      {t("users.form.countryLabel")}{" "}
+                      <span className="text-muted-foreground">({t("forms.optional")})</span>
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                         <Input
-                          placeholder="Ej: España"
+                          placeholder={t("users.form.countryPlaceholder")}
                           className="pl-10 h-11 transition-all focus-visible:ring-2 text-xs sm:text-sm"
                           disabled={isLoading}
                           autoComplete="country"
@@ -307,7 +309,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-3.5 text-muted-foreground" />
                 <h4 className="text-xs font-medium text-muted-foreground">
-                  Estado de la cuenta
+                  {t("users.form.accountState")}
                 </h4>
               </div>
             </div>
@@ -320,11 +322,10 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                   <div className="space-y-0.5">
                     <FormLabel className="text-sm font-semibold flex items-center gap-2">
                       <CheckCircle2 className="size-4 text-muted-foreground" />
-                      Cuenta
+                      {t("users.form.account")}
                     </FormLabel>
                     <FormDescription className="text-xs text-muted-foreground text-pretty">
-                      Los usuarios con cuenta inactiva no podrán acceder al
-                      sistema.
+                      {t("users.form.inactiveDescription")}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -349,7 +350,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
             disabled={isLoading}
             className="w-full sm:w-auto h-10 sm:h-11"
           >
-            Limpiar
+            {t("users.form.clear")}
           </Button>
           <Button
             type="submit"
@@ -361,7 +362,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 <Loader2 className="size-4 animate-spin" />
               </>
             ) : (
-              <>Confirmar</>
+              <>{t("users.form.confirm")}</>
             )}
           </Button>
         </div>

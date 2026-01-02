@@ -16,6 +16,7 @@ import { VisitsDataTable } from "@/components/visits/data-table";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { AccountDetailsCard } from "@/components/accounts/account-details-card";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   AlertDialog,
@@ -52,6 +53,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const [visitToEdit, setVisitToEdit] = useState<Visit | null>(null);
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { t, locale } = useI18n();
 
   // Function to save customer automatically
   const saveCustomerAutomatically = async (accountData: ZohoAccount) => {
@@ -243,6 +245,8 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
     onView: handleViewVisit,
     onEdit: handleEditVisit,
     onDelete: (visit) => setVisitToDelete(visit),
+    t,
+    locale,
   });
 
   const visitsTabContent = (
@@ -250,12 +254,12 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
       {!isLoadingVisits && visits.length === 0 ? (
         <EmptyCard
           icon={<History className="text-muted-foreground" />}
-          title="No hay visitas registradas"
-          description="Comienza creando una nueva visita para este cliente"
+          title={t("visits.noVisitsFound")}
+          description={t("visits.visitNotFoundDescription")}
           actions={
             <Button onClick={handleNewVisit} variant="secondary">
               <Plus className="size-4" />
-              Nueva visita
+              {t("visits.createVisit")}
             </Button>
           }
         />
@@ -298,34 +302,34 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
         <FolderKanban className=" text-muted-foreground" />
       </div>
       <h3 className="text-xl font-semibold mb-2 text-foreground">
-        Proyectos Asociados
+        {t("visits.projectsTab")}
       </h3>
       <p className="text-sm text-muted-foreground max-w-md">
-        Lista de proyectos relacionados con este cliente, estados y progreso.
+        {t("visits.projectsTabDescription")}
       </p>
     </div>
   );
 
   const tabs = [
     {
-      name: "Visitas",
+      name: t("visits.visitsTab"),
       value: "visits",
       icon: History,
-      description: "Historial completo de visitas realizadas",
+      description: t("visits.visitsTabDescription"),
       content: visitsTabContent,
     },
     {
-      name: "Detalles",
+      name: t("visits.detailsTab"),
       value: "details",
       icon: FileText,
-      description: "Información completa del cliente",
+      description: t("visits.detailsTabDescription"),
       content: detailsTabContent,
     },
     {
-      name: "Proyectos",
+      name: t("visits.projectsTab"),
       value: "projects",
       icon: FolderKanban,
-      description: "Proyectos vinculados",
+      description: t("visits.projectsTabDescription"),
       content: projectsTabContent,
     },
   ];
@@ -388,7 +392,11 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   className="h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
                 >
                   <ArrowLeft className="size-4" />
-                  <span className="hidden sm:inline">Volver</span>
+                  <span className="hidden sm:inline">
+                    {
+                      t("common.back")
+                    }
+                  </span>
                 </Button>
 
                 <Button
@@ -397,7 +405,11 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   className="h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
                 >
                   <Plus className="size-4" />
-                  <span className="hidden sm:inline">Nueva visita</span>
+                  <span className="hidden sm:inline">
+                    {
+                      t("visits.createVisit")
+                    }
+                  </span>
                 </Button>
               </div>
             </div>
@@ -455,16 +467,19 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           >
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>¿Eliminar visita?</AlertDialogTitle>
+                <AlertDialogTitle>
+                  {t("visits.deleteVisit")}
+                </AlertDialogTitle>
                 <AlertDialogDescription className="text-pretty">
-                  Esta acción no se puede deshacer. Se eliminará permanentemente
-                  la visita y todos sus datos asociados.
+                  {t("visits.deleteVisitModalDescription")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel>
+                  {t("common.cancel")}
+                </AlertDialogCancel>
                 <AlertDialogAction onClick={handleDeleteVisit}>
-                  Eliminar
+                  {t("visits.deleteVisit")}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

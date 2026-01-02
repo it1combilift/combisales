@@ -1,8 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
+import { useI18n } from "@/lib/i18n/context";
 import { FormHeader } from "./ui/form-header";
 import { FormNavigation } from "./ui/form-navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +22,7 @@ import { Step5Content } from "./steps/step-6-archivos";
 
 import {
   FormularioStraddleCarrierSchema,
-  formularioStraddleCarrierSchema,
+  getFormularioStraddleCarrierSchema,
 } from "./schemas";
 
 import {
@@ -38,10 +40,12 @@ export default function FormularioStraddleCarrierAnalisis({
 }: FormularioStraddleCarrierAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioStraddleCarrierAnalisis;
+  const { t } = useI18n();
+  const schema = useMemo(() => getFormularioStraddleCarrierSchema(t), [t]);
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioStraddleCarrierSchema>({
-    resolver: zodResolver(formularioStraddleCarrierSchema),
+    resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues:
       isEditing && formulario
@@ -79,6 +83,7 @@ export default function FormularioStraddleCarrierAnalisis({
     isEditing,
     existingVisit,
     onSuccess,
+    t,
   });
 
   const {
@@ -95,6 +100,7 @@ export default function FormularioStraddleCarrierAnalisis({
   } = useFileUploader({
     form,
     customerId: customer?.id || undefined,
+    t,
   });
 
   // Calculate visible steps count for navigation

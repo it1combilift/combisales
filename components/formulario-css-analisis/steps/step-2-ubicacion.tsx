@@ -2,6 +2,7 @@ import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
 import { FieldWrapper } from "../ui/field-wrapper";
 import { Home, Navigation, Hash, MapPinned, Flag } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -16,6 +17,8 @@ import {
  * Fields: direccion, localidad, codigoPostal, provinciaEstado, pais
  */
 export function Step2Content({ form }: StepContentProps) {
+  const { t } = useI18n();
+
   return (
     <div className="space-y-4 sm:space-y-5">
       <FieldWrapper icon={Home}>
@@ -25,12 +28,12 @@ export function Step2Content({ form }: StepContentProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                Dirección
+                {t("forms.clientData.fields.address.label")}
                 <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Calle, número, piso, puerta..."
+                  placeholder={t("forms.clientData.fields.address.placeholder")}
                   className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                   {...field}
                 />
@@ -50,12 +53,14 @@ export function Step2Content({ form }: StepContentProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                    Localidad
+                    {t("forms.clientData.fields.city.label")}
                     <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Ciudad"
+                      placeholder={t(
+                        "forms.clientData.fields.city.placeholder"
+                      )}
                       className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                       {...field}
                     />
@@ -74,11 +79,13 @@ export function Step2Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  C.P.
+                  {t("forms.clientData.fields.postalCode.label")}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="12345"
+                    placeholder={t(
+                      "forms.clientData.fields.postalCode.placeholder"
+                    )}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
@@ -98,12 +105,14 @@ export function Step2Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  Provincia/Estado
+                  {t("forms.clientData.fields.province.label")}
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Provincia o Estado"
+                    placeholder={t(
+                      "forms.clientData.fields.province.placeholder"
+                    )}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
@@ -121,12 +130,14 @@ export function Step2Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  País
+                  {t("forms.clientData.fields.country.label")}
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Ej: España"
+                    placeholder={t(
+                      "forms.clientData.fields.country.placeholder"
+                    )}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />

@@ -11,6 +11,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { useI18n } from "@/lib/i18n/context";
 
 // ==================== COMPACT NUMBERED INPUT ====================
 function NumberedInput({
@@ -63,6 +64,7 @@ function NumberedInput({
  * Step 6: Especificaciones del Pasillo - Ultra Compact
  */
 export function Step6Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   const alimentacion = form.watch("alimentacionDeseada");
   const isGuided = alimentacion === TipoAlimentacion.ELECTRICO;
 
@@ -74,11 +76,11 @@ export function Step6Content({ form }: StepContentProps) {
           <Ruler className="size-3 text-primary" />
         </div>
         <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Especificaciones del Pasillo
+          {t("forms.industrial.fields.aisle.header")}
         </h3>
         {isGuided && (
           <span className="ml-auto text-[9px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
-            + Rieles guía
+            {t("forms.industrial.fields.aisle.guideRailsLabel")}
           </span>
         )}
       </div>
@@ -92,7 +94,7 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <NumberedInput
               number={1}
-              label="Profundidad producto"
+              label={t("forms.industrial.fields.aisle.productDepth")}
               field={field}
             />
           )}
@@ -103,7 +105,7 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <NumberedInput
               number={2}
-              label="Ancho entre productos"
+              label={t("forms.industrial.fields.aisle.widthBetweenProducts")}
               field={field}
             />
           )}
@@ -116,7 +118,7 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <NumberedInput
               number={3}
-              label="Dist. entre estanterías"
+              label={t("forms.industrial.fields.aisle.distBetweenRacks")}
               field={field}
             />
           )}
@@ -127,7 +129,7 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <NumberedInput
               number={4}
-              label="Fondo útil estantería"
+              label={t("forms.industrial.fields.aisle.rackUsefulDepth")}
               field={field}
             />
           )}
@@ -138,7 +140,7 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <NumberedInput
               number={5}
-              label="Altura base estantería"
+              label={t("forms.industrial.fields.aisle.rackBaseHeight")}
               field={field}
             />
           )}
@@ -152,7 +154,7 @@ export function Step6Content({ form }: StepContentProps) {
             render={({ field }) => (
               <NumberedInput
                 number={6}
-                label="Dist. bajo rieles guía"
+                label={t("forms.industrial.fields.aisle.distUnderGuideRails")}
                 field={field}
                 isConditional
               />
@@ -166,7 +168,7 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <NumberedInput
               number={7}
-              label="Altura suelo→1er brazo"
+              label={t("forms.industrial.fields.aisle.heightFloorFirstArm")}
               field={field}
             />
           )}
@@ -180,7 +182,7 @@ export function Step6Content({ form }: StepContentProps) {
               render={({ field }) => (
                 <NumberedInput
                   number={8}
-                  label="Dist. entre rieles guía"
+                  label={t("forms.industrial.fields.aisle.distBetweenGuideRails")}
                   field={field}
                   isConditional
                 />
@@ -192,7 +194,7 @@ export function Step6Content({ form }: StepContentProps) {
               render={({ field }) => (
                 <NumberedInput
                   number={9}
-                  label="Altura libre→guía"
+                  label={t("forms.industrial.fields.aisle.clearHeightToGuide")}
                   field={field}
                   isConditional
                 />
@@ -208,7 +210,7 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <NumberedInput
               number={10}
-              label="Grosor pilar/columna"
+              label={t("forms.industrial.fields.aisle.columnThickness")}
               field={field}
             />
           )}
@@ -219,7 +221,7 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <NumberedInput
               number={11}
-              label="Altura último nivel"
+              label={t("forms.industrial.fields.aisle.lastLevelHeight")}
               field={field}
             />
           )}
@@ -230,7 +232,7 @@ export function Step6Content({ form }: StepContentProps) {
           render={({ field }) => (
             <NumberedInput
               number={12}
-              label="Altura máx. interior"
+              label={t("forms.industrial.fields.aisle.maxInteriorHeight")}
               field={field}
             />
           )}

@@ -2,6 +2,7 @@
 
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/lib/i18n/context";
 import {
   Package,
   Ruler,
@@ -100,6 +101,7 @@ function DimensionInput({
  * Step 4: Cuadro 2 - Carga Especial (Dimensiones)
  */
 export function Step4Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   const manejaCargaEspecial = form.watch("manejaCargaEspecial");
 
   if (!manejaCargaEspecial) {
@@ -107,8 +109,10 @@ export function Step4Content({ form }: StepContentProps) {
       <div className="flex items-center justify-center py-6">
         <AlertMessage
           variant="info"
-          title="Paso no aplicable"
-          description="Este paso solo es necesario cuando el cliente maneja carga especial. Puedes continuar al siguiente paso."
+          title={t("forms.straddleCarrier.fields.notApplicable.title")}
+          description={t(
+            "forms.straddleCarrier.fields.notApplicable.specialLoadDescription"
+          )}
         />
       </div>
     );
@@ -118,18 +122,27 @@ export function Step4Content({ form }: StepContentProps) {
     <div className="space-y-4">
       {/* ==================== LONGITUD DE PRODUCTOS ==================== */}
       <section>
-        <SectionHeader icon={Ruler} title="Longitud de Productos" />
+        <SectionHeader
+          icon={Ruler}
+          title={t(
+            "forms.straddleCarrier.fields.specialLoad.productLength.title"
+          )}
+        />
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <DimensionInput
             control={form.control}
             name="productoMasLargo"
-            label="Más largo"
+            label={t(
+              "forms.straddleCarrier.fields.specialLoad.productLength.longest"
+            )}
             icon={Ruler}
           />
           <DimensionInput
             control={form.control}
             name="productoMasCorto"
-            label="Más corto"
+            label={t(
+              "forms.straddleCarrier.fields.specialLoad.productLength.shortest"
+            )}
             icon={Ruler}
           />
         </div>
@@ -137,18 +150,27 @@ export function Step4Content({ form }: StepContentProps) {
 
       {/* ==================== ANCHO DE PRODUCTOS ==================== */}
       <section>
-        <SectionHeader icon={MoveHorizontal} title="Ancho de Productos" />
+        <SectionHeader
+          icon={MoveHorizontal}
+          title={t(
+            "forms.straddleCarrier.fields.specialLoad.productWidth.title"
+          )}
+        />
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <DimensionInput
             control={form.control}
             name="productoMasAncho"
-            label="Más ancho"
+            label={t(
+              "forms.straddleCarrier.fields.specialLoad.productWidth.widest"
+            )}
             icon={MoveHorizontal}
           />
           <DimensionInput
             control={form.control}
             name="productoMasEstrecho"
-            label="Más estrecho"
+            label={t(
+              "forms.straddleCarrier.fields.specialLoad.productWidth.narrowest"
+            )}
             icon={MoveHorizontal}
           />
         </div>
@@ -158,25 +180,33 @@ export function Step4Content({ form }: StepContentProps) {
       <section>
         <SectionHeader
           icon={ArrowUpDown}
-          title="Altura y Puntos de Elevación"
+          title={t(
+            "forms.straddleCarrier.fields.specialLoad.heightAndLifting.title"
+          )}
         />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
           <DimensionInput
             control={form.control}
             name="productoMasAlto"
-            label="Producto más alto"
+            label={t(
+              "forms.straddleCarrier.fields.specialLoad.heightAndLifting.tallestProduct"
+            )}
             icon={ArrowUpDown}
           />
           <DimensionInput
             control={form.control}
             name="puntosElevacionLongitud"
-            label="Elev. longitud"
+            label={t(
+              "forms.straddleCarrier.fields.specialLoad.heightAndLifting.liftingLength"
+            )}
             icon={Ruler}
           />
           <DimensionInput
             control={form.control}
             name="puntosElevacionAncho"
-            label="Elev. ancho"
+            label={t(
+              "forms.straddleCarrier.fields.specialLoad.heightAndLifting.liftingWidth"
+            )}
             icon={MoveHorizontal}
           />
         </div>
@@ -184,12 +214,17 @@ export function Step4Content({ form }: StepContentProps) {
 
       {/* ==================== PESOS MÁXIMOS ==================== */}
       <section>
-        <SectionHeader icon={Weight} title="Pesos Máximos" />
+        <SectionHeader
+          icon={Weight}
+          title={t("forms.straddleCarrier.fields.specialLoad.maxWeights.title")}
+        />
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <DimensionInput
             control={form.control}
             name="pesoMaximoProductoLargo"
-            label="Peso máx. prod. largo"
+            label={t(
+              "forms.straddleCarrier.fields.specialLoad.maxWeights.longProduct"
+            )}
             icon={Weight}
             unit="kg"
             placeholder="0"
@@ -198,7 +233,9 @@ export function Step4Content({ form }: StepContentProps) {
           <DimensionInput
             control={form.control}
             name="pesoMaximoProductoCorto"
-            label="Peso máx. prod. corto"
+            label={t(
+              "forms.straddleCarrier.fields.specialLoad.maxWeights.shortProduct"
+            )}
             icon={Weight}
             unit="kg"
             placeholder="0"

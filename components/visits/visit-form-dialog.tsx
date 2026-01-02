@@ -10,6 +10,7 @@ import { FORM_OPTIONS, VisitFormDialogProps } from "@/interfaces/visits";
 import FormularioLogisticaAnalisis from "../formulario-logistica-analisis";
 import FormularioIndustrialAnalisis from "../formulario-industrial-analisis";
 import FormularioStraddleCarrierAnalisis from "../formulario-straddle-carrier-analisis";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Dialog,
@@ -27,6 +28,7 @@ export default function VisitFormDialog({
   onSuccess,
   existingVisit,
 }: VisitFormDialogProps) {
+  const { t } = useI18n();
   const [selectedFormType, setSelectedFormType] =
     useState<VisitFormType | null>(null);
 
@@ -70,10 +72,10 @@ export default function VisitFormDialog({
             <div className="px-2 md:px-3 py-3 border-b border-border">
               <DialogHeader className="text-left">
                 <DialogTitle className="text-xs sm:text-sm font-semibold leading-tight tracking-tight text-balance">
-                  Registrar visita
+                  {t("visits.registerVisit")}
                 </DialogTitle>
                 <DialogDescription className="text-[10px] md:text-xs text-muted-foreground leading-snug text-balance">
-                  Selecciona el tipo de formulario para documentar esta visita.
+                  {t("visits.selectFormTypeDescription")}
                 </DialogDescription>
               </DialogHeader>
             </div>
@@ -128,7 +130,7 @@ export default function VisitFormDialog({
                             variant="secondary"
                             className="text-[9px] font-medium"
                           >
-                            Próximamente
+                            {t("visits.comingSoon")}
                           </Badge>
                         )}
                       </div>
@@ -138,7 +140,19 @@ export default function VisitFormDialog({
                           {FORM_TYPE_LABELS[option.type]}
                         </h3>
                         <p className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate">
-                          {option.description}
+                          {t(
+                            `visits.formTypes.${
+                              option.type === VisitFormType.ANALISIS_CSS
+                                ? "css"
+                                : option.type ===
+                                  VisitFormType.ANALISIS_INDUSTRIAL
+                                ? "industrial"
+                                : option.type ===
+                                  VisitFormType.ANALISIS_LOGISTICA
+                                ? "logistica"
+                                : "straddleCarrier"
+                            }` as any
+                          )}
                         </p>
                       </div>
 
@@ -149,7 +163,7 @@ export default function VisitFormDialog({
                             opacity-0 group-hover:opacity-100 transition-opacity
                           "
                         >
-                          Seleccionar
+                          {t("visits.select")}
                           <ArrowRight className="size-3 group-hover:translate-x-1 transition-transform" />
                         </div>
                       )}

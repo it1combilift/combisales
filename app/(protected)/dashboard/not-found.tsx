@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/empty-card";
 import { useRouter, usePathname } from "next/navigation";
 import { FileQuestion, Home, ArrowLeft } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function DashboardNotFound() {
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useI18n();
 
   useEffect(() => {
     console.log(`404 - Página no encontrada: ${pathname}`);
@@ -36,7 +38,7 @@ export default function DashboardNotFound() {
               className="gap-2"
             >
               <ArrowLeft className="size-4" />
-              Volver atrás
+              {t("common.back")}
             </Button>
           </div>
         }

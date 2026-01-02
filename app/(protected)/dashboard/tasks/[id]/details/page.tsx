@@ -2,26 +2,28 @@
 
 import { toast } from "sonner";
 import { es } from "date-fns/locale";
+import { Visit } from "@/interfaces/visits";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
 import { ZohoTask } from "@/interfaces/zoho";
 import { Label } from "@/components/ui/label";
+import { H1 } from "@/components/fonts/fonts";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { EmptyCard } from "@/components/empty-card";
 import { CopyButton } from "@/components/copy-button";
 import { Separator } from "@/components/ui/separator";
-import { H1, Paragraph } from "@/components/fonts/fonts";
-import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Visit, FORM_TYPE_LABELS, VisitFormType } from "@/interfaces/visits";
-import VisitFormDialog from "@/components/visits/visit-form-dialog";
-import { VisitsDataTable } from "@/components/visits/data-table";
+import { useState, useEffect, useCallback } from "react";
 import { VisitCard } from "@/components/visits/visit-card";
 import { createColumns } from "@/components/visits/columns";
 import { ColumnFiltersState } from "@tanstack/react-table";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { VisitsDataTable } from "@/components/visits/data-table";
+import VisitFormDialog from "@/components/visits/visit-form-dialog";
+import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   ArrowLeft,
@@ -47,7 +49,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Spinner } from "@/components/ui/spinner";
 
 interface TaskDetailPageProps {
   params: Promise<{ id: string }>;
@@ -66,6 +67,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { t, locale } = useI18n();
 
   useEffect(() => {
     const fetchTaskDetail = async () => {
@@ -284,7 +286,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
               variant="default"
             >
               <ArrowLeft className="size-4" />
-              Volver a tareas
+              {t("common.back")}
             </Button>
           }
         />
@@ -330,13 +332,17 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
             <Button variant="outline" size="sm" onClick={() => router.back()}>
               <ArrowLeft className="size-4" />
               <span className="text-muted-foreground hidden sm:inline">
-                Volver
+                {t("common.back")}
               </span>
             </Button>
 
             <Button onClick={handleNewVisit} size="sm">
               <Plus className="size-4" />
-              <span className="hidden sm:inline">Nueva visita</span>
+              <span className="hidden sm:inline">
+                {
+                  t("visits.createVisit")
+                }
+              </span>
             </Button>
           </div>
         </div>
@@ -353,7 +359,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                   </div>
                   <div className="min-w-0 flex-1">
                     <Label className="text-xs text-muted-foreground">
-                      Responsable
+                      {t("tasks.assignedTo")}
                     </Label>
                     <p className="text-sm font-medium truncate">
                       {task.Owner.name}
@@ -375,7 +381,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                   </div>
                   <div className="min-w-0 flex-1">
                     <Label className="text-xs text-muted-foreground">
-                      {task.What_Id.module || "Relacionado"}
+                      {t("tasks.relatedTo")}
                     </Label>
                     <p className="text-sm font-medium truncate">
                       {task.What_Id.name}
@@ -392,7 +398,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                   </div>
                   <div className="min-w-0 flex-1">
                     <Label className="text-xs text-muted-foreground">
-                      Contacto
+                      {t("tasks.contact")}
                     </Label>
                     <p className="text-sm font-medium truncate">
                       {task.Who_Id.name}
@@ -409,7 +415,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                   </div>
                   <div className="min-w-0 flex-1">
                     <Label className="text-xs text-muted-foreground">
-                      Última actualización
+                      {t("visits.modifiedSection")}
                     </Label>
                     <p className="text-sm font-medium">
                       {formatRelativeTime(task.Modified_Time)}
@@ -422,20 +428,23 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
         </Card>
       </header>
 
-      {/* PRIORIDAD: Visitas documentadas - Sección principal */}
       <Card className="shadow-none p-0 w-full border-none">
         <CardHeader className="p-0">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="space-y-1">
               <CardTitle className="flex items-center gap-2 text-base">
                 <FileCheck className="size-4 text-primary" />
-                Visitas documentadas
+                {
+                  t("visits.registeredVisitsTitleSection")
+                }
                 {visits.length > 0 && (
                   <Badge variant="secondary">{visits.length}</Badge>
                 )}
               </CardTitle>
               <p className="text-sm text-muted-foreground text-pretty">
-                Registro de todas las visitas realizadas para esta tarea
+                {
+                  t("visits.registeredVisitsDescriptionSection")
+                }
               </p>
             </div>
           </div>
@@ -445,18 +454,20 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
             <div className="flex flex-row items-center justify-center gap-2">
               <Spinner variant="bars" className="size-4" />
               <span className="text-sm text-muted-foreground animate-pulse">
-                Cargando visitas...
+                {t("common.loading")}
               </span>
             </div>
           ) : visits.length === 0 ? (
             <EmptyCard
-              title="Sin visitas registradas"
-              description="Aún no se han documentado visitas para esta tarea. Haz clic en 'Nueva visita' para comenzar a documentar."
+              title={t("visits.emptyTitle")}
+              description={t("visits.emptyDescription")}
               icon={<FileCheck />}
               actions={
                 <Button onClick={handleNewVisit} size="sm">
                   <Plus className="size-4" />
-                  Crear primera visita
+                  {
+                    t("visits.createVisit")
+                  }
                 </Button>
               }
             />
@@ -466,7 +477,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                 <VisitCard
                   key={visit.id}
                   visit={visit}
-                  onSelect={() => {}}
+                  onSelect={() => { }}
                   isSelected={false}
                   onView={handleViewVisit}
                   onEdit={handleEditVisit}
@@ -481,6 +492,8 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                 onView: handleViewVisit,
                 onEdit: handleEditVisit,
                 onDelete: (visit) => setVisitToDelete(visit),
+                t,
+                locale,
               })}
               data={visits}
               isLoading={isLoadingVisits}
@@ -507,7 +520,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
               <CardHeader className="bg-muted pt-3 rounded-t-xl">
                 <CardTitle className="flex items-center gap-2 text-sm md:text-base">
                   <FileText className="size-4" />
-                  Descripción
+                  {t("visits.descriptionSection")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -524,7 +537,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
               <CardHeader className="bg-muted pt-3 rounded-t-xl">
                 <CardTitle className="flex items-center gap-2 text-sm md:text-base">
                   <Clock className="size-4 text-amber-600 dark:text-amber-400" />
-                  Recordatorio programado
+                  {t("visits.reminderSection")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -553,21 +566,21 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
             <CardHeader className="bg-muted pt-3 rounded-t-xl">
               <CardTitle className="text-sm md:text-base flex items-center gap-2">
                 <Calendar className="size-4" />
-                Fechas
+                {t("visits.datesSection")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {task.Created_Time && (
                 <div className="space-y-1">
                   <Label className="text-xs text-muted-foreground">
-                    Creada
+                    {t("visits.createdSection")}
                   </Label>
                   <p className="text-sm font-medium">
                     {formatDate(task.Created_Time)}
                   </p>
                   {task.Created_By?.name && (
                     <p className="text-xs text-muted-foreground">
-                      por {task.Created_By.name}
+                      {t("visits.createdBySection")} {task.Created_By.name}
                     </p>
                   )}
                 </div>
@@ -578,14 +591,14 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                   <Separator />
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">
-                      Modificada
+                      {t("visits.modifiedSection")}
                     </Label>
                     <p className="text-sm font-medium">
                       {formatDate(task.Modified_Time)}
                     </p>
                     {task.Modified_By?.name && (
                       <p className="text-xs text-muted-foreground">
-                        por {task.Modified_By.name}
+                        {t("visits.modifiedBySection")} {task.Modified_By.name}
                       </p>
                     )}
                   </div>
@@ -597,7 +610,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                   <Separator />
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">
-                      Completada
+                      {t("visits.completedSection")}
                     </Label>
                     <p className="text-sm font-medium">
                       {formatDate(task.Closed_Time)}
@@ -616,13 +629,13 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
             <CardHeader className="bg-muted pt-3 rounded-t-xl">
               <CardTitle className="text-sm md:text-base flex items-center gap-2">
                 <ListTodo className="size-4" />
-                Información del sistema
+                {t("visits.systemInfoSection")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
                 <Label className="text-xs text-muted-foreground">
-                  ID de tarea
+                  {t("visits.taskIdSection")}
                 </Label>
                 <div className="flex items-center gap-2 mt-1">
                   <code className="text-xs font-mono bg-muted px-2 py-1 rounded flex-1">
@@ -640,7 +653,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
               {task.Ubicaci_n && (
                 <div>
                   <Label className="text-xs text-muted-foreground">
-                    Ubicación
+                    {t("visits.locationSection")}
                   </Label>
                   <p className="text-sm font-medium mt-1">{task.Ubicaci_n}</p>
                 </div>
@@ -666,16 +679,17 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar visita?</AlertDialogTitle>
+            <AlertDialogTitle>{t("visits.deleteVisitModalTitle")}</AlertDialogTitle>
             <AlertDialogDescription className="text-pretty">
-              Esta acción no se puede deshacer. Se eliminará permanentemente la
-              visita y todos sus datos asociados.
+              {t("visits.deleteVisitModalDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>
+              {t("common.cancel")}
+            </AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteVisit}>
-              Eliminar
+              {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

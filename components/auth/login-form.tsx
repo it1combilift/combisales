@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslation } from "@/lib/i18n/context";
 
 export function LoginForm({
   className,
@@ -25,6 +26,7 @@ export function LoginForm({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   type LoginValues = z.infer<typeof loginSchema>;
 
@@ -128,10 +130,10 @@ export function LoginForm({
             >
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold tracking-tight">
-                  Bienvenido
+                  {t("loginForm.title")}
                 </h1>
                 <p className="text-muted-foreground text-sm max-w-xs mx-auto text-pretty">
-                  Ingresa tus credenciales para acceder
+                  {t("loginForm.description")}
                 </p>
               </div>
 
@@ -146,14 +148,14 @@ export function LoginForm({
                       htmlFor="email"
                       className="text-sm font-medium text-foreground/80"
                     >
-                      Correo Electrónico
+                      {t("loginForm.email_label")}
                     </Label>
                     <div className="relative group">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="email"
                         type="email"
-                        placeholder="usuario@combilift.com"
+                        placeholder={t("loginForm.email_placeholder")}
                         aria-invalid={Boolean(errors.email)}
                         {...register("email")}
                         disabled={isLoading}
@@ -176,13 +178,13 @@ export function LoginForm({
                         htmlFor="password"
                         className="text-sm font-medium text-foreground/80"
                       >
-                        Contraseña
+                        {t("loginForm.password_label")}
                       </Label>
                       <Link
                         href="#"
                         className="text-xs font-medium text-primary hover:text-primary/80 hover:underline underline-offset-4 transition-colors"
                       >
-                        ¿Olvidaste tu contraseña?
+                        {t("loginForm.forgotPassword")}
                       </Link>
                     </div>
                     <div className="relative group">
@@ -225,7 +227,7 @@ export function LoginForm({
                       htmlFor="remember"
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      Recordar usuario
+                      {t("loginForm.rememberMe")}
                     </Label>
                   </div>
                 </div>
@@ -246,7 +248,8 @@ export function LoginForm({
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
-                      Acceder <ArrowRight className="size-4" />
+                      {t("loginForm.login")}
+                      <ArrowRight className="size-4" />
                     </span>
                   )}
                 </Button>
@@ -257,7 +260,7 @@ export function LoginForm({
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-2 text-muted-foreground">
-                      O continuar con
+                      {t("loginForm.or_continue_with")}
                     </span>
                   </div>
                 </div>
@@ -310,11 +313,11 @@ export function LoginForm({
                   <div className="w-12 h-1 bg-white/80 mb-2 rounded-full" />
 
                   <h2 className="text-3xl font-bold tracking-tight text-white drop-shadow-md">
-                    CombiSales
+                    {t("common.appName")}
                   </h2>
 
                   <p className="text-white/90 text-xs sm:text-sm font-light leading-relaxed drop-shadow-sm max-w-md text-pretty">
-                    Gestión de ventas y clientes de Combilift
+                    {t("common.description")}
                   </p>
                 </motion.div>
               </div>

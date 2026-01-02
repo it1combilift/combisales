@@ -8,6 +8,7 @@ import { Role } from "@prisma/client";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { Forklift, ListTodo } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/context";
 import { NavDocuments } from "@/components/nav-documents";
 import { NavSecondary } from "@/components/nav-secondary";
 
@@ -35,123 +36,125 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Tareas",
-      url: "/dashboard/tasks",
-      icon: ListTodo,
-    },
-    {
-      title: "Clientes",
-      url: "/dashboard/clients",
-      icon: IconBuildings,
-    },
-    {
-      title: "Equipos",
-      url: "/dashboard/equipment",
-      icon: Forklift,
-    },
-    {
-      title: "Usuarios",
-      url: "/dashboard/users",
-      icon: IconUsers,
-    },
-  ],
-
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Configuración",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Obtener ayuda",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Buscar",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: "Documentos",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Informes",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Asistente",
-      url: "#",
-      icon: IconFileWord,
-    },
-  ],
-};
-
 export function AppSidebar({
   session,
   ...props
 }: React.ComponentProps<typeof Sidebar> & { session?: Session }) {
+  const { t } = useTranslation();
+
+  const data = {
+    user: {
+      name: "shadcn",
+      email: "m@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    navMain: [
+      {
+        title: t("navigation.tasks"),
+        url: "/dashboard/tasks",
+        icon: ListTodo,
+      },
+      {
+        title: t("navigation.clients"),
+        url: "/dashboard/clients",
+        icon: IconBuildings,
+      },
+      {
+        title: t("navigation.equipment"),
+        url: "/dashboard/equipment",
+        icon: Forklift,
+      },
+      {
+        title: t("navigation.users"),
+        url: "/dashboard/users",
+        icon: IconUsers,
+      },
+    ],
+
+    navClouds: [
+      {
+        title: "Capture",
+        icon: IconCamera,
+        isActive: true,
+        url: "#",
+        items: [
+          {
+            title: "Active Proposals",
+            url: "#",
+          },
+          {
+            title: "Archived",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Proposal",
+        icon: IconFileDescription,
+        url: "#",
+        items: [
+          {
+            title: "Active Proposals",
+            url: "#",
+          },
+          {
+            title: "Archived",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Prompts",
+        icon: IconFileAi,
+        url: "#",
+        items: [
+          {
+            title: "Active Proposals",
+            url: "#",
+          },
+          {
+            title: "Archived",
+            url: "#",
+          },
+        ],
+      },
+    ],
+    navSecondary: [
+      {
+        title: t("common.settings"),
+        url: "#",
+        icon: IconSettings,
+      },
+      {
+        title: t("common.help"),
+        url: "#",
+        icon: IconHelp,
+      },
+      {
+        title: t("common.search"),
+        url: "#",
+        icon: IconSearch,
+      },
+    ],
+    documents: [
+      {
+        name: t("navigation.documents"),
+        url: "#",
+        icon: IconDatabase,
+      },
+      {
+        name: t("navigation.reports"),
+        url: "#",
+        icon: IconReport,
+      },
+      {
+        name: t("navigation.assistant"),
+        url: "#",
+        icon: IconFileWord,
+      },
+    ],
+  };
+
   const userData = session?.user || data.user;
   const userRole = session?.user?.role || Role.SELLER;
 
@@ -185,10 +188,10 @@ export function AppSidebar({
                 </div>
                 <div className="grid flex-1 text-left leading-tight">
                   <span className="truncate font-bold text-base tracking-tight">
-                    CombiSales
+                    {t("common.appName")}
                   </span>
                   <span className="truncate text-[11px] text-muted-foreground font-medium">
-                    Combilift Company
+                    {t("common.shortDescription")}
                   </span>
                 </div>
               </Link>

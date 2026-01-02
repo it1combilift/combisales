@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Shield, Key, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { useI18n } from "@/lib/i18n/context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -24,6 +27,7 @@ interface ProfileContentProps {
 }
 
 export default function ProfileContent({ user }: ProfileContentProps) {
+  const { t } = useI18n();
   const userName = user.name || "";
   const userEmail = user.email || "";
   const [firstName, lastName] = userName.split(" ");
@@ -31,33 +35,33 @@ export default function ProfileContent({ user }: ProfileContentProps) {
   return (
     <Tabs defaultValue="personal" className="space-y-6">
       <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="personal">Personal</TabsTrigger>
-        <TabsTrigger value="account">Account</TabsTrigger>
-        <TabsTrigger value="security">Security</TabsTrigger>
-        <TabsTrigger value="notifications">Notifications</TabsTrigger>
+        <TabsTrigger value="personal">{t("profile.tabs.personal")}</TabsTrigger>
+        <TabsTrigger value="account">{t("profile.tabs.account")}</TabsTrigger>
+        <TabsTrigger value="security">{t("profile.tabs.security")}</TabsTrigger>
+        <TabsTrigger value="notifications">{t("profile.tabs.notifications")}</TabsTrigger>
       </TabsList>
 
       {/* Personal Information */}
       <TabsContent value="personal" className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
+            <CardTitle>{t("profile.personal.title")}</CardTitle>
             <CardDescription>
-              Update your personal details and profile information.
+              {t("profile.personal.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 w-full">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="firstName">Nombre</Label>
+                <Label htmlFor="firstName">{t("profile.personal.firstName")}</Label>
                 <Input id="firstName" defaultValue={firstName || ""} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Apellido</Label>
+                <Label htmlFor="lastName">{t("profile.personal.lastName")}</Label>
                 <Input id="lastName" defaultValue={lastName || ""} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("profile.email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -66,25 +70,25 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Teléfono</Label>
-                <Input id="phone" placeholder="+1 (555) 123-4567" />
+                <Label htmlFor="phone">{t("profile.personal.phone")}</Label>
+                <Input id="phone" placeholder={t("profile.personal.phonePlaceholder")} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="jobTitle">Cargo</Label>
-                <Input id="jobTitle" placeholder="Ej: Gerente de Ventas" />
+                <Label htmlFor="jobTitle">{t("profile.personal.jobTitle")}</Label>
+                <Input id="jobTitle" placeholder={t("profile.personal.jobTitlePlaceholder")} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="company">Empresa</Label>
+                <Label htmlFor="company">{t("profile.personal.company")}</Label>
                 <Input id="company" defaultValue="Combilift Company" />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bio">Biografía</Label>
-              <Textarea id="bio" placeholder="Cuéntanos sobre ti..." rows={4} />
+              <Label htmlFor="bio">{t("profile.personal.bio")}</Label>
+              <Textarea id="bio" placeholder={t("profile.personal.bioPlaceholder")} rows={4} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="location">Ubicación</Label>
-              <Input id="location" placeholder="Ej: Madrid, España" />
+              <Label htmlFor="location">{t("profile.personal.location")}</Label>
+              <Input id="location" placeholder={t("profile.personal.locationPlaceholder")} />
             </div>
           </CardContent>
         </Card>
@@ -94,42 +98,42 @@ export default function ProfileContent({ user }: ProfileContentProps) {
       <TabsContent value="account" className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Account Settings</CardTitle>
+            <CardTitle>{t("profile.account.title")}</CardTitle>
             <CardDescription>
-              Manage your account preferences and subscription.
+              {t("profile.account.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label className="text-base">Account Status</Label>
+                <Label className="text-base">{t("profile.account.status")}</Label>
                 <p className="text-muted-foreground text-sm">
-                  Your account is currently active
+                  {t("profile.account.statusActive")}
                 </p>
               </div>
               <Badge
                 variant="outline"
                 className="border-green-200 bg-green-50 text-green-700"
               >
-                Active
+                {t("profile.account.active")}
               </Badge>
             </div>
             <Separator />
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label className="text-base">Subscription Plan</Label>
+                <Label className="text-base">{t("profile.account.subscription")}</Label>
                 <p className="text-muted-foreground text-sm">
-                  Pro Plan - $29/month
+                  {t("profile.account.subscriptionPlan")}
                 </p>
               </div>
-              <Button variant="outline">Manage Subscription</Button>
+              <Button variant="outline">{t("profile.account.manageSubscription")}</Button>
             </div>
             <Separator />
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label className="text-base">Account Visibility</Label>
+                <Label className="text-base">{t("profile.account.visibility")}</Label>
                 <p className="text-muted-foreground text-sm">
-                  Make your profile visible to other users
+                  {t("profile.account.visibilityDescription")}
                 </p>
               </div>
               <Switch defaultChecked />
@@ -137,34 +141,34 @@ export default function ProfileContent({ user }: ProfileContentProps) {
             <Separator />
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label className="text-base">Data Export</Label>
+                <Label className="text-base">{t("profile.account.dataExport")}</Label>
                 <p className="text-muted-foreground text-sm">
-                  Download a copy of your data
+                  {t("profile.account.dataExportDescription")}
                 </p>
               </div>
-              <Button variant="outline">Export Data</Button>
+              <Button variant="outline">{t("profile.account.exportData")}</Button>
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-destructive/50">
           <CardHeader>
-            <CardTitle className="text-destructive">Danger Zone</CardTitle>
+            <CardTitle className="text-destructive">{t("profile.danger.title")}</CardTitle>
             <CardDescription>
-              Irreversible and destructive actions
+              {t("profile.danger.description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label className="text-base">Delete Account</Label>
+                <Label className="text-base">{t("profile.danger.deleteAccount")}</Label>
                 <p className="text-muted-foreground text-sm">
-                  Permanently delete your account and all data
+                  {t("profile.danger.deleteAccountDescription")}
                 </p>
               </div>
               <Button variant="destructive">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Account
+                {t("profile.danger.deleteAccount")}
               </Button>
             </div>
           </CardContent>
@@ -175,31 +179,31 @@ export default function ProfileContent({ user }: ProfileContentProps) {
       <TabsContent value="security" className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Security Settings</CardTitle>
+            <CardTitle>{t("profile.security.title")}</CardTitle>
             <CardDescription>
-              Manage your account security and authentication.
+              {t("profile.security.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-base">Password</Label>
+                  <Label className="text-base">{t("profile.security.password")}</Label>
                   <p className="text-muted-foreground text-sm">
-                    Last changed 3 months ago
+                    {t("profile.security.passwordLastChanged")}
                   </p>
                 </div>
                 <Button variant="outline">
                   <Key className="mr-2 h-4 w-4" />
-                  Change Password
+                  {t("profile.security.changePassword")}
                 </Button>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-base">Two-Factor Authentication</Label>
+                  <Label className="text-base">{t("profile.security.twoFactor")}</Label>
                   <p className="text-muted-foreground text-sm">
-                    Add an extra layer of security to your account
+                    {t("profile.security.twoFactorDescription")}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -207,19 +211,19 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                     variant="outline"
                     className="border-green-200 bg-green-50 text-green-700"
                   >
-                    Enabled
+                    {t("profile.security.enabled")}
                   </Badge>
                   <Button variant="outline" size="sm">
-                    Configure
+                    {t("profile.security.configure")}
                   </Button>
                 </div>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-base">Login Notifications</Label>
+                  <Label className="text-base">{t("profile.security.loginNotifications")}</Label>
                   <p className="text-muted-foreground text-sm">
-                    Get notified when someone logs into your account
+                    {t("profile.security.loginNotificationsDescription")}
                   </p>
                 </div>
                 <Switch defaultChecked />
@@ -227,14 +231,14 @@ export default function ProfileContent({ user }: ProfileContentProps) {
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-base">Active Sessions</Label>
+                  <Label className="text-base">{t("profile.security.activeSessions")}</Label>
                   <p className="text-muted-foreground text-sm">
-                    Manage devices that are logged into your account
+                    {t("profile.security.activeSessionsDescription")}
                   </p>
                 </div>
                 <Button variant="outline">
                   <Shield className="mr-2 h-4 w-4" />
-                  View Sessions
+                  {t("profile.security.viewSessions")}
                 </Button>
               </div>
             </div>
@@ -246,18 +250,18 @@ export default function ProfileContent({ user }: ProfileContentProps) {
       <TabsContent value="notifications" className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Notification Preferences</CardTitle>
+            <CardTitle>{t("profile.notifications.title")}</CardTitle>
             <CardDescription>
-              Choose what notifications you want to receive.
+              {t("profile.notifications.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-base">Email Notifications</Label>
+                  <Label className="text-base">{t("profile.notifications.email")}</Label>
                   <p className="text-muted-foreground text-sm">
-                    Receive notifications via email
+                    {t("profile.notifications.emailDescription")}
                   </p>
                 </div>
                 <Switch defaultChecked />
@@ -265,9 +269,9 @@ export default function ProfileContent({ user }: ProfileContentProps) {
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-base">Push Notifications</Label>
+                  <Label className="text-base">{t("profile.notifications.push")}</Label>
                   <p className="text-muted-foreground text-sm">
-                    Receive push notifications in your browser
+                    {t("profile.notifications.pushDescription")}
                   </p>
                 </div>
                 <Switch />
@@ -275,9 +279,9 @@ export default function ProfileContent({ user }: ProfileContentProps) {
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-base">Marketing Emails</Label>
+                  <Label className="text-base">{t("profile.notifications.marketing")}</Label>
                   <p className="text-muted-foreground text-sm">
-                    Receive emails about new features and updates
+                    {t("profile.notifications.marketingDescription")}
                   </p>
                 </div>
                 <Switch defaultChecked />
@@ -285,9 +289,9 @@ export default function ProfileContent({ user }: ProfileContentProps) {
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-base">Weekly Summary</Label>
+                  <Label className="text-base">{t("profile.notifications.weeklySummary")}</Label>
                   <p className="text-muted-foreground text-sm">
-                    Get a weekly summary of your activity
+                    {t("profile.notifications.weeklySummaryDescription")}
                   </p>
                 </div>
                 <Switch defaultChecked />
@@ -295,9 +299,9 @@ export default function ProfileContent({ user }: ProfileContentProps) {
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label className="text-base">Security Alerts</Label>
+                  <Label className="text-base">{t("profile.notifications.securityAlerts")}</Label>
                   <p className="text-muted-foreground text-sm">
-                    Important security notifications (always enabled)
+                    {t("profile.notifications.securityAlertsDescription")}
                   </p>
                 </div>
                 <Switch checked disabled />

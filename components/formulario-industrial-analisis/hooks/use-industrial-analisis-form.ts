@@ -14,6 +14,7 @@ interface UseIndustrialAnalisisFormProps {
   isEditing: boolean;
   existingVisit?: any;
   onSuccess: () => void;
+  t: (key: string) => string;
 }
 
 export function useIndustrialAnalisisForm({
@@ -23,6 +24,7 @@ export function useIndustrialAnalisisForm({
   isEditing,
   existingVisit,
   onSuccess,
+  t,
 }: UseIndustrialAnalisisFormProps) {
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
@@ -273,7 +275,7 @@ export function useIndustrialAnalisisForm({
     const isValid = await validateStep(currentStep);
 
     if (!isValid) {
-      toast.error("Por favor, completa todos los campos requeridos");
+      toast.error(t("toast.form.validationError"));
       return;
     }
 
@@ -346,20 +348,20 @@ export function useIndustrialAnalisisForm({
         }
 
         const messages = {
-          submit: "Formulario enviado exitosamente",
-          draft: "Borrador guardado exitosamente",
-          changes: "Cambios guardados exitosamente",
+          submit: t("toast.form.submitSuccess"),
+          draft: t("toast.form.draftSuccess"),
+          changes: t("toast.form.changesSuccess"),
         };
 
         toast.success(messages[saveType]);
         onSuccess();
       } catch (error) {
         console.error(`Error al guardar (${saveType}):`, error);
-        toast.error("Error al guardar el formulario");
+        toast.error(t("toast.form.submitError"));
         throw error;
       }
     },
-    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess]
+    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess, t]
   );
 
   // ==================== FORM SUBMIT ====================

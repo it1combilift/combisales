@@ -5,7 +5,9 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { FormularioCSSAnalisisProps } from "./types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formularioCSSSchema, FormularioCSSSchema } from "./schemas";
+import { getFormularioCSSSchema, FormularioCSSSchema } from "./schemas";
+import { useI18n } from "@/lib/i18n/context";
+import { useMemo } from "react";
 
 import {
   getDefaultValuesForNew,
@@ -32,9 +34,12 @@ export default function FormularioCSSAnalisis({
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioCSSAnalisis;
 
+  const { t } = useI18n();
+  const schema = useMemo(() => getFormularioCSSSchema(t), [t]);
+
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioCSSSchema>({
-    resolver: zodResolver(formularioCSSSchema),
+    resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues:
       isEditing && formulario
@@ -70,6 +75,7 @@ export default function FormularioCSSAnalisis({
     isEditing,
     existingVisit,
     onSuccess,
+    t,
   });
 
   const {
@@ -86,6 +92,7 @@ export default function FormularioCSSAnalisis({
   } = useFileUploader({
     form,
     customerId: customer?.id || "",
+    t,
   });
 
   // ==================== RENDER STEP CONTENT ====================

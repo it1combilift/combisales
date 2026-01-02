@@ -25,7 +25,12 @@ import {
   IconPhone,
 } from "@tabler/icons-react";
 
-export function createColumns(): ColumnDef<ZohoAccount>[] {
+interface CreateColumnsProps {
+  t: (key: string) => string;
+  locale: string;
+}
+
+export function createColumns({ t, locale }: CreateColumnsProps): ColumnDef<ZohoAccount>[] {
   const router = useRouter();
   const ACCOUNT_ID_URL = (accountId: string) =>
     `/dashboard/clients/visits/${accountId}`;
@@ -33,7 +38,7 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
   return [
     {
       accessorKey: "Account_Name",
-      header: "Cliente",
+      header: t("clients.accountName"),
       cell: ({ row }) => {
         const name = row.getValue("Account_Name") as string;
         const accountType = row.original.Account_Type;
@@ -53,7 +58,7 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
     },
     {
       accessorKey: "Industry",
-      header: "Industria",
+      header: t("clients.industry"),
       cell: ({ row }) => {
         const industry = row.getValue("Industry") as string | undefined;
         return industry ? (
@@ -67,7 +72,7 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
     },
     {
       accessorKey: "Billing_Country",
-      header: "País",
+      header: t("clients.country"),
       cell: ({ row }) => {
         const country = row.getValue("Billing_Country") as string | undefined;
         const city = row.original.Billing_City;
@@ -86,7 +91,7 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
             )}
 
             {!country && !city && (
-              <span className="text-xs text-muted-foreground italic">N/A</span>
+              <span className="text-xs text-muted-foreground italic">{t("clients.na")}</span>
             )}
           </div>
         );
@@ -94,7 +99,7 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
     },
     {
       accessorKey: "Phone",
-      header: "Contacto",
+      header: t("clients.contact"),
       cell: ({ row }) => {
         const phone = row.getValue("Phone") as string | undefined;
         const email = row.original.Email;
@@ -129,7 +134,7 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
                   rel="noopener noreferrer"
                   className="text-xs font-medium text-muted-foreground hover:underline"
                 >
-                  Sitio web
+                  {t("clients.visitWebsite")}
                 </a>
               </div>
             )}
@@ -143,7 +148,7 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
     },
     {
       accessorKey: "Owner",
-      header: "Propietario",
+      header: t("clients.owner"),
       cell: ({ row }) => {
         const owner = row.getValue("Owner") as ZohoAccount["Owner"];
         return owner ? (
@@ -160,17 +165,17 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
     },
     {
       accessorKey: "Modified_Time",
-      header: "Últ. modificación",
+      header: t("clients.modifiedDate"),
       cell: ({ row }) => {
         const date = row.getValue("Modified_Time") as string | undefined;
         if (!date)
           return (
-            <span className="text-xs text-muted-foreground italic">N/A</span>
+            <span className="text-xs text-muted-foreground italic">{t("clients.na")}</span>
           );
 
         return (
           <span className="text-xs text-muted-foreground">
-            {formatDateShort(date)}
+            {formatDateShort(date, locale)}
           </span>
         );
       },
@@ -184,24 +189,24 @@ export function createColumns(): ColumnDef<ZohoAccount>[] {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir menú</span>
+                <span className="sr-only">{t("clients.openMenu")}</span>
                 <IconDotsVertical className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("clients.actions")}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => router.push(ACCOUNT_ID_URL(account.id))}
                 className="cursor-pointer"
               >
                 <Building2 className="size-4" />
-                Visitas
+                {t("clients.visits")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive">
                 <IconTrash className="size-4 text-destructive" />
-                Eliminar
+                {t("clients.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -14,6 +14,7 @@ interface UseCSSAnalisisFormProps {
   isEditing: boolean;
   existingVisit?: any;
   onSuccess: () => void;
+  t: (key: string) => string;
 }
 
 export function useCSSAnalisisForm({
@@ -23,6 +24,7 @@ export function useCSSAnalisisForm({
   isEditing,
   existingVisit,
   onSuccess,
+  t,
 }: UseCSSAnalisisFormProps) {
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
@@ -162,9 +164,9 @@ export function useCSSAnalisisForm({
 
         if (response.status === 200) {
           const messages = {
-            submit: "Visita actualizada y enviada exitosamente",
-            draft: "Borrador actualizado exitosamente",
-            changes: "Cambios guardados exitosamente",
+            submit: t("toast.form.visitUpdatedSuccess"),
+            draft: t("toast.form.draftUpdatedSuccess"),
+            changes: t("toast.form.changesSuccess"),
           };
           toast.success(messages[saveType]);
           onSuccess();
@@ -184,15 +186,15 @@ export function useCSSAnalisisForm({
         if (response.status === 201) {
           toast.success(
             saveType === "submit"
-              ? "Visita guardada exitosamente"
-              : "Borrador guardado exitosamente"
+              ? t("toast.form.visitCreatedSuccess")
+              : t("toast.form.draftSuccess")
           );
           onSuccess();
         }
       }
     } catch (error: any) {
       console.error("Error saving visit:", error);
-      toast.error(error.response?.data?.error || "Error al guardar la visita");
+      toast.error(error.response?.data?.error || t("toast.form.visitError"));
     } finally {
       if (saveType === "submit") {
         setIsSubmitting(false);

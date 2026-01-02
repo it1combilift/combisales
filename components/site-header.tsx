@@ -1,27 +1,26 @@
-"use client"
+"use client";
 
-import { getInitials } from '@/lib/utils'
-import { ModeToggle } from './mode-toggle'
-import { usePathname } from 'next/navigation'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ModeToggle } from "./mode-toggle";
+import { usePathname } from "next/navigation";
+import { useTranslation } from "@/lib/i18n/context";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { LanguageSelector } from "./language-selector";
 
 export function SiteHeader({ session }: { session?: any }) {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const { t } = useTranslation();
 
   const getTitleFromPath = (path: string) => {
-    if (path === '/dashboard') return 'Dashboard'
-    if (path.includes('/lifecycle')) return 'Lifecycle'
-    if (path.includes('/analytics')) return 'Analytics'
-    if (path.includes('/projects')) return 'Projects'
-    if (path.includes('/team')) return 'Team'
-    if (path.includes('/profile')) return 'Cuenta'
-    return 'Dashboard'
-  }
+    if (path === "/dashboard") return "Dashboard";
+    if (path.includes("/lifecycle")) return "Lifecycle";
+    if (path.includes("/analytics")) return "Analytics";
+    if (path.includes("/projects")) return "Projects";
+    if (path.includes("/team")) return "Team";
+    if (path.includes("/profile")) return "Cuenta";
+    return "Dashboard";
+  };
 
-  const userName = session?.user?.name || 'Usuario'
-  const userEmail = session?.user?.email || ''
 
   return (
     <header className="pt-1 flex shrink-0 items-center gap-2 rounded-t-2xl bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) border-b border-muted-foreground/10">
@@ -31,17 +30,17 @@ export function SiteHeader({ session }: { session?: any }) {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <h1 className="text-xs sm:text-sm font-semibold">{getTitleFromPath(pathname)}</h1>
+        <h1 className="text-xs sm:text-sm font-semibold">
+          {t(getTitleFromPath(pathname))}
+        </h1>
 
         <div className="ml-auto flex items-center gap-3">
-          <Separator
-            orientation="vertical"
-            className="h-6 hidden md:block"
-          />
+          <Separator orientation="vertical" className="h-6 hidden md:block" />
 
+          <LanguageSelector showFlag showFullName={false} />
           <ModeToggle />
         </div>
       </div>
     </header>
-  )
+  );
 }

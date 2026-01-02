@@ -14,12 +14,14 @@ import { ContenedorTipo } from "@prisma/client";
 import { CONTENEDOR_TIPO_LABELS } from "@/interfaces/visits";
 import { CONTENEDOR_TIPO_ICONS } from "@/constants/visits";
 import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 
 /**
  * Step 5: Container Types and Operation
  * Fields: contenedorTipos, contenedoresPorSemana, condicionesSuelo
  */
 export function Step5Content({ form }: StepContentProps) {
+  const { t } = useI18n();
   return (
     <div className="space-y-4 sm:space-y-5">
       <FormField
@@ -86,20 +88,20 @@ export function Step5Content({ form }: StepContentProps) {
           return (
             <FormItem>
               <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                Tipo de contenedor
+                {t("forms.css.fields.containerType.label")}
                 <span className="text-destructive">*</span>
               </FormLabel>
 
               <div className="space-y-4">
                 <div className="space-y-2">
                   <span className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">
-                    Ubicación del contenedor
+                    {t("forms.css.fields.containerType.locationLabel")}
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {locationTypes.map((key) => {
                       const isChecked = selectedLocation === key;
                       const Icon = CONTENEDOR_TIPO_ICONS[key];
-                      const label = CONTENEDOR_TIPO_LABELS[key];
+                      const label = t(`visits.containerTypes.${key}` as any);
                       return (
                         <Label
                           key={key}
@@ -148,7 +150,7 @@ export function Step5Content({ form }: StepContentProps) {
                 <div className="flex items-center gap-3">
                   <div className="flex-1 h-px bg-border/60" />
                   <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                    Ambiente de trabajo
+                    {t("forms.css.fields.containerType.environmentLabel")}
                   </span>
                   <div className="flex-1 h-px bg-border/60" />
                 </div>
@@ -156,13 +158,13 @@ export function Step5Content({ form }: StepContentProps) {
                 {/* Environment Type - Can select multiple */}
                 <div className="space-y-2">
                   <span className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">
-                    Selecciona uno o ambos
+                    {t("forms.css.fields.containerType.selectBothLabel")}
                   </span>
                   <div className="grid grid-cols-2 gap-2">
                     {environmentTypes.map((key) => {
                       const isChecked = selectedEnvironments.includes(key);
                       const Icon = CONTENEDOR_TIPO_ICONS[key];
-                      const label = CONTENEDOR_TIPO_LABELS[key];
+                      const label = t(`visits.containerTypes.${key}` as any);
                       return (
                         <Label
                           key={key}
@@ -222,15 +224,15 @@ export function Step5Content({ form }: StepContentProps) {
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5 text-pretty">
                   <span className="hidden md:block">
-                    Contenedores por semana
+                    {t("forms.css.fields.containersPerWeek.label")}
                   </span>
 
-                  <span className="block md:hidden">Contenedores/semana</span>
+                  <span className="block md:hidden">{t("forms.css.fields.containersPerWeek.shortLabel")}</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     type="number"
-                    placeholder="Ej: 5"
+                    placeholder={t("forms.css.fields.containersPerWeek.placeholder")}
                     min={1}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
@@ -252,11 +254,11 @@ export function Step5Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-                  Condiciones del suelo
+                  {t("forms.css.fields.floorConditions.label")}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Compactado, rocoso..."
+                    placeholder={t("forms.css.fields.floorConditions.placeholder")}
                     className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />

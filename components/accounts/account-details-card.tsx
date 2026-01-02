@@ -2,10 +2,11 @@
 
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS } from "date-fns/locale";
 import { ZohoAccount } from "@/interfaces/zoho";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   Building2,
@@ -173,10 +174,11 @@ function DetailSection({
 /**
  * Formatea una fecha ISO a formato legible
  */
-function formatDate(dateString: string | undefined): string | null {
+function formatDate(dateString: string | undefined, locale: any): string | null {
   if (!dateString) return null;
   try {
-    return format(new Date(dateString), "d 'de' MMMM, yyyy", { locale: es });
+    const formatStr = locale.code === "es" ? "d 'de' MMMM, yyyy" : "MMMM d, yyyy";
+    return format(new Date(dateString), formatStr, { locale });
   } catch {
     return null;
   }
@@ -185,10 +187,10 @@ function formatDate(dateString: string | undefined): string | null {
 /**
  * Formatea una fecha con hora
  */
-function formatDateTime(dateString: string | undefined): string | null {
+function formatDateTime(dateString: string | undefined, locale: any): string | null {
   if (!dateString) return null;
   try {
-    return format(new Date(dateString), "d MMM yyyy, HH:mm", { locale: es });
+    return format(new Date(dateString), "d MMM yyyy, HH:mm", { locale });
   } catch {
     return null;
   }
@@ -214,6 +216,9 @@ export function AccountDetailsCard({
   account,
   className,
 }: AccountDetailsCardProps) {
+  const { t, locale } = useI18n();
+  const dateLocale = locale === "es" ? es : enUS;
+
   const billingAddress = buildAddress(
     account.Billing_Street,
     account.Billing_City,
@@ -250,32 +255,32 @@ export function AccountDetailsCard({
   return (
     <div className={cn("space-y-6", className)}>
       {/* ==================== IDENTIFICACIÓN ==================== */}
-      <DetailSection title="Identificación" icon={Building2}>
+      <DetailSection title={t("clients.identification")} icon={Building2}>
         <DetailItem
           icon={Building2}
-          label="Nombre de cuenta"
+          label={t("clients.accountName")}
           value={account.Account_Name}
         />
         <DetailItem
           icon={FileText}
-          label="Razón social"
+          label={t("clients.legalName")}
           value={account.Razon_Social}
         />
         <DetailItem
           icon={Hash}
-          label="Código cliente"
+          label={t("clients.clientCode")}
           value={account.C_digo_Cliente}
           copyable
         />
         <DetailItem
           icon={Hash}
-          label="CIF / NIF"
+          label={t("clients.cif")}
           value={account.CIF}
           copyable
         />
         <DetailItem
           icon={Hash}
-          label="ID Zoho"
+          label={t("clients.zohoId")}
           value={account.id}
           copyable
           className="lg:col-span-2"
@@ -287,35 +292,35 @@ export function AccountDetailsCard({
       {/* ==================== CLASIFICACIÓN ==================== */}
       {hasClassification && (
         <>
-          <DetailSection title="Clasificación" icon={Briefcase}>
+          <DetailSection title={t("clients.classification")} icon={Briefcase}>
             <DetailItem
               icon={Tag}
-              label="Tipo de cuenta"
+              label={t("clients.accountType")}
               value={account.Account_Type}
             />
             <DetailItem
               icon={Briefcase}
-              label="Industria"
+              label={t("clients.industry")}
               value={account.Industry}
             />
             <DetailItem
               icon={Tag}
-              label="Sub-sector"
+              label={t("clients.subSector")}
               value={account.Sub_Sector}
             />
             <DetailItem
               icon={Tag}
-              label="Comunidad Autónoma"
+              label={t("clients.autonomousCommunity")}
               value={account.Comunidad_Aut_noma}
             />
             <DetailItem
               icon={FileText}
-              label="Estado de la cuenta"
+              label={t("clients.accountStatus")}
               value={account.Estado_de_la_Cuenta}
             />
             <DetailItem
               icon={Truck}
-              label="Tipo de pedido"
+              label={t("clients.orderType")}
               value={account.Tipo_de_pedido}
             />
           </DetailSection>
@@ -326,23 +331,23 @@ export function AccountDetailsCard({
       {/* ==================== CONTACTO ==================== */}
       {hasContactInfo && (
         <>
-          <DetailSection title="Contacto" icon={Phone}>
+          <DetailSection title={t("clients.contact")} icon={Phone}>
             <DetailItem
               icon={Phone}
-              label="Teléfono"
+              label={t("clients.phone")}
               value={account.Phone}
               copyable
             />
-            <DetailItem icon={Phone} label="Fax" value={account.Fax} copyable />
+            <DetailItem icon={Phone} label={t("clients.fax")} value={account.Fax} copyable />
             <DetailItem
               icon={Mail}
-              label="Correo electrónico"
+              label={t("clients.email")}
               value={account.Correo_electr_nico || account.Email}
               copyable
             />
             <DetailItem
               icon={Globe}
-              label="Sitio web"
+              label={t("clients.visitWebsite")}
               value={account.Website?.replace(/^https?:\/\//, "").replace(
                 /\/$/,
                 ""
@@ -358,20 +363,20 @@ export function AccountDetailsCard({
       {/* ==================== DIRECCIÓN DE FACTURACIÓN ==================== */}
       {billingAddress && (
         <>
-          <DetailSection title="Dirección de Facturación" icon={MapPin}>
+          <DetailSection title={t("clients.billingAddress")} icon={MapPin}>
             <DetailItem
               icon={MapPin}
-              label="Dirección"
+              label={t("clients.address")}
               value={account.Billing_Street}
               className="sm:col-span-2 lg:col-span-3"
             />
-            <DetailItem label="Ciudad" value={account.Billing_City} />
+            <DetailItem label={t("clients.city")} value={account.Billing_City} />
             <DetailItem
-              label="Provincia / Estado"
+              label={t("clients.state")}
               value={account.Billing_State}
             />
-            <DetailItem label="Código Postal" value={account.Billing_Code} />
-            <DetailItem label="País" value={account.Billing_Country} />
+            <DetailItem label={t("clients.zipCode")} value={account.Billing_Code} />
+            <DetailItem label={t("clients.country")} value={account.Billing_Country} />
           </DetailSection>
           <Separator />
         </>
@@ -380,37 +385,37 @@ export function AccountDetailsCard({
       {/* ==================== DIRECCIÓN DE ENVÍO ==================== */}
       {shippingAddress && (
         <>
-          <DetailSection title="Dirección de Envío" icon={Truck}>
+          <DetailSection title={t("clients.shippingAddress")} icon={Truck}>
             <DetailItem
               icon={MapPin}
-              label="Dirección"
+              label={t("clients.address")}
               value={account.Shipping_Street}
               className="sm:col-span-2 lg:col-span-3"
             />
-            <DetailItem label="Ciudad" value={account.Shipping_City} />
+            <DetailItem label={t("clients.city")} value={account.Shipping_City} />
             <DetailItem
-              label="Provincia / Estado"
+              label={t("clients.state")}
               value={account.Shipping_State}
             />
-            <DetailItem label="Código Postal" value={account.Shipping_Code} />
-            <DetailItem label="País" value={account.Shipping_Country} />
+            <DetailItem label={t("clients.zipCode")} value={account.Shipping_Code} />
+            <DetailItem label={t("clients.country")} value={account.Shipping_Country} />
           </DetailSection>
           <Separator />
         </>
       )}
 
       {/* ==================== PROPIETARIO Y RESPONSABLES ==================== */}
-      <DetailSection title="Responsables" icon={Users}>
+      <DetailSection title={t("clients.responsibles")} icon={Users}>
         {account.Owner && (
           <>
             <DetailItem
               icon={User}
-              label="Propietario"
+              label={t("clients.owner")}
               value={account.Owner.name}
             />
             <DetailItem
               icon={Mail}
-              label="Email propietario"
+              label={t("clients.ownerEmail")}
               value={account.Owner.email}
               copyable
             />
@@ -420,12 +425,12 @@ export function AccountDetailsCard({
           <>
             <DetailItem
               icon={User}
-              label="Creado por"
+              label={t("clients.createdBy")}
               value={account.Created_By.name}
             />
             <DetailItem
               icon={Mail}
-              label="Email creador"
+              label={t("clients.creatorEmail")}
               value={account.Created_By.email}
               copyable
             />
@@ -435,7 +440,7 @@ export function AccountDetailsCard({
           <>
             <DetailItem
               icon={User}
-              label="Modificado por"
+              label={t("clients.modifiedBy")}
               value={account.Modified_By.name}
             />
           </>
@@ -443,7 +448,7 @@ export function AccountDetailsCard({
         {account.Parent_Account && (
           <DetailItem
             icon={Building2}
-            label="Cuenta padre"
+            label={t("clients.parentAccount")}
             value={account.Parent_Account.name}
           />
         )}
@@ -454,32 +459,32 @@ export function AccountDetailsCard({
       {/* ==================== ESTADOS Y FLAGS ==================== */}
       {hasStatusFlags && (
         <>
-          <DetailSection title="Estado del Cliente" icon={CheckCircle2}>
+          <DetailSection title={t("clients.clientStatus")} icon={CheckCircle2}>
             <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-3">
               <StatusBadge
                 value={account.Cliente_con_Equipo}
-                trueLabel="Cliente con equipo"
+                trueLabel={t("clients.flags.hasEquipment")}
               />
               <StatusBadge
                 value={account.Cuenta_Nacional}
-                trueLabel="Cuenta nacional"
+                trueLabel={t("clients.flags.nationalAccount")}
               />
               <StatusBadge
                 value={account.Cliente_Books}
-                trueLabel="Cliente Books"
+                trueLabel={t("clients.flags.booksClient")}
               />
               <StatusBadge
                 value={account.Condiciones_Especiales}
-                trueLabel="Condiciones especiales"
+                trueLabel={t("clients.flags.specialConditions")}
               />
               <StatusBadge
                 value={account.Proyecto_abierto}
-                trueLabel="Proyecto abierto"
+                trueLabel={t("clients.flags.openProject")}
               />
-              <StatusBadge value={account.Revisado} trueLabel="Revisado" />
+              <StatusBadge value={account.Revisado} trueLabel={t("clients.flags.reviewed")} />
               <StatusBadge
                 value={account.Localizaciones_multiples}
-                trueLabel="Múltiples localizaciones"
+                trueLabel={t("clients.flags.multiLocation")}
               />
             </div>
           </DetailSection>
@@ -488,21 +493,21 @@ export function AccountDetailsCard({
       )}
 
       {/* ==================== FECHAS ==================== */}
-      <DetailSection title="Historial" icon={Calendar}>
+      <DetailSection title={t("clients.history")} icon={Calendar}>
         <DetailItem
           icon={Calendar}
-          label="Fecha de creación"
-          value={formatDate(account.Created_Time)}
+          label={t("clients.createdDate")}
+          value={formatDate(account.Created_Time, dateLocale)}
         />
         <DetailItem
           icon={Clock}
-          label="Última modificación"
-          value={formatDateTime(account.Modified_Time)}
+          label={t("clients.modifiedDate")}
+          value={formatDateTime(account.Modified_Time, dateLocale)}
         />
         <DetailItem
           icon={Clock}
-          label="Última actividad"
-          value={formatDateTime(account.Last_Activity_Time)}
+          label={t("clients.lastActivity")}
+          value={formatDateTime(account.Last_Activity_Time, dateLocale)}
         />
       </DetailSection>
 
@@ -510,7 +515,7 @@ export function AccountDetailsCard({
       {account.Description && (
         <>
           <Separator />
-          <DetailSection title="Descripción" icon={FileText}>
+          <DetailSection title={t("common.description")} icon={FileText}>
             <div className="sm:col-span-2 lg:col-span-3">
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                 {account.Description}

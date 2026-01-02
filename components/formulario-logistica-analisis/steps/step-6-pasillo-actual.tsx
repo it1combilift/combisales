@@ -1,6 +1,7 @@
 import { Route, Layers } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { StepContentProps, TIPO_ESTANTERIAS_OPTIONS } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -43,11 +44,16 @@ function SectionHeader({
  * Information about the current aisle configuration
  */
 export function Step6Content({ form }: StepContentProps) {
+  const { t } = useI18n();
+
   return (
     <div className="space-y-4">
       {/* ==================== DISTANCIAS DEL PASILLO ==================== */}
       <section>
-        <SectionHeader icon={Route} title="Distancias del Pasillo" />
+        <SectionHeader
+          icon={Route}
+          title={t("forms.logistica.fields.aisle.distancesHeader")}
+        />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {/* Distancia entre estanterías */}
           <FormField
@@ -56,7 +62,7 @@ export function Step6Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium">
-                  Dist. entre estanterías
+                  {t("forms.fields.distBetweenRacks")}
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -90,7 +96,7 @@ export function Step6Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium">
-                  Dist. entre productos
+                  {t("forms.fields.distBetweenProducts")}
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -124,7 +130,7 @@ export function Step6Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem className="col-span-2 sm:col-span-1">
                 <FormLabel className="text-[11px] font-medium">
-                  Ancho pasillo disponible
+                  {t("forms.fields.availableAisleWidth")}
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -155,7 +161,10 @@ export function Step6Content({ form }: StepContentProps) {
 
       {/* ==================== ESTANTERÍAS ==================== */}
       <section>
-        <SectionHeader icon={Layers} title="Información de Estanterías" />
+        <SectionHeader
+          icon={Layers}
+          title={t("forms.logistica.fields.aisle.shelfInfoHeader")}
+        />
         <div className="space-y-3">
           {/* Row 1: Tipo de estanterías - full width en mobile */}
           <FormField
@@ -164,7 +173,7 @@ export function Step6Content({ form }: StepContentProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[11px] font-medium">
-                  Tipo de estanterías
+                  {t("forms.logistica.fields.aisle.shelfType")}
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
@@ -172,7 +181,7 @@ export function Step6Content({ form }: StepContentProps) {
                 >
                   <FormControl>
                     <SelectTrigger className="h-9 text-sm w-full">
-                      <SelectValue placeholder="Seleccionar..." />
+                      <SelectValue placeholder={t("common.select")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -182,7 +191,7 @@ export function Step6Content({ form }: StepContentProps) {
                         value={option.value}
                         className="text-sm"
                       >
-                        {option.label}
+                        {t(option.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -201,7 +210,7 @@ export function Step6Content({ form }: StepContentProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[11px] font-medium">
-                    Niveles de estanterías
+                    {t("forms.fields.rackLevels")}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -231,7 +240,7 @@ export function Step6Content({ form }: StepContentProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[11px] font-medium">
-                    Altura máx. estantería
+                    {t("forms.fields.maxRackHeight")}
                   </FormLabel>
                   <FormControl>
                     <div className="relative">

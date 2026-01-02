@@ -34,6 +34,7 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 interface MachinesTableProps {
   machines: Machine[];
@@ -50,11 +51,12 @@ type SortField =
 type SortDirection = "asc" | "desc";
 
 export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
+  const { t, locale } = useI18n();
   const [sortField, setSortField] = useState<SortField>("description");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("es-ES", {
+    return new Date(dateString).toLocaleDateString(locale, {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -62,7 +64,7 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
   };
 
   const formatHours = (hours: number) => {
-    return hours.toLocaleString("es-ES", { maximumFractionDigits: 0 });
+    return hours.toLocaleString(locale, { maximumFractionDigits: 0 });
   };
 
   const handleSort = (field: SortField) => {
@@ -141,36 +143,36 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
             <TableHeader>
               <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
                 <TableHead className="w-14 font-medium text-xs text-muted-foreground p-2">
-                  Img
+                  {t("machines.table.image")}
                 </TableHead>
-                <SortableHeader field="description">Máquina</SortableHeader>
+                <SortableHeader field="description">{t("machines.table.machine")}</SortableHeader>
                 <SortableHeader
                   field="serialNumber"
                   className="hidden sm:table-cell"
                 >
-                  S/N
+                  {t("machines.serialNumber")}
                 </SortableHeader>
-                <SortableHeader field="status">Estado</SortableHeader>
+                <SortableHeader field="status">{t("machines.status")}</SortableHeader>
                 <TableHead className="font-medium text-xs text-muted-foreground hidden md:table-cell">
-                  Disp.
+                  {t("machines.table.availabilityShort")}
                 </TableHead>
                 <SortableHeader
                   field="location"
                   className="hidden lg:table-cell"
                 >
-                  Ubicación
+                  {t("machines.location")}
                 </SortableHeader>
                 <SortableHeader field="usageHours" className="text-right">
-                  Horas
+                  {t("machines.card.hours")}
                 </SortableHeader>
                 <SortableHeader
                   field="usageHoursDate"
                   className="hidden xl:table-cell"
                 >
-                  Fecha
+                  {t("machines.card.date")}
                 </SortableHeader>
                 <TableHead className="font-medium text-xs text-muted-foreground hidden lg:table-cell">
-                  Docs
+                  {t("machines.table.docs")}
                 </TableHead>
                 <TableHead className="w-10 p-2"></TableHead>
               </TableRow>
@@ -221,7 +223,7 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
                       {machine.status === "Operativa" ? (
                         <>
                           <CheckCircle2 className="size-2.5" />
-                          <span>{machine.status}</span>
+                          <span>{t("machines.statuses.operational")}</span>
                         </>
                       ) : (
                         <>
@@ -238,7 +240,7 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
                         className="text-[10px] px-1.5 py-0 h-5 flex items-center gap-0.5 font-medium"
                       >
                         <CheckCircle2 className="size-2.5" />
-                        Disponible
+                        {t("machines.availabilities.available")}
                       </Badge>
                     ) : (
                       <Badge
@@ -246,7 +248,7 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
                         className="text-[10px] px-1.5 py-0 h-5 flex items-center gap-0.5 font-medium"
                       >
                         <XCircle className="size-2.5" />
-                        No disponible
+                        {t("machines.availabilities.notAvailable")}
                       </Badge>
                     )}
                   </TableCell>
@@ -267,7 +269,7 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
                             <ShieldCheck className="size-3.5 text-emerald-500" />
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs">
-                            Asegurada
+                            {t("machines.insured")}
                           </TooltipContent>
                         </Tooltip>
                       )}
@@ -277,7 +279,7 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
                             <Camera className="size-3.5 text-blue-500" />
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs">
-                            Fotos
+                            {t("machines.card.photos")}
                           </TooltipContent>
                         </Tooltip>
                       )}
@@ -287,7 +289,7 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
                             <Plane className="size-3.5 text-violet-500" />
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs">
-                            Traveller
+                            {t("machines.card.traveller")}
                           </TooltipContent>
                         </Tooltip>
                       )}
@@ -297,7 +299,7 @@ export function MachinesTable({ machines, onViewMachine }: MachinesTableProps) {
                             <FileText className="size-3.5 text-amber-500" />
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs">
-                            Cert. CE
+                            {t("machines.card.ce")}
                           </TooltipContent>
                         </Tooltip>
                       )}

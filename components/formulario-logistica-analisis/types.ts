@@ -140,11 +140,11 @@ export const TIPO_OPERACION_OPTIONS = [
 
 // ==================== TIPO ESTANTERIAS OPTIONS ====================
 export const TIPO_ESTANTERIAS_OPTIONS = [
-  { value: "convencional", label: "Convencional" },
-  { value: "drive-in", label: "Drive-in" },
-  { value: "push-back", label: "Push-back" },
-  { value: "dinamica", label: "Dinámica" },
-  { value: "cantilever", label: "Cantilever" },
-  { value: "movil", label: "Móvil" },
-  { value: "otra", label: "Otra" },
+  { value: "CONVENCIONAL", labelKey: "visits.shelfTypes.CONVENCIONAL" },
+  { value: "DRIVE_IN", labelKey: "visits.shelfTypes.DRIVE_IN" },
+  { value: "PUSH_BACK", labelKey: "visits.shelfTypes.PUSH_BACK" },
+  { value: "DINAMICA", labelKey: "visits.shelfTypes.DINAMICA" },
+  { value: "CANTILEVER", labelKey: "visits.shelfTypes.CANTILEVER" },
+  { value: "MOVIL", labelKey: "visits.shelfTypes.MOVIL" },
+  { value: "OTRA", labelKey: "visits.shelfTypes.OTRA" },
 ];

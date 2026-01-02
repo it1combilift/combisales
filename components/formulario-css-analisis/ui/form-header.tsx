@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 import { FormHeaderProps } from "../types";
 import { Progress } from "@/components/ui/progress";
 import { DialogTitle } from "@/components/ui/dialog";
@@ -16,8 +17,19 @@ export function FormHeader({
   completedSteps,
   onGoToStep,
 }: FormHeaderProps) {
+  const { t } = useI18n();
   const currentColors = getStepColorClasses(currentStepConfig.color);
   const StepIcon = currentStepConfig.icon;
+
+  const stepKeyMap: Record<number, string> = {
+    1: "product",
+    2: "container",
+    3: "measurements",
+    4: "files",
+  };
+  
+  const currentTitle = t(`forms.css.steps.${stepKeyMap[currentStepConfig.number]}.title` as any);
+  const currentDescription = t(`forms.css.steps.${stepKeyMap[currentStepConfig.number]}.description` as any);
 
   return (
     <header className="shrink-0 px-2 sm:px-4 py-2 bg-muted/20 border-b">
@@ -36,10 +48,10 @@ export function FormHeader({
         {/* Title */}
         <div className="flex-1 min-w-0">
           <DialogTitle className="text-xs sm:text-sm font-bold text-foreground truncate">
-            {currentStepConfig.title}
+            {currentTitle}
           </DialogTitle>
           <p className="text-[10px] sm:text-xs text-muted-foreground truncate hidden sm:block">
-            {currentStepConfig.description}
+            {currentDescription}
           </p>
         </div>
 
@@ -68,7 +80,7 @@ export function FormHeader({
                   "relative flex flex-col items-center justify-center transition-all duration-200 cursor-pointer",
                   "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5"
                 )}
-                title={step.title}
+                title={t(step.title as any)}
               >
                 <div
                   className={cn(
@@ -86,10 +98,9 @@ export function FormHeader({
                     <Icon className="size-3" />
                   )}
                 </div>
-                {/* Mobile: shortTitle, Desktop: full title */}
                 <span
                   className={cn(
-                    "block sm:hidden text-[10px] mt-0.5 font-medium text-center leading-tight",
+                    "text-[9px] mt-1 font-medium max-w-[63px] truncate text-center leading-tight",
                     isCurrent
                       ? "text-primary"
                       : isCompleted
@@ -97,19 +108,7 @@ export function FormHeader({
                       : "text-muted-foreground"
                   )}
                 >
-                  {step.shortTitle}
-                </span>
-                <span
-                  className={cn(
-                    "hidden sm:block text-[9px] mt-1 font-medium max-w-[60px] truncate text-center leading-tight",
-                    isCurrent
-                      ? "text-primary"
-                      : isCompleted
-                      ? "text-primary/70"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {step.title}
+                  {t(`forms.css.steps.${stepKeyMap[step.number]}.title` as any)}
                 </span>
               </button>
               {/* Connector line */}

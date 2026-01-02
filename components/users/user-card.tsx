@@ -25,6 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   DropdownMenu,
@@ -52,6 +53,7 @@ export function UserCard({
   onDelete,
   onRevokeSession,
 }: UserCardProps) {
+  const { t, locale } = useI18n();
   return (
     <Card className="relative">
       <CardHeader className="pb-4">
@@ -74,7 +76,7 @@ export function UserCard({
             </Avatar>
             <div className="flex flex-col min-w-0 flex-1">
               <CardTitle className="text-base truncate">
-                {user.name || "Sin nombre"}
+                {user.name || t("users.card.noName")}
               </CardTitle>
               <CardDescription className="truncate">
                 {user.email}
@@ -89,21 +91,21 @@ export function UserCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("users.actions.title")}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => onEdit(user)}
                 className="text-xs sm:text-sm"
               >
                 <PencilLine className="size-3.5" />
-                Editar
+                {t("users.actions.edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onRevokeSession(user)}
                 className="text-xs sm:text-sm text-orange-600 dark:text-orange-400"
               >
                 <ShieldOff className="size-3.5" />
-                Revocar Sesión
+                {t("users.actions.revokeSession")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(user)}
@@ -111,7 +113,7 @@ export function UserCard({
                 className="text-xs sm:text-sm"
               >
                 <Trash className="size-3.5" />
-                Eliminar
+                {t("users.actions.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -121,18 +123,18 @@ export function UserCard({
       <CardContent className="pt-4 pb-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Rol</p>
-            {getRoleBadge(user.role)}
+            <p className="text-xs text-muted-foreground">{t("users.card.role")}</p>
+            {getRoleBadge(user.role, t(`users.roles.${user.role.toLowerCase()}` as any))}
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Estado</p>
+            <p className="text-xs text-muted-foreground">{t("users.card.status")}</p>
             {user.isActive ? (
               <Badge
                 variant="outline"
                 className="gap-1.5 border-green-200 dark:border-green-900/50 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/50 font-medium"
               >
                 <CheckCircle2 className="size-3" />
-                Activa
+                {t("users.card.active")}
               </Badge>
             ) : (
               <Badge
@@ -140,12 +142,12 @@ export function UserCard({
                 className="gap-1.5 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/50 font-medium"
               >
                 <XCircle className="size-3" />
-                Inactiva
+                {t("users.card.inactive")}
               </Badge>
             )}
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Auth</p>
+            <p className="text-xs text-muted-foreground">{t("users.card.auth")}</p>
             <div className="flex flex-wrap gap-1">
               {user.authMethods && user.authMethods.length > 0 ? (
                 user.authMethods.map((method) => (
@@ -157,7 +159,7 @@ export function UserCard({
                     {method === "zoho" ? (
                       <>
                         <KeyRound className="size-3 mr-1" />
-                        Zoho
+                        {t("users.providers.zoho")}
                       </>
                     ) : (
                       <>
@@ -173,24 +175,24 @@ export function UserCard({
             </div>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Últ. Login</p>
+            <p className="text-xs text-muted-foreground">{t("users.card.lastLogin")}</p>
             <p className="text-sm font-medium">
-              {user.lastLoginAt ? formatDate(user.lastLoginAt) : "Nunca"}
+              {user.lastLoginAt ? formatDate(user.lastLoginAt, locale) : t("users.card.never")}
             </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">País</p>
+            <p className="text-xs text-muted-foreground">{t("users.card.country")}</p>
             <p className="text-sm font-medium">
-              {user.country || "No especificado"}
+              {user.country || t("users.card.unspecified")}
             </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Creado</p>
-            <p className="text-sm font-medium">{formatDate(user.createdAt)}</p>
+            <p className="text-xs text-muted-foreground">{t("users.card.created")}</p>
+            <p className="text-sm font-medium">{formatDate(user.createdAt, locale)}</p>
           </div>
           {user.zohoId && (
             <div className="space-y-1 col-span-2">
-              <p className="text-xs text-muted-foreground">Zoho ID (ZUID)</p>
+              <p className="text-xs text-muted-foreground">{t("users.card.zohoId")}</p>
               <p className="text-xs font-mono bg-muted px-2 py-1 rounded w-fit">
                 {user.zohoId}
               </p>

@@ -13,6 +13,7 @@ import { useIsMobile } from "@/components/ui/use-mobile";
 import { Building2, X, Loader2, RefreshCw } from "lucide-react";
 import { AccountsCardsPageSkeleton } from "../dashboard-skeleton";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
+import { useI18n } from "@/lib/i18n/context";
 
 import {
   ColumnFiltersState,
@@ -86,6 +87,7 @@ export function AccountsTable({
 }: AccountsTableProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
+  const { t } = useI18n();
 
   // Local search input state (for immediate UI feedback)
   const [localSearchValue, setLocalSearchValue] = React.useState(
@@ -226,7 +228,7 @@ export function AccountsTable({
           <div className="relative flex-1 max-w-full sm:max-w-sm">
             <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Buscar clientes..."
+              placeholder={t("clients.searchPlaceholder")}
               value={localSearchValue}
               onChange={(event) => handleSearchChange(event.target.value)}
               className="pl-9 pr-9 h-10 text-xs sm:text-sm"
@@ -239,7 +241,7 @@ export function AccountsTable({
                 type="button"
                 onClick={handleClearSearch}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Limpiar búsqueda"
+                aria-label={t("clients.clearSearch")}
               >
                 <X className="size-4" />
               </button>
@@ -248,7 +250,7 @@ export function AccountsTable({
           {/* Show search status badge */}
           {externalSearchQuery && !isSearching && (
             <span className="hidden sm:inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary whitespace-nowrap">
-              Resultados para &quot;{externalSearchQuery}&quot;
+              {t("common.resultsFor")} &quot;{externalSearchQuery}&quot;
             </span>
           )}
         </div>
@@ -256,7 +258,7 @@ export function AccountsTable({
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
               <IconLayoutColumns className="size-4" />
-              <span className="sm:hidden md:inline">Columnas</span>
+              <span className="sm:hidden md:inline">{t("common.columns")}</span>
               <IconChevronDown className="size-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -275,24 +277,24 @@ export function AccountsTable({
                     }
                   >
                     {column.id === "Account_Name"
-                      ? "Cliente"
+                      ? t("clients.accountName")
                       : column.id === "Account_Owner"
-                      ? "Propietario"
-                      : column.id === "Created_Time"
-                      ? "Fecha de creación"
-                      : column.id === "Modified_Time"
-                      ? "Últ. modificación"
-                      : column.id === "Account_Type"
-                      ? "Tipo de cuenta"
-                      : column.id === "Industry"
-                      ? "Industria"
-                      : column.id === "Billing_Country"
-                      ? "País"
-                      : column.id === "Phone"
-                      ? "Contacto"
-                      : column.id === "Owner"
-                      ? "Propietario"
-                      : column.id.replaceAll("_", " ")}
+                        ? t("clients.owner")
+                        : column.id === "Created_Time"
+                          ? t("clients.createdDate")
+                          : column.id === "Modified_Time"
+                            ? t("clients.modifiedDate")
+                            : column.id === "Account_Type"
+                              ? t("clients.accountType")
+                              : column.id === "Industry"
+                                ? t("clients.industry")
+                                : column.id === "Billing_Country"
+                                  ? t("clients.country")
+                                  : column.id === "Phone"
+                                    ? t("clients.contact")
+                                    : column.id === "Owner"
+                                      ? t("clients.owner")
+                                      : column.id.replaceAll("_", " ")}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -330,8 +332,8 @@ export function AccountsTable({
               ))
           ) : (
             <EmptyCard
-              title="No se encontraron clientes."
-              description="No hay clientes disponibles para mostrar."
+              title={t("clients.noClientsFound")}
+              description={t("clients.noClientsAvailable")}
               icon={<Building2 className="h-12 w-12" />}
             />
           )}
@@ -348,9 +350,9 @@ export function AccountsTable({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                       </TableHead>
                     );
                   })}
@@ -399,8 +401,8 @@ export function AccountsTable({
                     className="h-24 text-center"
                   >
                     <EmptyCard
-                      title="No se encontraron clientes."
-                      description="No hay clientes disponibles para mostrar."
+                      title={t("clients.noClientsFound")}
+                      description={t("clients.noClientsAvailable")}
                       icon={<Building2 className="h-12 w-12" />}
                     />
                   </TableCell>
@@ -413,13 +415,15 @@ export function AccountsTable({
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-2">
         <div className="flex-1 text-sm text-muted-foreground order-2 sm:order-1">
-          {table.getFilteredSelectedRowModel().rows.length} de{" "}
-          {table.getFilteredRowModel().rows.length} fila(s) seleccionada(s).
+          {t("table.selectedRows", {
+            count: table.getFilteredSelectedRowModel().rows.length,
+            total: table.getFilteredRowModel().rows.length,
+          })}
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:space-x-6 lg:space-x-8 order-1 sm:order-2">
           <div className="flex items-center justify-between sm:justify-start space-x-2">
             <p className="text-sm font-medium whitespace-nowrap">
-              Filas por página
+              {t("table.rowsPerPage")}
             </p>
             <Select
               value={pageSize.toString()}
@@ -443,7 +447,7 @@ export function AccountsTable({
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium text-primary whitespace-nowrap">
-            Página {pageIndex} de {table.getPageCount()}
+            {t("pagination.page")} {pageIndex} {t("pagination.of")} {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">
             <Button
@@ -454,7 +458,7 @@ export function AccountsTable({
               }}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Ir a la primera página</span>
+              <span className="sr-only">{t("pagination.gotToFirstPage")}</span>
               <IconChevronsLeft className="size-4" />
             </Button>
             <Button
@@ -465,7 +469,7 @@ export function AccountsTable({
               }}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Ir a la página anterior</span>
+              <span className="sr-only">{t("pagination.previous")}</span>
               <IconChevronLeft className="size-4" />
             </Button>
             <Button
@@ -476,7 +480,7 @@ export function AccountsTable({
               }}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Ir a la página siguiente</span>
+              <span className="sr-only">{t("pagination.next")}</span>
               <IconChevronRight className="size-4" />
             </Button>
             <Button
@@ -487,7 +491,7 @@ export function AccountsTable({
               }}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Ir a la última página</span>
+              <span className="sr-only">{t("pagination.goToLastPage")}</span>
               <IconChevronsRight className="size-4" />
             </Button>
 
@@ -499,7 +503,7 @@ export function AccountsTable({
                 onClick={onLoadMore}
                 disabled={isLoadingMore}
                 className="ml-2 gap-2"
-                title="Cargar más registros"
+                title={t("common.loadMore")}
               >
                 {isLoadingMore ? (
                   <>
@@ -508,7 +512,7 @@ export function AccountsTable({
                 ) : (
                   <>
                     <RefreshCw className="size-4" />
-                    <span className="hidden sm:inline">Cargar más</span>
+                    <span className="hidden sm:inline">{t("common.loadMore")}</span>
                   </>
                 )}
               </Button>

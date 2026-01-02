@@ -5,6 +5,7 @@ import { FormHeaderProps } from "../types";
 import { Progress } from "@/components/ui/progress";
 import { DialogTitle } from "@/components/ui/dialog";
 import { getStepColorClasses } from "@/constants/visits";
+import { useI18n } from "@/lib/i18n/context";
 
 interface FormHeaderPropsExtended extends FormHeaderProps {
   shouldSkipStep3?: () => boolean;
@@ -18,6 +19,7 @@ export function FormHeader({
   onGoToStep,
   shouldSkipStep3,
 }: FormHeaderPropsExtended) {
+  const { t } = useI18n();
   const currentColors = getStepColorClasses(currentStepConfig.color);
   const StepIcon = currentStepConfig.icon;
   const skipStep3 = shouldSkipStep3?.() ?? false;
@@ -43,10 +45,10 @@ export function FormHeader({
         {/* Title */}
         <div className="flex-1 min-w-0">
           <DialogTitle className="text-xs font-bold text-foreground truncate">
-            {currentStepConfig.title}
+            {t(currentStepConfig.title as any)}
           </DialogTitle>
           <p className="text-[10px] text-muted-foreground truncate hidden sm:block">
-            {currentStepConfig.description}
+            {t(currentStepConfig.description as any)}
           </p>
         </div>
 
@@ -75,7 +77,7 @@ export function FormHeader({
                   "relative flex flex-col items-center justify-center transition-all duration-200 cursor-pointer",
                   "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5"
                 )}
-                title={step.title}
+                title={t(step.title as any)}
               >
                 <div
                   className={cn(
@@ -103,7 +105,7 @@ export function FormHeader({
                       : "text-muted-foreground"
                   )}
                 >
-                  {step.shortTitle}
+                  {t(step.shortTitle as any)}
                 </span>
               </button>
               {/* Connector line */}

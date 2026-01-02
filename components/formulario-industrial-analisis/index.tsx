@@ -20,13 +20,15 @@ import { Step6Content } from "./steps/step-7-archivos";
 
 import {
   FormularioIndustrialSchema,
-  formularioIndustrialSchema,
+  getFormularioIndustrialSchema,
 } from "./schemas";
 
 import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
+import { useI18n } from "@/lib/i18n/context";
+import { useMemo } from "react";
 
 export default function FormularioIndustrialAnalisis({
   customer,
@@ -37,10 +39,12 @@ export default function FormularioIndustrialAnalisis({
 }: FormularioIndustrialAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioIndustrialAnalisis;
+  const { t } = useI18n();
+  const schema = useMemo(() => getFormularioIndustrialSchema(t), [t]);
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioIndustrialSchema>({
-    resolver: zodResolver(formularioIndustrialSchema),
+    resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues:
       isEditing && formulario
@@ -77,6 +81,7 @@ export default function FormularioIndustrialAnalisis({
     isEditing,
     existingVisit,
     onSuccess,
+    t,
   });
 
   const {
@@ -93,6 +98,7 @@ export default function FormularioIndustrialAnalisis({
   } = useFileUploader({
     form,
     customerId: customer?.id || undefined,
+    t,
   });
 
   // ==================== RENDER STEP CONTENT ====================

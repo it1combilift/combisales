@@ -3,12 +3,15 @@
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
+import { VisitStatus } from "@prisma/client";
 import { FormHeader } from "./ui/form-header";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormNavigation } from "./ui/form-navigation";
 import { FormularioLogisticaAnalisisProps } from "./types";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useLogisticaAnalisisForm } from "./hooks/use-logistica-analisis-form";
+import { useI18n } from "@/lib/i18n/context";
+import { useMemo } from "react";
 
 // Steps renumerados: Step 1 = Descripción operación, Step 2 = Datos aplicación, etc.
 import { Step1Content } from "./steps/step-2-descripcion-operacion";
@@ -20,14 +23,13 @@ import { Step6Content } from "./steps/step-7-archivos";
 
 import {
   FormularioLogisticaSchema,
-  formularioLogisticaSchema,
+  getFormularioLogisticaSchema,
 } from "./schemas";
 
 import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
-import { VisitStatus } from "@prisma/client";
 
 export default function FormularioLogisticaAnalisis({
   customer,
@@ -39,9 +41,12 @@ export default function FormularioLogisticaAnalisis({
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioLogisticaAnalisis;
 
+  const { t } = useI18n();
+  const schema = useMemo(() => getFormularioLogisticaSchema(t), [t]);
+
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioLogisticaSchema>({
-    resolver: zodResolver(formularioLogisticaSchema),
+    resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues:
       isEditing && formulario
@@ -78,6 +83,7 @@ export default function FormularioLogisticaAnalisis({
     isEditing,
     existingVisit,
     onSuccess,
+    t,
   });
 
   const {
@@ -94,6 +100,7 @@ export default function FormularioLogisticaAnalisis({
   } = useFileUploader({
     form,
     customerId: customer?.id || undefined,
+    t,
   });
 
   // ==================== RENDER STEP CONTENT ====================
