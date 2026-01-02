@@ -146,7 +146,9 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 {statusConfig && (
                   <Badge variant={statusConfig.variant} size="sm">
                     <statusConfig.icon className="size-3" />
-                    {statusConfig.label}
+                    {t(
+                      `taskPage.columns.status.${statusConfig.label}` as string
+                    )}
                   </Badge>
                 )}
               </div>

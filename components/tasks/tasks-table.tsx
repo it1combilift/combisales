@@ -108,7 +108,6 @@ export function TasksTable({
   onLoadMore,
   hasMoreRecords = false,
   isLoadingMore = false,
-  totalLoaded = 0,
   onPageChange,
   onPageSizeChange,
   isOnLastPage,
