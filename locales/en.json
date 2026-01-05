@@ -349,6 +349,7 @@
     "formNotRecognized": "Form type not recognized",
     "unsupportedFormType": "Unsupported Form Type",
     "unsupportedFormTypeDesc": "The form type \"{{type}}\" does not have a detail view implemented yet.",
+    "completedSection": "Completed",
     "powerTypes": {
       "ELECTRICO": "Electric",
       "DIESEL": "Diesel",

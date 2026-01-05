@@ -565,7 +565,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                   <Separator />
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">
-                      {t("visits.completedSection")}
+                      {t("tasks.completedSection")}
                     </Label>
                     <p className="text-sm font-medium">
                       {formatDate(task.Closed_Time)}
