@@ -22,6 +22,7 @@ import {
   FORM_TYPE_LABELS,
   VisitFormType,
   FORM_TYPE_ICONS,
+  VisitStatus,
 } from "@/interfaces/visits";
 
 import {
@@ -146,9 +147,11 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 {statusConfig && (
                   <Badge variant={statusConfig.variant} size="sm">
                     <statusConfig.icon className="size-3" />
-                    {t(
-                      `taskPage.columns.status.${statusConfig.label}` as string
-                    )}
+                    {visit.status === VisitStatus.BORRADOR
+                      ? t("visits.statuses.draft")
+                      : visit.status === VisitStatus.COMPLETADA
+                      ? t("visits.statuses.completed")
+                      : ""}
                   </Badge>
                 )}
               </div>
