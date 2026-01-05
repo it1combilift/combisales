@@ -164,6 +164,14 @@ export async function PUT(
     // Enviar notificacion de email para cualquier guardado (BORRADOR o COMPLETADA)
     const currentStatus = visitData?.status || existingVisit.status;
     if (shouldSendVisitNotification(currentStatus) && formularioData) {
+      // visit includes customer from VISIT_INCLUDE
+      const visitWithCustomer = visit as typeof visit & {
+        customer?: { accountName?: string };
+      };
+      const customerName =
+        visitWithCustomer.customer?.accountName ||
+        `#${existingVisit.zohoTaskId}`;
+
       const emailData = buildVisitEmailData(
         existingVisit.formType,
         formularioData,
@@ -175,7 +183,8 @@ export async function PUT(
               email: visit.user.email || "",
             }
           : undefined,
-        req.headers.get("accept-language")?.startsWith("en") ? "en" : "es"
+        customerName,
+        visitData?.locale || "es"
       );
 
       // Enviar notificacion de forma asincrona (no bloquea la respuesta)

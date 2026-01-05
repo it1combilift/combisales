@@ -15,6 +15,7 @@ interface UseCSSAnalisisFormProps {
   existingVisit?: any;
   onSuccess: () => void;
   t: (key: string) => string;
+  locale: string;
 }
 
 export function useCSSAnalisisForm({
@@ -25,6 +26,7 @@ export function useCSSAnalisisForm({
   existingVisit,
   onSuccess,
   t,
+  locale,
 }: UseCSSAnalisisFormProps) {
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
@@ -158,7 +160,7 @@ export function useCSSAnalisisForm({
 
       if (isEditing && existingVisit) {
         response = await axios.put(`/api/visits/${existingVisit.id}`, {
-          visitData: { status },
+          visitData: { status, locale },
           formularioData: data,
         });
 
@@ -179,6 +181,7 @@ export function useCSSAnalisisForm({
             formType: VisitFormType.ANALISIS_CSS,
             visitDate: new Date(),
             status,
+            locale,
           },
           formularioData: data,
         });

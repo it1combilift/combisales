@@ -15,6 +15,7 @@ interface UseIndustrialAnalisisFormProps {
   existingVisit?: any;
   onSuccess: () => void;
   t: (key: string) => string;
+  locale: string;
 }
 
 export function useIndustrialAnalisisForm({
@@ -25,6 +26,7 @@ export function useIndustrialAnalisisForm({
   existingVisit,
   onSuccess,
   t,
+  locale,
 }: UseIndustrialAnalisisFormProps) {
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
@@ -334,6 +336,7 @@ export function useIndustrialAnalisisForm({
             zohoTaskId,
             formType: "ANALISIS_INDUSTRIAL",
             status: visitStatus,
+            locale,
           },
           formularioData: {
             ...formData,

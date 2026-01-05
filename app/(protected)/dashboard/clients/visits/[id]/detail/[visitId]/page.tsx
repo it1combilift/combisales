@@ -4,11 +4,11 @@ import axios from "axios";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertMessage } from "@/components/alert";
+import React, { useEffect, useState } from "react";
 import { EmptyCard } from "@/components/empty-card";
 import { H1, Paragraph } from "@/components/fonts/fonts";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,9 +26,9 @@ import {
 import {
   Visit,
   FORM_TYPE_LABELS,
-  VISIT_STATUS_LABELS,
   STATUS_CONFIG,
   VisitDetailPageProps,
+  VISIT_STATUS_ICONS,
 } from "@/interfaces/visits";
 
 import {
@@ -155,7 +155,21 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                     variant={statusConfig?.variant}
                     className="text-xs font-medium w-fit"
                   >
-                    {VISIT_STATUS_LABELS[visit.status]}
+                    <span className="inline-flex">
+                      {React.createElement(
+                        VISIT_STATUS_ICONS[visit.status as VisitStatus],
+                        {
+                          className: "size-3.5",
+                        }
+                      )}
+                    </span>
+                    {t(
+                      `visits.statuses.${
+                        visit.status === VisitStatus.BORRADOR
+                          ? "draft"
+                          : "completed"
+                      }`
+                    )}
                   </Badge>
                 </div>
 

@@ -15,6 +15,7 @@ interface UseLogisticaAnalisisFormProps {
   existingVisit?: any;
   onSuccess: () => void;
   t: (key: string) => string;
+  locale: string;
 }
 
 export function useLogisticaAnalisisForm({
@@ -25,6 +26,7 @@ export function useLogisticaAnalisisForm({
   existingVisit,
   onSuccess,
   t,
+  locale,
 }: UseLogisticaAnalisisFormProps) {
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
@@ -313,6 +315,7 @@ export function useLogisticaAnalisisForm({
             zohoTaskId,
             formType: "ANALISIS_LOGISTICA",
             status: visitStatus,
+            locale,
           },
           formularioData: {
             ...formData,

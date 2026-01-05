@@ -24,7 +24,27 @@ import {
   CreateFormularioStraddleCarrierData,
 } from "@/interfaces/visits";
 
-// ==================== FORM DATA EXTRACTION HELPERS ====================
+import es from "@/locales/es.json";
+import en from "@/locales/en.json";
+
+type Locale = "es" | "en";
+const translations = { es, en };
+
+function t(key: string, locale: string = "es"): string {
+  const lang = (locale === "en" ? "en" : "es") as Locale;
+  const keys = key.split(".");
+  let value: any = translations[lang];
+
+  for (const k of keys) {
+    if (value && typeof value === "object" && k in value) {
+      value = value[k];
+    } else {
+      return key; // Fallback to key if not found
+    }
+  }
+
+  return typeof value === "string" ? value : key;
+}
 
 /**
  * Extract CSS form-specific data for email
@@ -277,16 +297,39 @@ function generateEmailSubject(
   razonSocial: string,
   formType: string,
   status: string,
-  archivosCount: number
+  archivosCount: number,
+  locale: string = "es"
 ): string {
-  const statusPrefix = status === VisitStatus.BORRADOR ? "[Borrador] " : "";
-  const formTypeName = formType.replace("ANALISIS_", "").replace("_", " ");
-  const archivosText =
-    archivosCount > 0
-      ? ` (${archivosCount} archivo${archivosCount > 1 ? "s" : ""})`
+  const statusPrefix =
+    status === VisitStatus.BORRADOR
+      ? `[${t("email.status.draft", locale)}] `
       : "";
 
-  return `${statusPrefix}Visita: ${razonSocial} - ${formTypeName}${archivosText}`;
+  // Map form type to translated name
+  const formTypeKeys: Record<string, string> = {
+    ANALISIS_CSS: "visits.formTypes.css",
+    ANALISIS_INDUSTRIAL: "visits.formTypes.industrial",
+    ANALISIS_LOGISTICA: "visits.formTypes.logistica",
+    ANALISIS_STRADDLE_CARRIER: "visits.formTypes.straddleCarrier",
+  };
+  const formTypeName = t(
+    formTypeKeys[formType] || "email.subject.visit",
+    locale
+  );
+
+  const archivosText =
+    archivosCount > 0
+      ? ` (${archivosCount} ${
+          archivosCount > 1
+            ? t("email.subject.files", locale)
+            : t("email.subject.file", locale)
+        })`
+      : "";
+
+  return `${statusPrefix}${t(
+    "email.subject.visit",
+    locale
+  )}: ${razonSocial} - ${formTypeName}${archivosText}`;
 }
 
 /**
@@ -305,12 +348,14 @@ export async function sendVisitNotification({
     : getEmailRecipients(visitData.status);
 
   const archivosCount = visitData.archivos?.length || 0;
+  const locale = visitData.locale || "es";
 
   const subject = generateEmailSubject(
     visitData.razonSocial,
     visitData.formType,
     visitData.status,
-    archivosCount
+    archivosCount,
+    locale
   );
 
   try {

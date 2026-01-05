@@ -1836,7 +1836,9 @@
     "subject": {
       "visitCompleted": "Visita completada",
       "visitDraft": "[Borrador] Visita",
-      "visit": "Visita"
+      "visit": "Visita",
+      "file": "archivo",
+      "files": "archivos"
     },
     "header": {
       "visitCompleted": "Visita completada",

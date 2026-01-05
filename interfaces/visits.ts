@@ -474,6 +474,7 @@ export interface CreateVisitData {
   formType: VisitFormType;
   status?: VisitStatus;
   visitDate?: Date;
+  locale?: string; // Idioma para la generación de emails
 }
 
 export interface CreateFormularioCSSData {
@@ -619,6 +620,7 @@ export interface CreateFormularioStraddleCarrierData {
 export interface UpdateVisitData {
   status?: VisitStatus;
   visitDate?: Date;
+  locale?: string; // Idioma para la generación de emails
 }
 
 export interface VisitDetailPageProps {

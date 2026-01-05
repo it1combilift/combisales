@@ -40,7 +40,7 @@ export default function FormularioStraddleCarrierAnalisis({
 }: FormularioStraddleCarrierAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioStraddleCarrierAnalisis;
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioStraddleCarrierSchema(t), [t]);
 
   // ==================== FORM SETUP ====================
@@ -84,6 +84,7 @@ export default function FormularioStraddleCarrierAnalisis({
     existingVisit,
     onSuccess,
     t,
+    locale,
   });
 
   const {

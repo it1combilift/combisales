@@ -41,7 +41,7 @@ export default function FormularioLogisticaAnalisis({
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioLogisticaAnalisis;
 
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioLogisticaSchema(t), [t]);
 
   // ==================== FORM SETUP ====================
@@ -84,6 +84,7 @@ export default function FormularioLogisticaAnalisis({
     existingVisit,
     onSuccess,
     t,
+    locale,
   });
 
   const {

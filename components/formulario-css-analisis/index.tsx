@@ -34,7 +34,7 @@ export default function FormularioCSSAnalisis({
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioCSSAnalisis;
 
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioCSSSchema(t), [t]);
 
   // ==================== FORM SETUP ====================
@@ -76,6 +76,7 @@ export default function FormularioCSSAnalisis({
     existingVisit,
     onSuccess,
     t,
+    locale,
   });
 
   const {

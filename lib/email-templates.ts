@@ -1,6 +1,6 @@
 import { VisitStatus } from "@prisma/client";
 import { EMAIL_CONFIG } from "@/constants/constants";
-import { formatDateShort, getFormTypeName } from "@/lib/utils";
+import { formatDateShort } from "@/lib/utils";
 import { formatFileSize } from "@/components/formulario-css-analisis/utils/file-utils";
 
 import {
@@ -11,11 +11,6 @@ import {
   FormularioLogisticaEmailData,
   FormularioStraddleCarrierEmailData,
 } from "@/interfaces/email";
-
-import {
-  CONTENEDOR_MEDIDA_LABELS,
-  CONTENEDOR_TIPO_LABELS,
-} from "@/interfaces/visits";
 
 import es from "@/locales/es.json";
 import en from "@/locales/en.json";
@@ -194,6 +189,19 @@ function formatBoolean(
   locale: string = "es"
 ): string {
   return value ? t("email.common.yes", locale) : t("email.common.no", locale);
+}
+
+/**
+ * Get translated form type name
+ */
+function getFormTypeName(formType: string, locale: string = "es"): string {
+  const formTypeKeys: Record<string, string> = {
+    ANALISIS_CSS: "visits.formTypes.css",
+    ANALISIS_INDUSTRIAL: "visits.formTypes.industrial",
+    ANALISIS_LOGISTICA: "visits.formTypes.logistica",
+    ANALISIS_STRADDLE_CARRIER: "visits.formTypes.straddleCarrier",
+  };
+  return t(formTypeKeys[formType] || "email.subject.visit", locale);
 }
 
 // ==================== SECTION BUILDING BLOCKS ====================
@@ -1096,7 +1104,7 @@ function buildFilesSection(
 
 export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
   const locale = data.locale || "es";
-  const formTypeName = getFormTypeName(data.formType);
+  const formTypeName = getFormTypeName(data.formType, locale);
   const statusConfig = getStatusConfig(data.status, locale);
   const formSpecificContent = buildFormSpecificContent(data, locale);
   const filesSection = buildFilesSection(data.archivos, locale);
@@ -1284,7 +1292,7 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
 
 export function generateVisitCompletedEmailText(data: VisitEmailData): string {
   const locale = data.locale || "es";
-  const formTypeName = getFormTypeName(data.formType);
+  const formTypeName = getFormTypeName(data.formType, locale);
   const archivos = data.archivos || [];
   const statusLabel =
     data.status === VisitStatus.COMPLETADA

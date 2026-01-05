@@ -1842,7 +1842,9 @@
     "subject": {
       "visitCompleted": "Visit completed",
       "visitDraft": "[Draft] Visit",
-      "visit": "Visit"
+      "visit": "Visit",
+      "file": "file",
+      "files": "files"
     },
     "header": {
       "visitCompleted": "Visit completed",

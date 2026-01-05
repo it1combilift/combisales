@@ -189,12 +189,11 @@ export async function POST(req: NextRequest) {
 
     const finalStatus = visitData.status || VisitStatus.COMPLETADA;
     if (shouldSendVisitNotification(finalStatus) && formularioData) {
-      // Obtener nombre del contexto (cliente o tarea)
       let contextName = "Sin especificar";
       if (visitData.customerId && visit.customer) {
         contextName = visit.customer.accountName;
       } else if (visitData.zohoTaskId) {
-        contextName = `Tarea #${visitData.zohoTaskId}`;
+        contextName = `#${visitData.zohoTaskId}`;
       }
 
       const emailData = buildVisitEmailData(
@@ -208,7 +207,8 @@ export async function POST(req: NextRequest) {
               email: visit.user.email || "",
             }
           : undefined,
-        contextName
+        contextName,
+        visitData.locale || "es"
       );
 
       // Enviar notificacion de forma asincrona (no bloquea la respuesta)

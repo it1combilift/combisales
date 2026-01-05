@@ -15,6 +15,7 @@ interface UseStraddleCarrierAnalisisFormProps {
   existingVisit?: any;
   onSuccess: () => void;
   t: (key: string) => string;
+  locale: string;
 }
 
 export function useStraddleCarrierAnalisisForm({
@@ -25,6 +26,7 @@ export function useStraddleCarrierAnalisisForm({
   existingVisit,
   onSuccess,
   t,
+  locale,
 }: UseStraddleCarrierAnalisisFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -283,6 +285,7 @@ export function useStraddleCarrierAnalisisForm({
             zohoTaskId,
             formType: "ANALISIS_STRADDLE_CARRIER",
             status: visitStatus,
+            locale,
           },
           formularioData: {
             ...formData,
