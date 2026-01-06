@@ -7,80 +7,117 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { useTranslation } from "@/lib/i18n/context";
 
-const getStatusConfig = (status?: string) => {
-  switch (status) {
-    case "Completada":
-    case "Completed":
-      return {
-        label: "Completada",
-        className: "bg-green-500/10 text-green-700 dark:text-green-400",
-      };
-    case "In Progress":
-    case "En progreso":
-      return {
-        label: "En progreso",
-        className: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-      };
-    case "Not Started":
-    case "No iniciada":
-      return {
-        label: "No iniciada",
-        className: "bg-gray-500/10 text-gray-700 dark:text-gray-400",
-      };
-    case "Deferred":
-    case "Diferida":
-      return {
-        label: "Diferida",
-        className: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
-      };
-    case "Waiting for Input":
-    case "Esperando entrada":
-      return {
-        label: "Esperando entrada",
-        className: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-      };
-    default:
-      return {
-        label: status || "Sin estado",
-        className: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-      };
+const getStatusConfig = (status?: string, t?: (key: string) => string) => {
+  const statusMap: Record<string, { key: string; className: string }> = {
+    Completada: {
+      key: "tasks.statuses.completed",
+      className: "bg-green-500/10 text-green-700 dark:text-green-400",
+    },
+    Completed: {
+      key: "tasks.statuses.completed",
+      className: "bg-green-500/10 text-green-700 dark:text-green-400",
+    },
+    "In Progress": {
+      key: "tasks.statuses.inProgress",
+      className: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+    },
+    "En progreso": {
+      key: "tasks.statuses.inProgress",
+      className: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+    },
+    "Not Started": {
+      key: "tasks.statuses.notStarted",
+      className: "bg-gray-500/10 text-gray-700 dark:text-gray-400",
+    },
+    "No iniciada": {
+      key: "tasks.statuses.notStarted",
+      className: "bg-gray-500/10 text-gray-700 dark:text-gray-400",
+    },
+    Deferred: {
+      key: "tasks.statuses.deferred",
+      className: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
+    },
+    Diferida: {
+      key: "tasks.statuses.deferred",
+      className: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
+    },
+    "Waiting for Input": {
+      key: "tasks.statuses.waitingInput",
+      className: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+    },
+    "Esperando entrada": {
+      key: "tasks.statuses.waitingInput",
+      className: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+    },
+  };
+
+  const config = status ? statusMap[status] : null;
+
+  if (config && t) {
+    return {
+      label: t(config.key),
+      className: config.className,
+    };
   }
+
+  return {
+    label: t ? t("tasks.noState") : status || "Sin estado",
+    className: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+  };
 };
 
-const getPriorityConfig = (priority?: string) => {
-  switch (priority) {
-    case "Highest":
-    case "Alta":
-    case "High":
-      return {
-        label: "Alta",
-        className: "bg-red-500/10 text-red-700 dark:text-red-400",
-      };
-    case "Normal":
-      return {
-        label: "Normal",
-        className: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-      };
-    case "Low":
-    case "Baja":
-    case "Lowest":
-      return {
-        label: "Baja",
-        className: "bg-gray-500/10 text-gray-700 dark:text-gray-400",
-      };
-    default:
-      return {
-        label: priority || "Normal",
-        className: "",
-      };
+const getPriorityConfig = (priority?: string, t?: (key: string) => string) => {
+  const priorityMap: Record<string, { key: string; className: string }> = {
+    Highest: {
+      key: "tasks.priorities.highest",
+      className: "bg-red-500/10 text-red-700 dark:text-red-400",
+    },
+    Alta: {
+      key: "tasks.priorities.high",
+      className: "bg-red-500/10 text-red-700 dark:text-red-400",
+    },
+    High: {
+      key: "tasks.priorities.high",
+      className: "bg-red-500/10 text-red-700 dark:text-red-400",
+    },
+    Normal: {
+      key: "tasks.priorities.normal",
+      className: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+    },
+    Low: {
+      key: "tasks.priorities.low",
+      className: "bg-gray-500/10 text-gray-700 dark:text-gray-400",
+    },
+    Baja: {
+      key: "tasks.priorities.low",
+      className: "bg-gray-500/10 text-gray-700 dark:text-gray-400",
+    },
+    Lowest: {
+      key: "tasks.priorities.lowest",
+      className: "bg-gray-500/10 text-gray-700 dark:text-gray-400",
+    },
+  };
+
+  const config = priority ? priorityMap[priority] : null;
+
+  if (config && t) {
+    return {
+      label: t(config.key),
+      className: config.className,
+    };
   }
+
+  return {
+    label: t ? t("tasks.priorities.normal") : priority || "Normal",
+    className: "",
+  };
 };
 
-const formatDate = (dateString?: string) => {
+const formatDate = (dateString?: string, locale: string = "es-ES") => {
   if (!dateString) return "—";
   try {
     const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
+    return date.toLocaleDateString(locale, {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -171,8 +208,9 @@ export const columns: ColumnDef<ZohoTask>[] = [
       );
     },
     cell: ({ row }) => {
+      const { t } = useTranslation();
       const status = row.getValue("Status") as string | undefined;
-      const config = getStatusConfig(status);
+      const config = getStatusConfig(status, t);
       return (
         <Badge className={config.className} variant="outline">
           {config.label}
@@ -200,8 +238,9 @@ export const columns: ColumnDef<ZohoTask>[] = [
       );
     },
     cell: ({ row }) => {
+      const { t } = useTranslation();
       const priority = row.getValue("Priority") as string | undefined;
-      const config = getPriorityConfig(priority);
+      const config = getPriorityConfig(priority, t);
       return (
         <Badge className={config.className} variant="outline">
           {config.label}
@@ -229,9 +268,13 @@ export const columns: ColumnDef<ZohoTask>[] = [
       );
     },
     cell: ({ row }) => {
+      const { locale } = useTranslation();
       const dueDate = row.getValue("Due_Date") as string | undefined;
+      const localeStr = locale === "es" ? "es-ES" : "en-US";
       return (
-        <span className="text-sm whitespace-nowrap">{formatDate(dueDate)}</span>
+        <span className="text-sm whitespace-nowrap">
+          {formatDate(dueDate, localeStr)}
+        </span>
       );
     },
   },
@@ -251,14 +294,16 @@ export const columns: ColumnDef<ZohoTask>[] = [
       );
     },
     cell: ({ row }) => {
+      const { t } = useTranslation();
       const owner = row.original.Owner;
+      const notAssigned = t("tasks.notSpecified");
       return (
         <div
           className="flex flex-col gap-0.5"
-          title={owner?.name || "Sin asignar"}
+          title={owner?.name || notAssigned}
         >
           <span className="text-sm font-medium">
-            {owner?.name || "Sin asignar"}
+            {owner?.name || notAssigned}
           </span>
           {owner?.email && (
             <span className="text-xs text-muted-foreground">{owner.email}</span>

@@ -33,101 +33,175 @@ export const TaskCard = ({
   onCreateVisit?: () => void;
 }) => {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const TASK_DETAIL_URL = (taskId: string) =>
     `/dashboard/tasks/${taskId}/details`;
 
   const getStatusConfig = (status?: string) => {
-    switch (status) {
-      case "Completada":
-      case "Completed":
-        return {
-          label: t("tasks.statuses.completed"),
-          variant: "default" as const,
-          className:
-            "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20",
-          icon: CheckCircle2,
-        };
-      case "In Progress":
-      case "En progreso":
-        return {
-          label: t("tasks.statuses.inProgress"),
-          variant: "secondary" as const,
-          className:
-            "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
-          icon: Clock,
-        };
-      case "Not Started":
-      case "No iniciada":
-        return {
-          label: t("tasks.statuses.notStarted"),
-          variant: "outline" as const,
-          className:
-            "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
-          icon: FileText,
-        };
-      case "Deferred":
-      case "Diferida":
-        return {
-          label: t("tasks.statuses.deferred"),
-          variant: "outline" as const,
-          className:
-            "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20",
-          icon: Clock,
-        };
-      case "Waiting for Input":
-      case "Esperando entrada":
-        return {
-          label: t("tasks.statuses.waitingInput"),
-          variant: "outline" as const,
-          className:
-            "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20",
-          icon: Clock,
-        };
-      default:
-        return {
-          label: status || t("common.status"),
-          variant: "outline" as const,
-          className: "border-border/50",
-          icon: FileText,
-        };
+    const statusMap: Record<
+      string,
+      {
+        key: string;
+        variant: "default" | "secondary" | "outline";
+        className: string;
+        icon: any;
+      }
+    > = {
+      Completada: {
+        key: "tasks.statuses.completed",
+        variant: "default" as const,
+        className:
+          "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20",
+        icon: CheckCircle2,
+      },
+      Completed: {
+        key: "tasks.statuses.completed",
+        variant: "default" as const,
+        className:
+          "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20",
+        icon: CheckCircle2,
+      },
+      "In Progress": {
+        key: "tasks.statuses.inProgress",
+        variant: "secondary" as const,
+        className:
+          "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
+        icon: Clock,
+      },
+      "En progreso": {
+        key: "tasks.statuses.inProgress",
+        variant: "secondary" as const,
+        className:
+          "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
+        icon: Clock,
+      },
+      "Not Started": {
+        key: "tasks.statuses.notStarted",
+        variant: "outline" as const,
+        className:
+          "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
+        icon: FileText,
+      },
+      "No iniciada": {
+        key: "tasks.statuses.notStarted",
+        variant: "outline" as const,
+        className:
+          "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
+        icon: FileText,
+      },
+      Deferred: {
+        key: "tasks.statuses.deferred",
+        variant: "outline" as const,
+        className:
+          "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20",
+        icon: Clock,
+      },
+      Diferida: {
+        key: "tasks.statuses.deferred",
+        variant: "outline" as const,
+        className:
+          "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20",
+        icon: Clock,
+      },
+      "Waiting for Input": {
+        key: "tasks.statuses.waitingInput",
+        variant: "outline" as const,
+        className:
+          "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20",
+        icon: Clock,
+      },
+      "Esperando entrada": {
+        key: "tasks.statuses.waitingInput",
+        variant: "outline" as const,
+        className:
+          "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20",
+        icon: Clock,
+      },
+    };
+
+    const config = status ? statusMap[status] : null;
+
+    if (config) {
+      return {
+        label: t(config.key),
+        variant: config.variant,
+        className: config.className,
+        icon: config.icon,
+      };
     }
+
+    return {
+      label: status || t("common.status"),
+      variant: "outline" as const,
+      className: "border-border/50",
+      icon: FileText,
+    };
   };
 
   const getPriorityConfig = (priority?: string) => {
-    switch (priority) {
-      case "Highest":
-      case "Alta":
-      case "High":
-        return {
-          label: t("tasks.priorities.high"),
-          className:
-            "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
-          dotColor: "bg-red-500",
-        };
-      case "Normal":
-        return {
-          label: t("tasks.priorities.normal"),
-          className:
-            "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
-          dotColor: "bg-blue-500",
-        };
-      case "Low":
-      case "Baja":
-      case "Lowest":
-        return {
-          label: t("tasks.priorities.low"),
-          className:
-            "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
-          dotColor: "bg-gray-500",
-        };
-      default:
-        return {
-          label: priority || t("tasks.priorities.normal"),
-          className: "border-border/50",
-          dotColor: "bg-gray-400",
-        };
+    const priorityMap: Record<
+      string,
+      { key: string; className: string; dotColor: string }
+    > = {
+      Highest: {
+        key: "tasks.priorities.highest",
+        className:
+          "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
+        dotColor: "bg-red-500",
+      },
+      Alta: {
+        key: "tasks.priorities.high",
+        className:
+          "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
+        dotColor: "bg-red-500",
+      },
+      High: {
+        key: "tasks.priorities.high",
+        className:
+          "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
+        dotColor: "bg-red-500",
+      },
+      Normal: {
+        key: "tasks.priorities.normal",
+        className:
+          "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
+        dotColor: "bg-blue-500",
+      },
+      Low: {
+        key: "tasks.priorities.low",
+        className:
+          "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
+        dotColor: "bg-gray-500",
+      },
+      Baja: {
+        key: "tasks.priorities.low",
+        className:
+          "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
+        dotColor: "bg-gray-500",
+      },
+      Lowest: {
+        key: "tasks.priorities.lowest",
+        className:
+          "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
+        dotColor: "bg-gray-500",
+      },
+    };
+
+    const config = priority ? priorityMap[priority] : null;
+
+    if (config) {
+      return {
+        label: t(config.key),
+        className: config.className,
+        dotColor: config.dotColor,
+      };
     }
+
+    return {
+      label: priority || t("tasks.priorities.normal"),
+      className: "border-border/50",
+      dotColor: "bg-gray-400",
+    };
   };
 
   const statusConfig = getStatusConfig(task.Status);
@@ -138,7 +212,8 @@ export const TaskCard = ({
     if (!dateString) return null;
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString("es-ES", {
+      const localeStr = locale === "es" ? "es-ES" : "en-US";
+      return date.toLocaleDateString(localeStr, {
         day: "2-digit",
         month: "short",
         year: "numeric",
@@ -152,7 +227,8 @@ export const TaskCard = ({
     if (!dateString) return null;
     try {
       const date = new Date(dateString);
-      return formatDistanceToNow(date, { addSuffix: true, locale: es });
+      const dateLocale = locale === "es" ? es : undefined;
+      return formatDistanceToNow(date, { addSuffix: true, locale: dateLocale });
     } catch {
       return null;
     }
