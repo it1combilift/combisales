@@ -195,10 +195,17 @@ export function Step7Content({
           </div>
         )}
 
-        {/* Mobile file limits info */}
-        <p className="text-[10px] text-center text-muted-foreground text-balance">
-          {t("forms.files.limits", { max: MAX_FILES })}
-        </p>
+        <div className="flex flex-wrap gap-2 justify-center pt-1">
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <Camera className="size-3" /> {t("forms.files.limits.images")}
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400">
+            <Video className="size-3" /> {t("forms.files.limits.videos")}
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400">
+            <FolderOpen className="size-3" /> {t("forms.files.limits.docs")}
+          </span>
+        </div>
       </div>
 
       {/* ===== DESKTOP: Drop zone + inline buttons ===== */}
