@@ -4,13 +4,13 @@ import * as React from "react";
 import { Label } from "../ui/label";
 import { TaskCard } from "./task-card";
 import { Spinner } from "../ui/spinner";
-import { EmptyCard } from "../empty-card";
 import { Skeleton } from "../ui/skeleton";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useDebouncedCallback } from "use-debounce";
+import { useTranslation } from "@/lib/i18n/context";
 import { TasksTableProps } from "@/interfaces/zoho";
 import { useIsMobile } from "@/components/ui/use-mobile";
 import { TasksCardsSkeleton } from "../dashboard-skeleton";
@@ -63,30 +63,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useTranslation } from "@/lib/i18n/context";
+import { EmptyCard } from "../empty-card";
 
-// Helper function to get readable filter labels
-const getFilterLabel = (type: "status" | "priority", value: string): string => {
+const getFilterLabel = (
+  type: "status" | "priority",
+  value: string,
+  t: (key: string) => string
+): string => {
   if (type === "status") {
-    const statusLabels: Record<string, string> = {
-      "Not Started": "No iniciada",
-      "In Progress": "En progreso",
-      Completed: "Completada",
-      Deferred: "Diferida",
-      "Waiting for Input": "Esperando entrada",
+    const statusMap: Record<string, string> = {
+      "Not Started": "tasks.statuses.notStarted",
+      "In Progress": "tasks.statuses.inProgress",
+      Completed: "tasks.statuses.completed",
+      Deferred: "tasks.statuses.deferred",
+      "Waiting for Input": "tasks.statuses.waitingInput",
     };
-    return statusLabels[value] || value;
+    return t(statusMap[value] || "common.status");
   }
 
   if (type === "priority") {
-    const priorityLabels: Record<string, string> = {
-      Highest: "Máxima",
-      High: "Alta",
-      Normal: "Normal",
-      Low: "Baja",
-      Lowest: "Mínima",
+    const priorityMap: Record<string, string> = {
+      Highest: "tasks.priorities.highest",
+      High: "tasks.priorities.high",
+      Normal: "tasks.priorities.normal",
+      Low: "tasks.priorities.low",
+      Lowest: "tasks.priorities.lowest",
     };
-    return priorityLabels[value] || value;
+    return t(priorityMap[value] || "tasks.priority");
   }
 
   return value;
@@ -319,7 +322,7 @@ export function TasksTable({
                 {statusFilter && (
                   <Badge variant="secondary" className="text-xs">
                     {t("common.status")}{" "}
-                    {getFilterLabel("status", statusFilter)}
+                    {getFilterLabel("status", statusFilter, t)}
                     <button
                       onClick={() => setStatusFilter("")}
                       className="ml-1 hover:text-destructive"
@@ -330,7 +333,8 @@ export function TasksTable({
                 )}
                 {priorityFilter && (
                   <Badge variant="secondary" className="text-xs">
-                    {t("taskPage.columns.priority")}: {getFilterLabel("priority", priorityFilter)}
+                    {t("taskPage.columns.priority")}:{" "}
+                    {getFilterLabel("priority", priorityFilter, t)}
                     <button
                       onClick={() => setPriorityFilter("")}
                       className="ml-1 hover:text-destructive"
@@ -550,86 +554,6 @@ export function TasksTable({
           <div className="flex justify-start items-center gap-3 p-3 border rounded-lg bg-muted/30 flex-wrap">
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">
-                {t("taskPage.filters.status")}
-              </Label>
-              <div className="flex items-center gap-2">
-                <Select
-                  value={statusFilter || undefined}
-                  onValueChange={(value) => setStatusFilter(value)}
-                >
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue
-                      placeholder={t(
-                        "taskPage.filters.statusPlaceholderStatus"
-                      )}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Not Started">No iniciada</SelectItem>
-                    <SelectItem value="In Progress">En progreso</SelectItem>
-                    <SelectItem value="Completed">Completada</SelectItem>
-                    <SelectItem value="Deferred">Diferida</SelectItem>
-                    <SelectItem value="Waiting for Input">
-                      Esperando entrada
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                {statusFilter && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                    onClick={() => setStatusFilter("")}
-                  >
-                    <X className="size-4" />
-                    <span>{t("taskPage.filters.status")}</span>
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">
-                {t("taskPage.filters.priority")}
-              </Label>
-              <div className="flex items-center gap-2">
-                <Select
-                  value={priorityFilter || undefined}
-                  onValueChange={(value) => setPriorityFilter(value)}
-                >
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue
-                      placeholder={t(
-                        "taskPage.filters.priorityPlaceholderPriority"
-                      )}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Highest">Máxima</SelectItem>
-                    <SelectItem value="High">Alta</SelectItem>
-                    <SelectItem value="Normal">Normal</SelectItem>
-                    <SelectItem value="Low">Baja</SelectItem>
-                    <SelectItem value="Lowest">Mínima</SelectItem>
-                  </SelectContent>
-                </Select>
-                {priorityFilter && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                    onClick={() => setPriorityFilter("")}
-                  >
-                    <X className="size-4" />
-                    <span className="sr-only">
-                      {t("taskPage.filters.priority")}
-                    </span>
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">
                 {t("taskPage.filters.type")}
               </Label>
               <div className="flex items-center gap-2">
@@ -711,9 +635,29 @@ export function TasksTable({
               ))
           ) : (
             <EmptyCard
-              icon={<ListTodo className="size-8 text-muted-foreground" />}
-              title={t("messages.noResults")}
-              description={t("messages.unableToLoadData")}
+              icon={<ListTodo />}
+              title={
+                externalSearchQuery || columnFilters.length > 0
+                  ? t("tasks.emptySearchTitle")
+                  : t("tasks.emptyStateTitle")
+              }
+              description={
+                externalSearchQuery || columnFilters.length > 0
+                  ? t("tasks.emptySearchDescription")
+                  : t("tasks.emptyStateDescription")
+              }
+              actions={
+                (externalSearchQuery || columnFilters.length > 0) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearSearch}
+                  >
+                    <FilterX className="size-4" />
+                    {t("common.clearFilters")}
+                  </Button>
+                )
+              }
             />
           )}
         </div>
@@ -773,14 +717,32 @@ export function TasksTable({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-24 text-center"
+                    className="h-64 text-center"
                   >
                     <EmptyCard
-                      icon={
-                        <ListTodo className="size-8 text-muted-foreground" />
+                      icon={<ListTodo />}
+                      title={
+                        externalSearchQuery || columnFilters.length > 0
+                          ? t("tasks.emptySearchTitle")
+                          : t("tasks.emptyStateTitle")
                       }
-                      title={t("messages.noResults")}
-                      description={t("messages.unableToLoadData")}
+                      description={
+                        externalSearchQuery || columnFilters.length > 0
+                          ? t("tasks.emptySearchDescription")
+                          : t("tasks.emptyStateDescription")
+                      }
+                      actions={
+                        (externalSearchQuery || columnFilters.length > 0) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleClearSearch}
+                          >
+                            <FilterX className="size-4" />
+                            {t("common.clearFilters")}
+                          </Button>
+                        )
+                      }
                     />
                   </TableCell>
                 </TableRow>

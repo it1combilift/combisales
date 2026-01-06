@@ -6,15 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Customer } from "@/interfaces/visits";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { RefreshCw, ListTodo } from "lucide-react";
-import { EmptyCard } from "@/components/empty-card";
+import { useTranslation } from "@/lib/i18n/context";
 import { columns } from "@/components/tasks/columns";
 import { H1, Paragraph } from "@/components/fonts/fonts";
 import { ColumnFiltersState } from "@tanstack/react-table";
 import { TasksTable } from "@/components/tasks/tasks-table";
+import { RefreshCw, ListTodo, FilterX } from "lucide-react";
 import { useState, useCallback, useRef, useEffect } from "react";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
-import { useTranslation } from "@/lib/i18n/context";
+import { EmptyCard } from "@/components/empty-card";
 
 const PER_PAGE = 200;
 const INITIAL_LOAD_ONLY_FIRST_PAGE = true;
@@ -71,7 +71,7 @@ export default function TasksPage() {
       const response = await fetch(`/api/zoho/tasks?${params.toString()}`);
 
       if (!response.ok) {
-        throw new Error("Error al obtener tareas");
+        console.log("Error fetching tasks");
       }
 
       const result = await response.json();
@@ -160,10 +160,7 @@ export default function TasksPage() {
         }
       } catch (err) {
         console.error("Error fetching initial tasks:", err);
-        setError(
-          err instanceof Error ? err.message : "Error al cargar las tareas"
-        );
-        toast.error("Error al cargar las tareas");
+        toast.error(t("tasks.errorLoadingTitle"));
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
@@ -196,10 +193,14 @@ export default function TasksPage() {
         isLoadingMore: false,
       });
 
-      toast.success(`${newTasks.length} tareas más cargadas`);
+      toast.success(
+        t("plurals.items_other", { count: newTasks.length }) +
+          " " +
+          t("common.tasks").toLowerCase()
+      );
     } catch (err) {
       console.error("Error loading more tasks:", err);
-      toast.error("Error al cargar más tareas");
+      toast.error(t("errors.loadingMore"));
       setPagination((prev) => ({ ...prev, isLoadingMore: false }));
     } finally {
       isLoadingRef.current = false;
@@ -236,8 +237,7 @@ export default function TasksPage() {
         });
       } catch (err) {
         console.error("Error searching tasks:", err);
-        setError(err instanceof Error ? err.message : "Error al buscar tareas");
-        toast.error("Error al buscar tareas");
+        toast.error(t("tasks.errorLoadingTitle"));
       } finally {
         setIsSearching(false);
         isLoadingRef.current = false;
@@ -256,6 +256,7 @@ export default function TasksPage() {
 
   const handleClearSearch = () => {
     setSearchQuery("");
+    setColumnFilters([]);
     fetchInitialTasks();
   };
 
@@ -284,8 +285,8 @@ export default function TasksPage() {
   const handleVisitSuccess = useCallback(() => {
     setIsVisitDialogOpen(false);
     setSelectedTaskForVisit(null);
-    toast.success("Visita creada exitosamente");
-  }, []);
+    toast.success(t("visits.visitCreated"));
+  }, [t]);
 
   const handleDialogClose = useCallback((open: boolean) => {
     setIsVisitDialogOpen(open);
@@ -350,7 +351,7 @@ export default function TasksPage() {
               {isLoading || isRefreshing ? (
                 <>
                   <Spinner variant="circle" size="sm" />
-                  <span className="text-xs">{t("common.refreshing")}</span>
+                  <span className="text-xs">{t("common.loading")}</span>
                 </>
               ) : (
                 <>
@@ -376,24 +377,35 @@ export default function TasksPage() {
                 isRefreshing || isLoading ? "animate-spin" : ""
               }`}
             />
-            <span className="hidden md:inline">{
-                isRefreshing || isLoading
-                  ? t("common.refreshing")
-                  : t("common.refresh")
-              }</span>
+            <span className="hidden md:inline">
+              {isRefreshing || isLoading
+                ? t("common.refreshing")
+                : t("common.refresh")}
+            </span>
           </Button>
         </div>
       </div>
 
       {error ? (
         <EmptyCard
-          icon={<ListTodo />}
-          title={t("errors.serverError")}
-          description={t("errors.unableToLoadData")}
+          icon={<ListTodo className="size-6 text-muted-foreground" />}
+          title={
+            searchQuery
+              ? t("tasks.emptySearchTitle")
+              : t("tasks.emptyStateTitle")
+          }
+          description={
+            searchQuery
+              ? t("tasks.emptySearchDescription")
+              : t("tasks.emptyStateDescription")
+          }
           actions={
-            <Button onClick={handleRefresh} variant="default">
-              {t("common.tryAgain")}
-            </Button>
+            searchQuery ? (
+              <Button variant="outline" onClick={handleClearSearch}>
+                <FilterX className="size-4" />
+                {t("common.clearFilters")}
+              </Button>
+            ) : undefined
           }
         />
       ) : (
