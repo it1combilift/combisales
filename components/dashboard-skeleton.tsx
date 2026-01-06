@@ -441,11 +441,6 @@ export function TasksCardsSkeleton() {
               <Skeleton className="h-7 w-16 rounded-full" /> {/* tag */}
             </div>
           </div>
-
-          <div className="flex flex-col items-end gap-2">
-            <Skeleton className="h-9 w-9 rounded-full" /> {/* avatar */}
-            <Skeleton className="h-4 w-20" /> {/* small meta */}
-          </div>
         </div>
 
         {/* Buttons / status row */}
@@ -464,13 +459,6 @@ export function TasksCardsSkeleton() {
                 <Skeleton className="h-4 w-40" /> {/* label line */}
                 <Skeleton className="h-3 w-28" /> {/* subline */}
               </div>
-            </div>
-
-            <div className="flex-1" />
-
-            <div className="space-y-1 text-right">
-              <Skeleton className="h-4 w-28" /> {/* related / contact */}
-              <Skeleton className="h-3 w-28" /> {/* modified/completed */}
             </div>
           </div>
         </div>
