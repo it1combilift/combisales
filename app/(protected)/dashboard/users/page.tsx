@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n/context";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { UserListItem } from "@/interfaces/user";
@@ -19,7 +20,6 @@ import { EditUserForm } from "@/components/users/edit-user-form";
 import { CreateUserForm } from "@/components/users/create-user-form";
 import { UserPlus, RefreshCw, Trash, UsersIcon } from "lucide-react";
 import { DashboardUsersPageSkeleton } from "@/components/dashboard-skeleton";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   Dialog,
@@ -74,7 +74,7 @@ export default function UsersPage() {
       const data = response.data;
 
       if (response.status !== 200) {
-        throw new Error(data.error || "Error al obtener la lista de usuarios");
+        throw new Error(t("users.fetchError") || "Error fetching users");
       }
 
       const filteredUsers = (data.users || []).filter(
@@ -83,11 +83,11 @@ export default function UsersPage() {
       setUsers(filteredUsers);
       setError(null);
       if (isRefresh) {
-        toast.success("Lista de usuarios actualizada");
+        toast.success(t("users.usersLoaded", { count: filteredUsers.length }));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
-      toast.error("Error al cargar usuarios");
+      toast.error(t("users.fetchError") || "Error al cargar usuarios");
     } finally {
       if (isRefresh) {
         setIsRefreshing(false);
@@ -123,7 +123,7 @@ export default function UsersPage() {
     try {
       await axios.delete(`/api/users/${user.id}`);
 
-      toast.success("Usuario eliminado exitosamente");
+      toast.success(t("users.deleteSuccess") || "User deleted successfully");
       setIsDeleteDialogOpen(false);
       setSelectedUser(null);
       await fetchUsers(true);
@@ -131,13 +131,15 @@ export default function UsersPage() {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.error ||
-          "Hubo un problema al eliminar el usuario."
+            t("users.deleteError") ||
+            "An error occurred while deleting the user."
         );
       } else {
         toast.error(
           error instanceof Error
             ? error.message
-            : "Hubo un problema al eliminar el usuario."
+            : t("users.deleteError") ||
+                "An error occurred while deleting the user."
         );
       }
     } finally {
@@ -156,9 +158,7 @@ export default function UsersPage() {
         ids: userIdsToDelete,
       });
 
-      toast.success(
-        response.data.message || "Usuarios eliminados exitosamente"
-      );
+      toast.success(response.data.message || t("users.deleteMultipleSuccess"));
       setRowSelection({});
       setIsDeleteMultipleDialogOpen(false);
       fetchUsers(true);
@@ -166,13 +166,15 @@ export default function UsersPage() {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.error ||
-          "Hubo un problema al eliminar los usuarios."
+            t("users.deleteError") ||
+            "An error occurred while deleting the users."
         );
       } else {
         toast.error(
           error instanceof Error
             ? error.message
-            : "Hubo un problema al eliminar los usuarios."
+            : t("users.deleteError") ||
+                "An error occurred while deleting the users."
         );
       }
     }
@@ -279,13 +281,13 @@ export default function UsersPage() {
         <div className="container mx-auto py-10 px-4">
           <EmptyCard
             icon={<UsersIcon />}
-            title="Ha ocurrido un error"
-            description="No se pudieron cargar los usuarios. Por favor, intenta nuevamente."
+            title={t("users.errorTitle")}
+            description={t("users.errorDescription")}
             className="min-h-[500px]"
             actions={
               <Button onClick={() => fetchUsers()} className="gap-2">
                 <RefreshCw className="size-4" />
-                Reintentar
+                {t("users.retry")}
               </Button>
             }
           />
@@ -340,14 +342,10 @@ export default function UsersPage() {
                 <DialogContent className="max-w-[95vw] xs:max-w-3xl max-h-[85vh] p-0 gap-0">
                   <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
                     <DialogTitle className="text-left text-base sm:text-lg">
-                      {
-                        t("users.createUser")
-                      }
+                      {t("users.createUser")}
                     </DialogTitle>
                     <DialogDescription className="text-left text-xs sm:text-sm">
-                      {
-                        t("users.createUserDescription")
-                      }
+                      {t("users.createUserDescription")}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="overflow-y-auto px-4 sm:px-6 py-4">
@@ -390,11 +388,11 @@ export default function UsersPage() {
               ) : filteredUsers.length === 0 ? (
                 <EmptyCard
                   icon={<UsersIcon />}
-                  title="No hay usuarios"
+                  title={t("users.noUsersFound")}
                   description={
                     globalFilter || columnFilters.length > 0
-                      ? "No se encontraron usuarios con los filtros aplicados"
-                      : "No se encontraron usuarios en el sistema"
+                      ? t("users.noUsersWithFilters")
+                      : t("users.noUsersInSystem")
                   }
                 />
               ) : (
@@ -408,7 +406,7 @@ export default function UsersPage() {
                       user={user}
                       isSelected={
                         !!rowSelection[
-                        originalIndex as keyof typeof rowSelection
+                          originalIndex as keyof typeof rowSelection
                         ]
                       }
                       onSelect={(checked) => {
@@ -435,18 +433,16 @@ export default function UsersPage() {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-left">
-                  ¿Eliminar usuario?
+                  {t("users.deleteUserTitle")}
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-left text-pretty">
-                  Estás a punto de eliminar a{" "}
-                  <span className="font-semibold">
-                    {selectedUser?.name || selectedUser?.email}
-                  </span>
-                  . Esta acción no se puede deshacer.
+                  {t("users.deleteUserDescription", {
+                    name: selectedUser?.name || selectedUser?.email || "",
+                  })}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="grid grid-cols-2">
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel>{t("users.cancel")}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => selectedUser && handleDeleteUser(selectedUser)}
                   disabled={!!deletingUserId}
@@ -454,10 +450,10 @@ export default function UsersPage() {
                   {deletingUserId === selectedUser?.id ? (
                     <>
                       <RefreshCw className="mr-2 size-4 animate-spin" />
-                      Eliminando...
+                      {t("users.deleting")}
                     </>
                   ) : (
-                    "Eliminar"
+                    t("users.delete")
                   )}
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -472,17 +468,18 @@ export default function UsersPage() {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-left">
-                  ¿Eliminar usuarios seleccionados?
+                  {t("users.deleteMultipleTitle")}
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-left text-pretty">
-                  Estás a punto de eliminar {selectedUserIds.length} usuario(s).
-                  Esta acción no se puede deshacer.
+                  {t("users.deleteMultipleDescription", {
+                    count: selectedUserIds.length,
+                  })}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="grid grid-cols-2">
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel>{t("users.cancel")}</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDeleteMultiple}>
-                  Eliminar
+                  {t("users.delete")}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -493,14 +490,10 @@ export default function UsersPage() {
             <DialogContent className="max-w-[95vw] xs:max-w-3xl max-h-[85vh] p-0 gap-0">
               <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
                 <DialogTitle className="text-left text-base sm:text-lg">
-                  {
-                    t("users.editUser")
-                  }
+                  {t("users.editUser")}
                 </DialogTitle>
                 <DialogDescription className="text-left text-xs sm:text-sm">
-                  {
-                    t("users.editUserDescription")
-                  }
+                  {t("users.editUserDescription")}
                 </DialogDescription>
               </DialogHeader>
               <div className="overflow-y-auto px-4 sm:px-6 py-4">

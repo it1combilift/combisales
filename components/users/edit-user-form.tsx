@@ -102,15 +102,10 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       onSuccess?.();
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.error(
-          error.response?.data?.error ||
-          "Hubo un problema al actualizar el usuario. Por favor, intenta nuevamente."
-        );
+        toast.error(error.response?.data?.error || t("users.form.updateError"));
       } else {
         toast.error(
-          error instanceof Error
-            ? error.message
-            : t("users.form.updateError")
+          error instanceof Error ? error.message : t("users.form.updateError")
         );
       }
     } finally {
@@ -128,7 +123,9 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
               className="text-xs sm:text-sm py-2.5 sm:py-3 px-4 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
             >
               <User className="size-4" />
-              <span className="hidden xs:inline">{t("users.form.personal")}</span>
+              <span className="hidden xs:inline">
+                {t("users.form.personal")}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value="config"
@@ -250,7 +247,9 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
                         <SelectTrigger className="min-h-full transition-all focus:ring-2 text-xs sm:text-sm w-full">
                           <div className="flex items-center gap-2">
                             <Shield className="size-4 text-muted-foreground" />
-                            <SelectValue placeholder={t("users.form.rolePlaceholder")} />
+                            <SelectValue
+                              placeholder={t("users.form.rolePlaceholder")}
+                            />
                           </div>
                         </SelectTrigger>
                       </FormControl>
@@ -261,7 +260,9 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
                         >
                           <div className="flex items-center gap-2">
                             <div className="size-2 rounded-full bg-blue-500" />
-                            <span className="font-medium">{t("users.roles.admin")}</span>
+                            <span className="font-medium">
+                              {t("users.roles.admin")}
+                            </span>
                           </div>
                         </SelectItem>
                         <SelectItem
@@ -270,7 +271,9 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
                         >
                           <div className="flex items-center gap-2">
                             <div className="size-2 rounded-full bg-emerald-500" />
-                            <span className="font-medium">{t("users.roles.seller")}</span>
+                            <span className="font-medium">
+                              {t("users.roles.seller")}
+                            </span>
                           </div>
                         </SelectItem>
                       </SelectContent>

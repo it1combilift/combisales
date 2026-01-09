@@ -147,7 +147,6 @@ export default function ClientsPage() {
         }
         setError(null);
 
-        // Load only first page initially for performance
         const result = await fetchAccountsPage(1);
 
         allAccountsRef.current = result.accounts;
@@ -160,13 +159,14 @@ export default function ClientsPage() {
         });
 
         if (result.pagination.more_records && !INITIAL_LOAD_ONLY_FIRST_PAGE) {
-          // If configured to load all, continue loading in background
           loadMoreAccountsInBackground(2);
         }
 
         if (isRefresh) {
           toast.success(
-            `${result.accounts.length} clientes cargados correctamente`,
+            t("clients.clientsLoaded", {
+              count: accounts.length,
+            }),
             { closeButton: true }
           );
         }
@@ -310,11 +310,11 @@ export default function ClientsPage() {
   const filteredAccountsCount =
     columnFilters.length > 0
       ? accounts.filter((account) => {
-        return columnFilters.every((filter) => {
-          const value = account[filter.id as keyof ZohoAccount];
-          return value === filter.value;
-        });
-      }).length
+          return columnFilters.every((filter) => {
+            const value = account[filter.id as keyof ZohoAccount];
+            return value === filter.value;
+          });
+        }).length
       : accounts.length;
 
   const totalPages = Math.ceil(filteredAccountsCount / tablePageSize);
@@ -342,52 +342,52 @@ export default function ClientsPage() {
   // Prepare customer data from account
   const customerFromAccount: Customer | undefined = selectedAccountForVisit
     ? {
-      id: selectedAccountForVisit.id,
-      zohoAccountId: selectedAccountForVisit.id,
-      accountName: selectedAccountForVisit.Account_Name,
-      razonSocial: selectedAccountForVisit.Razon_Social || null,
-      accountNumber: selectedAccountForVisit.Account_Number || null,
-      cif: selectedAccountForVisit.CIF || null,
-      codigoCliente: selectedAccountForVisit.C_digo_Cliente || null,
-      accountType: selectedAccountForVisit.Account_Type || null,
-      industry: selectedAccountForVisit.Industry || null,
-      subSector: selectedAccountForVisit.Sub_Sector || null,
-      phone: selectedAccountForVisit.Phone || null,
-      fax: selectedAccountForVisit.Fax || null,
-      email: selectedAccountForVisit.Email || null,
-      website: selectedAccountForVisit.Website || null,
-      billingStreet: selectedAccountForVisit.Billing_Street || null,
-      billingCity: selectedAccountForVisit.Billing_City || null,
-      billingState: selectedAccountForVisit.Billing_State || null,
-      billingCode: selectedAccountForVisit.Billing_Code || null,
-      billingCountry: selectedAccountForVisit.Billing_Country || null,
-      shippingStreet: selectedAccountForVisit.Shipping_Street || null,
-      shippingCity: selectedAccountForVisit.Shipping_City || null,
-      shippingState: selectedAccountForVisit.Shipping_State || null,
-      shippingCode: selectedAccountForVisit.Shipping_Code || null,
-      shippingCountry: selectedAccountForVisit.Shipping_Country || null,
-      latitude: selectedAccountForVisit.dealsingooglemaps__Latitude || null,
-      longitude: selectedAccountForVisit.dealsingooglemaps__Longitude || null,
-      zohoOwnerId: selectedAccountForVisit.Owner?.id || null,
-      zohoOwnerName: selectedAccountForVisit.Owner?.name || null,
-      zohoOwnerEmail: selectedAccountForVisit.Owner?.email || null,
-      zohoCreatedById: selectedAccountForVisit.Created_By?.id || null,
-      zohoCreatedByName: selectedAccountForVisit.Created_By?.name || null,
-      zohoCreatedByEmail: selectedAccountForVisit.Created_By?.email || null,
-      parentAccountId: selectedAccountForVisit.Parent_Account?.id || null,
-      parentAccountName: selectedAccountForVisit.Parent_Account?.name || null,
-      clienteConEquipo: selectedAccountForVisit.Cliente_con_Equipo || false,
-      cuentaNacional: selectedAccountForVisit.Cuenta_Nacional || false,
-      clienteBooks: selectedAccountForVisit.Cliente_Books || false,
-      condicionesEspeciales:
-        selectedAccountForVisit.Condiciones_Especiales || false,
-      proyectoAbierto: selectedAccountForVisit.Proyecto_abierto || false,
-      revisado: selectedAccountForVisit.Revisado || false,
-      localizacionesMultiples:
-        selectedAccountForVisit.Localizaciones_multiples || false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+        id: selectedAccountForVisit.id,
+        zohoAccountId: selectedAccountForVisit.id,
+        accountName: selectedAccountForVisit.Account_Name,
+        razonSocial: selectedAccountForVisit.Razon_Social || null,
+        accountNumber: selectedAccountForVisit.Account_Number || null,
+        cif: selectedAccountForVisit.CIF || null,
+        codigoCliente: selectedAccountForVisit.C_digo_Cliente || null,
+        accountType: selectedAccountForVisit.Account_Type || null,
+        industry: selectedAccountForVisit.Industry || null,
+        subSector: selectedAccountForVisit.Sub_Sector || null,
+        phone: selectedAccountForVisit.Phone || null,
+        fax: selectedAccountForVisit.Fax || null,
+        email: selectedAccountForVisit.Email || null,
+        website: selectedAccountForVisit.Website || null,
+        billingStreet: selectedAccountForVisit.Billing_Street || null,
+        billingCity: selectedAccountForVisit.Billing_City || null,
+        billingState: selectedAccountForVisit.Billing_State || null,
+        billingCode: selectedAccountForVisit.Billing_Code || null,
+        billingCountry: selectedAccountForVisit.Billing_Country || null,
+        shippingStreet: selectedAccountForVisit.Shipping_Street || null,
+        shippingCity: selectedAccountForVisit.Shipping_City || null,
+        shippingState: selectedAccountForVisit.Shipping_State || null,
+        shippingCode: selectedAccountForVisit.Shipping_Code || null,
+        shippingCountry: selectedAccountForVisit.Shipping_Country || null,
+        latitude: selectedAccountForVisit.dealsingooglemaps__Latitude || null,
+        longitude: selectedAccountForVisit.dealsingooglemaps__Longitude || null,
+        zohoOwnerId: selectedAccountForVisit.Owner?.id || null,
+        zohoOwnerName: selectedAccountForVisit.Owner?.name || null,
+        zohoOwnerEmail: selectedAccountForVisit.Owner?.email || null,
+        zohoCreatedById: selectedAccountForVisit.Created_By?.id || null,
+        zohoCreatedByName: selectedAccountForVisit.Created_By?.name || null,
+        zohoCreatedByEmail: selectedAccountForVisit.Created_By?.email || null,
+        parentAccountId: selectedAccountForVisit.Parent_Account?.id || null,
+        parentAccountName: selectedAccountForVisit.Parent_Account?.name || null,
+        clienteConEquipo: selectedAccountForVisit.Cliente_con_Equipo || false,
+        cuentaNacional: selectedAccountForVisit.Cuenta_Nacional || false,
+        clienteBooks: selectedAccountForVisit.Cliente_Books || false,
+        condicionesEspeciales:
+          selectedAccountForVisit.Condiciones_Especiales || false,
+        proyectoAbierto: selectedAccountForVisit.Proyecto_abierto || false,
+        revisado: selectedAccountForVisit.Revisado || false,
+        localizacionesMultiples:
+          selectedAccountForVisit.Localizaciones_multiples || false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
     : undefined;
 
   return (
@@ -430,8 +430,8 @@ export default function ClientsPage() {
                       {searchQuery
                         ? t("clients.resultsFound", { count: accounts.length })
                         : t("clients.clientsLoaded", {
-                          count: accounts.length,
-                        })}
+                            count: accounts.length,
+                          })}
                     </span>
                     {pagination.isLoadingMore && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary animate-pulse">
@@ -458,12 +458,17 @@ export default function ClientsPage() {
                 size="sm"
               >
                 <RefreshCw
-                  className={`size-4 ${isRefreshing || pagination.isLoadingMore
-                    ? "animate-spin"
-                    : ""
-                    }`}
+                  className={`size-4 ${
+                    isRefreshing || pagination.isLoadingMore
+                      ? "animate-spin"
+                      : ""
+                  }`}
                 />
-                <span className="hidden md:inline">{t("common.refresh")}</span>
+                <span className="hidden md:inline">
+                  {isLoading || isRefreshing || pagination.isLoadingMore
+                    ? t("common.refreshing")
+                    : t("common.refresh")}
+                </span>
               </Button>
             </div>
           </div>
@@ -498,20 +503,6 @@ export default function ClientsPage() {
                 onOpenChange={handleDialogClose}
                 customer={customerFromAccount}
                 onSuccess={handleVisitSuccess}
-              />
-            )}
-
-            {/* Empty state for search with no results */}
-            {searchQuery && !hasData && !isSearching && (
-              <EmptyCard
-                title={t("common.noResults")}
-                description={t("clients.noResultsFor", { query: searchQuery })}
-                icon={<Search className="h-12 w-12 text-muted-foreground" />}
-                actions={
-                  <Button onClick={handleClearSearch} variant="outline">
-                    <RefreshCw className="size-4" /> {t("clients.clearSearch")}
-                  </Button>
-                }
               />
             )}
           </div>

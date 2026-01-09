@@ -62,7 +62,9 @@ export function UserCard({
             <Checkbox
               checked={isSelected}
               onCheckedChange={onSelect}
-              aria-label={`Seleccionar ${user.name || user.email}`}
+              aria-label={t("users.selectUser", {
+                name: user.name || user.email,
+              })}
               className="mt-1"
             />
             <Avatar className="size-12 rounded-lg shrink-0">
@@ -86,7 +88,7 @@ export function UserCard({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="size-8 p-0 shrink-0">
-                <span className="sr-only">Abrir menú</span>
+                <span className="sr-only">{t("users.openMenu")}</span>
                 <MoreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -123,11 +125,18 @@ export function UserCard({
       <CardContent className="pt-4 pb-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">{t("users.card.role")}</p>
-            {getRoleBadge(user.role, t(`users.roles.${user.role.toLowerCase()}` as any))}
+            <p className="text-xs text-muted-foreground">
+              {t("users.card.role")}
+            </p>
+            {getRoleBadge(
+              user.role,
+              t(`users.roles.${user.role.toLowerCase()}` as any)
+            )}
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">{t("users.card.status")}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("users.card.status")}
+            </p>
             {user.isActive ? (
               <Badge
                 variant="outline"
@@ -147,7 +156,9 @@ export function UserCard({
             )}
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">{t("users.card.auth")}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("users.card.auth")}
+            </p>
             <div className="flex flex-wrap gap-1">
               {user.authMethods && user.authMethods.length > 0 ? (
                 user.authMethods.map((method) => (
@@ -175,24 +186,36 @@ export function UserCard({
             </div>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">{t("users.card.lastLogin")}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("users.card.lastLogin")}
+            </p>
             <p className="text-sm font-medium">
-              {user.lastLoginAt ? formatDate(user.lastLoginAt, locale) : t("users.card.never")}
+              {user.lastLoginAt
+                ? formatDate(user.lastLoginAt, locale)
+                : t("users.card.never")}
             </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">{t("users.card.country")}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("users.card.country")}
+            </p>
             <p className="text-sm font-medium">
               {user.country || t("users.card.unspecified")}
             </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">{t("users.card.created")}</p>
-            <p className="text-sm font-medium">{formatDate(user.createdAt, locale)}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("users.card.created")}
+            </p>
+            <p className="text-sm font-medium">
+              {formatDate(user.createdAt, locale)}
+            </p>
           </div>
           {user.zohoId && (
             <div className="space-y-1 col-span-2">
-              <p className="text-xs text-muted-foreground">{t("users.card.zohoId")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("users.card.zohoId")}
+              </p>
               <p className="text-xs font-mono bg-muted px-2 py-1 rounded w-fit">
                 {user.zohoId}
               </p>

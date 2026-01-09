@@ -783,6 +783,26 @@
     "deleteSuccess": "User deleted successfully",
     "deleteError": "Error deleting user",
     "sessionRevoked": "Session revoked successfully",
+    "usersLoaded": "{{count}} users loaded",
+    "fetchError": "Error loading users",
+    "userCreated": "User created successfully",
+    "errorTitle": "An error occurred",
+    "errorDescription": "Could not load users. Please try again.",
+    "retry": "Retry",
+    "deleteUserTitle": "Delete user?",
+    "deleteUserDescription": "You are about to delete {{name}}. This action cannot be undone.",
+    "deleteMultipleTitle": "Delete selected users?",
+    "deleteMultipleDescription": "You are about to delete {{count}} user(s). This action cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "selectAll": "Select all",
+    "selectRow": "Select row",
+    "selectUser": "Select {{name}}",
+    "openMenu": "Open menu",
+    "noUsersWithFilters": "No users found with the applied filters",
+    "noUsersInSystem": "No users found in the system",
+    "deleteMultipleSuccess": "Users deleted successfully",
     "roles": {
       "admin": "Administrator",
       "seller": "Seller"
@@ -824,6 +844,11 @@
       "clear": "Clear filters"
     },
     "form": {
+      "tabs": {
+        "personal": "Personal",
+        "security": "Security",
+        "config": "Config"
+      },
       "personal": "Personal",
       "security": "Security",
       "config": "Config",

@@ -781,6 +781,26 @@
     "deleteSuccess": "Usuario eliminado exitosamente",
     "deleteError": "Error al eliminar el usuario",
     "sessionRevoked": "Sesión revocada exitosamente",
+    "usersLoaded": "{{count}} usuarios cargados",
+    "fetchError": "Error al cargar usuarios",
+    "userCreated": "Usuario creado exitosamente",
+    "errorTitle": "Ha ocurrido un error",
+    "errorDescription": "No se pudieron cargar los usuarios. Por favor, intenta nuevamente.",
+    "retry": "Reintentar",
+    "deleteUserTitle": "¿Eliminar usuario?",
+    "deleteUserDescription": "Estás a punto de eliminar a {{name}}. Esta acción no se puede deshacer.",
+    "deleteMultipleTitle": "¿Eliminar usuarios seleccionados?",
+    "deleteMultipleDescription": "Estás a punto de eliminar {{count}} usuario(s). Esta acción no se puede deshacer.",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "deleting": "Eliminando...",
+    "selectAll": "Seleccionar todos",
+    "selectRow": "Seleccionar fila",
+    "selectUser": "Seleccionar {{name}}",
+    "openMenu": "Abrir menú",
+    "noUsersWithFilters": "No se encontraron usuarios con los filtros aplicados",
+    "noUsersInSystem": "No se encontraron usuarios en el sistema",
+    "deleteMultipleSuccess": "Usuarios eliminados exitosamente",
     "roles": {
       "admin": "Administrador",
       "seller": "Vendedor"
@@ -822,6 +842,11 @@
       "clear": "Limpiar filtros"
     },
     "form": {
+      "tabs": {
+        "personal": "Personal",
+        "security": "Seguridad",
+        "config": "Config"
+      },
       "personal": "Personal",
       "security": "Seguridad",
       "config": "Config",
