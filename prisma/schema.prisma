@@ -10,6 +10,7 @@ datasource db {
 enum Role {
   ADMIN
   SELLER
+  DEALER
 }
 
 enum AuthProvider {
@@ -38,12 +39,39 @@ model User {
   sessions Session[]
   visits   Visit[] // Visitas realizadas por el vendedor
 
+  // Relaciones DEALER ↔ SELLER
+  // Un DEALER puede tener múltiples SELLERs asignados
+  assignedSellers DealerSeller[] @relation("DealerToSeller")
+  // Un SELLER puede estar asignado a múltiples DEALERs
+  assignedDealers DealerSeller[] @relation("SellerToDealer")
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([email])
   @@index([isActive])
+  @@index([role])
+}
+
+// ==================== DEALER-SELLER RELATIONSHIP ====================
+// Tabla intermedia para relación muchos a muchos entre DEALER y SELLER
+model DealerSeller {
+  id       String @id @default(cuid())
+  dealerId String
+  sellerId String
+
+  // Relaciones
+  dealer User @relation("DealerToSeller", fields: [dealerId], references: [id], onDelete: Cascade)
+  seller User @relation("SellerToDealer", fields: [sellerId], references: [id], onDelete: Cascade)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([dealerId, sellerId])
+  @@index([dealerId])
+  @@index([sellerId])
 }
 
 // ==================== OAUTH ACCOUNTS MODEL ====================

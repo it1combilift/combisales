@@ -39,7 +39,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, email, password, role, country, isActive } = validation.data;
+    const {
+      name,
+      email,
+      password,
+      role,
+      country,
+      isActive,
+      assignedSellerIds,
+    } = validation.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -52,8 +60,30 @@ export async function POST(request: Request) {
       );
     }
 
+    // Si es DEALER, validar que los sellers existan y sean realmente SELLER
+    if (
+      role === Role.DEALER &&
+      assignedSellerIds &&
+      assignedSellerIds.length > 0
+    ) {
+      const sellers = await prisma.user.findMany({
+        where: {
+          id: { in: assignedSellerIds },
+          role: Role.SELLER,
+        },
+      });
+
+      if (sellers.length !== assignedSellerIds.length) {
+        return NextResponse.json(
+          { error: "Uno o más vendedores seleccionados no son válidos" },
+          { status: 400 }
+        );
+      }
+    }
+
     const hashedPassword = await hash(password, 12);
 
+    // Crear usuario con relaciones DEALER-SELLER
     const user = await prisma.user.create({
       data: {
         name,
@@ -62,6 +92,17 @@ export async function POST(request: Request) {
         role,
         country: country || null,
         isActive: isActive ?? true,
+        ...(role === Role.DEALER &&
+        assignedSellerIds &&
+        assignedSellerIds.length > 0
+          ? {
+              assignedSellers: {
+                create: assignedSellerIds.map((sellerId) => ({
+                  sellerId,
+                })),
+              },
+            }
+          : {}),
       },
       select: {
         id: true,
@@ -71,6 +112,17 @@ export async function POST(request: Request) {
         country: true,
         isActive: true,
         createdAt: true,
+        assignedSellers: {
+          select: {
+            seller: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
 

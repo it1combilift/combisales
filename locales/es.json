@@ -803,7 +803,8 @@
     "deleteMultipleSuccess": "Usuarios eliminados exitosamente",
     "roles": {
       "admin": "Administrador",
-      "seller": "Vendedor"
+      "seller": "Vendedor",
+      "dealer": "Distribuidor"
     },
     "providers": {
       "credentials": "Credenciales",
@@ -845,7 +846,8 @@
       "tabs": {
         "personal": "Personal",
         "security": "Seguridad",
-        "config": "Config"
+        "config": "Config",
+        "sellers": "Vendedores"
       },
       "personal": "Personal",
       "security": "Seguridad",
@@ -872,7 +874,18 @@
       "noChanges": "No hay cambios para actualizar",
       "updateSuccess": "Usuario actualizado exitosamente",
       "updateError": "Hubo un problema al actualizar el usuario. Por favor, intenta de nuevo.",
-      "createError": "Error al crear el usuario. Por favor, intenta de nuevo."
+      "createError": "Error al crear el usuario. Por favor, intenta de nuevo.",
+      "sellers": {
+        "title": "Vendedores asignados",
+        "description": "Selecciona los vendedores que reportarán a este dealer",
+        "search": "Buscar vendedor...",
+        "noSellers": "No hay vendedores disponibles",
+        "loading": "Cargando vendedores...",
+        "selected": "{{count}} vendedor(es) seleccionado(s)",
+        "selectAll": "Seleccionar todos",
+        "deselectAll": "Deseleccionar todos",
+        "errorLoading": "Error al cargar vendedores"
+      }
     },
     "table": {
       "user": "Usuario",

@@ -805,7 +805,8 @@
     "deleteMultipleSuccess": "Users deleted successfully",
     "roles": {
       "admin": "Administrator",
-      "seller": "Seller"
+      "seller": "Seller",
+      "dealer": "Dealer"
     },
     "providers": {
       "credentials": "Credentials",
@@ -847,7 +848,8 @@
       "tabs": {
         "personal": "Personal",
         "security": "Security",
-        "config": "Config"
+        "config": "Config",
+        "sellers": "Sellers"
       },
       "personal": "Personal",
       "security": "Security",
@@ -874,7 +876,18 @@
       "noChanges": "No changes to update",
       "updateSuccess": "User updated successfully",
       "updateError": "There was a problem updating the user. Please try again.",
-      "createError": "Error creating user. Please try again."
+      "createError": "Error creating user. Please try again.",
+      "sellers": {
+        "title": "Assigned sellers",
+        "description": "Select the sellers who will report to this dealer",
+        "search": "Search seller...",
+        "noSellers": "No sellers available",
+        "loading": "Loading sellers...",
+        "selected": "{{count}} seller(s) selected",
+        "selectAll": "Select all",
+        "deselectAll": "Deselect all",
+        "errorLoading": "Error loading sellers"
+      }
     },
     "table": {
       "user": "User",

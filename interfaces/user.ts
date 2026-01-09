@@ -30,6 +30,7 @@ export interface CreateUserInput {
   role: Role;
   country?: string;
   isActive?: boolean;
+  assignedSellerIds?: string[];
 }
 
 export interface UserListItem {
@@ -45,12 +46,28 @@ export interface UserListItem {
   lastLoginAt: Date | null;
   zohoId: string | null; // ZUID
   hasActiveSession: boolean;
+  assignedSellers?: {
+    seller: {
+      id: string;
+      name: string | null;
+      email: string;
+    };
+  }[];
 }
 
 export interface UpdateUserInput
   extends Partial<
     Omit<User, "id" | "createdAt" | "updatedAt" | "emailVerified">
-  > {}
+  > {
+  assignedSellerIds?: string[];
+}
+
+export interface SellerInfo {
+  id: string;
+  name: string | null;
+  email: string;
+  country: string | null;
+}
 
 export interface EditUserFormProps {
   user: UserListItem;

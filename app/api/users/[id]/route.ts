@@ -42,6 +42,17 @@ export async function GET(
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        assignedSellers: {
+          select: {
+            seller: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -106,8 +117,16 @@ export async function PATCH(
       );
     }
 
-    const { id, name, email, role, country, isActive, password } =
-      validation.data;
+    const {
+      id,
+      name,
+      email,
+      role,
+      country,
+      isActive,
+      password,
+      assignedSellerIds,
+    } = validation.data;
 
     const userToUpdate = await prisma.user.findUnique({
       where: { id },
@@ -130,6 +149,42 @@ export async function PATCH(
           { error: "El email ya está en uso" },
           { status: 409 }
         );
+      }
+    }
+
+    // Si es DEALER y se proporcionan sellers, validar
+    if (
+      (role === Role.DEALER || userToUpdate.role === Role.DEALER) &&
+      assignedSellerIds !== undefined
+    ) {
+      if (assignedSellerIds.length > 0) {
+        const sellers = await prisma.user.findMany({
+          where: {
+            id: { in: assignedSellerIds },
+            role: Role.SELLER,
+          },
+        });
+
+        if (sellers.length !== assignedSellerIds.length) {
+          return NextResponse.json(
+            { error: "Uno o más vendedores seleccionados no son válidos" },
+            { status: 400 }
+          );
+        }
+      }
+
+      // Actualizar relaciones DEALER-SELLER
+      await prisma.dealerSeller.deleteMany({
+        where: { dealerId: id },
+      });
+
+      if (assignedSellerIds.length > 0) {
+        await prisma.dealerSeller.createMany({
+          data: assignedSellerIds.map((sellerId) => ({
+            dealerId: id,
+            sellerId,
+          })),
+        });
       }
     }
 
@@ -156,6 +211,17 @@ export async function PATCH(
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        assignedSellers: {
+          select: {
+            seller: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
 

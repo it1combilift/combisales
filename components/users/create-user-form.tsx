@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUserFormProps } from "@/interfaces/user";
 import { useI18n } from "@/lib/i18n/context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SellersSelection } from "./sellers-selection";
 
 import {
   Loader2,
@@ -24,6 +25,7 @@ import {
   CheckCircle2,
   Lock,
   Settings,
+  Users,
 } from "lucide-react";
 
 import {
@@ -58,8 +60,12 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       role: Role.SELLER,
       country: "",
       isActive: true,
+      assignedSellerIds: [] as string[],
     },
   });
+
+  const selectedRole = form.watch("role");
+  const isDealerRole = selectedRole === Role.DEALER;
 
   async function onSubmit(values: z.infer<typeof createUserSchema>) {
     setIsLoading(true);
@@ -72,15 +78,10 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       onSuccess?.();
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.error(
-          error.response?.data?.error ||
-          t("users.form.createError")
-        );
+        toast.error(error.response?.data?.error || t("users.form.createError"));
       } else {
         toast.error(
-          error instanceof Error
-            ? error.message
-            : t("users.form.createError")
+          error instanceof Error ? error.message : t("users.form.createError")
         );
       }
     } finally {
@@ -92,28 +93,49 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <Tabs defaultValue="personal" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto bg-muted/30 dark:bg-muted/50 p-1 rounded-lg border border-border/40">
+          <TabsList
+            className={`grid w-full ${
+              isDealerRole ? "grid-cols-4" : "grid-cols-3"
+            } mb-6 h-auto bg-muted/30 dark:bg-muted/50 p-1 rounded-lg border border-border/40`}
+          >
             <TabsTrigger
               value="personal"
               className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
             >
               <User className="size-4" />
-              <span className="hidden xs:inline">{t("users.form.tabs.personal")}</span>
+              <span className="hidden xs:inline">
+                {t("users.form.tabs.personal")}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value="security"
               className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
             >
               <Lock className="size-4" />
-              <span className="hidden xs:inline">{t("users.form.tabs.security")}</span>
+              <span className="hidden xs:inline">
+                {t("users.form.tabs.security")}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value="config"
               className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
             >
               <Settings className="size-4" />
-              <span className="hidden xs:inline">{t("users.form.tabs.config")}</span>
+              <span className="hidden xs:inline">
+                {t("users.form.tabs.config")}
+              </span>
             </TabsTrigger>
+            {isDealerRole && (
+              <TabsTrigger
+                value="sellers"
+                className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
+              >
+                <Users className="size-4" />
+                <span className="hidden xs:inline">
+                  {t("users.form.tabs.sellers")}
+                </span>
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* Personal Information Tab */}
@@ -248,7 +270,9 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                         <SelectTrigger className="min-h-full transition-all focus:ring-2 text-xs sm:text-sm w-full">
                           <div className="flex items-center gap-2">
                             <Shield className="size-4 text-muted-foreground" />
-                            <SelectValue placeholder={t("users.form.rolePlaceholder")} />
+                            <SelectValue
+                              placeholder={t("users.form.rolePlaceholder")}
+                            />
                           </div>
                         </SelectTrigger>
                       </FormControl>
@@ -259,7 +283,9 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                         >
                           <div className="flex items-center gap-2">
                             <div className="size-2 rounded-full bg-blue-500" />
-                            <span className="font-medium">{t("users.roles.admin")}</span>
+                            <span className="font-medium">
+                              {t("users.roles.admin")}
+                            </span>
                           </div>
                         </SelectItem>
                         <SelectItem
@@ -268,7 +294,20 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                         >
                           <div className="flex items-center gap-2">
                             <div className="size-2 rounded-full bg-emerald-500" />
-                            <span className="font-medium">{t("users.roles.seller")}</span>
+                            <span className="font-medium">
+                              {t("users.roles.seller")}
+                            </span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem
+                          value={Role.DEALER}
+                          className="cursor-pointer text-xs sm:text-sm"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="size-2 rounded-full bg-amber-500" />
+                            <span className="font-medium">
+                              {t("users.roles.dealer")}
+                            </span>
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -285,7 +324,9 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                   <FormItem className="space-y-2">
                     <FormLabel className="text-sm font-semibold">
                       {t("users.form.countryLabel")}{" "}
-                      <span className="text-muted-foreground">({t("forms.optional")})</span>
+                      <span className="text-muted-foreground">
+                        ({t("forms.optional")})
+                      </span>
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -339,6 +380,29 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
               )}
             />
           </TabsContent>
+
+          {/* Sellers Tab (only for DEALER role) */}
+          {isDealerRole && (
+            <TabsContent value="sellers" className="mt-0">
+              <FormField
+                control={form.control}
+                name="assignedSellerIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SellersSelection
+                        selectedSellerIds={field.value ?? []}
+                        onSelectionChange={(ids) => {
+                          field.onChange(ids);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TabsContent>
+          )}
         </Tabs>
 
         {/* Action Buttons */}

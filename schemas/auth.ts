@@ -32,6 +32,8 @@ export const createUserSchema = z
       .or(z.literal(""))
       .transform((val) => (val === "" ? undefined : val)),
     isActive: z.boolean().default(true),
+    // Para usuarios DEALER: IDs de sellers asignados
+    assignedSellerIds: z.array(z.string().cuid()).optional().default([]),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Las contraseñas no coinciden",
@@ -63,6 +65,8 @@ export const updateUserSchema = z.object({
     .optional()
     .or(z.literal(""))
     .transform((val) => (val === "" ? undefined : val)),
+  // Para usuarios DEALER: IDs de sellers asignados
+  assignedSellerIds: z.array(z.string().cuid()).optional(),
 });
 
 // Delete user schema

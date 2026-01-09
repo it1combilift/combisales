@@ -13,6 +13,7 @@ import { updateUserSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditUserFormProps } from "@/interfaces/user";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SellersSelection } from "./sellers-selection";
 
 import {
   Loader2,
@@ -23,6 +24,7 @@ import {
   Globe,
   CheckCircle2,
   Settings,
+  Users,
 } from "lucide-react";
 
 import {
@@ -59,8 +61,13 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       country: user.country || "",
       isActive: user.isActive,
       password: "",
+      assignedSellerIds: (user.assignedSellers?.map((as) => as.seller.id) ||
+        []) as string[],
     },
   });
+
+  const selectedRole = form.watch("role");
+  const isDealerRole = selectedRole === Role.DEALER;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -87,6 +94,18 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       }
       if (values.password && values.password.trim().length > 0) {
         updateData.password = values.password;
+      }
+
+      // Handle DEALER sellers assignment
+      if (values.assignedSellerIds !== undefined) {
+        const currentSellerIds =
+          user.assignedSellers?.map((as) => as.seller.id).sort() || [];
+        const newSellerIds = [...values.assignedSellerIds].sort();
+
+        // Only update if there's a change
+        if (JSON.stringify(currentSellerIds) !== JSON.stringify(newSellerIds)) {
+          updateData.assignedSellerIds = values.assignedSellerIds;
+        }
       }
 
       if (Object.keys(updateData).length === 0) {
@@ -117,7 +136,11 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <Tabs defaultValue="personal" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 h-auto bg-muted/30 dark:bg-muted/50 p-1 rounded-lg border border-border/40">
+          <TabsList
+            className={`grid w-full ${
+              isDealerRole ? "grid-cols-3" : "grid-cols-2"
+            } mb-6 h-auto bg-muted/30 dark:bg-muted/50 p-1 rounded-lg border border-border/40`}
+          >
             <TabsTrigger
               value="personal"
               className="text-xs sm:text-sm py-2.5 sm:py-3 px-4 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
@@ -134,6 +157,17 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
               <Settings className="size-4" />
               <span className="hidden xs:inline">{t("users.form.config")}</span>
             </TabsTrigger>
+            {isDealerRole && (
+              <TabsTrigger
+                value="sellers"
+                className="text-xs sm:text-sm py-2.5 sm:py-3 px-4 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
+              >
+                <Users className="size-4" />
+                <span className="hidden xs:inline">
+                  {t("users.form.tabs.sellers")}
+                </span>
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* Personal & Security Tab */}
@@ -344,6 +378,29 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
               )}
             />
           </TabsContent>
+
+          {/* Sellers Tab (only for DEALER role) */}
+          {isDealerRole && (
+            <TabsContent value="sellers" className="mt-0">
+              <FormField
+                control={form.control}
+                name="assignedSellerIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SellersSelection
+                        selectedSellerIds={field.value ?? []}
+                        onSelectionChange={(ids) => {
+                          field.onChange(ids);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TabsContent>
+          )}
         </Tabs>
 
         {/* Action Buttons */}
