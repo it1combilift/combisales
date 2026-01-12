@@ -18,7 +18,10 @@ export function getInitials(name: string | null): string {
     .slice(0, 2);
 }
 
-export function formatDate(date: string | Date, locale: string = "es-PA"): string {
+export function formatDate(
+  date: string | Date,
+  locale: string = "es-PA"
+): string {
   const d = new Date(date);
   return d.toLocaleDateString(locale, {
     year: "numeric",
@@ -30,7 +33,10 @@ export function formatDate(date: string | Date, locale: string = "es-PA"): strin
   });
 }
 
-export function formatDateShort(date: string | Date, locale: string = "es-PA"): string {
+export function formatDateShort(
+  date: string | Date,
+  locale: string = "es-PA"
+): string {
   const d = new Date(date);
   return d.toLocaleDateString(locale, {
     year: "numeric",
@@ -39,7 +45,10 @@ export function formatDateShort(date: string | Date, locale: string = "es-PA"): 
   });
 }
 
-export function formatDateTime(date: string | Date, locale: string = "es-PA"): string {
+export function formatDateTime(
+  date: string | Date,
+  locale: string = "es-PA"
+): string {
   const d = new Date(date);
   return d.toLocaleString(locale, {
     year: "numeric",
@@ -54,14 +63,23 @@ export function formatDateTime(date: string | Date, locale: string = "es-PA"): s
 export function getRoleBadge(role: Role, label?: string) {
   if (role === Role.ADMIN) {
     return (
-      <Badge variant="info">
+      <Badge variant="outline-info">
         <ShieldCheck className="size-3.5" />
         {label || "Admin"}
       </Badge>
     );
   }
+  if (role === Role.DEALER) {
+    return (
+      <Badge variant="outline-warning">
+        <ShieldCheck className="size-3.5" />
+        {label || "Dealer"}
+      </Badge>
+    );
+  }
+
   return (
-    <Badge variant="success">
+    <Badge variant="outline-success">
       <PackageCheck className="size-3.5" />
       {label || "Vendedor"}
     </Badge>

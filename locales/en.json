@@ -1,4 +1,12 @@
 {
+  "dashboard": {
+    "error": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred. Please try again.",
+      "tryAgain": "Try Again",
+      "goBack": "Go Back"
+    }
+  },
   "common": {
     "appName": "Combisales",
     "description": "Combilift Sales and Customer Management",

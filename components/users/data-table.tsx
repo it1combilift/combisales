@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Users } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableRowSkeleton } from "@/components/ui/skeleton";
@@ -18,7 +19,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useI18n } from "@/lib/i18n/context";
+
 
 import {
   Table,

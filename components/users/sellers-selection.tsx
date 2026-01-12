@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { SellerInfo } from "@/interfaces/user";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Search, User, CheckSquare, Square } from "lucide-react";
 
@@ -75,21 +74,24 @@ export function SellersSelection({
     );
   }, [sellers, searchQuery]);
 
-  const handleToggleSeller = (sellerId: string) => {
-    if (selectedSellerIds.includes(sellerId)) {
-      onSelectionChange(selectedSellerIds.filter((id) => id !== sellerId));
-    } else {
-      onSelectionChange([...selectedSellerIds, sellerId]);
-    }
-  };
+  const handleToggleSeller = useCallback(
+    (sellerId: string) => {
+      if (selectedSellerIds.includes(sellerId)) {
+        onSelectionChange(selectedSellerIds.filter((id) => id !== sellerId));
+      } else {
+        onSelectionChange([...selectedSellerIds, sellerId]);
+      }
+    },
+    [selectedSellerIds, onSelectionChange]
+  );
 
-  const handleSelectAll = () => {
+  const handleSelectAll = useCallback(() => {
     onSelectionChange(filteredSellers.map((s) => s.id));
-  };
+  }, [filteredSellers, onSelectionChange]);
 
-  const handleDeselectAll = () => {
+  const handleDeselectAll = useCallback(() => {
     onSelectionChange([]);
-  };
+  }, [onSelectionChange]);
 
   const allSelected =
     filteredSellers.length > 0 &&
@@ -195,10 +197,13 @@ export function SellersSelection({
                     )}
                     onClick={() => handleToggleSeller(seller.id)}
                   >
-                    <Checkbox
-                      checked={isSelected}
-                      className="mt-1 pointer-events-none"
-                    />
+                    <div className="mt-1">
+                      {isSelected ? (
+                        <CheckSquare className="size-4 text-primary" />
+                      ) : (
+                        <Square className="size-4 text-muted-foreground" />
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm truncate">

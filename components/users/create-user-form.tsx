@@ -3,7 +3,7 @@
 import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -66,6 +66,13 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
 
   const selectedRole = form.watch("role");
   const isDealerRole = selectedRole === Role.DEALER;
+
+  const handleSellerSelectionChange = useCallback(
+    (ids: string[]) => {
+      form.setValue("assignedSellerIds", ids, { shouldValidate: true });
+    },
+    [form]
+  );
 
   async function onSubmit(values: z.infer<typeof createUserSchema>) {
     setIsLoading(true);
@@ -392,9 +399,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                     <FormControl>
                       <SellersSelection
                         selectedSellerIds={field.value ?? []}
-                        onSelectionChange={(ids) => {
-                          field.onChange(ids);
-                        }}
+                        onSelectionChange={handleSellerSelectionChange}
                       />
                     </FormControl>
                     <FormMessage />

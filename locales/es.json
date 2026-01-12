@@ -1,2150 +1,2158 @@
-{
-  "common": {
-    "appName": "Combisales",
-    "description": "Gestión de ventas y clientes de Combilift",
-    "shortDescription": "Ventas y clientes",
-    "loading": "Cargando...",
-    "refreshing": "Actualizando...",
-    "refresh": "Actualizar",
-    "save": "Guardar",
-    "cancel": "Cancelar",
-    "delete": "Eliminar",
-    "edit": "Editar",
-    "create": "Crear",
-    "search": "Buscar",
-    "searchPlaceholder": "Buscar...",
-    "submit": "Enviar",
-    "back": "Volver",
-    "next": "Siguiente",
-    "previous": "Anterior",
-    "yes": "Sí",
-    "no": "No",
-    "close": "Cerrar",
-    "open": "Abrir",
-    "settings": "Configuración",
-    "profile": "Perfil",
-    "logout": "Cerrar sesión",
-    "login": "Iniciar sesión",
-    "register": "Registrarse",
-    "more": "Más",
-    "support": "Soporte",
-    "help": "Ayuda",
-    "files": "Archivos",
-    "tryAgain": "Intentar de nuevo",
-    "columns": "Columnas",
-    "filters": "Filtros",
-    "results": "Resultados",
-    "resultsFor": "Resultados para",
-    "status ": "Estado",
-    "loadMore": "Cargar más",
-    "clearFilters": "Limpiar filtros",
-    "actions": "Acciones",
-    "noName": "Sin nombre",
-    "add": "Agregar",
-    "select": "Seleccionar",
-    "selectDate": "Seleccionar fecha",
-    "powerSource": {
-      "ELECTRICO": "Eléctrico",
-      "DIESEL": "Diésel",
-      "GLP": "GLP"
-    }
-  },
-  "navigation": {
-    "tasks": "Tareas",
-    "clients": "Clientes",
-    "equipment": "Equipos",
-    "users": "Usuarios",
-    "reports": "Informes",
-    "documents": "Documentos",
-    "assistant": "Asistente"
-  },
-  "header": {
-    "welcome": "Bienvenido",
-    "selectLanguage": "Seleccionar idioma",
-    "menu": "Menú"
-  },
-  "footer": {
-    "rights": "Todos los derechos reservados",
-    "privacy": "Política de privacidad",
-    "terms": "Términos de servicio",
-    "contact": "Contacto"
-  },
-  "validation": {
-    "required": "Este campo es requerido",
-    "email": "Ingrese un correo electrónico válido",
-    "minLength": "Mínimo {{min}} caracteres",
-    "maxLength": "Máximo {{max}} caracteres",
-    "passwordMatch": "Las contraseñas no coinciden",
-    "invalidFormat": "Formato inválido"
-  },
-  "messages": {
-    "success": "Operación exitosa",
-    "error": "Ha ocurrido un error",
-    "saved": "Guardado correctamente",
-    "deleted": "Eliminado correctamente",
-    "updated": "Actualizado correctamente",
-    "loading": "Cargando datos...",
-    "noResults": "No se encontraron resultados",
-    "confirmDelete": "¿Está seguro de que desea eliminar este elemento?"
-  },
-  "toast": {
-    "form": {
-      "submitSuccess": "Formulario enviado exitosamente",
-      "draftSuccess": "Borrador guardado exitosamente",
-      "changesSuccess": "Cambios guardados exitosamente",
-      "submitError": "Error al guardar el formulario",
-      "validationError": "Por favor, completa todos los campos requeridos",
-      "visitUpdatedSuccess": "Visita actualizada y enviada exitosamente",
-      "visitCreatedSuccess": "Visita guardada exitosamente",
-      "visitDraftSuccess": "Borrador guardado exitosamente",
-      "draftUpdatedSuccess": "Borrador actualizado exitosamente",
-      "visitError": "Error al guardar la visita"
+  {
+    "dashboard": {
+      "error": {
+        "title": "Error al cargar el panel",
+        "description": "Hubo un problema al cargar los datos del panel. Por favor, intenta de nuevo o regresa al inicio.",
+        "tryAgain": "Intentar nuevamente",
+        "goBack": "Regresar"
+      }
     },
-    "file": {
-      "maxFilesExceeded": "Máximo {{max}} archivos permitidos",
-      "onlyCanUpload": "Solo puedes subir {{remaining}} archivo(s) más",
-      "typeNotAllowed": "Tipo de archivo no permitido",
-      "filesTypeNotAllowed": "Tipo de archivo no permitido: {{files}}",
-      "uploadSuccess": "{{count}} archivo(s) subido(s) exitosamente",
-      "uploadError": "Error al subir archivos",
-      "deleteSuccess": "Archivo eliminado exitosamente",
-      "deleteError": "Error al eliminar archivo"
-    }
-  },
-  "errors": {
-    "notFound": "Página no encontrada",
-    "unauthorized": "No autorizado",
-    "forbidden": "Acceso denegado",
-    "serverError": "Error del servidor",
-    "networkError": "Error de conexión",
-    "unableToLoadData": "No se pueden cargar los datos",
-    "loadingMore": "Error al cargar más"
-  },
-  "dates": {
-    "today": "Hoy",
-    "yesterday": "Ayer",
-    "tomorrow": "Mañana",
-    "days": "días",
-    "hours": "horas",
-    "minutes": "minutos",
-    "seconds": "segundos"
-  },
-  "plurals": {
-    "days": {
-      "one": "día",
-      "other": "días"
+    "common": {
+      "appName": "Combisales",
+      "description": "Gestión de ventas y clientes de Combilift",
+      "shortDescription": "Ventas y clientes",
+      "loading": "Cargando...",
+      "refreshing": "Actualizando...",
+      "refresh": "Actualizar",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "create": "Crear",
+      "search": "Buscar",
+      "searchPlaceholder": "Buscar...",
+      "submit": "Enviar",
+      "back": "Volver",
+      "next": "Siguiente",
+      "previous": "Anterior",
+      "yes": "Sí",
+      "no": "No",
+      "close": "Cerrar",
+      "open": "Abrir",
+      "settings": "Configuración",
+      "profile": "Perfil",
+      "logout": "Cerrar sesión",
+      "login": "Iniciar sesión",
+      "register": "Registrarse",
+      "more": "Más",
+      "support": "Soporte",
+      "help": "Ayuda",
+      "files": "Archivos",
+      "tryAgain": "Intentar de nuevo",
+      "columns": "Columnas",
+      "filters": "Filtros",
+      "results": "Resultados",
+      "resultsFor": "Resultados para",
+      "status ": "Estado",
+      "loadMore": "Cargar más",
+      "clearFilters": "Limpiar filtros",
+      "actions": "Acciones",
+      "noName": "Sin nombre",
+      "add": "Agregar",
+      "select": "Seleccionar",
+      "selectDate": "Seleccionar fecha",
+      "powerSource": {
+        "ELECTRICO": "Eléctrico",
+        "DIESEL": "Diésel",
+        "GLP": "GLP"
+      }
     },
-    "items_zero": "Sin elementos",
-    "items_one": "{{count}} elemento",
-    "items_other": "{{count}} elementos",
-    "results_zero": "Sin resultados",
-    "results_one": "{{count}} resultado",
-    "results_other": "{{count}} resultados"
-  },
-  "loginForm": {
-    "title": "Bienvenido",
-    "description": "Por favor, inicia sesión en tu cuenta",
-    "email_label": "Correo electrónico",
-    "password_label": "Contraseña",
-    "email_placeholder": "usuario@combilift.com",
-    "forgotPassword": "¿Olvidaste tu contraseña?",
-    "rememberMe": "Recordar usuario",
-    "loginWithZoho": "Iniciar sesión con Zoho",
-    "login": "Acceder",
-    "or_continue_with": "O continuar con"
-  },
-  "taskPage": {
-    "title": "Gestión de tareas",
-    "description": "Aquí puedes ver todas las tareas configuradas en el sistema.",
-    "searchInputPlaceholder": "Buscar tareas por nombre o descripción...",
-    "createTaskButton": "Crear nueva tarea",
-    "filters": {
-      "status": "Estado",
-      "priority": "Prioridad",
-      "type": "Tipo de tarea",
-      "tasksType": {
-        "visitProposal": "Propuesta de visita",
-        "demonstration": "Demostración",
-        "offerQuote": "Oferta/Cotización",
-        "offer": "Oferta",
-        "quote": "Cotización"
+    "navigation": {
+      "tasks": "Tareas",
+      "clients": "Clientes",
+      "equipment": "Equipos",
+      "users": "Usuarios",
+      "reports": "Informes",
+      "documents": "Documentos",
+      "assistant": "Asistente"
+    },
+    "header": {
+      "welcome": "Bienvenido",
+      "selectLanguage": "Seleccionar idioma",
+      "menu": "Menú"
+    },
+    "footer": {
+      "rights": "Todos los derechos reservados",
+      "privacy": "Política de privacidad",
+      "terms": "Términos de servicio",
+      "contact": "Contacto"
+    },
+    "validation": {
+      "required": "Este campo es requerido",
+      "email": "Ingrese un correo electrónico válido",
+      "minLength": "Mínimo {{min}} caracteres",
+      "maxLength": "Máximo {{max}} caracteres",
+      "passwordMatch": "Las contraseñas no coinciden",
+      "invalidFormat": "Formato inválido"
+    },
+    "messages": {
+      "success": "Operación exitosa",
+      "error": "Ha ocurrido un error",
+      "saved": "Guardado correctamente",
+      "deleted": "Eliminado correctamente",
+      "updated": "Actualizado correctamente",
+      "loading": "Cargando datos...",
+      "noResults": "No se encontraron resultados",
+      "confirmDelete": "¿Está seguro de que desea eliminar este elemento?"
+    },
+    "toast": {
+      "form": {
+        "submitSuccess": "Formulario enviado exitosamente",
+        "draftSuccess": "Borrador guardado exitosamente",
+        "changesSuccess": "Cambios guardados exitosamente",
+        "submitError": "Error al guardar el formulario",
+        "validationError": "Por favor, completa todos los campos requeridos",
+        "visitUpdatedSuccess": "Visita actualizada y enviada exitosamente",
+        "visitCreatedSuccess": "Visita guardada exitosamente",
+        "visitDraftSuccess": "Borrador guardado exitosamente",
+        "draftUpdatedSuccess": "Borrador actualizado exitosamente",
+        "visitError": "Error al guardar la visita"
       },
-      "statusPlaceholderStatus": "Seleccionar estado",
-      "priorityPlaceholderPriority": "Seleccionar prioridad",
-      "typePlaceholderType": "Seleccionar tipo"
+      "file": {
+        "maxFilesExceeded": "Máximo {{max}} archivos permitidos",
+        "onlyCanUpload": "Solo puedes subir {{remaining}} archivo(s) más",
+        "typeNotAllowed": "Tipo de archivo no permitido",
+        "filesTypeNotAllowed": "Tipo de archivo no permitido: {{files}}",
+        "uploadSuccess": "{{count}} archivo(s) subido(s) exitosamente",
+        "uploadError": "Error al subir archivos",
+        "deleteSuccess": "Archivo eliminado exitosamente",
+        "deleteError": "Error al eliminar archivo"
+      }
     },
-    "columns": {
-      "matter": "Asunto",
+    "errors": {
+      "notFound": "Página no encontrada",
+      "unauthorized": "No autorizado",
+      "forbidden": "Acceso denegado",
+      "serverError": "Error del servidor",
+      "networkError": "Error de conexión",
+      "unableToLoadData": "No se pueden cargar los datos",
+      "loadingMore": "Error al cargar más"
+    },
+    "dates": {
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "tomorrow": "Mañana",
+      "days": "días",
+      "hours": "horas",
+      "minutes": "minutos",
+      "seconds": "segundos"
+    },
+    "plurals": {
+      "days": {
+        "one": "día",
+        "other": "días"
+      },
+      "items_zero": "Sin elementos",
+      "items_one": "{{count}} elemento",
+      "items_other": "{{count}} elementos",
+      "results_zero": "Sin resultados",
+      "results_one": "{{count}} resultado",
+      "results_other": "{{count}} resultados"
+    },
+    "loginForm": {
+      "title": "Bienvenido",
+      "description": "Por favor, inicia sesión en tu cuenta",
+      "email_label": "Correo electrónico",
+      "password_label": "Contraseña",
+      "email_placeholder": "usuario@combilift.com",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "rememberMe": "Recordar usuario",
+      "loginWithZoho": "Iniciar sesión con Zoho",
+      "login": "Acceder",
+      "or_continue_with": "O continuar con"
+    },
+    "taskPage": {
+      "title": "Gestión de tareas",
+      "description": "Aquí puedes ver todas las tareas configuradas en el sistema.",
+      "searchInputPlaceholder": "Buscar tareas por nombre o descripción...",
+      "createTaskButton": "Crear nueva tarea",
+      "filters": {
+        "status": "Estado",
+        "priority": "Prioridad",
+        "type": "Tipo de tarea",
+        "tasksType": {
+          "visitProposal": "Propuesta de visita",
+          "demonstration": "Demostración",
+          "offerQuote": "Oferta/Cotización",
+          "offer": "Oferta",
+          "quote": "Cotización"
+        },
+        "statusPlaceholderStatus": "Seleccionar estado",
+        "priorityPlaceholderPriority": "Seleccionar prioridad",
+        "typePlaceholderType": "Seleccionar tipo"
+      },
+      "columns": {
+        "matter": "Asunto",
+        "type": "Tipo",
+        "status": "Estado",
+        "priority": "Prioridad",
+        "dueDate": "Fecha de vencimiento",
+        "assignedTo": "Responsable",
+        "relatedTo": "Relacionado con",
+        "lastModified": "Últ. modificación"
+      }
+    },
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "page": "Página",
+      "of": "de",
+      "itemsPerPage": "Elementos por página",
+      "gotToFirstPage": "Ir a la primera página",
+      "goToLastPage": "Ir a la última página",
+      "showing": "Mostrando",
+      "rows": "fila(s)"
+    },
+    "clients": {
+      "title": "Gestión de clientes",
+      "description": "Administra las visitas de tus clientes",
+      "searchPlaceholder": "Buscar clientes...",
+      "noClientsFound": "No se encontraron clientes",
+      "noClientsAvailable": "No hay clientes disponibles en Zoho CRM",
+      "errorLoading": "Error al cargar los clientes",
+      "accountName": "Nombre de cuenta",
+      "accountNumber": "Número de cuenta",
+      "phone": "Teléfono",
+      "email": "Correo electrónico",
+      "website": "Sitio web",
+      "industry": "Industria",
+      "accountType": "Tipo de cuenta",
+      "owner": "Propietario",
+      "createdDate": "Fecha de creación",
+      "modifiedDate": "Última modificación",
+      "billingAddress": "Dirección de facturación",
+      "shippingAddress": "Dirección de envío",
+      "viewVisits": "Ver visitas",
+      "createVisit": "Crear visita",
+      "accountDetails": "Detalles de la cuenta",
+      "basicInfo": "Información básica",
+      "contactInfo": "Información de contacto",
+      "addressInfo": "Información de dirección",
+      "clientWithEquipment": "Cliente con equipo",
+      "nationalAccount": "Cuenta nacional",
+      "moreClientsLoaded": "{{count}} clientes más cargados",
+      "resultsFound": "{{count}} resultados encontrados",
+      "clientsLoaded": "{{count}} clientes cargados",
+      "noResultsFor": "No se encontraron clientes que coincidan con \"{{query}}\"",
+      "clearSearch": "Limpiar búsqueda",
+      "copyId": "Copiar ID",
+      "details": "Detalles",
+      "visitWebsite": "Visitar sitio web",
+      "modified": "Modificado",
+      "contact": "Contacto",
+      "na": "N/A",
+      "identification": "Identificación",
+      "legalName": "Razón social",
+      "clientCode": "Código cliente",
+      "cif": "CIF / NIF",
+      "zohoId": "ID Zoho",
+      "classification": "Clasificación",
+      "subSector": "Sub-sector",
+      "autonomousCommunity": "Comunidad Autónoma",
+      "accountStatus": "Estado de la cuenta",
+      "orderType": "Tipo de pedido",
+      "fax": "Fax",
+      "city": "Ciudad",
+      "state": "Provincia / Estado",
+      "zipCode": "Código Postal",
+      "country": "País",
+      "responsibles": "Responsables",
+      "ownerEmail": "Email propietario",
+      "createdBy": "Creado por",
+      "creatorEmail": "Email creador",
+      "modifiedBy": "Modificado por",
+      "parentAccount": "Cuenta padre",
+      "clientStatus": "Estado del Cliente",
+      "lastActivity": "Última actividad",
+      "flags": {
+        "hasEquipment": "Cliente con equipo",
+        "nationalAccount": "Cuenta nacional",
+        "booksClient": "Cliente Books",
+        "specialConditions": "Condiciones especiales",
+        "openProject": "Proyecto abierto",
+        "reviewed": "Revisado",
+        "multiLocation": "Múltiples localizaciones"
+      }
+    },
+    "visits": {
+      "title": "Visitas",
+      "description": "Información completa de la visita realizada al cliente",
+      "searchPlaceholder": "Buscar visitas...",
+      "filterByStatus": "Filtrar por estado",
+      "filters": {
+        "all": "Todos",
+        "draft": "Borrador",
+        "completed": "Completada"
+      },
+      "visitWithDraftStateTitle": "Visita con estado borrador",
+      "visitWithDraftStateDescription": "Esta visita tiene un estado borrador, puedes continuar editándola o eliminarla.",
+      "createVisit": "Crear visita",
+      "visitsTab": "Visitas",
+      "visitsTabDescription": "Historial completo de visitas realizadas",
+      "detailsTab": "Detalles",
+      "detailsTabDescription": "Información completa del cliente",
+      "projectsTab": "Proyectos",
+      "projectsTabDescription": "Proyectos vinculados",
+      "registerVisit": "Registrar visita",
+      "selectFormTypeDescription": "Selecciona el tipo de formulario para documentar esta visita.",
+      "editVisit": "Editar visita",
+      "viewDetails": "Ver detalles",
+      "deleteVisit": "Eliminar visita",
+      "visitDate": "Fecha de visita",
+      "visitType": "Tipo de visita",
+      "status": "Estado",
+      "seller": "Vendedor",
+      "customer": "Cliente",
+      "formType": "Tipo de formulario",
+      "noVisitsFound": "No se encontraron visitas",
+      "visitNotFound": "Visita no encontrada",
+      "visitNotFoundDescription": "La visita que buscas no existe o fue eliminada.",
+      "errorLoadingVisit": "Error al cargar los detalles de la visita",
+      "selectFormType": "Selecciona el tipo de formulario",
+      "visitCreated": "Visita creada exitosamente",
+      "comingSoon": "Próximamente",
+      "select": "Seleccionar",
+      "formTypes": {
+        "css": "Análisis CSS",
+        "industrial": "Análisis Industrial",
+        "logistica": "Análisis Logística",
+        "straddleCarrier": "Análisis Straddle Carrier"
+      },
+      "statuses": {
+        "draft": "Borrador",
+        "completed": "Completada"
+      },
+      "visitHistory": "Historial de visitas",
+      "noVisitsForClient": "Este cliente aún no tiene visitas registradas",
+      "createFirstVisit": "Crear primera visita",
+      "visitDetails": "Detalles de la visita",
+      "visitInformation": "Información de la visita",
+      "attachments": "Archivos adjuntos",
+      "copy": "Copiar",
+      "backToList": "Volver al listado",
+      "emptyTitle": "No se contraron visitas",
+      "emptyDescription": "No hay visitas registradas en este momento",
+      "registeredVisitsTitleSection": "Visitas registradas",
+      "registeredVisitsDescriptionSection": "Visitas registradas en el sistema",
+      "deleteVisitModalTitle": "Eliminar visita",
+      "deleteVisitModalDescription": "¿Estás seguro de que deseas eliminar esta visita? Esta acción no se puede deshacer.",
+      "descriptionSection": "Descripción",
+      "datesSection": "Fechas",
+      "systemInfoSection": "Información del sistema",
+      "createdSection": "Creado",
+      "modifiedSection": "Modificado",
+      "createdBySection": "Creado por",
+      "modifiedBySection": "Modificado por",
+      "taskIdSection": "ID de la tarea",
+      "locationSection": "Localización",
+      "detailTitle": "Detalle de visita",
+      "detailDescription": "Información completa de la visita documentada",
+      "generalInfo": "Información general",
+      "associatedTask": "Asociada a",
+      "taskNumber": "Tarea #",
+      "zohoTask": "Tarea de Zoho",
+      "unassigned": "Sin asignar",
+      "formNotAvailable": "Formulario no disponible",
+      "formNotRecognized": "El tipo de formulario no es reconocido",
+      "unsupportedFormType": "Tipo de formulario no soportado",
+      "unsupportedFormTypeDesc": "El tipo de formulario \"{{type}}\" aún no tiene vista de detalle implementada.",
+      "powerTypes": {
+        "ELECTRICO": "Eléctrico",
+        "DIESEL": "Diésel",
+        "GLP": "GLP"
+      },
+      "currentTypes": {
+        "MONOFASICA": "Monofásica",
+        "TRIFASICA": "Trifásica"
+      },
+      "shelfTypes": {
+        "CONVENCIONAL": "Convencional",
+        "DRIVE_IN": "Drive-in",
+        "PUSH_BACK": "Push-back",
+        "DINAMICA": "Dinámica",
+        "CANTILEVER": "Cantilever",
+        "MOVIL": "Móvil",
+        "OTRA": "Otra"
+      },
+      "containerTypes": {
+        "SOBRE_CAMION": "Contenedor sobre camión",
+        "EN_SUELO": "Contenedor en suelo",
+        "INTERIOR": "Interior",
+        "EXTERIOR": "Exterior"
+      },
+      "containerMeasures": {
+        "VEINTE_PIES": "20 pies",
+        "TREINTA_PIES": "30 pies",
+        "CUARENTA_PIES": "40 pies",
+        "CUARENTA_Y_CINCO_PIES": "45 pies",
+        "TODOS": "Todos los tamaños",
+        "OTRO": "Otro"
+      },
+      "formNavigation": {
+        "backToSelection": "Volver a selección",
+        "previousStep": "Anterior",
+        "nextStep": "Siguiente",
+        "saveDraft": "Guardar borrador",
+        "saveChanges": "Guardar cambios",
+        "saving": "Guardando...",
+        "submit": "Enviar",
+        "submitting": "Enviando...",
+        "completeAllSteps": "Completa todos los pasos para enviar",
+        "savingDraft": "Guardando borrador...",
+        "savingChanges": "Guardando cambios...",
+        "draftSaved": "Borrador guardado",
+        "changesSaved": "Cambios guardados",
+        "errorSavingDraft": "Error al guardar borrador",
+        "errorSavingChanges": "Error al guardar cambios",
+        "visitSubmitted": "Visita enviada exitosamente",
+        "errorSubmitting": "Error al enviar la visita",
+        "cannotEditCompleted": "No se pueden guardar cambios en una visita completada"
+      }
+    },
+    "tasks": {
+      "title": "Gestión de tareas",
+      "description": "Administra las tareas del sistema",
+      "taskDetails": "Detalles de la tarea",
+      "subject": "Asunto",
       "type": "Tipo",
       "status": "Estado",
       "priority": "Prioridad",
       "dueDate": "Fecha de vencimiento",
-      "assignedTo": "Responsable",
+      "assignedTo": "Asignado a",
       "relatedTo": "Relacionado con",
-      "lastModified": "Últ. modificación"
-    }
-  },
-  "pagination": {
-    "previous": "Anterior",
-    "next": "Siguiente",
-    "page": "Página",
-    "of": "de",
-    "itemsPerPage": "Elementos por página",
-    "gotToFirstPage": "Ir a la primera página",
-    "goToLastPage": "Ir a la última página",
-    "showing": "Mostrando",
-    "rows": "fila(s)"
-  },
-  "clients": {
-    "title": "Gestión de clientes",
-    "description": "Administra las visitas de tus clientes",
-    "searchPlaceholder": "Buscar clientes...",
-    "noClientsFound": "No se encontraron clientes",
-    "noClientsAvailable": "No hay clientes disponibles en Zoho CRM",
-    "errorLoading": "Error al cargar los clientes",
-    "accountName": "Nombre de cuenta",
-    "accountNumber": "Número de cuenta",
-    "phone": "Teléfono",
-    "email": "Correo electrónico",
-    "website": "Sitio web",
-    "industry": "Industria",
-    "accountType": "Tipo de cuenta",
-    "owner": "Propietario",
-    "createdDate": "Fecha de creación",
-    "modifiedDate": "Última modificación",
-    "billingAddress": "Dirección de facturación",
-    "shippingAddress": "Dirección de envío",
-    "viewVisits": "Ver visitas",
-    "createVisit": "Crear visita",
-    "accountDetails": "Detalles de la cuenta",
-    "basicInfo": "Información básica",
-    "contactInfo": "Información de contacto",
-    "addressInfo": "Información de dirección",
-    "clientWithEquipment": "Cliente con equipo",
-    "nationalAccount": "Cuenta nacional",
-    "moreClientsLoaded": "{{count}} clientes más cargados",
-    "resultsFound": "{{count}} resultados encontrados",
-    "clientsLoaded": "{{count}} clientes cargados",
-    "noResultsFor": "No se encontraron clientes que coincidan con \"{{query}}\"",
-    "clearSearch": "Limpiar búsqueda",
-    "copyId": "Copiar ID",
-    "details": "Detalles",
-    "visitWebsite": "Visitar sitio web",
-    "modified": "Modificado",
-    "contact": "Contacto",
-    "na": "N/A",
-    "identification": "Identificación",
-    "legalName": "Razón social",
-    "clientCode": "Código cliente",
-    "cif": "CIF / NIF",
-    "zohoId": "ID Zoho",
-    "classification": "Clasificación",
-    "subSector": "Sub-sector",
-    "autonomousCommunity": "Comunidad Autónoma",
-    "accountStatus": "Estado de la cuenta",
-    "orderType": "Tipo de pedido",
-    "fax": "Fax",
-    "city": "Ciudad",
-    "state": "Provincia / Estado",
-    "zipCode": "Código Postal",
-    "country": "País",
-    "responsibles": "Responsables",
-    "ownerEmail": "Email propietario",
-    "createdBy": "Creado por",
-    "creatorEmail": "Email creador",
-    "modifiedBy": "Modificado por",
-    "parentAccount": "Cuenta padre",
-    "clientStatus": "Estado del Cliente",
-    "lastActivity": "Última actividad",
-    "flags": {
-      "hasEquipment": "Cliente con equipo",
-      "nationalAccount": "Cuenta nacional",
-      "booksClient": "Cliente Books",
-      "specialConditions": "Condiciones especiales",
-      "openProject": "Proyecto abierto",
-      "reviewed": "Revisado",
-      "multiLocation": "Múltiples localizaciones"
-    }
-  },
-  "visits": {
-    "title": "Visitas",
-    "description": "Información completa de la visita realizada al cliente",
-    "searchPlaceholder": "Buscar visitas...",
-    "filterByStatus": "Filtrar por estado",
-    "filters": {
-      "all": "Todos",
-      "draft": "Borrador",
-      "completed": "Completada"
-    },
-    "visitWithDraftStateTitle": "Visita con estado borrador",
-    "visitWithDraftStateDescription": "Esta visita tiene un estado borrador, puedes continuar editándola o eliminarla.",
-    "createVisit": "Crear visita",
-    "visitsTab": "Visitas",
-    "visitsTabDescription": "Historial completo de visitas realizadas",
-    "detailsTab": "Detalles",
-    "detailsTabDescription": "Información completa del cliente",
-    "projectsTab": "Proyectos",
-    "projectsTabDescription": "Proyectos vinculados",
-    "registerVisit": "Registrar visita",
-    "selectFormTypeDescription": "Selecciona el tipo de formulario para documentar esta visita.",
-    "editVisit": "Editar visita",
-    "viewDetails": "Ver detalles",
-    "deleteVisit": "Eliminar visita",
-    "visitDate": "Fecha de visita",
-    "visitType": "Tipo de visita",
-    "status": "Estado",
-    "seller": "Vendedor",
-    "customer": "Cliente",
-    "formType": "Tipo de formulario",
-    "noVisitsFound": "No se encontraron visitas",
-    "visitNotFound": "Visita no encontrada",
-    "visitNotFoundDescription": "La visita que buscas no existe o fue eliminada.",
-    "errorLoadingVisit": "Error al cargar los detalles de la visita",
-    "selectFormType": "Selecciona el tipo de formulario",
-    "visitCreated": "Visita creada exitosamente",
-    "comingSoon": "Próximamente",
-    "select": "Seleccionar",
-    "formTypes": {
-      "css": "Análisis CSS",
-      "industrial": "Análisis Industrial",
-      "logistica": "Análisis Logística",
-      "straddleCarrier": "Análisis Straddle Carrier"
-    },
-    "statuses": {
-      "draft": "Borrador",
-      "completed": "Completada"
-    },
-    "visitHistory": "Historial de visitas",
-    "noVisitsForClient": "Este cliente aún no tiene visitas registradas",
-    "createFirstVisit": "Crear primera visita",
-    "visitDetails": "Detalles de la visita",
-    "visitInformation": "Información de la visita",
-    "attachments": "Archivos adjuntos",
-    "copy": "Copiar",
-    "backToList": "Volver al listado",
-    "emptyTitle": "No se contraron visitas",
-    "emptyDescription": "No hay visitas registradas en este momento",
-    "registeredVisitsTitleSection": "Visitas registradas",
-    "registeredVisitsDescriptionSection": "Visitas registradas en el sistema",
-    "deleteVisitModalTitle": "Eliminar visita",
-    "deleteVisitModalDescription": "¿Estás seguro de que deseas eliminar esta visita? Esta acción no se puede deshacer.",
-    "descriptionSection": "Descripción",
-    "datesSection": "Fechas",
-    "systemInfoSection": "Información del sistema",
-    "createdSection": "Creado",
-    "modifiedSection": "Modificado",
-    "createdBySection": "Creado por",
-    "modifiedBySection": "Modificado por",
-    "taskIdSection": "ID de la tarea",
-    "locationSection": "Localización",
-    "detailTitle": "Detalle de visita",
-    "detailDescription": "Información completa de la visita documentada",
-    "generalInfo": "Información general",
-    "associatedTask": "Asociada a",
-    "taskNumber": "Tarea #",
-    "zohoTask": "Tarea de Zoho",
-    "unassigned": "Sin asignar",
-    "formNotAvailable": "Formulario no disponible",
-    "formNotRecognized": "El tipo de formulario no es reconocido",
-    "unsupportedFormType": "Tipo de formulario no soportado",
-    "unsupportedFormTypeDesc": "El tipo de formulario \"{{type}}\" aún no tiene vista de detalle implementada.",
-    "powerTypes": {
-      "ELECTRICO": "Eléctrico",
-      "DIESEL": "Diésel",
-      "GLP": "GLP"
-    },
-    "currentTypes": {
-      "MONOFASICA": "Monofásica",
-      "TRIFASICA": "Trifásica"
-    },
-    "shelfTypes": {
-      "CONVENCIONAL": "Convencional",
-      "DRIVE_IN": "Drive-in",
-      "PUSH_BACK": "Push-back",
-      "DINAMICA": "Dinámica",
-      "CANTILEVER": "Cantilever",
-      "MOVIL": "Móvil",
-      "OTRA": "Otra"
-    },
-    "containerTypes": {
-      "SOBRE_CAMION": "Contenedor sobre camión",
-      "EN_SUELO": "Contenedor en suelo",
-      "INTERIOR": "Interior",
-      "EXTERIOR": "Exterior"
-    },
-    "containerMeasures": {
-      "VEINTE_PIES": "20 pies",
-      "TREINTA_PIES": "30 pies",
-      "CUARENTA_PIES": "40 pies",
-      "CUARENTA_Y_CINCO_PIES": "45 pies",
-      "TODOS": "Todos los tamaños",
-      "OTRO": "Otro"
-    },
-    "formNavigation": {
-      "backToSelection": "Volver a selección",
-      "previousStep": "Anterior",
-      "nextStep": "Siguiente",
-      "saveDraft": "Guardar borrador",
-      "saveChanges": "Guardar cambios",
-      "saving": "Guardando...",
-      "submit": "Enviar",
-      "submitting": "Enviando...",
-      "completeAllSteps": "Completa todos los pasos para enviar",
-      "savingDraft": "Guardando borrador...",
-      "savingChanges": "Guardando cambios...",
-      "draftSaved": "Borrador guardado",
-      "changesSaved": "Cambios guardados",
-      "errorSavingDraft": "Error al guardar borrador",
-      "errorSavingChanges": "Error al guardar cambios",
-      "visitSubmitted": "Visita enviada exitosamente",
-      "errorSubmitting": "Error al enviar la visita",
-      "cannotEditCompleted": "No se pueden guardar cambios en una visita completada"
-    }
-  },
-  "tasks": {
-    "title": "Gestión de tareas",
-    "description": "Administra las tareas del sistema",
-    "taskDetails": "Detalles de la tarea",
-    "subject": "Asunto",
-    "type": "Tipo",
-    "status": "Estado",
-    "priority": "Prioridad",
-    "dueDate": "Fecha de vencimiento",
-    "assignedTo": "Asignado a",
-    "relatedTo": "Relacionado con",
-    "description_field": "Descripción",
-    "closedDate": "Fecha de cierre",
-    "lastModified": "Última modificación",
-    "createdBy": "Creado por",
-    "createdDate": "Fecha de creación",
-    "noTasksFound": "No se encontraron tareas",
-    "searchPlaceholder": "Buscar tareas...",
-    "moreTasksLoaded": "{{count}} tareas más cargadas",
-    "createTask": "Crear tarea",
-    "viewDetails": "Ver detalles",
-    "createVisit": "Crear visita",
-    "relatedVisits": "Visitas relacionadas",
-    "noRelatedVisits": "No hay visitas relacionadas con esta tarea",
-    "taskInformation": "Información de la tarea",
-    "additionalInfo": "Información adicional",
-    "overdue": "Vencida",
-    "contact": "Contacto",
-    "modified": "Modificado",
-    "modifiedRecently": "Modificado hace poco",
-    "completed": "Completada",
-    "taskNotFound": "Tarea no encontrada",
-    "taskNotFoundDescription": "La tarea que buscas no existe o no tienes permisos para verla",
-    "noState": "Sin estado",
-    "notSpecified": "No especificada",
-    "invalidDate": "Fecha inválida",
-    "active": "Activo",
-    "reminderSection": "Recordatorio",
-    "completedSection": "Completada",
-    "emptySearchTitle": "No se encontraron tareas",
-    "emptySearchDescription": "No hay tareas que coincidan con tu búsqueda. Intenta con otros términos o limpia los filtros.",
-    "emptyStateTitle": "No hay tareas disponibles",
-    "emptyStateDescription": "Aún no hay tareas en el sistema. Las tareas aparecerán aquí cuando se creen.",
-    "errorLoadingTitle": "Error al cargar las tareas",
-    "errorLoadingDescription": "No se pudieron cargar las tareas del servidor. Por favor, intenta de nuevo.",
-    "noResultsForQuery": "No se encontraron tareas para \"{{query}}\"",
-    "tryDifferentSearch": "Intenta con otros términos de búsqueda",
-    "clearFiltersToSeeAll": "Limpia los filtros para ver todas las tareas",
-    "types": {
-      "visitProposal": "Propuesta de Visita",
-      "visitCommercial": "Visita Comercial",
-      "demonstration": "Demostración",
-      "offer": "Oferta",
-      "quote": "Cotización",
-      "offerQuote": "Oferta / Cotización"
-    },
-    "statuses": {
-      "notStarted": "No iniciada",
-      "deferred": "Diferida",
-      "inProgress": "En progreso",
+      "description_field": "Descripción",
+      "closedDate": "Fecha de cierre",
+      "lastModified": "Última modificación",
+      "createdBy": "Creado por",
+      "createdDate": "Fecha de creación",
+      "noTasksFound": "No se encontraron tareas",
+      "searchPlaceholder": "Buscar tareas...",
+      "moreTasksLoaded": "{{count}} tareas más cargadas",
+      "createTask": "Crear tarea",
+      "viewDetails": "Ver detalles",
+      "createVisit": "Crear visita",
+      "relatedVisits": "Visitas relacionadas",
+      "noRelatedVisits": "No hay visitas relacionadas con esta tarea",
+      "taskInformation": "Información de la tarea",
+      "additionalInfo": "Información adicional",
+      "overdue": "Vencida",
+      "contact": "Contacto",
+      "modified": "Modificado",
+      "modifiedRecently": "Modificado hace poco",
       "completed": "Completada",
-      "waitingInput": "Esperando entrada"
+      "taskNotFound": "Tarea no encontrada",
+      "taskNotFoundDescription": "La tarea que buscas no existe o no tienes permisos para verla",
+      "noState": "Sin estado",
+      "notSpecified": "No especificada",
+      "invalidDate": "Fecha inválida",
+      "active": "Activo",
+      "reminderSection": "Recordatorio",
+      "completedSection": "Completada",
+      "emptySearchTitle": "No se encontraron tareas",
+      "emptySearchDescription": "No hay tareas que coincidan con tu búsqueda. Intenta con otros términos o limpia los filtros.",
+      "emptyStateTitle": "No hay tareas disponibles",
+      "emptyStateDescription": "Aún no hay tareas en el sistema. Las tareas aparecerán aquí cuando se creen.",
+      "errorLoadingTitle": "Error al cargar las tareas",
+      "errorLoadingDescription": "No se pudieron cargar las tareas del servidor. Por favor, intenta de nuevo.",
+      "noResultsForQuery": "No se encontraron tareas para \"{{query}}\"",
+      "tryDifferentSearch": "Intenta con otros términos de búsqueda",
+      "clearFiltersToSeeAll": "Limpia los filtros para ver todas las tareas",
+      "types": {
+        "visitProposal": "Propuesta de Visita",
+        "visitCommercial": "Visita Comercial",
+        "demonstration": "Demostración",
+        "offer": "Oferta",
+        "quote": "Cotización",
+        "offerQuote": "Oferta / Cotización"
+      },
+      "statuses": {
+        "notStarted": "No iniciada",
+        "deferred": "Diferida",
+        "inProgress": "En progreso",
+        "completed": "Completada",
+        "waitingInput": "Esperando entrada"
+      },
+      "priorities": {
+        "highest": "Más alta",
+        "high": "Alta",
+        "normal": "Normal",
+        "low": "Baja",
+        "lowest": "Más baja"
+      }
     },
-    "priorities": {
-      "highest": "Más alta",
-      "high": "Alta",
-      "normal": "Normal",
-      "low": "Baja",
-      "lowest": "Más baja"
-    }
-  },
-  "machines": {
-    "title": "Gestión de equipos",
-    "pageTitle": "Máquinas disponibles",
-    "pageDescription": "Aquí puedes ver todas las máquinas disponibles en el sistema.",
-    "description": "Administra el inventario de equipos",
-    "searchPlaceholder": "Buscar equipos...",
-    "noMachinesFound": "No se encontraron equipos",
-    "noMachinesMatchFilters": "No hay máquinas que coincidan con los filtros aplicados.",
-    "machineDetails": "Detalles del equipo",
-    "description_field": "Descripción",
-    "serialNumber": "Número de serie",
-    "status": "Estado",
-    "location": "Ubicación",
-    "usageHours": "Horas de uso",
-    "usageHoursDate": "Fecha de horas",
-    "insurance": "Seguro",
-    "insured": "Asegurado",
-    "notInsured": "No asegurado",
-    "insuranceExpiry": "Vencimiento seguro",
-    "availability": "Disponibilidad",
-    "viewDetails": "Ver detalles",
-    "equipmentFound": "equipos encontrados",
-    "of": "de",
-    "machinesLabel": "máquinas",
-    "view": "Vista",
-    "viewCards": "Tarjetas",
-    "viewTable": "Tabla",
-    "dealer": "Distribuidor",
-    "errorLoading": "Error al cargar las máquinas",
-    "errorDescription": "Hubo un problema al obtener los datos de las máquinas. Por favor, inténtalo de nuevo más tarde.",
-    "filters": {
-      "all": "Todos",
-      "advancedFilters": "Filtros avanzados",
-      "clearFilters": "Limpiar filtros",
-      "searchPlaceholder": "Buscar por descripción, S/N o distribuidor...",
+    "machines": {
+      "title": "Gestión de equipos",
+      "pageTitle": "Máquinas disponibles",
+      "pageDescription": "Aquí puedes ver todas las máquinas disponibles en el sistema.",
+      "description": "Administra el inventario de equipos",
+      "searchPlaceholder": "Buscar equipos...",
+      "noMachinesFound": "No se encontraron equipos",
+      "noMachinesMatchFilters": "No hay máquinas que coincidan con los filtros aplicados.",
+      "machineDetails": "Detalles del equipo",
+      "description_field": "Descripción",
+      "serialNumber": "Número de serie",
       "status": "Estado",
-      "availability": "Disponibilidad",
       "location": "Ubicación",
+      "usageHours": "Horas de uso",
+      "usageHoursDate": "Fecha de horas",
       "insurance": "Seguro",
-      "hoursRange": "Rango de horas",
       "insured": "Asegurado",
       "notInsured": "No asegurado",
-      "0-1000": "0 - 1,000 horas",
-      "1000-5000": "1,000 - 5,000 horas",
-      "5000-10000": "5,000 - 10,000 horas",
-      "10000+": "Más de 10,000 horas",
-      "activeFilters": "Filtros activos"
-    },
-    "statuses": {
-      "available": "Disponible",
-      "inUse": "En uso",
-      "maintenance": "Mantenimiento",
-      "retired": "Retirado",
-      "operational": "Operativa"
-    },
-    "availabilities": {
-      "available": "Disponible",
-      "notAvailable": "No disponible"
-    },
-    "insuranceStatuses": {
-      "valid": "Válido",
-      "expired": "Vencido",
-      "expiringSoon": "Por vencer"
-    },
-    "card": {
-      "details": "Detalles",
-      "options": "Opcionales",
-      "hours": "Horas",
-      "date": "Fecha",
-      "height": "Altura",
-      "documentation": "Documentación",
-      "history": "Historial",
-      "photos": "Fotos",
-      "traveller": "Traveller",
-      "ce": "CE"
-    },
-    "table": {
-      "image": "Img",
-      "machine": "Máquina",
-      "availabilityShort": "Disp.",
-      "docs": "Docs"
-    },
-    "logistica": {
-      "steps": {
-        "operation": {
-          "title": "Descripción operación",
-          "shortTitle": "Descripción",
-          "description": "Detalles logísticos"
-        },
-        "application": {
-          "title": "Datos aplicación",
-          "shortTitle": "Aplicación",
-          "description": "Información técnica"
-        },
-        "batteries": {
-          "title": "Baterías",
-          "shortTitle": "Baterías",
-          "description": "Especificaciones eléctricas"
-        },
-        "loads": {
-          "title": "Cargas",
-          "shortTitle": "Cargas",
-          "description": "Tabla de dimensiones"
-        },
-        "aisle": {
-          "title": "Pasillo actual",
-          "shortTitle": "Pasillo",
-          "description": "Medidas del pasillo"
-        },
-        "files": {
-          "title": "Archivos adjuntos",
-          "shortTitle": "Archivos",
-          "description": "Fotos, videos y documentos"
-        }
-      },
-      "fields": {
-        "operation": {
-          "notes": {
-            "label": "Notas de operación",
-            "placeholder": "Describa la operación..."
-          },
-          "ramps": {
-            "label": "¿Existen rampas?",
-            "placeholder": "Describa las rampas (% pendiente, etc)..."
-          },
-          "doors": {
-            "label": "¿Existen pasos de puertas?",
-            "placeholder": "Altura, ancho, cantidad..."
-          },
-          "restrictions": {
-            "label": "¿Otras restricciones de altura?",
-            "placeholder": "Vigas, tuberías, iluminación, rociadores..."
-          },
-          "maxHeight": {
-            "label": "Altura máxima nave"
-          },
-          "aisleWidth": {
-            "label": "Ancho pasillo actual"
-          },
-          "surface": {
-            "label": "Superficie de trabajo"
-          },
-          "floor": {
-            "label": "Condiciones del suelo (Interior/Exterior)",
-            "placeholder": "Describa el estado del suelo..."
-          },
-          "type": {
-            "label": "Tipo de operación",
-            "placeholder": "Describa el tipo de operación..."
-          },
-          "closingDate": {
-            "label": "Fecha de cierre"
-          }
-        },
-        "aisle": {
-          "header": "Pasillo Actual",
-          "distRacks": "Distancia entre estanterías",
-          "distProducts": "Distancia entre productos",
-          "widthAvailable": "Ancho pasillo disponible",
-          "rackType": "Tipo de estantería",
-          "rackLevel": "Nivel de estantería",
-          "maxRackHeight": "Altura máxima estantería"
-        },
-        "application": {
-          "productDescription": {
-            "label": "Producto a manipular",
-            "placeholder": "Descripción del producto"
-          },
-          "lastLevelHeight": {
-            "label": "Alt. últ. nivel"
-          },
-          "maxLiftHeight": {
-            "label": "Máx. elevación"
-          },
-          "maxLoadWeight": {
-            "label": "Peso máx. alt."
-          },
-          "firstLevelLoadWeight": {
-            "label": "Peso 1er niv."
-          },
-          "workAreaWidth": {
-            "label": "Ancho área"
-          },
-          "workAreaDepth": {
-            "label": "Fondo área"
-          },
-          "shifts": {
-            "label": "Turnos",
-            "placeholder": "1"
-          },
-          "definitionDate": {
-            "label": "Fecha definición"
-          },
-          "powerSource": {
-            "label": "Alimentación"
-          },
-          "validation": {
-            "operationNotesRequired": "Notas de operación son requeridas"
-          },
-          "headers": {
-            "productDescription": "Descripción del Producto",
-            "dimensionsAndWeights": "Dimensiones y Pesos",
-            "operationAndPower": "Operación y Alimentación"
-          }
-        },
-        "batteries": {
-          "notApplicable": "No aplica",
-          "notApplicableHint": "Activa esta opción si las especificaciones eléctricas no son aplicables para esta visita.",
-          "specifications": "Especificaciones Eléctricas",
-          "currentType": {
-            "label": "Tipo corriente"
-          },
-          "voltage": {
-            "label": "Voltaje"
-          },
-          "frequency": {
-            "label": "Frecuencia"
-          },
-          "amperage": {
-            "label": "Amperaje"
-          },
-          "temperature": {
-            "label": "Temp. ambiente"
-          },
-          "hours": {
-            "label": "Horas/día"
-          },
-          "notes": {
-            "label": "Observaciones (opcional)",
-            "placeholder": "Notas adicionales sobre los equipos eléctricos..."
-          },
-          "alert": {
-            "title": "Paso no aplicable",
-            "description": "Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puedes continuar al siguiente paso."
-          }
-        },
-        "loads": {
-          "title": "Dimensiones de Cargas",
-          "addButton": "Agregar",
-          "addFirstButton": "Agregar primera carga",
-          "emptyTitle": "No hay cargas agregadas",
-          "emptyDescription": "Agrega las dimensiones de las cargas que se manipularán",
-          "length": "Largo",
-          "depth": "Fondo",
-          "height": "Alto",
-          "weight": "Peso",
-          "product": "Producto",
-          "totalPercentage": "Total porcentaje:",
-          "percentageError": "Los porcentajes deben sumar exactamente 100%"
-        }
-      },
-      "options": {
-        "operationType": {
-          "storage": "Almacenamiento",
-          "crossDocking": "Cross-docking",
-          "picking": "Picking",
-          "loadingUnloading": "Carga/Descarga",
-          "orderPrep": "Preparación de pedidos",
-          "mixed": "Mixto"
-        },
-        "powerSource": {
-          "electric": "Eléctrico",
-          "diesel": "Diésel",
-          "gas": "GLP"
-        },
-        "currentType": {
-          "monophasic": "Monofásica",
-          "triphasic": "Trifásica"
-        },
-        "rackType": {
-          "conventional": "Convencional",
-          "driveIn": "Drive-in",
-          "pushBack": "Push-back",
-          "dynamic": "Dinámica",
-          "cantilever": "Cantilever",
-          "mobile": "Móvil",
-          "other": "Otra"
-        }
-      },
-      "validation": {
-        "operationNotesRequired": "Notas de operación son requeridas",
-        "productDescriptionRequired": "Descripción del producto es requerida",
-        "positiveValueRequired": "Debe ser un valor positivo",
-        "emailInvalid": "Email inválido",
-        "urlInvalid": "URL inválida",
-        "min1Shift": "Mínimo 1 turno",
-        "loadRequired": "Debe agregar al menos una carga",
-        "percentageSumError": "Los porcentajes deben sumar 100% (actual: {{current}}%)",
-        "electricalRequired": "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",
-        "productRequired": "Producto es requerido",
-        "positiveRequired": "Debe ser positivo",
-        "min0": "Mínimo 0%",
-        "max100": "Máximo 100%"
-      }
-    }
-  },
-  "users": {
-    "title": "Usuarios",
-    "description": "Gestiona los usuarios del sistema",
-    "createUser": "Crear usuario",
-    "createUserDescription": "Crear un nuevo usuario",
-    "editUser": "Editar usuario",
-    "editUserDescription": "Editar usuario",
-    "deleteUser": "Eliminar usuario",
-    "deleteMultiple": "Eliminar seleccionados",
-    "noUsersFound": "No se encontraron usuarios",
-    "deleteConfirmTitle": "¿Estás seguro?",
-    "deleteConfirmDescription": "Esta acción no se puede deshacer. Se eliminará permanentemente al usuario y sus datos asociados.",
-    "deleteSuccess": "Usuario eliminado exitosamente",
-    "deleteError": "Error al eliminar el usuario",
-    "sessionRevoked": "Sesión revocada exitosamente",
-    "usersLoaded": "{{count}} usuarios cargados",
-    "fetchError": "Error al cargar usuarios",
-    "userCreated": "Usuario creado exitosamente",
-    "errorTitle": "Ha ocurrido un error",
-    "errorDescription": "No se pudieron cargar los usuarios. Por favor, intenta nuevamente.",
-    "retry": "Reintentar",
-    "deleteUserTitle": "¿Eliminar usuario?",
-    "deleteUserDescription": "Estás a punto de eliminar a {{name}}. Esta acción no se puede deshacer.",
-    "deleteMultipleTitle": "¿Eliminar usuarios seleccionados?",
-    "deleteMultipleDescription": "Estás a punto de eliminar {{count}} usuario(s). Esta acción no se puede deshacer.",
-    "cancel": "Cancelar",
-    "delete": "Eliminar",
-    "deleting": "Eliminando...",
-    "selectAll": "Seleccionar todos",
-    "selectRow": "Seleccionar fila",
-    "selectUser": "Seleccionar {{name}}",
-    "openMenu": "Abrir menú",
-    "noUsersWithFilters": "No se encontraron usuarios con los filtros aplicados",
-    "noUsersInSystem": "No se encontraron usuarios en el sistema",
-    "deleteMultipleSuccess": "Usuarios eliminados exitosamente",
-    "roles": {
-      "admin": "Administrador",
-      "seller": "Vendedor",
-      "dealer": "Distribuidor"
-    },
-    "providers": {
-      "credentials": "Credenciales",
-      "zoho": "Zoho"
-    },
-    "card": {
-      "role": "Rol",
-      "status": "Estado",
-      "auth": "Auth",
-      "lastLogin": "Últ. Login",
-      "country": "País",
-      "created": "Creado",
-      "never": "Nunca",
-      "unspecified": "No especificado",
-      "noName": "Sin nombre",
-      "zohoId": "Zoho ID",
-      "active": "Activo",
-      "inactive": "Inactivo"
-    },
-    "actions": {
-      "title": "Acciones",
-      "edit": "Editar",
-      "revokeSession": "Revocar Sesión",
-      "delete": "Eliminar"
-    },
-    "filters": {
-      "search": "Búsqueda",
-      "searchPlaceholder": "Buscar...",
-      "role": "Rol",
-      "allRoles": "Todos los roles",
-      "status": "Estado",
-      "allStatuses": "Todos los estados",
-      "all": "Todos",
-      "active": "Activos",
-      "inactive": "Inactivos",
-      "clear": "Limpiar filtros"
-    },
-    "form": {
-      "tabs": {
-        "personal": "Personal",
-        "security": "Seguridad",
-        "config": "Config",
-        "sellers": "Vendedores"
-      },
-      "personal": "Personal",
-      "security": "Seguridad",
-      "config": "Config",
-      "fullNameLabel": "Nombre completo",
-      "fullNamePlaceholder": "Ej: Juan Pérez García",
-      "emailLabel": "Correo electrónico",
-      "emailPlaceholder": "usuario@combilift.es",
-      "passwordLabel": "Contraseña",
-      "confirmPasswordLabel": "Confirmar contraseña",
-      "changePassword": "Cambiar contraseña",
-      "newPassword": "Nueva contraseña",
-      "leaveEmpty": "Dejar vacío para no cambiar",
-      "roleLabel": "Rol del usuario",
-      "rolePlaceholder": "Selecciona un rol",
-      "countryLabel": "País",
-      "countryPlaceholder": "Ej: España",
-      "accountState": "Estado de la cuenta",
-      "account": "Cuenta",
-      "inactiveDescription": "Los usuarios con cuenta inactiva no podrán acceder al sistema.",
-      "clear": "Limpiar",
-      "confirm": "Confirmar",
-      "save": "Guardar",
-      "noChanges": "No hay cambios para actualizar",
-      "updateSuccess": "Usuario actualizado exitosamente",
-      "updateError": "Hubo un problema al actualizar el usuario. Por favor, intenta de nuevo.",
-      "createError": "Error al crear el usuario. Por favor, intenta de nuevo.",
-      "sellers": {
-        "title": "Vendedores asignados",
-        "description": "Selecciona los vendedores que reportarán a este dealer",
-        "search": "Buscar vendedor...",
-        "noSellers": "No hay vendedores disponibles",
-        "loading": "Cargando vendedores...",
-        "selected": "{{count}} vendedor(es) seleccionado(s)",
-        "selectAll": "Seleccionar todos",
-        "deselectAll": "Deseleccionar todos",
-        "errorLoading": "Error al cargar vendedores"
-      }
-    },
-    "table": {
-      "user": "Usuario",
-      "created": "Creación",
-      "account": "Cuenta",
-      "actions": "Acciones",
-      "role": "Rol",
-      "status": "Estado",
-      "country": "País",
-      "provider": "Proveedor",
-      "lastLogin": "Últ. login",
-      "never": "Nunca",
-      "unspecified": "No especificado",
-      "noName": "Sin nombre",
-      "zohoId": "Zoho ID",
-      "active": "Activo",
-      "inactive": "Inactivo"
-    }
-  },
-  "profile": {
-    "title": "Mi perfil",
-    "personalInfo": "Información personal",
-    "accountInfo": "Información de cuenta",
-    "name": "Nombre",
-    "email": "Correo electrónico",
-    "role": "Rol",
-    "country": "País",
-    "provider": "Proveedor",
-    "memberSince": "Miembro desde",
-    "lastLogin": "Últ. login",
-    "notAvailable": "No disponible",
-    "tabs": {
-      "personal": "Personal",
-      "account": "Cuenta",
-      "security": "Seguridad",
-      "notifications": "Notificaciones"
-    },
-    "personal": {
-      "title": "Información personal",
-      "description": "Actualiza tus datos personales y de perfil.",
-      "firstName": "Nombre",
-      "lastName": "Apellido",
-      "phone": "Teléfono",
-      "phonePlaceholder": "+1 (555) 123-4567",
-      "jobTitle": "Cargo",
-      "jobTitlePlaceholder": "Ej: Gerente de Ventas",
-      "company": "Empresa",
-      "bio": "Biografía",
-      "bioPlaceholder": "Cuéntanos sobre ti...",
-      "location": "Ubicación",
-      "locationPlaceholder": "Ej: Madrid, España"
-    },
-    "account": {
-      "title": "Configuración de cuenta",
-      "description": "Administra tus preferencias de cuenta y suscripción.",
-      "status": "Estado de cuenta",
-      "statusActive": "Tu cuenta está actualmente activa",
-      "active": "Activa",
-      "inactive": "Inactiva",
-      "subscription": "Plan de suscripción",
-      "subscriptionPlan": "Plan Pro - $29/mes",
-      "manageSubscription": "Administrar suscripción",
-      "visibility": "Visibilidad de cuenta",
-      "visibilityDescription": "Hacer tu perfil visible para otros usuarios",
-      "dataExport": "Exportar datos",
-      "dataExportDescription": "Descargar una copia de tus datos",
-      "exportData": "Exportar datos"
-    },
-    "security": {
-      "title": "Configuración de seguridad",
-      "description": "Administra la seguridad y autenticación de tu cuenta.",
-      "password": "Contraseña",
-      "passwordLastChanged": "Cambiada hace 3 meses",
-      "changePassword": "Cambiar contraseña",
-      "twoFactor": "Autenticación de dos factores",
-      "twoFactorDescription": "Añade una capa extra de seguridad a tu cuenta",
-      "enabled": "Habilitado",
-      "disabled": "Deshabilitado",
-      "configure": "Configurar",
-      "loginNotifications": "Notificaciones de inicio de sesión",
-      "loginNotificationsDescription": "Recibe notificaciones cuando alguien inicie sesión en tu cuenta",
-      "activeSessions": "Sesiones activas",
-      "activeSessionsDescription": "Administra los dispositivos conectados a tu cuenta",
-      "viewSessions": "Ver sesiones"
-    },
-    "notifications": {
-      "title": "Preferencias de notificaciones",
-      "description": "Elige qué notificaciones deseas recibir.",
-      "email": "Notificaciones por correo",
-      "emailDescription": "Recibir notificaciones por correo electrónico",
-      "push": "Notificaciones push",
-      "pushDescription": "Recibir notificaciones push en tu navegador",
-      "marketing": "Correos de marketing",
-      "marketingDescription": "Recibir correos sobre nuevas funciones y actualizaciones",
-      "weeklySummary": "Resumen semanal",
-      "weeklySummaryDescription": "Recibir un resumen semanal de tu actividad",
-      "securityAlerts": "Alertas de seguridad",
-      "securityAlertsDescription": "Notificaciones de seguridad importantes (siempre habilitadas)"
-    },
-    "danger": {
-      "title": "Zona de peligro",
-      "description": "Acciones irreversibles y destructivas",
-      "deleteAccount": "Eliminar cuenta",
-      "deleteAccountDescription": "Eliminar permanentemente tu cuenta y todos los datos"
-    }
-  },
-  "forms": {
-    "selectOption": "Seleccionar opción",
-    "selectFile": "Seleccionar archivo",
-    "uploadFile": "Subir archivo",
-    "dragDropFiles": "Arrastra y suelta archivos aquí",
-    "or": "o",
-    "browse": "Examinar",
-    "filesSelected": "archivos seleccionados",
-    "removeFile": "Eliminar archivo",
-    "required": "Requerido",
-    "optional": "Opcional",
-    "saving": "Guardando...",
-    "processing": "Procesando...",
-    "files": {
-      "takePhoto": "Tomar foto",
-      "recordVideo": "Grabar video",
-      "browse": "Explorador",
-      "uploading": "Subiendo archivos...",
-      "dropHere": "¡Suelta los archivos aquí!",
-      "dragDrop": "Arrastra y suelta archivos aquí",
-      "orClick": "o haz clic para seleccionar",
-      "uploadedFiles": "Archivos subidos",
-      "noFiles": "Aún no has subido ningún archivo",
-      "viewFile": "Ver archivo",
-      "deleteFile": "Eliminar",
-      "limits": {
-        "images": "Imágenes 10MB",
-        "videos": "Videos 100MB",
-        "docs": "Docs 25MB",
-        "max": "Máx. {{max}} archivos"
-      }
-    },
-    "fields": {
-      "legalName": "Razón social",
-      "contactPerson": "Persona de contacto",
-      "email": "Correo electrónico",
-      "website": "Sitio web",
-      "fiscalId": "ID Fiscal / CIF",
-      "address": "Dirección",
-      "city": "Ciudad",
-      "state": "Estado / Provincia",
-      "country": "País",
-      "postalCode": "Código postal",
-      "distributor": "Distribuidor",
-      "distributorContact": "Contacto del distribuidor",
-      "closingDate": "Fecha de cierre estimada",
-      "estimatedDefinitionDate": "Fecha estimada de definición",
-      "clientEndUserData": "Datos del cliente final",
-      "containerType": "Tipo de contenedor",
-      "groundConditions": "Condiciones del suelo",
-      "selectedMeasurements": "Medidas seleccionadas",
-      "noClientInfo": "No hay información del cliente",
-      "notProvided": "No proporcionado",
-      "productDescription": "Descripción del producto",
-      "lastShelfLevel": "Último nivel de estantería",
-      "maxLiftHeight": "Altura máxima de elevación",
-      "maxHeightLoad": "Carga a altura máxima",
-      "firstLevelLoad": "Carga en primer nivel",
-      "workAreaWidth": "Ancho del área de trabajo",
-      "workAreaDepth": "Profundidad del área de trabajo",
-      "workShifts": "Turnos de trabajo",
-      "desiredPower": "Alimentación deseada",
-      "currentType": "Tipo de corriente",
-      "voltage": "Voltaje",
-      "frequency": "Frecuencia",
-      "amperage": "Amperaje",
-      "ambientTemperature": "Temperatura ambiente",
-      "workHoursPerDay": "Horas trabajo/día",
-      "availablePower": "Potencia disponible",
-      "chargePointDistance": "Distancia al punto de carga",
-      "loadNumber": "Carga",
-      "length": "Largo",
-      "depth": "Fondo",
-      "width": "Ancho",
-      "height": "Alto",
-      "weight": "Peso",
-      "floorType": "Tipo de suelo",
-      "aisleWidth": "Ancho del pasillo",
-      "maxStackHeight": "Altura máxima de apilado",
-      "loadCapacity": "Capacidad de carga",
-      "operatingEnvironment": "Ambiente de operación",
-      "temperatureRange": "Rango de temperatura",
-      "specialRequirements": "Requisitos especiales",
-      "notes": "Notas",
-      "additionalInfo": "Información adicional",
-      "maxBuildingHeight": "Altura máxima nave",
-      "currentAisleWidth": "Ancho pasillo actual",
-      "workSurface": "Superficie de trabajo",
-      "floorConditions": "Condiciones del suelo",
-      "operationType": "Tipo de operación",
-      "ramps": "Rampas",
-      "doorways": "Pasos/Puertas",
-      "restrictions": "Restricciones",
-      "yes": "Sí",
-      "no": "No",
-      "distBetweenRacks": "Distancia entre estanterías",
-      "distBetweenProducts": "Distancia entre productos",
-      "availableAisleWidth": "Ancho pasillo disponible",
-      "rackLevels": "Niveles de estanterías",
-      "maxRackHeight": "Altura máx. estantería",
-      "legalNamePlaceholder": "Nombre legal de la empresa",
-      "fullNamePlaceholder": "Nombre completo",
-      "emailPlaceholder": "correo@empresa.com",
-      "fiscalIdPlaceholder": "Identificación fiscal",
-      "websitePlaceholder": "https://www.empresa.com",
-      "distributorPlaceholder": "Nombre del distribuidor",
-      "distributorContactPlaceholder": "Email o teléfono de contacto",
-      "clientEndUserDataPlaceholder": "Información adicional sobre el cliente o proyecto..."
-    },
-    "selectDate": "Seleccionar fecha",
-    "clientData": {
-      "sections": {
-        "company": "Datos de la Empresa",
-        "contact": "Persona de Contacto",
+      "insuranceExpiry": "Vencimiento seguro",
+      "availability": "Disponibilidad",
+      "viewDetails": "Ver detalles",
+      "equipmentFound": "equipos encontrados",
+      "of": "de",
+      "machinesLabel": "máquinas",
+      "view": "Vista",
+      "viewCards": "Tarjetas",
+      "viewTable": "Tabla",
+      "dealer": "Distribuidor",
+      "errorLoading": "Error al cargar las máquinas",
+      "errorDescription": "Hubo un problema al obtener los datos de las máquinas. Por favor, inténtalo de nuevo más tarde.",
+      "filters": {
+        "all": "Todos",
+        "advancedFilters": "Filtros avanzados",
+        "clearFilters": "Limpiar filtros",
+        "searchPlaceholder": "Buscar por descripción, S/N o distribuidor...",
+        "status": "Estado",
+        "availability": "Disponibilidad",
         "location": "Ubicación",
-        "commercial": "Información Comercial"
+        "insurance": "Seguro",
+        "hoursRange": "Rango de horas",
+        "insured": "Asegurado",
+        "notInsured": "No asegurado",
+        "0-1000": "0 - 1,000 horas",
+        "1000-5000": "1,000 - 5,000 horas",
+        "5000-10000": "5,000 - 10,000 horas",
+        "10000+": "Más de 10,000 horas",
+        "activeFilters": "Filtros activos"
       },
-      "fields": {
-        "companyName": {
-          "label": "Razón Social",
-          "placeholder": "Nombre de la empresa"
-        },
-        "fiscalId": {
-          "label": "NIF",
-          "placeholder": "B12345678"
-        },
-        "website": {
-          "label": "Website",
-          "placeholder": "https://www.empresa.com"
-        },
-        "contactName": {
-          "label": "Nombre completo",
-          "placeholder": "Nombre y apellidos"
-        },
-        "email": {
-          "label": "Email",
-          "placeholder": "correo@empresa.com"
-        },
-        "address": {
-          "label": "Dirección",
-          "placeholder": "Calle, número, piso..."
-        },
-        "city": {
-          "label": "Localidad",
-          "placeholder": "Ciudad"
-        },
-        "postalCode": {
-          "label": "C. Postal",
-          "placeholder": "00000"
-        },
-        "province": {
-          "label": "Provincia",
-          "placeholder": "Provincia / Estado"
-        },
-        "country": {
-          "label": "País",
-          "placeholder": "País"
-        },
-        "distributor": {
-          "label": "Distribuidor",
-          "placeholder": "Nombre distribuidor"
-        },
-        "distributorContact": {
-          "label": "Contacto",
-          "placeholder": "Teléfono o email"
-        },
-        "closingDate": {
-          "label": "Fecha Cierre Estimada",
-          "placeholder": "Seleccionar fecha"
-        }
-      }
-    },
-    "detail": {
-      "title": "Formulario de análisis",
-      "clientData": "Datos del cliente",
-      "operationInfo": "Información de operación",
-      "operationDescription": "Descripción de la operación",
-      "applicationData": "Datos de la aplicación",
-      "equipmentData": "Datos del equipo",
-      "electricalEquipment": "Equipos eléctricos",
-      "loadDimensions": "Dimensiones de las cargas",
-      "containerInfo": "Información del contenedor",
-      "measurementsInfo": "Información de medidas",
-      "filesInfo": "Archivos adjuntos",
-      "productInfo": "Información del producto",
-      "notSpecified": "No especificado",
-      "notProvided": "No proporcionada",
-      "additionalInfo": "Información adicional",
-      "operationType": "Tipo de operación",
-      "containers": "Contenedores",
-      "specialLoad": "Carga especial",
-      "others": "Otros",
-      "attachedFiles": "Archivos adjuntos",
-      "noClientInfoProvided": "No se proporcionó información del cliente.",
-      "noElectricalInfoProvided": "No se proporcionó información sobre equipos eléctricos.",
-      "noAisleSpecifications": "No se han registrado especificaciones de pasillo.",
-      "aisleSpecifications": "Especificaciones del pasillo",
-      "aisleMeasurements": "Medidas y dimensiones registradas (en milímetros)",
-      "currentAisle": "Pasillo actual",
-      "currentAisleMeasurements": "Medidas y configuración del pasillo actual",
-      "rackType": "Tipo de estanterías",
-      "productDimensions": "Dimensiones de productos",
-      "liftingPoints": "Puntos de elevación",
-      "weightsAndHeight": "Pesos y altura",
-      "passageAreas": "Zonas de paso",
-      "floorConditions": "Condiciones del piso",
-      "flatFloor": "Piso plano",
-      "restrictions": "Restricciones",
-      "restrictionHeight": "Restricción de altura",
-      "restrictionWidth": "Restricción de anchura",
-      "additionalNotes": "Notas adicionales",
-      "containerSizes": "Tamaños de contenedores",
-      "size": "Tamaño",
-      "quantityPerWeek": "Cantidad/Semana",
-      "doubleStacking": "Doble apilamiento",
-      "individualContainers": "Contenedores individuales",
-      "handlesContainers": "Maneja Contenedores",
-      "handlesSpecialLoad": "Maneja Carga Especial",
-      "longestProduct": "Producto más largo",
-      "shortestProduct": "Producto más corto",
-      "widestProduct": "Producto más ancho",
-      "narrowestProduct": "Producto más estrecho",
-      "liftingPointLength": "Longitud",
-      "liftingPointWidth": "Ancho",
-      "maxWeightLongProduct": "Peso máx. prod. largo",
-      "maxWeightShortProduct": "Peso máx. prod. corto",
-      "tallestProduct": "Producto más alto",
-      "width": "Ancho",
-      "height": "Alto"
-    },
-    "sections": {
-      "address": "Dirección",
-      "distributor": "Distribuidor",
-      "commercial": "Información comercial",
-      "technical": "Información técnica",
-      "operational": "Información operacional",
-      "equipment": "Equipamiento",
-      "loads": "Cargas"
-    },
-    "formTypes": {
-      "css": "CSS Analysis",
-      "industrial": "Análisis Industrial",
-      "logistica": "Análisis Logística",
-      "straddleCarrier": "Análisis Straddle Carrier"
-    },
-    "css": {
-      "steps": {
-        "product": {
-          "title": "Producto",
-          "shortTitle": "Producto",
-          "description": "Descripción del proyecto"
-        },
-        "container": {
-          "title": "Contenedor",
-          "shortTitle": "Contenedor",
-          "description": "Tipo y operación"
-        },
-        "measurements": {
-          "title": "Medidas",
-          "shortTitle": "Medidas",
-          "description": "Dimensiones del contenedor"
-        },
-        "files": {
-          "title": "Archivos",
-          "shortTitle": "Archivos",
-          "description": "Fotos, videos y documentos"
-        }
+      "statuses": {
+        "available": "Disponible",
+        "inUse": "En uso",
+        "maintenance": "Mantenimiento",
+        "retired": "Retirado",
+        "operational": "Operativa"
       },
-      "fields": {
-        "productDescription": {
-          "label": "Descripción detallada del proyecto",
-          "placeholder": "Describa detalladamente el producto, incluyendo capacidades, dimensiones, frecuencia de uso..."
-        },
-        "closingDate": {
-          "label": "Fecha de cierre estimada",
-          "placeholder": "Seleccionar fecha"
-        },
-        "containerType": {
-          "label": "Tipo de contenedor",
-          "locationLabel": "Ubicación del contenedor",
-          "environmentLabel": "Ambiente de trabajo",
-          "selectBothLabel": "Selecciona uno o ambos"
-        },
-        "containersPerWeek": {
-          "label": "Contenedores por semana",
-          "shortLabel": "Contenedores/semana",
-          "placeholder": "Ej: 5"
-        },
-        "floorConditions": {
-          "label": "Condiciones del suelo",
-          "placeholder": "Compactado, rocoso..."
-        },
-        "measurements": {
-          "label": "Medidas del contenedor",
-          "customLabel": "Medida personalizada",
-          "specifyLabel": "Especificar medida",
-          "specifyPlaceholder": "Ej: 45 pies, 12m x 2.5m x 2.9m...",
-          "specifyDescription": "Indique las dimensiones exactas (largo x ancho x alto)",
-          "specifyAdditional": "Especificar dimensiones adicionales"
-        }
+      "availabilities": {
+        "available": "Disponible",
+        "notAvailable": "No disponible"
       },
-      "validation": {
-        "descriptionRequired": "Debe proporcionar una descripción detallada",
-        "typeRequired": "Selecciona al menos un tipo",
-        "measuresRequired": "Selecciona al menos una medida",
-        "emailInvalid": "Email inválido",
-        "urlInvalid": "URL inválida"
+      "insuranceStatuses": {
+        "valid": "Válido",
+        "expired": "Vencido",
+        "expiringSoon": "Por vencer"
       },
-      "navigation": {
-        "instructions": "Instrucciones",
-        "company": "Empresa",
-        "location": "Ubicación",
-        "commercial": "Comercial",
-        "product": "Producto",
-        "container": "Contenedor",
-        "measurements": "Medidas",
-        "files": "Archivos"
-      }
-    },
-    "industrial": {
-      "steps": {
-        "operation": {
-          "title": "Descripción operación",
-          "shortTitle": "Descripción",
-          "description": "Detalles de la operación"
-        },
-        "application": {
-          "title": "Datos aplicación",
-          "shortTitle": "Aplicación",
-          "description": "Información técnica"
-        },
-        "batteries": {
-          "title": "Baterías",
-          "shortTitle": "Baterías",
-          "description": "Especificaciones eléctricas"
-        },
-        "loads": {
-          "title": "Cargas",
-          "shortTitle": "Cargas",
-          "description": "Tabla de dimensiones"
-        },
-        "aisle": {
-          "title": "Especificaciones pasillo",
-          "shortTitle": "Pasillo",
-          "description": "Medidas del pasillo"
-        },
-        "files": {
-          "title": "Archivos adjuntos",
-          "shortTitle": "Archivos",
-          "description": "Fotos, videos y documentos"
-        }
+      "card": {
+        "details": "Detalles",
+        "options": "Opcionales",
+        "hours": "Horas",
+        "date": "Fecha",
+        "height": "Altura",
+        "documentation": "Documentación",
+        "history": "Historial",
+        "photos": "Fotos",
+        "traveller": "Traveller",
+        "ce": "CE"
       },
-      "fields": {
-        "operationNotes": {
-          "label": "Notas sobre la operación",
-          "placeholder": "Describe las condiciones y restricciones del área de trabajo...",
-          "required": "Notas sobre la operación son requeridas"
+      "table": {
+        "image": "Img",
+        "machine": "Máquina",
+        "availabilityShort": "Disp.",
+        "docs": "Docs"
+      },
+      "logistica": {
+        "steps": {
+          "operation": {
+            "title": "Descripción operación",
+            "shortTitle": "Descripción",
+            "description": "Detalles logísticos"
+          },
+          "application": {
+            "title": "Datos aplicación",
+            "shortTitle": "Aplicación",
+            "description": "Información técnica"
+          },
+          "batteries": {
+            "title": "Baterías",
+            "shortTitle": "Baterías",
+            "description": "Especificaciones eléctricas"
+          },
+          "loads": {
+            "title": "Cargas",
+            "shortTitle": "Cargas",
+            "description": "Tabla de dimensiones"
+          },
+          "aisle": {
+            "title": "Pasillo actual",
+            "shortTitle": "Pasillo",
+            "description": "Medidas del pasillo"
+          },
+          "files": {
+            "title": "Archivos adjuntos",
+            "shortTitle": "Archivos",
+            "description": "Fotos, videos y documentos"
+          }
         },
-        "closingDate": {
-          "label": "Fecha de cierre estimada",
-          "optional": "(opcional)",
-          "placeholder": "Seleccionar fecha"
-        },
-        "productDescription": {
-          "header": "Descripción del Producto",
-          "label": "Producto a manipular",
-          "placeholder": "Descripción del producto",
-          "required": "Descripción del producto es requerida"
-        },
-        "dimensionsAndWeights": {
-          "header": "Dimensiones y Pesos",
-          "lastLevelHeight": "Alt. últ. nivel",
-          "maxElevation": "Máx. elevación",
-          "maxHeightLoadWeight": "Peso máx. alt.",
-          "firstLevelLoadWeight": "Peso 1er niv.",
-          "areaWidth": "Ancho área",
-          "areaDepth": "Fondo área"
-        },
-        "operationAndPower": {
-          "header": "Operación y Alimentación",
-          "shifts": "Turnos",
-          "definitionDate": "Fecha definición",
-          "powerSource": "Alimentación"
-        },
-        "electrical": {
-          "header": "Especificaciones Eléctricas",
-          "notApplicable": {
-            "label": "No aplica",
-            "description": "Activa esta opción si las especificaciones eléctricas no son aplicables para esta visita.",
+        "fields": {
+          "operation": {
+            "notes": {
+              "label": "Notas de operación",
+              "placeholder": "Describa la operación..."
+            },
+            "ramps": {
+              "label": "¿Existen rampas?",
+              "placeholder": "Describa las rampas (% pendiente, etc)..."
+            },
+            "doors": {
+              "label": "¿Existen pasos de puertas?",
+              "placeholder": "Altura, ancho, cantidad..."
+            },
+            "restrictions": {
+              "label": "¿Otras restricciones de altura?",
+              "placeholder": "Vigas, tuberías, iluminación, rociadores..."
+            },
+            "maxHeight": {
+              "label": "Altura máxima nave"
+            },
+            "aisleWidth": {
+              "label": "Ancho pasillo actual"
+            },
+            "surface": {
+              "label": "Superficie de trabajo"
+            },
+            "floor": {
+              "label": "Condiciones del suelo (Interior/Exterior)",
+              "placeholder": "Describa el estado del suelo..."
+            },
+            "type": {
+              "label": "Tipo de operación",
+              "placeholder": "Describa el tipo de operación..."
+            },
+            "closingDate": {
+              "label": "Fecha de cierre"
+            }
+          },
+          "aisle": {
+            "header": "Pasillo Actual",
+            "distRacks": "Distancia entre estanterías",
+            "distProducts": "Distancia entre productos",
+            "widthAvailable": "Ancho pasillo disponible",
+            "rackType": "Tipo de estantería",
+            "rackLevel": "Nivel de estantería",
+            "maxRackHeight": "Altura máxima estantería"
+          },
+          "application": {
+            "productDescription": {
+              "label": "Producto a manipular",
+              "placeholder": "Descripción del producto"
+            },
+            "lastLevelHeight": {
+              "label": "Alt. últ. nivel"
+            },
+            "maxLiftHeight": {
+              "label": "Máx. elevación"
+            },
+            "maxLoadWeight": {
+              "label": "Peso máx. alt."
+            },
+            "firstLevelLoadWeight": {
+              "label": "Peso 1er niv."
+            },
+            "workAreaWidth": {
+              "label": "Ancho área"
+            },
+            "workAreaDepth": {
+              "label": "Fondo área"
+            },
+            "shifts": {
+              "label": "Turnos",
+              "placeholder": "1"
+            },
+            "definitionDate": {
+              "label": "Fecha definición"
+            },
+            "powerSource": {
+              "label": "Alimentación"
+            },
+            "validation": {
+              "operationNotesRequired": "Notas de operación son requeridas"
+            },
+            "headers": {
+              "productDescription": "Descripción del Producto",
+              "dimensionsAndWeights": "Dimensiones y Pesos",
+              "operationAndPower": "Operación y Alimentación"
+            }
+          },
+          "batteries": {
+            "notApplicable": "No aplica",
+            "notApplicableHint": "Activa esta opción si las especificaciones eléctricas no son aplicables para esta visita.",
+            "specifications": "Especificaciones Eléctricas",
+            "currentType": {
+              "label": "Tipo corriente"
+            },
+            "voltage": {
+              "label": "Voltaje"
+            },
+            "frequency": {
+              "label": "Frecuencia"
+            },
+            "amperage": {
+              "label": "Amperaje"
+            },
+            "temperature": {
+              "label": "Temp. ambiente"
+            },
+            "hours": {
+              "label": "Horas/día"
+            },
+            "notes": {
+              "label": "Observaciones (opcional)",
+              "placeholder": "Notas adicionales sobre los equipos eléctricos..."
+            },
             "alert": {
               "title": "Paso no aplicable",
               "description": "Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puedes continuar al siguiente paso."
             }
           },
-          "currentType": "Tipo corriente",
-          "voltage": "Voltaje",
-          "frequency": "Frecuencia",
-          "amperage": "Amperaje",
-          "ambientTemp": "Temp. ambiente",
-          "workHours": "Horas/día",
-          "notes": "Observaciones (opcional)",
-          "notesPlaceholder": "Notas adicionales sobre los equipos eléctricos..."
+          "loads": {
+            "title": "Dimensiones de Cargas",
+            "addButton": "Agregar",
+            "addFirstButton": "Agregar primera carga",
+            "emptyTitle": "No hay cargas agregadas",
+            "emptyDescription": "Agrega las dimensiones de las cargas que se manipularán",
+            "length": "Largo",
+            "depth": "Fondo",
+            "height": "Alto",
+            "weight": "Peso",
+            "product": "Producto",
+            "totalPercentage": "Total porcentaje:",
+            "percentageError": "Los porcentajes deben sumar exactamente 100%"
+          }
         },
-        "loads": {
-          "header": "Dimensiones de Cargas",
-          "add": "Agregar",
-          "addFirst": "Agregar primera carga",
-          "empty": "No hay cargas agregadas",
-          "productName": "Nombre del producto",
-          "length": "Largo",
-          "depth": "Fondo",
-          "height": "Alto",
-          "weight": "Peso",
-          "table": {
-            "product": "PRODUCTO",
-            "length": "LARGO",
-            "depth": "FONDO",
-            "height": "ALTO",
-            "weight": "PESO",
-            "percentage": "%"
+        "options": {
+          "operationType": {
+            "storage": "Almacenamiento",
+            "crossDocking": "Cross-docking",
+            "picking": "Picking",
+            "loadingUnloading": "Carga/Descarga",
+            "orderPrep": "Preparación de pedidos",
+            "mixed": "Mixto"
           },
-          "totalPercentage": "Total porcentaje",
-          "percentageError": "Los porcentajes deben sumar exactamente 100%"
+          "powerSource": {
+            "electric": "Eléctrico",
+            "diesel": "Diésel",
+            "gas": "GLP"
+          },
+          "currentType": {
+            "monophasic": "Monofásica",
+            "triphasic": "Trifásica"
+          },
+          "rackType": {
+            "conventional": "Convencional",
+            "driveIn": "Drive-in",
+            "pushBack": "Push-back",
+            "dynamic": "Dinámica",
+            "cantilever": "Cantilever",
+            "mobile": "Móvil",
+            "other": "Otra"
+          }
         },
-        "aisle": {
-          "header": "Especificaciones del Pasillo",
-          "guideRails": "+ Rieles guía",
-          "guideRailsLabel": "+ Rieles guía",
-          "productDepth": "Profundidad producto",
-          "widthBetweenProducts": "Ancho entre productos",
-          "distBetweenRacks": "Dist. entre estanterías",
-          "rackUsefulDepth": "Fondo útil estantería",
-          "rackBaseHeight": "Altura base estantería",
-          "distUnderGuideRails": "Dist. bajo rieles guía",
-          "heightFloorFirstArm": "Altura suelo→1er brazo",
-          "floorToFirstArm": "Altura suelo→1er brazo",
-          "distBetweenGuideRails": "Dist. entre rieles guía",
-          "clearHeightToGuide": "Altura libre→guía",
-          "columnThickness": "Grosor pilar/columna",
-          "lastLevelHeight": "Altura último nivel",
-          "maxInteriorHeight": "Altura máx. interior"
+        "validation": {
+          "operationNotesRequired": "Notas de operación son requeridas",
+          "productDescriptionRequired": "Descripción del producto es requerida",
+          "positiveValueRequired": "Debe ser un valor positivo",
+          "emailInvalid": "Email inválido",
+          "urlInvalid": "URL inválida",
+          "min1Shift": "Mínimo 1 turno",
+          "loadRequired": "Debe agregar al menos una carga",
+          "percentageSumError": "Los porcentajes deben sumar 100% (actual: {{current}}%)",
+          "electricalRequired": "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",
+          "productRequired": "Producto es requerido",
+          "positiveRequired": "Debe ser positivo",
+          "min0": "Mínimo 0%",
+          "max100": "Máximo 100%"
         }
-      },
-      "validation": {
-        "descriptionRequired": "Debe proporcionar una descripción detallada",
-        "typeRequired": "Selecciona al menos un tipo",
-        "measuresRequired": "Selecciona al menos una medida",
-        "emailInvalid": "Email inválido",
-        "urlInvalid": "URL inválida",
-        "productRequired": "Producto es requerido",
-        "positiveRequired": "Debe ser positivo",
-        "min0": "Mínimo 0%",
-        "max100": "Máximo 100%",
-        "operationNotesRequired": "Notas sobre la operación son requeridas",
-        "productDescriptionRequired": "Descripción del producto es requerida",
-        "positiveValueRequired": "Debe ser un valor positivo",
-        "min1Shift": "Mínimo 1 turno",
-        "electricalRequired": "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",
-        "percentageSumError": "Los porcentajes deben sumar 100% (actual: {{current}}%)",
-        "loadRequired": "Debe agregar al menos una carga"
-      },
-      "navigation": {
-        "operation": "Operación",
-        "application": "Aplicación",
-        "batteries": "Baterías",
-        "loads": "Cargas",
-        "aisle": "Pasillo",
-        "files": "Archivos"
       }
     },
-    "logistica": {
-      "steps": {
-        "operation": {
-          "title": "Descripción operación",
-          "shortTitle": "Operación",
-          "description": "Detalles de la operación"
+    "users": {
+      "title": "Usuarios",
+      "description": "Gestiona los usuarios del sistema",
+      "createUser": "Crear usuario",
+      "createUserDescription": "Crear un nuevo usuario",
+      "editUser": "Editar usuario",
+      "editUserDescription": "Editar usuario",
+      "deleteUser": "Eliminar usuario",
+      "deleteMultiple": "Eliminar seleccionados",
+      "noUsersFound": "No se encontraron usuarios",
+      "deleteConfirmTitle": "¿Estás seguro?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer. Se eliminará permanentemente al usuario y sus datos asociados.",
+      "deleteSuccess": "Usuario eliminado exitosamente",
+      "deleteError": "Error al eliminar el usuario",
+      "sessionRevoked": "Sesión revocada exitosamente",
+      "usersLoaded": "{{count}} usuarios cargados",
+      "fetchError": "Error al cargar usuarios",
+      "userCreated": "Usuario creado exitosamente",
+      "errorTitle": "Ha ocurrido un error",
+      "errorDescription": "No se pudieron cargar los usuarios. Por favor, intenta nuevamente.",
+      "retry": "Reintentar",
+      "deleteUserTitle": "¿Eliminar usuario?",
+      "deleteUserDescription": "Estás a punto de eliminar a {{name}}. Esta acción no se puede deshacer.",
+      "deleteMultipleTitle": "¿Eliminar usuarios seleccionados?",
+      "deleteMultipleDescription": "Estás a punto de eliminar {{count}} usuario(s). Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "deleting": "Eliminando...",
+      "selectAll": "Seleccionar todos",
+      "selectRow": "Seleccionar fila",
+      "selectUser": "Seleccionar {{name}}",
+      "openMenu": "Abrir menú",
+      "noUsersWithFilters": "No se encontraron usuarios con los filtros aplicados",
+      "noUsersInSystem": "No se encontraron usuarios en el sistema",
+      "deleteMultipleSuccess": "Usuarios eliminados exitosamente",
+      "roles": {
+        "admin": "Administrador",
+        "seller": "Vendedor",
+        "dealer": "Distribuidor"
+      },
+      "providers": {
+        "credentials": "Credenciales",
+        "zoho": "Zoho"
+      },
+      "card": {
+        "role": "Rol",
+        "status": "Estado",
+        "auth": "Auth",
+        "lastLogin": "Últ. Login",
+        "country": "País",
+        "created": "Creado",
+        "never": "Nunca",
+        "unspecified": "No especificado",
+        "noName": "Sin nombre",
+        "zohoId": "Zoho ID",
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "actions": {
+        "title": "Acciones",
+        "edit": "Editar",
+        "revokeSession": "Revocar Sesión",
+        "delete": "Eliminar"
+      },
+      "filters": {
+        "search": "Búsqueda",
+        "searchPlaceholder": "Buscar...",
+        "role": "Rol",
+        "allRoles": "Todos los roles",
+        "status": "Estado",
+        "allStatuses": "Todos los estados",
+        "all": "Todos",
+        "active": "Activos",
+        "inactive": "Inactivos",
+        "clear": "Limpiar filtros"
+      },
+      "form": {
+        "tabs": {
+          "personal": "Personal",
+          "security": "Seguridad",
+          "config": "Config",
+          "sellers": "Vendedores"
         },
-        "application": {
-          "title": "Datos aplicación",
-          "shortTitle": "Aplicación",
-          "description": "Información técnica"
-        },
-        "batteries": {
-          "title": "Baterías",
-          "shortTitle": "Baterías",
-          "description": "Especificaciones eléctricas"
-        },
-        "loads": {
-          "title": "Cargas",
-          "shortTitle": "Cargas",
-          "description": "Tabla de dimensiones"
-        },
-        "aisle": {
-          "title": "Pasillo actual",
-          "shortTitle": "Pasillo",
-          "description": "Medidas del pasillo"
-        },
-        "files": {
-          "title": "Archivos adjuntos",
-          "shortTitle": "Archivos",
-          "description": "Fotos, videos y documentos"
+        "personal": "Personal",
+        "security": "Seguridad",
+        "config": "Config",
+        "fullNameLabel": "Nombre completo",
+        "fullNamePlaceholder": "Ej: Juan Pérez García",
+        "emailLabel": "Correo electrónico",
+        "emailPlaceholder": "usuario@combilift.es",
+        "passwordLabel": "Contraseña",
+        "confirmPasswordLabel": "Confirmar contraseña",
+        "changePassword": "Cambiar contraseña",
+        "newPassword": "Nueva contraseña",
+        "leaveEmpty": "Dejar vacío para no cambiar",
+        "roleLabel": "Rol del usuario",
+        "rolePlaceholder": "Selecciona un rol",
+        "countryLabel": "País",
+        "countryPlaceholder": "Ej: España",
+        "accountState": "Estado de la cuenta",
+        "account": "Cuenta",
+        "inactiveDescription": "Los usuarios con cuenta inactiva no podrán acceder al sistema.",
+        "clear": "Limpiar",
+        "confirm": "Confirmar",
+        "save": "Guardar",
+        "noChanges": "No hay cambios para actualizar",
+        "updateSuccess": "Usuario actualizado exitosamente",
+        "updateError": "Hubo un problema al actualizar el usuario. Por favor, intenta de nuevo.",
+        "createError": "Error al crear el usuario. Por favor, intenta de nuevo.",
+        "sellers": {
+          "title": "Vendedores asignados",
+          "description": "Selecciona los vendedores que reportarán a este dealer",
+          "search": "Buscar vendedor...",
+          "noSellers": "No hay vendedores disponibles",
+          "loading": "Cargando vendedores...",
+          "selected": "{{count}} vendedor(es) seleccionado(s)",
+          "selectAll": "Seleccionar todos",
+          "deselectAll": "Deseleccionar todos",
+          "errorLoading": "Error al cargar vendedores"
+        }
+      },
+      "table": {
+        "user": "Usuario",
+        "created": "Creación",
+        "account": "Cuenta",
+        "actions": "Acciones",
+        "role": "Rol",
+        "status": "Estado",
+        "country": "País",
+        "provider": "Proveedor",
+        "lastLogin": "Últ. login",
+        "never": "Nunca",
+        "unspecified": "No especificado",
+        "noName": "Sin nombre",
+        "zohoId": "Zoho ID",
+        "active": "Activo",
+        "inactive": "Inactivo"
+      }
+    },
+    "profile": {
+      "title": "Mi perfil",
+      "personalInfo": "Información personal",
+      "accountInfo": "Información de cuenta",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "role": "Rol",
+      "country": "País",
+      "provider": "Proveedor",
+      "memberSince": "Miembro desde",
+      "lastLogin": "Últ. login",
+      "notAvailable": "No disponible",
+      "tabs": {
+        "personal": "Personal",
+        "account": "Cuenta",
+        "security": "Seguridad",
+        "notifications": "Notificaciones"
+      },
+      "personal": {
+        "title": "Información personal",
+        "description": "Actualiza tus datos personales y de perfil.",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "phone": "Teléfono",
+        "phonePlaceholder": "+1 (555) 123-4567",
+        "jobTitle": "Cargo",
+        "jobTitlePlaceholder": "Ej: Gerente de Ventas",
+        "company": "Empresa",
+        "bio": "Biografía",
+        "bioPlaceholder": "Cuéntanos sobre ti...",
+        "location": "Ubicación",
+        "locationPlaceholder": "Ej: Madrid, España"
+      },
+      "account": {
+        "title": "Configuración de cuenta",
+        "description": "Administra tus preferencias de cuenta y suscripción.",
+        "status": "Estado de cuenta",
+        "statusActive": "Tu cuenta está actualmente activa",
+        "active": "Activa",
+        "inactive": "Inactiva",
+        "subscription": "Plan de suscripción",
+        "subscriptionPlan": "Plan Pro - $29/mes",
+        "manageSubscription": "Administrar suscripción",
+        "visibility": "Visibilidad de cuenta",
+        "visibilityDescription": "Hacer tu perfil visible para otros usuarios",
+        "dataExport": "Exportar datos",
+        "dataExportDescription": "Descargar una copia de tus datos",
+        "exportData": "Exportar datos"
+      },
+      "security": {
+        "title": "Configuración de seguridad",
+        "description": "Administra la seguridad y autenticación de tu cuenta.",
+        "password": "Contraseña",
+        "passwordLastChanged": "Cambiada hace 3 meses",
+        "changePassword": "Cambiar contraseña",
+        "twoFactor": "Autenticación de dos factores",
+        "twoFactorDescription": "Añade una capa extra de seguridad a tu cuenta",
+        "enabled": "Habilitado",
+        "disabled": "Deshabilitado",
+        "configure": "Configurar",
+        "loginNotifications": "Notificaciones de inicio de sesión",
+        "loginNotificationsDescription": "Recibe notificaciones cuando alguien inicie sesión en tu cuenta",
+        "activeSessions": "Sesiones activas",
+        "activeSessionsDescription": "Administra los dispositivos conectados a tu cuenta",
+        "viewSessions": "Ver sesiones"
+      },
+      "notifications": {
+        "title": "Preferencias de notificaciones",
+        "description": "Elige qué notificaciones deseas recibir.",
+        "email": "Notificaciones por correo",
+        "emailDescription": "Recibir notificaciones por correo electrónico",
+        "push": "Notificaciones push",
+        "pushDescription": "Recibir notificaciones push en tu navegador",
+        "marketing": "Correos de marketing",
+        "marketingDescription": "Recibir correos sobre nuevas funciones y actualizaciones",
+        "weeklySummary": "Resumen semanal",
+        "weeklySummaryDescription": "Recibir un resumen semanal de tu actividad",
+        "securityAlerts": "Alertas de seguridad",
+        "securityAlertsDescription": "Notificaciones de seguridad importantes (siempre habilitadas)"
+      },
+      "danger": {
+        "title": "Zona de peligro",
+        "description": "Acciones irreversibles y destructivas",
+        "deleteAccount": "Eliminar cuenta",
+        "deleteAccountDescription": "Eliminar permanentemente tu cuenta y todos los datos"
+      }
+    },
+    "forms": {
+      "selectOption": "Seleccionar opción",
+      "selectFile": "Seleccionar archivo",
+      "uploadFile": "Subir archivo",
+      "dragDropFiles": "Arrastra y suelta archivos aquí",
+      "or": "o",
+      "browse": "Examinar",
+      "filesSelected": "archivos seleccionados",
+      "removeFile": "Eliminar archivo",
+      "required": "Requerido",
+      "optional": "Opcional",
+      "saving": "Guardando...",
+      "processing": "Procesando...",
+      "files": {
+        "takePhoto": "Tomar foto",
+        "recordVideo": "Grabar video",
+        "browse": "Explorador",
+        "uploading": "Subiendo archivos...",
+        "dropHere": "¡Suelta los archivos aquí!",
+        "dragDrop": "Arrastra y suelta archivos aquí",
+        "orClick": "o haz clic para seleccionar",
+        "uploadedFiles": "Archivos subidos",
+        "noFiles": "Aún no has subido ningún archivo",
+        "viewFile": "Ver archivo",
+        "deleteFile": "Eliminar",
+        "limits": {
+          "images": "Imágenes 10MB",
+          "videos": "Videos 100MB",
+          "docs": "Docs 25MB",
+          "max": "Máx. {{max}} archivos"
         }
       },
       "fields": {
-        "operation": {
-          "closingDate": {
-            "label": "Fecha de cierre"
-          },
-          "notes": {
-            "label": "Notas de operación",
-            "placeholder": "Describa la operación..."
-          },
-          "ramps": {
-            "label": "¿Existen rampas?",
-            "placeholder": "Describa las rampas (% pendiente, etc)..."
-          },
-          "doors": {
-            "label": "¿Existen pasos de puertas?",
-            "placeholder": "Altura, ancho, cantidad..."
-          },
-          "restrictions": {
-            "label": "¿Otras restricciones de altura?",
-            "placeholder": "Vigas, tuberías, iluminación, rociadores..."
-          },
-          "maxHeight": {
-            "label": "Altura máxima nave"
-          },
-          "aisleWidth": {
-            "label": "Ancho pasillo actual"
-          },
-          "surface": {
-            "label": "Superficie de trabajo"
-          },
-          "floor": {
-            "label": "Condiciones del suelo (Interior/Exterior)",
-            "placeholder": "Describa el estado del suelo..."
-          },
-          "type": {
-            "label": "Tipo de operación"
-          }
-        },
-        "application": {
-          "headers": {
-            "productDescription": "Descripción del Producto",
-            "dimensionsAndWeights": "Alturas, Pesos y Área",
-            "operationAndPower": "Operación y Alimentación"
-          },
-          "productDescription": {
-            "label": "Producto a manipular",
-            "placeholder": "Descripción del producto"
-          },
-          "lastLevelHeight": {
-            "label": "Alt. últ. nivel"
-          },
-          "maxLiftHeight": {
-            "label": "Máx. elevación"
-          },
-          "maxLoadWeight": {
-            "label": "Peso máx. alt."
-          },
-          "firstLevelLoadWeight": {
-            "label": "Peso 1er nivel"
-          },
-          "workAreaWidth": {
-            "label": "Ancho área"
-          },
-          "workAreaDepth": {
-            "label": "Fondo área"
-          },
-          "shifts": {
-            "label": "Turnos",
-            "placeholder": "1"
-          },
-          "definitionDate": {
-            "label": "Fecha definición"
-          },
-          "powerSource": {
-            "label": "Alimentación"
-          }
-        },
-        "operationNotes": {
-          "label": "Notas sobre la operación",
-          "placeholder": "Describe las condiciones y restricciones del área de trabajo..."
-        },
-        "operationType": "Tipo de operación",
-        "hasRamps": {
-          "label": "Rampas",
-          "yes": "Sí",
-          "no": "No",
-          "notes": "Notas sobre rampas"
-        },
-        "hasDoorways": {
-          "label": "Pasos/Puertas",
-          "notes": "Notas sobre pasos/puertas"
-        },
-        "hasRestrictions": {
-          "label": "Restricciones",
-          "notes": "Notas sobre restricciones"
-        },
+        "legalName": "Razón social",
+        "contactPerson": "Persona de contacto",
+        "email": "Correo electrónico",
+        "website": "Sitio web",
+        "fiscalId": "ID Fiscal / CIF",
+        "address": "Dirección",
+        "city": "Ciudad",
+        "state": "Estado / Provincia",
+        "country": "País",
+        "postalCode": "Código postal",
+        "distributor": "Distribuidor",
+        "distributorContact": "Contacto del distribuidor",
+        "closingDate": "Fecha de cierre estimada",
+        "estimatedDefinitionDate": "Fecha estimada de definición",
+        "clientEndUserData": "Datos del cliente final",
+        "containerType": "Tipo de contenedor",
+        "groundConditions": "Condiciones del suelo",
+        "selectedMeasurements": "Medidas seleccionadas",
+        "noClientInfo": "No hay información del cliente",
+        "notProvided": "No proporcionado",
+        "productDescription": "Descripción del producto",
+        "lastShelfLevel": "Último nivel de estantería",
+        "maxLiftHeight": "Altura máxima de elevación",
+        "maxHeightLoad": "Carga a altura máxima",
+        "firstLevelLoad": "Carga en primer nivel",
+        "workAreaWidth": "Ancho del área de trabajo",
+        "workAreaDepth": "Profundidad del área de trabajo",
+        "workShifts": "Turnos de trabajo",
+        "desiredPower": "Alimentación deseada",
+        "currentType": "Tipo de corriente",
+        "voltage": "Voltaje",
+        "frequency": "Frecuencia",
+        "amperage": "Amperaje",
+        "ambientTemperature": "Temperatura ambiente",
+        "workHoursPerDay": "Horas trabajo/día",
+        "availablePower": "Potencia disponible",
+        "chargePointDistance": "Distancia al punto de carga",
+        "loadNumber": "Carga",
+        "length": "Largo",
+        "depth": "Fondo",
+        "width": "Ancho",
+        "height": "Alto",
+        "weight": "Peso",
+        "floorType": "Tipo de suelo",
+        "aisleWidth": "Ancho del pasillo",
+        "maxStackHeight": "Altura máxima de apilado",
+        "loadCapacity": "Capacidad de carga",
+        "operatingEnvironment": "Ambiente de operación",
+        "temperatureRange": "Rango de temperatura",
+        "specialRequirements": "Requisitos especiales",
+        "notes": "Notas",
+        "additionalInfo": "Información adicional",
         "maxBuildingHeight": "Altura máxima nave",
         "currentAisleWidth": "Ancho pasillo actual",
         "workSurface": "Superficie de trabajo",
         "floorConditions": "Condiciones del suelo",
-        "productDescription": {
-          "header": "Descripción del Producto",
-          "label": "Producto a manipular",
-          "placeholder": "Descripción del producto"
+        "operationType": "Tipo de operación",
+        "ramps": "Rampas",
+        "doorways": "Pasos/Puertas",
+        "restrictions": "Restricciones",
+        "yes": "Sí",
+        "no": "No",
+        "distBetweenRacks": "Distancia entre estanterías",
+        "distBetweenProducts": "Distancia entre productos",
+        "availableAisleWidth": "Ancho pasillo disponible",
+        "rackLevels": "Niveles de estanterías",
+        "maxRackHeight": "Altura máx. estantería",
+        "legalNamePlaceholder": "Nombre legal de la empresa",
+        "fullNamePlaceholder": "Nombre completo",
+        "emailPlaceholder": "correo@empresa.com",
+        "fiscalIdPlaceholder": "Identificación fiscal",
+        "websitePlaceholder": "https://www.empresa.com",
+        "distributorPlaceholder": "Nombre del distribuidor",
+        "distributorContactPlaceholder": "Email o teléfono de contacto",
+        "clientEndUserDataPlaceholder": "Información adicional sobre el cliente o proyecto..."
+      },
+      "selectDate": "Seleccionar fecha",
+      "clientData": {
+        "sections": {
+          "company": "Datos de la Empresa",
+          "contact": "Persona de Contacto",
+          "location": "Ubicación",
+          "commercial": "Información Comercial"
         },
-        "dimensionsAndWeights": {
-          "header": "Dimensiones y Pesos",
-          "lastLevelHeight": "Alt. últ. nivel",
-          "maxElevation": "Máx. elevación",
-          "maxHeightLoadWeight": "Peso máx. alt.",
-          "firstLevelLoadWeight": "Peso 1er niv.",
-          "areaWidth": "Ancho área",
-          "areaDepth": "Fondo área"
-        },
-        "operationAndPower": {
-          "header": "Operación y Alimentación",
-          "shifts": "Turnos",
-          "definitionDate": "Fecha definición",
-          "powerSource": "Alimentación"
-        },
-        "electrical": {
-          "header": "Especificaciones Eléctricas",
-          "notApplicable": {
-            "label": "No aplica",
-            "description": "Activa esta opción si las especificaciones eléctricas no son aplicables.",
-            "alert": {
-              "title": "Paso no aplicable",
-              "description": "Este paso solo es necesario cuando la alimentación deseada es eléctrica."
-            }
+        "fields": {
+          "companyName": {
+            "label": "Razón Social",
+            "placeholder": "Nombre de la empresa"
           },
-          "currentType": "Tipo corriente",
-          "voltage": "Voltaje",
-          "frequency": "Frecuencia",
-          "amperage": "Amperaje",
-          "ambientTemp": "Temp. ambiente",
-          "workHours": "Horas/día",
-          "notes": "Observaciones (opcional)",
-          "notesPlaceholder": "Notas adicionales..."
-        },
-        "loads": {
-          "header": "Dimensiones de Cargas",
-          "add": "Agregar",
-          "addFirst": "Agregar primera carga",
-          "empty": "No hay cargas agregadas",
-          "productName": "Nombre del producto",
-          "productPlaceholder": "Nombre del producto",
-          "length": "Largo",
-          "depth": "Fondo",
-          "height": "Alto",
-          "weight": "Peso",
-          "percentage": "%",
-          "totalPercentage": "Total porcentaje:",
-          "percentageError": "Los porcentajes deben sumar exactamente 100%"
-        },
-        "aisle": {
-          "header": "Pasillo Actual",
-          "distancesHeader": "Distancias del Pasillo",
-          "shelfInfoHeader": "Información de Estanterías",
-          "shelfType": "Tipo de estanterías",
-          "productDepth": "Profundidad producto",
-          "widthBetweenProducts": "Ancho entre productos",
-          "distBetweenRacks": "Dist. entre estanterías",
-          "rackUsefulDepth": "Fondo útil estantería",
-          "rackBaseHeight": "Altura base estantería"
-        },
-        "electricEquipment": {
-          "header": "Especificaciones Eléctricas",
-          "notApplicable": "Paso no aplicable",
-          "notApplicableDescription": "Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puedes continuar al siguiente paso.",
-          "notApplicableToggle": "No aplica",
-          "notApplicableToggleDescription": "Activa esta opción si las especificaciones eléctricas no son aplicables para esta visita.",
-          "notesLabel": "Observaciones (opcional)",
-          "notesPlaceholder": "Notas adicionales sobre los equipos eléctricos..."
+          "fiscalId": {
+            "label": "NIF",
+            "placeholder": "B12345678"
+          },
+          "website": {
+            "label": "Website",
+            "placeholder": "https://www.empresa.com"
+          },
+          "contactName": {
+            "label": "Nombre completo",
+            "placeholder": "Nombre y apellidos"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "correo@empresa.com"
+          },
+          "address": {
+            "label": "Dirección",
+            "placeholder": "Calle, número, piso..."
+          },
+          "city": {
+            "label": "Localidad",
+            "placeholder": "Ciudad"
+          },
+          "postalCode": {
+            "label": "C. Postal",
+            "placeholder": "00000"
+          },
+          "province": {
+            "label": "Provincia",
+            "placeholder": "Provincia / Estado"
+          },
+          "country": {
+            "label": "País",
+            "placeholder": "País"
+          },
+          "distributor": {
+            "label": "Distribuidor",
+            "placeholder": "Nombre distribuidor"
+          },
+          "distributorContact": {
+            "label": "Contacto",
+            "placeholder": "Teléfono o email"
+          },
+          "closingDate": {
+            "label": "Fecha Cierre Estimada",
+            "placeholder": "Seleccionar fecha"
+          }
         }
       },
-      "options": {
-        "operationType": {
-          "storage": "Almacenamiento",
-          "crossDocking": "Cross-docking",
-          "picking": "Picking",
-          "loadingUnloading": "Carga/Descarga",
-          "orderPrep": "Preparación de pedidos",
-          "mixed": "Mixto"
-        },
-        "powerSource": {
-          "electric": "Eléctrico",
-          "diesel": "Diésel",
-          "gas": "GLP"
-        },
-        "currentType": {
-          "monophasic": "Monofásica",
-          "triphasic": "Trifásica"
-        }
+      "detail": {
+        "title": "Formulario de análisis",
+        "clientData": "Datos del cliente",
+        "operationInfo": "Información de operación",
+        "operationDescription": "Descripción de la operación",
+        "applicationData": "Datos de la aplicación",
+        "equipmentData": "Datos del equipo",
+        "electricalEquipment": "Equipos eléctricos",
+        "loadDimensions": "Dimensiones de las cargas",
+        "containerInfo": "Información del contenedor",
+        "measurementsInfo": "Información de medidas",
+        "filesInfo": "Archivos adjuntos",
+        "productInfo": "Información del producto",
+        "notSpecified": "No especificado",
+        "notProvided": "No proporcionada",
+        "additionalInfo": "Información adicional",
+        "operationType": "Tipo de operación",
+        "containers": "Contenedores",
+        "specialLoad": "Carga especial",
+        "others": "Otros",
+        "attachedFiles": "Archivos adjuntos",
+        "noClientInfoProvided": "No se proporcionó información del cliente.",
+        "noElectricalInfoProvided": "No se proporcionó información sobre equipos eléctricos.",
+        "noAisleSpecifications": "No se han registrado especificaciones de pasillo.",
+        "aisleSpecifications": "Especificaciones del pasillo",
+        "aisleMeasurements": "Medidas y dimensiones registradas (en milímetros)",
+        "currentAisle": "Pasillo actual",
+        "currentAisleMeasurements": "Medidas y configuración del pasillo actual",
+        "rackType": "Tipo de estanterías",
+        "productDimensions": "Dimensiones de productos",
+        "liftingPoints": "Puntos de elevación",
+        "weightsAndHeight": "Pesos y altura",
+        "passageAreas": "Zonas de paso",
+        "floorConditions": "Condiciones del piso",
+        "flatFloor": "Piso plano",
+        "restrictions": "Restricciones",
+        "restrictionHeight": "Restricción de altura",
+        "restrictionWidth": "Restricción de anchura",
+        "additionalNotes": "Notas adicionales",
+        "containerSizes": "Tamaños de contenedores",
+        "size": "Tamaño",
+        "quantityPerWeek": "Cantidad/Semana",
+        "doubleStacking": "Doble apilamiento",
+        "individualContainers": "Contenedores individuales",
+        "handlesContainers": "Maneja Contenedores",
+        "handlesSpecialLoad": "Maneja Carga Especial",
+        "longestProduct": "Producto más largo",
+        "shortestProduct": "Producto más corto",
+        "widestProduct": "Producto más ancho",
+        "narrowestProduct": "Producto más estrecho",
+        "liftingPointLength": "Longitud",
+        "liftingPointWidth": "Ancho",
+        "maxWeightLongProduct": "Peso máx. prod. largo",
+        "maxWeightShortProduct": "Peso máx. prod. corto",
+        "tallestProduct": "Producto más alto",
+        "width": "Ancho",
+        "height": "Alto"
       },
-      "validation": {
-        "descriptionRequired": "Debe proporcionar una descripción detallada",
-        "typeRequired": "Selecciona al menos un tipo",
-        "measuresRequired": "Selecciona al menos una medida",
-        "emailInvalid": "Email inválido",
-        "urlInvalid": "URL inválida",
-        "productRequired": "Producto es requerido",
-        "positiveRequired": "Debe ser positivo",
-        "min0": "Mínimo 0%",
-        "max100": "Máximo 100%",
-        "operationNotesRequired": "Notas sobre la operación son requeridas",
-        "productDescriptionRequired": "Descripción del producto es requerida",
-        "positiveValueRequired": "Debe ser un valor positivo",
-        "min1Shift": "Mínimo 1 turno",
-        "electricalRequired": "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",
-        "percentageSumError": "Los porcentajes deben sumar 100% (actual: {{current}}%)",
-        "loadRequired": "Debe agregar al menos una carga"
+      "sections": {
+        "address": "Dirección",
+        "distributor": "Distribuidor",
+        "commercial": "Información comercial",
+        "technical": "Información técnica",
+        "operational": "Información operacional",
+        "equipment": "Equipamiento",
+        "loads": "Cargas"
       },
-      "navigation": {
-        "operation": "Operación",
-        "application": "Aplicación",
-        "batteries": "Baterías",
-        "loads": "Cargas",
-        "aisle": "Pasillo",
-        "files": "Archivos"
-      }
-    },
-    "straddleCarrier": {
-      "steps": {
-        "instructions": {
-          "title": "Instrucciones",
-          "shortTitle": "Instrucciones",
-          "description": "Detalles de las cargas"
-        },
-        "containers": {
-          "title": "Contenedores",
-          "shortTitle": "Contenedores",
-          "description": "Cuadro 1 - Contenedores"
-        },
-        "specialLoad": {
-          "title": "Carga especial",
-          "shortTitle": "Carg. Especial",
-          "description": "Cuadro 2 - Dimensiones"
-        },
-        "others": {
-          "title": "Otros",
-          "shortTitle": "Otros",
-          "description": "Condiciones adicionales"
-        },
-        "files": {
-          "title": "Archivos adjuntos",
-          "shortTitle": "Archivos",
-          "description": "Fotos, videos y documentos"
-        }
+      "formTypes": {
+        "css": "CSS Analysis",
+        "industrial": "Análisis Industrial",
+        "logistica": "Análisis Logística",
+        "straddleCarrier": "Análisis Straddle Carrier"
       },
-      "fields": {
-        "closingDate": {
-          "label": "Fecha estimada de cierre",
-          "placeholder": "Seleccionar fecha"
-        },
-        "instructions": {
-          "title": "Instrucciones",
-          "step1": "Complete cuadro 1 si maneja contenedores",
-          "step2": "Complete cuadro 2 si es carga especial",
-          "step3": "Complete ambos si trabaja ambos tipos"
-        },
-        "handlesContainers": {
-          "label": "Contenedores",
-          "description": "Cuadro 1: Contenedores estándar",
-          "question": "¿Qué tipo de carga maneja el cliente?",
-          "warning": "Seleccione al menos una opción para continuar.",
-          "stepsToComplete": "Pasos a completar:"
-        },
-        "handlesSpecialLoad": {
-          "label": "Carga especial",
-          "description": "Cuadro 2: Dimensiones específicas"
-        },
-        "selectAtLeastOne": "Selecciona al menos una opción",
-        "notApplicable": {
-          "title": "Paso no aplicable",
-          "containersDescription": "Este paso solo es necesario cuando el cliente maneja contenedores. Puedes continuar al siguiente paso.",
-          "specialLoadDescription": "Este paso solo es necesario cuando el cliente maneja carga especial. Puedes continuar al siguiente paso."
-        },
-        "containers": {
-          "header": "Cuadro 1 - Contenedores",
-          "individualHandling": {
-            "label": "Manejo individual",
-            "description": "Contenedores de forma individual"
+      "css": {
+        "steps": {
+          "product": {
+            "title": "Producto",
+            "shortTitle": "Producto",
+            "description": "Descripción del proyecto"
           },
-          "doubleStacking": {
-            "label": "Doble apilamiento",
-            "description": "Apilar dos contenedores"
+          "container": {
+            "title": "Contenedor",
+            "shortTitle": "Contenedor",
+            "description": "Tipo y operación"
           },
-          "quantityPerWeek": "Cant/semana",
-          "maxWeight": {
-            "label": "Peso máximo a manipular"
+          "measurements": {
+            "title": "Medidas",
+            "shortTitle": "Medidas",
+            "description": "Dimensiones del contenedor"
           },
-          "additionalInfo": {
-            "placeholder": "Añada cualquier información adicional sobre los contenedores..."
+          "files": {
+            "title": "Archivos",
+            "shortTitle": "Archivos",
+            "description": "Fotos, videos y documentos"
           }
         },
-        "specialLoad": {
-          "header": "Cuadro 2 - Carga Especial",
-          "productLength": {
-            "title": "Longitud de Productos",
-            "longest": "Más largo",
-            "shortest": "Más corto"
+        "fields": {
+          "productDescription": {
+            "label": "Descripción detallada del proyecto",
+            "placeholder": "Describa detalladamente el producto, incluyendo capacidades, dimensiones, frecuencia de uso..."
           },
-          "productWidth": {
-            "title": "Ancho de Productos",
-            "widest": "Más ancho",
-            "narrowest": "Más estrecho"
+          "closingDate": {
+            "label": "Fecha de cierre estimada",
+            "placeholder": "Seleccionar fecha"
           },
-          "heightAndLifting": {
-            "title": "Altura y Puntos de Elevación",
-            "tallestProduct": "Producto más alto",
-            "liftingLength": "Elev. longitud",
-            "liftingWidth": "Elev. ancho"
+          "containerType": {
+            "label": "Tipo de contenedor",
+            "locationLabel": "Ubicación del contenedor",
+            "environmentLabel": "Ambiente de trabajo",
+            "selectBothLabel": "Selecciona uno o ambos"
           },
-          "maxWeights": {
-            "title": "Pesos Máximos",
-            "longProduct": "Peso máx. prod. largo",
-            "shortProduct": "Peso máx. prod. corto"
-          }
-        },
-        "others": {
-          "header": "Otros - Condiciones",
-          "passageAreas": {
-            "title": "Zonas de Paso",
-            "width": "Ancho",
-            "height": "Alto"
+          "containersPerWeek": {
+            "label": "Contenedores por semana",
+            "shortLabel": "Contenedores/semana",
+            "placeholder": "Ej: 5"
           },
           "floorConditions": {
-            "title": "Condiciones del Piso",
-            "isFlat": {
-              "label": "¿El piso es plano?",
-              "flatDescription": "Piso plano y uniforme",
-              "irregularDescription": "Piso con irregularidades"
-            },
-            "description": {
-              "label": "Descripción del piso",
-              "placeholderFlat": "Añada detalles adicionales si es necesario...",
-              "placeholderIrregular": "Describa las irregularidades, desniveles, tipo de superficie..."
-            }
+            "label": "Condiciones del suelo",
+            "placeholder": "Compactado, rocoso..."
           },
-          "restrictions": {
-            "title": "Restricciones",
-            "height": "Restricción altura",
-            "width": "Restricción anchura"
-          },
-          "additionalNotes": {
-            "title": "Notas Adicionales",
-            "placeholder": "Añada cualquier otra información relevante..."
+          "measurements": {
+            "label": "Medidas del contenedor",
+            "customLabel": "Medida personalizada",
+            "specifyLabel": "Especificar medida",
+            "specifyPlaceholder": "Ej: 45 pies, 12m x 2.5m x 2.9m...",
+            "specifyDescription": "Indique las dimensiones exactas (largo x ancho x alto)",
+            "specifyAdditional": "Especificar dimensiones adicionales"
           }
+        },
+        "validation": {
+          "descriptionRequired": "Debe proporcionar una descripción detallada",
+          "typeRequired": "Selecciona al menos un tipo",
+          "measuresRequired": "Selecciona al menos una medida",
+          "emailInvalid": "Email inválido",
+          "urlInvalid": "URL inválida"
+        },
+        "navigation": {
+          "instructions": "Instrucciones",
+          "company": "Empresa",
+          "location": "Ubicación",
+          "commercial": "Comercial",
+          "product": "Producto",
+          "container": "Contenedor",
+          "measurements": "Medidas",
+          "files": "Archivos"
         }
       },
-      "navigation": {
-        "instructions": "Instrucciones",
+      "industrial": {
+        "steps": {
+          "operation": {
+            "title": "Descripción operación",
+            "shortTitle": "Descripción",
+            "description": "Detalles de la operación"
+          },
+          "application": {
+            "title": "Datos aplicación",
+            "shortTitle": "Aplicación",
+            "description": "Información técnica"
+          },
+          "batteries": {
+            "title": "Baterías",
+            "shortTitle": "Baterías",
+            "description": "Especificaciones eléctricas"
+          },
+          "loads": {
+            "title": "Cargas",
+            "shortTitle": "Cargas",
+            "description": "Tabla de dimensiones"
+          },
+          "aisle": {
+            "title": "Especificaciones pasillo",
+            "shortTitle": "Pasillo",
+            "description": "Medidas del pasillo"
+          },
+          "files": {
+            "title": "Archivos adjuntos",
+            "shortTitle": "Archivos",
+            "description": "Fotos, videos y documentos"
+          }
+        },
+        "fields": {
+          "operationNotes": {
+            "label": "Notas sobre la operación",
+            "placeholder": "Describe las condiciones y restricciones del área de trabajo...",
+            "required": "Notas sobre la operación son requeridas"
+          },
+          "closingDate": {
+            "label": "Fecha de cierre estimada",
+            "optional": "(opcional)",
+            "placeholder": "Seleccionar fecha"
+          },
+          "productDescription": {
+            "header": "Descripción del Producto",
+            "label": "Producto a manipular",
+            "placeholder": "Descripción del producto",
+            "required": "Descripción del producto es requerida"
+          },
+          "dimensionsAndWeights": {
+            "header": "Dimensiones y Pesos",
+            "lastLevelHeight": "Alt. últ. nivel",
+            "maxElevation": "Máx. elevación",
+            "maxHeightLoadWeight": "Peso máx. alt.",
+            "firstLevelLoadWeight": "Peso 1er niv.",
+            "areaWidth": "Ancho área",
+            "areaDepth": "Fondo área"
+          },
+          "operationAndPower": {
+            "header": "Operación y Alimentación",
+            "shifts": "Turnos",
+            "definitionDate": "Fecha definición",
+            "powerSource": "Alimentación"
+          },
+          "electrical": {
+            "header": "Especificaciones Eléctricas",
+            "notApplicable": {
+              "label": "No aplica",
+              "description": "Activa esta opción si las especificaciones eléctricas no son aplicables para esta visita.",
+              "alert": {
+                "title": "Paso no aplicable",
+                "description": "Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puedes continuar al siguiente paso."
+              }
+            },
+            "currentType": "Tipo corriente",
+            "voltage": "Voltaje",
+            "frequency": "Frecuencia",
+            "amperage": "Amperaje",
+            "ambientTemp": "Temp. ambiente",
+            "workHours": "Horas/día",
+            "notes": "Observaciones (opcional)",
+            "notesPlaceholder": "Notas adicionales sobre los equipos eléctricos..."
+          },
+          "loads": {
+            "header": "Dimensiones de Cargas",
+            "add": "Agregar",
+            "addFirst": "Agregar primera carga",
+            "empty": "No hay cargas agregadas",
+            "productName": "Nombre del producto",
+            "length": "Largo",
+            "depth": "Fondo",
+            "height": "Alto",
+            "weight": "Peso",
+            "table": {
+              "product": "PRODUCTO",
+              "length": "LARGO",
+              "depth": "FONDO",
+              "height": "ALTO",
+              "weight": "PESO",
+              "percentage": "%"
+            },
+            "totalPercentage": "Total porcentaje",
+            "percentageError": "Los porcentajes deben sumar exactamente 100%"
+          },
+          "aisle": {
+            "header": "Especificaciones del Pasillo",
+            "guideRails": "+ Rieles guía",
+            "guideRailsLabel": "+ Rieles guía",
+            "productDepth": "Profundidad producto",
+            "widthBetweenProducts": "Ancho entre productos",
+            "distBetweenRacks": "Dist. entre estanterías",
+            "rackUsefulDepth": "Fondo útil estantería",
+            "rackBaseHeight": "Altura base estantería",
+            "distUnderGuideRails": "Dist. bajo rieles guía",
+            "heightFloorFirstArm": "Altura suelo→1er brazo",
+            "floorToFirstArm": "Altura suelo→1er brazo",
+            "distBetweenGuideRails": "Dist. entre rieles guía",
+            "clearHeightToGuide": "Altura libre→guía",
+            "columnThickness": "Grosor pilar/columna",
+            "lastLevelHeight": "Altura último nivel",
+            "maxInteriorHeight": "Altura máx. interior"
+          }
+        },
+        "validation": {
+          "descriptionRequired": "Debe proporcionar una descripción detallada",
+          "typeRequired": "Selecciona al menos un tipo",
+          "measuresRequired": "Selecciona al menos una medida",
+          "emailInvalid": "Email inválido",
+          "urlInvalid": "URL inválida",
+          "productRequired": "Producto es requerido",
+          "positiveRequired": "Debe ser positivo",
+          "min0": "Mínimo 0%",
+          "max100": "Máximo 100%",
+          "operationNotesRequired": "Notas sobre la operación son requeridas",
+          "productDescriptionRequired": "Descripción del producto es requerida",
+          "positiveValueRequired": "Debe ser un valor positivo",
+          "min1Shift": "Mínimo 1 turno",
+          "electricalRequired": "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",
+          "percentageSumError": "Los porcentajes deben sumar 100% (actual: {{current}}%)",
+          "loadRequired": "Debe agregar al menos una carga"
+        },
+        "navigation": {
+          "operation": "Operación",
+          "application": "Aplicación",
+          "batteries": "Baterías",
+          "loads": "Cargas",
+          "aisle": "Pasillo",
+          "files": "Archivos"
+        }
+      },
+      "logistica": {
+        "steps": {
+          "operation": {
+            "title": "Descripción operación",
+            "shortTitle": "Operación",
+            "description": "Detalles de la operación"
+          },
+          "application": {
+            "title": "Datos aplicación",
+            "shortTitle": "Aplicación",
+            "description": "Información técnica"
+          },
+          "batteries": {
+            "title": "Baterías",
+            "shortTitle": "Baterías",
+            "description": "Especificaciones eléctricas"
+          },
+          "loads": {
+            "title": "Cargas",
+            "shortTitle": "Cargas",
+            "description": "Tabla de dimensiones"
+          },
+          "aisle": {
+            "title": "Pasillo actual",
+            "shortTitle": "Pasillo",
+            "description": "Medidas del pasillo"
+          },
+          "files": {
+            "title": "Archivos adjuntos",
+            "shortTitle": "Archivos",
+            "description": "Fotos, videos y documentos"
+          }
+        },
+        "fields": {
+          "operation": {
+            "closingDate": {
+              "label": "Fecha de cierre"
+            },
+            "notes": {
+              "label": "Notas de operación",
+              "placeholder": "Describa la operación..."
+            },
+            "ramps": {
+              "label": "¿Existen rampas?",
+              "placeholder": "Describa las rampas (% pendiente, etc)..."
+            },
+            "doors": {
+              "label": "¿Existen pasos de puertas?",
+              "placeholder": "Altura, ancho, cantidad..."
+            },
+            "restrictions": {
+              "label": "¿Otras restricciones de altura?",
+              "placeholder": "Vigas, tuberías, iluminación, rociadores..."
+            },
+            "maxHeight": {
+              "label": "Altura máxima nave"
+            },
+            "aisleWidth": {
+              "label": "Ancho pasillo actual"
+            },
+            "surface": {
+              "label": "Superficie de trabajo"
+            },
+            "floor": {
+              "label": "Condiciones del suelo (Interior/Exterior)",
+              "placeholder": "Describa el estado del suelo..."
+            },
+            "type": {
+              "label": "Tipo de operación"
+            }
+          },
+          "application": {
+            "headers": {
+              "productDescription": "Descripción del Producto",
+              "dimensionsAndWeights": "Alturas, Pesos y Área",
+              "operationAndPower": "Operación y Alimentación"
+            },
+            "productDescription": {
+              "label": "Producto a manipular",
+              "placeholder": "Descripción del producto"
+            },
+            "lastLevelHeight": {
+              "label": "Alt. últ. nivel"
+            },
+            "maxLiftHeight": {
+              "label": "Máx. elevación"
+            },
+            "maxLoadWeight": {
+              "label": "Peso máx. alt."
+            },
+            "firstLevelLoadWeight": {
+              "label": "Peso 1er nivel"
+            },
+            "workAreaWidth": {
+              "label": "Ancho área"
+            },
+            "workAreaDepth": {
+              "label": "Fondo área"
+            },
+            "shifts": {
+              "label": "Turnos",
+              "placeholder": "1"
+            },
+            "definitionDate": {
+              "label": "Fecha definición"
+            },
+            "powerSource": {
+              "label": "Alimentación"
+            }
+          },
+          "operationNotes": {
+            "label": "Notas sobre la operación",
+            "placeholder": "Describe las condiciones y restricciones del área de trabajo..."
+          },
+          "operationType": "Tipo de operación",
+          "hasRamps": {
+            "label": "Rampas",
+            "yes": "Sí",
+            "no": "No",
+            "notes": "Notas sobre rampas"
+          },
+          "hasDoorways": {
+            "label": "Pasos/Puertas",
+            "notes": "Notas sobre pasos/puertas"
+          },
+          "hasRestrictions": {
+            "label": "Restricciones",
+            "notes": "Notas sobre restricciones"
+          },
+          "maxBuildingHeight": "Altura máxima nave",
+          "currentAisleWidth": "Ancho pasillo actual",
+          "workSurface": "Superficie de trabajo",
+          "floorConditions": "Condiciones del suelo",
+          "productDescription": {
+            "header": "Descripción del Producto",
+            "label": "Producto a manipular",
+            "placeholder": "Descripción del producto"
+          },
+          "dimensionsAndWeights": {
+            "header": "Dimensiones y Pesos",
+            "lastLevelHeight": "Alt. últ. nivel",
+            "maxElevation": "Máx. elevación",
+            "maxHeightLoadWeight": "Peso máx. alt.",
+            "firstLevelLoadWeight": "Peso 1er niv.",
+            "areaWidth": "Ancho área",
+            "areaDepth": "Fondo área"
+          },
+          "operationAndPower": {
+            "header": "Operación y Alimentación",
+            "shifts": "Turnos",
+            "definitionDate": "Fecha definición",
+            "powerSource": "Alimentación"
+          },
+          "electrical": {
+            "header": "Especificaciones Eléctricas",
+            "notApplicable": {
+              "label": "No aplica",
+              "description": "Activa esta opción si las especificaciones eléctricas no son aplicables.",
+              "alert": {
+                "title": "Paso no aplicable",
+                "description": "Este paso solo es necesario cuando la alimentación deseada es eléctrica."
+              }
+            },
+            "currentType": "Tipo corriente",
+            "voltage": "Voltaje",
+            "frequency": "Frecuencia",
+            "amperage": "Amperaje",
+            "ambientTemp": "Temp. ambiente",
+            "workHours": "Horas/día",
+            "notes": "Observaciones (opcional)",
+            "notesPlaceholder": "Notas adicionales..."
+          },
+          "loads": {
+            "header": "Dimensiones de Cargas",
+            "add": "Agregar",
+            "addFirst": "Agregar primera carga",
+            "empty": "No hay cargas agregadas",
+            "productName": "Nombre del producto",
+            "productPlaceholder": "Nombre del producto",
+            "length": "Largo",
+            "depth": "Fondo",
+            "height": "Alto",
+            "weight": "Peso",
+            "percentage": "%",
+            "totalPercentage": "Total porcentaje:",
+            "percentageError": "Los porcentajes deben sumar exactamente 100%"
+          },
+          "aisle": {
+            "header": "Pasillo Actual",
+            "distancesHeader": "Distancias del Pasillo",
+            "shelfInfoHeader": "Información de Estanterías",
+            "shelfType": "Tipo de estanterías",
+            "productDepth": "Profundidad producto",
+            "widthBetweenProducts": "Ancho entre productos",
+            "distBetweenRacks": "Dist. entre estanterías",
+            "rackUsefulDepth": "Fondo útil estantería",
+            "rackBaseHeight": "Altura base estantería"
+          },
+          "electricEquipment": {
+            "header": "Especificaciones Eléctricas",
+            "notApplicable": "Paso no aplicable",
+            "notApplicableDescription": "Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puedes continuar al siguiente paso.",
+            "notApplicableToggle": "No aplica",
+            "notApplicableToggleDescription": "Activa esta opción si las especificaciones eléctricas no son aplicables para esta visita.",
+            "notesLabel": "Observaciones (opcional)",
+            "notesPlaceholder": "Notas adicionales sobre los equipos eléctricos..."
+          }
+        },
+        "options": {
+          "operationType": {
+            "storage": "Almacenamiento",
+            "crossDocking": "Cross-docking",
+            "picking": "Picking",
+            "loadingUnloading": "Carga/Descarga",
+            "orderPrep": "Preparación de pedidos",
+            "mixed": "Mixto"
+          },
+          "powerSource": {
+            "electric": "Eléctrico",
+            "diesel": "Diésel",
+            "gas": "GLP"
+          },
+          "currentType": {
+            "monophasic": "Monofásica",
+            "triphasic": "Trifásica"
+          }
+        },
+        "validation": {
+          "descriptionRequired": "Debe proporcionar una descripción detallada",
+          "typeRequired": "Selecciona al menos un tipo",
+          "measuresRequired": "Selecciona al menos una medida",
+          "emailInvalid": "Email inválido",
+          "urlInvalid": "URL inválida",
+          "productRequired": "Producto es requerido",
+          "positiveRequired": "Debe ser positivo",
+          "min0": "Mínimo 0%",
+          "max100": "Máximo 100%",
+          "operationNotesRequired": "Notas sobre la operación son requeridas",
+          "productDescriptionRequired": "Descripción del producto es requerida",
+          "positiveValueRequired": "Debe ser un valor positivo",
+          "min1Shift": "Mínimo 1 turno",
+          "electricalRequired": "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",
+          "percentageSumError": "Los porcentajes deben sumar 100% (actual: {{current}}%)",
+          "loadRequired": "Debe agregar al menos una carga"
+        },
+        "navigation": {
+          "operation": "Operación",
+          "application": "Aplicación",
+          "batteries": "Baterías",
+          "loads": "Cargas",
+          "aisle": "Pasillo",
+          "files": "Archivos"
+        }
+      },
+      "straddleCarrier": {
+        "steps": {
+          "instructions": {
+            "title": "Instrucciones",
+            "shortTitle": "Instrucciones",
+            "description": "Detalles de las cargas"
+          },
+          "containers": {
+            "title": "Contenedores",
+            "shortTitle": "Contenedores",
+            "description": "Cuadro 1 - Contenedores"
+          },
+          "specialLoad": {
+            "title": "Carga especial",
+            "shortTitle": "Carg. Especial",
+            "description": "Cuadro 2 - Dimensiones"
+          },
+          "others": {
+            "title": "Otros",
+            "shortTitle": "Otros",
+            "description": "Condiciones adicionales"
+          },
+          "files": {
+            "title": "Archivos adjuntos",
+            "shortTitle": "Archivos",
+            "description": "Fotos, videos y documentos"
+          }
+        },
+        "fields": {
+          "closingDate": {
+            "label": "Fecha estimada de cierre",
+            "placeholder": "Seleccionar fecha"
+          },
+          "instructions": {
+            "title": "Instrucciones",
+            "step1": "Complete cuadro 1 si maneja contenedores",
+            "step2": "Complete cuadro 2 si es carga especial",
+            "step3": "Complete ambos si trabaja ambos tipos"
+          },
+          "handlesContainers": {
+            "label": "Contenedores",
+            "description": "Cuadro 1: Contenedores estándar",
+            "question": "¿Qué tipo de carga maneja el cliente?",
+            "warning": "Seleccione al menos una opción para continuar.",
+            "stepsToComplete": "Pasos a completar:"
+          },
+          "handlesSpecialLoad": {
+            "label": "Carga especial",
+            "description": "Cuadro 2: Dimensiones específicas"
+          },
+          "selectAtLeastOne": "Selecciona al menos una opción",
+          "notApplicable": {
+            "title": "Paso no aplicable",
+            "containersDescription": "Este paso solo es necesario cuando el cliente maneja contenedores. Puedes continuar al siguiente paso.",
+            "specialLoadDescription": "Este paso solo es necesario cuando el cliente maneja carga especial. Puedes continuar al siguiente paso."
+          },
+          "containers": {
+            "header": "Cuadro 1 - Contenedores",
+            "individualHandling": {
+              "label": "Manejo individual",
+              "description": "Contenedores de forma individual"
+            },
+            "doubleStacking": {
+              "label": "Doble apilamiento",
+              "description": "Apilar dos contenedores"
+            },
+            "quantityPerWeek": "Cant/semana",
+            "maxWeight": {
+              "label": "Peso máximo a manipular"
+            },
+            "additionalInfo": {
+              "placeholder": "Añada cualquier información adicional sobre los contenedores..."
+            }
+          },
+          "specialLoad": {
+            "header": "Cuadro 2 - Carga Especial",
+            "productLength": {
+              "title": "Longitud de Productos",
+              "longest": "Más largo",
+              "shortest": "Más corto"
+            },
+            "productWidth": {
+              "title": "Ancho de Productos",
+              "widest": "Más ancho",
+              "narrowest": "Más estrecho"
+            },
+            "heightAndLifting": {
+              "title": "Altura y Puntos de Elevación",
+              "tallestProduct": "Producto más alto",
+              "liftingLength": "Elev. longitud",
+              "liftingWidth": "Elev. ancho"
+            },
+            "maxWeights": {
+              "title": "Pesos Máximos",
+              "longProduct": "Peso máx. prod. largo",
+              "shortProduct": "Peso máx. prod. corto"
+            }
+          },
+          "others": {
+            "header": "Otros - Condiciones",
+            "passageAreas": {
+              "title": "Zonas de Paso",
+              "width": "Ancho",
+              "height": "Alto"
+            },
+            "floorConditions": {
+              "title": "Condiciones del Piso",
+              "isFlat": {
+                "label": "¿El piso es plano?",
+                "flatDescription": "Piso plano y uniforme",
+                "irregularDescription": "Piso con irregularidades"
+              },
+              "description": {
+                "label": "Descripción del piso",
+                "placeholderFlat": "Añada detalles adicionales si es necesario...",
+                "placeholderIrregular": "Describa las irregularidades, desniveles, tipo de superficie..."
+              }
+            },
+            "restrictions": {
+              "title": "Restricciones",
+              "height": "Restricción altura",
+              "width": "Restricción anchura"
+            },
+            "additionalNotes": {
+              "title": "Notas Adicionales",
+              "placeholder": "Añada cualquier otra información relevante..."
+            }
+          }
+        },
+        "navigation": {
+          "instructions": "Instrucciones",
+          "containers": "Contenedores",
+          "specialLoad": "Carg. Especial",
+          "others": "Otros",
+          "files": "Archivos"
+        },
+        "validation": {
+          "emailInvalid": "Email inválido",
+          "urlInvalid": "URL inválida",
+          "selectAtLeastOneOption": "Debe seleccionar al menos una opción: contenedores o carga especial"
+        }
+      }
+    },
+    "table": {
+      "rowsPerPage": "Filas por página",
+      "showingResults": "Mostrando {{from}} - {{to}} de {{total}} resultados",
+      "noResults": "No se encontraron resultados",
+      "selectAll": "Seleccionar todo",
+      "selected": "seleccionados",
+      "actions": "Acciones",
+      "sortAscending": "Ordenar ascendente",
+      "sortDescending": "Ordenar descendente",
+      "hideColumn": "Ocultar columna",
+      "selectedRows": "{{count}} de {{total}} fila(s) seleccionadas",
+      "empty": {
+        "title": "No se encontraron datos",
+        "description": "No hay datos disponibles"
+      },
+      "noResultsFound": {
+        "title": "No se encontraron resultados",
+        "description": "Intenta ajustar tus filtros de búsqueda"
+      }
+    },
+    "email": {
+      "subject": {
+        "visitCompleted": "Visita completada",
+        "visitDraft": "[Borrador] Visita",
+        "visit": "Visita",
+        "file": "archivo",
+        "files": "archivos"
+      },
+      "header": {
+        "visitCompleted": "Visita completada",
+        "visitDraft": "Borrador de visita"
+      },
+      "preheader": {
+        "completed": "Visita completada",
+        "draft": "Borrador de visita"
+      },
+      "status": {
+        "completed": "COMPLETADA",
+        "draft": "BORRADOR",
+        "unknown": "ESTADO DESCONOCIDO"
+      },
+      "common": {
+        "yes": "Sí",
+        "no": "No",
+        "notAssigned": "No asignado",
+        "noDescription": "Sin descripción proporcionada",
+        "automaticMessage": "Mensaje automático de",
+        "allRightsReserved": "Todos los derechos reservados"
+      },
+      "sections": {
+        "productDescription": "Descripción del Producto",
+        "attachedFiles": "Archivos Adjuntos",
+        "additionalInfo": "Información Adicional",
+        "endUserData": "Datos usuario final"
+      },
+      "files": {
+        "header": "Archivos Adjuntos",
+        "file": "Archivo",
+        "type": "Tipo",
+        "size": "Tamaño",
+        "fileTypes": {
+          "image": "IMG",
+          "pdf": "PDF",
+          "video": "VID",
+          "document": "DOC",
+          "excel": "XLS",
+          "file": "FILE"
+        }
+      },
+      "css": {
+        "container": "Contenedor",
+        "containerType": "Tipo de contenedor",
+        "containersPerWeek": "Contenedores por semana",
+        "floorConditions": "Condiciones del suelo",
+        "measurements": "Medidas del Contenedor",
+        "otherMeasurement": "Otra medida"
+      },
+      "industrial": {
+        "operationDescription": "Descripción de Operación",
+        "operationNotes": "Notas de operación",
+        "applicationData": "Datos de Aplicación",
+        "lastShelfLevel": "Altura último nivel estantería",
+        "maxLiftHeight": "Máxima altura de elevación",
+        "maxHeightLoadWeight": "Peso carga a máxima altura",
+        "firstLevelLoadWeight": "Peso carga primer nivel",
+        "workArea": "Área de trabajo",
+        "workShifts": "Turnos de trabajo",
+        "desiredPower": "Alimentación deseada",
+        "electricalEquipment": "Baterías / Equipos Eléctricos",
+        "currentType": "Tipo de corriente",
+        "voltage": "Voltaje",
+        "frequency": "Frecuencia",
+        "amperage": "Amperaje",
+        "ambientTemperature": "Temperatura ambiente",
+        "workHoursPerDay": "Horas trabajo/día",
+        "notes": "Notas",
+        "loadDimensions": "Dimensiones de Cargas",
+        "loadTable": {
+          "product": "Producto",
+          "length": "Largo (mm)",
+          "depth": "Fondo (mm)",
+          "height": "Alto (mm)",
+          "weight": "Peso (kg)",
+          "percentage": "%"
+        },
+        "aisleSpecs": "Especificaciones del Pasillo",
+        "productDepth": "Profundidad del producto",
+        "widthBetweenProducts": "Ancho libre entre productos",
+        "distBetweenRacks": "Distancia libre entre estanterías",
+        "rackUsefulDepth": "Fondo útil estantería",
+        "rackBaseHeight": "Altura base estantería",
+        "floorToFirstArm": "Altura suelo al primer brazo",
+        "columnThickness": "Grosor pilar/columna",
+        "maxInteriorHeight": "Altura máx. interior edificio"
+      },
+      "logistica": {
+        "operationDescription": "Descripción de Operación",
+        "operationNotes": "Notas de operación",
+        "placeConditions": "Condiciones del lugar",
+        "hasRamps": "Tiene rampas",
+        "rampDetails": "Detalles rampas",
+        "hasDoorways": "Tiene pasos/puertas",
+        "doorwayDetails": "Detalles pasos/puertas",
+        "hasRestrictions": "Tiene restricciones",
+        "restrictionDetails": "Detalles restricciones",
+        "warehouseMeasurements": "Medidas de la nave",
+        "maxWarehouseHeight": "Altura máxima nave",
+        "currentAisleWidth": "Ancho pasillo actual",
+        "workSurface": "Superficie de trabajo",
+        "floorConditions": "Condiciones del suelo",
+        "operationType": "Tipo de operación",
+        "applicationData": "Datos de Aplicación",
+        "lastShelfLevel": "Altura último nivel estantería",
+        "maxLiftHeight": "Máxima altura de elevación",
+        "maxHeightLoadWeight": "Peso carga a máxima altura",
+        "firstLevelLoadWeight": "Peso carga primer nivel",
+        "workArea": "Área de trabajo",
+        "workShifts": "Turnos de trabajo",
+        "desiredPower": "Alimentación deseada",
+        "electricalEquipment": "Baterías / Equipos Eléctricos",
+        "loadDimensions": "Dimensiones de Cargas",
+        "currentAisle": "Pasillo Actual",
+        "distBetweenRacks": "Distancia entre estanterías",
+        "distBetweenProducts": "Distancia entre productos",
+        "availableAisleWidth": "Ancho pasillo disponible",
+        "rackType": "Tipo de estanterías",
+        "rackLevels": "Niveles de estanterías",
+        "maxRackHeight": "Altura máx. estantería"
+      },
+      "straddleCarrier": {
+        "handlingType": "Tipo de Manejo",
+        "handlesContainers": "Maneja contenedores",
+        "handlesSpecialLoad": "Maneja carga especial",
         "containers": "Contenedores",
-        "specialLoad": "Carg. Especial",
-        "others": "Otros",
-        "files": "Archivos"
+        "individualContainers": "Contenedores individuales",
+        "doubleStacking": "Doble apilamiento",
+        "containerSizes": "Tamaños de contenedores",
+        "maxContainerWeight": "Peso máx. contenedor",
+        "additionalInfo": "Información adicional",
+        "specialLoad": "Carga Especial",
+        "productDimensions": "Dimensiones de productos",
+        "longestProduct": "Producto más largo",
+        "shortestProduct": "Producto más corto",
+        "widestProduct": "Producto más ancho",
+        "narrowestProduct": "Producto más estrecho",
+        "tallestProduct": "Producto más alto",
+        "liftPointsAndWeights": "Puntos de elevación y pesos",
+        "liftPointsLength": "Puntos elevación (longitud)",
+        "liftPointsWidth": "Puntos elevación (ancho)",
+        "maxWeightLongProduct": "Peso máx. producto largo",
+        "maxWeightShortProduct": "Peso máx. producto corto",
+        "additionalConditions": "Condiciones Adicionales",
+        "passageZones": "Zonas de paso",
+        "passageWidth": "Ancho zonas de paso",
+        "passageHeight": "Alto zonas de paso",
+        "floorConditions": "Condiciones del piso",
+        "floorConditionsLabel": "Condiciones del piso",
+        "flatFloor": "Piso plano",
+        "restrictions": "Restricciones",
+        "heightRestriction": "Restricción de altura",
+        "widthRestriction": "Restricción de anchura",
+        "additionalNotes": "Notas adicionales"
       },
-      "validation": {
-        "emailInvalid": "Email inválido",
-        "urlInvalid": "URL inválida",
-        "selectAtLeastOneOption": "Debe seleccionar al menos una opción: contenedores o carga especial"
+      "plainText": {
+        "header": "COMBISALES",
+        "visitCompleted": "Visita completada",
+        "visitDraft": "Borrador de visita",
+        "unknownStatus": "Estado desconocido",
+        "type": "Tipo",
+        "company": "Empresa",
+        "seller": "Vendedor",
+        "date": "Fecha",
+        "productDescription": "Descripción del producto",
+        "container": "Contenedor",
+        "types": "Tipos",
+        "containersPerWeek": "Contenedores/sem",
+        "floorConditions": "Condiciones suelo",
+        "containerMeasurements": "Medidas del contenedor",
+        "measurements": "Medidas",
+        "otherMeasurement": "Otra medida",
+        "applicationData": "Datos de aplicación",
+        "lastShelfLevel": "Altura último nivel",
+        "maxLiftHeight": "Máx. altura elevación",
+        "maxHeightLoadWeight": "Peso carga máx. altura",
+        "firstLevelLoadWeight": "Peso carga primer nivel",
+        "workShifts": "Turnos trabajo",
+        "power": "Alimentación",
+        "operationNotes": "Notas de operación",
+        "operatingConditions": "Condiciones de operación",
+        "maxWarehouseHeight": "Altura máx. nave",
+        "aisleWidth": "Ancho pasillo",
+        "workSurface": "Superficie trabajo",
+        "operationType": "Tipo operación",
+        "handlingType": "Tipo de manejo",
+        "handlesContainers": "Maneja contenedores",
+        "handlesSpecialLoad": "Maneja carga especial",
+        "containers": "Contenedores",
+        "individualContainers": "Contenedores indiv.",
+        "doubleStacking": "Doble apilamiento",
+        "maxContainerWeight": "Peso máx. contenedor",
+        "specialLoad": "Carga especial",
+        "longestProduct": "Producto más largo",
+        "shortestProduct": "Producto más corto",
+        "widestProduct": "Producto más ancho",
+        "tallestProduct": "Producto más alto",
+        "additionalNotes": "Notas adicionales",
+        "attachedFiles": "Archivos adjuntos",
+        "fileType": "Tipo",
+        "fileSize": "Tamaño"
       }
-    }
-  },
-  "table": {
-    "rowsPerPage": "Filas por página",
-    "showingResults": "Mostrando {{from}} - {{to}} de {{total}} resultados",
-    "noResults": "No se encontraron resultados",
-    "selectAll": "Seleccionar todo",
-    "selected": "seleccionados",
-    "actions": "Acciones",
-    "sortAscending": "Ordenar ascendente",
-    "sortDescending": "Ordenar descendente",
-    "hideColumn": "Ocultar columna",
-    "selectedRows": "{{count}} de {{total}} fila(s) seleccionadas",
-    "empty": {
-      "title": "No se encontraron datos",
-      "description": "No hay datos disponibles"
     },
-    "noResultsFound": {
-      "title": "No se encontraron resultados",
-      "description": "Intenta ajustar tus filtros de búsqueda"
-    }
-  },
-  "email": {
-    "subject": {
-      "visitCompleted": "Visita completada",
-      "visitDraft": "[Borrador] Visita",
-      "visit": "Visita",
-      "file": "archivo",
-      "files": "archivos"
-    },
-    "header": {
-      "visitCompleted": "Visita completada",
-      "visitDraft": "Borrador de visita"
-    },
-    "preheader": {
-      "completed": "Visita completada",
-      "draft": "Borrador de visita"
-    },
-    "status": {
-      "completed": "COMPLETADA",
-      "draft": "BORRADOR",
-      "unknown": "ESTADO DESCONOCIDO"
-    },
-    "common": {
-      "yes": "Sí",
-      "no": "No",
-      "notAssigned": "No asignado",
-      "noDescription": "Sin descripción proporcionada",
-      "automaticMessage": "Mensaje automático de",
-      "allRightsReserved": "Todos los derechos reservados"
-    },
-    "sections": {
-      "productDescription": "Descripción del Producto",
-      "attachedFiles": "Archivos Adjuntos",
-      "additionalInfo": "Información Adicional",
-      "endUserData": "Datos usuario final"
-    },
-    "files": {
-      "header": "Archivos Adjuntos",
-      "file": "Archivo",
-      "type": "Tipo",
-      "size": "Tamaño",
+    "attachments": {
+      "title": "Archivos adjuntos",
+      "filesAttached": "archivo(s) adjunto(s)",
+      "viewMode": {
+        "grid": "Vista cuadrícula",
+        "list": "Vista lista"
+      },
+      "actions": {
+        "view": "Ver",
+        "download": "Descargar",
+        "downloadFile": "Descargar archivo",
+        "close": "Cerrar",
+        "zoom": "Zoom",
+        "navigate": "Navegar",
+        "goToFile": "Ir al archivo {{number}}",
+        "goToFirstFile": "Ir al primer archivo",
+        "goToLastFile": "Ir al último archivo"
+      },
+      "preview": {
+        "title": "Vista previa de {{name}}",
+        "loadingImage": "Cargando imagen...",
+        "videoNotSupported": "Tu navegador no soporta la reproducción de video."
+      },
       "fileTypes": {
-        "image": "IMG",
+        "image": "Imagen",
+        "video": "Video",
+        "document": "Documento",
+        "archivo": "Archivo",
+        "jpg": "Imagen JPG",
+        "jpeg": "Imagen JPEG",
+        "png": "Imagen PNG",
+        "gif": "GIF",
+        "webp": "WebP",
+        "svg": "SVG",
+        "heic": "HEIC",
+        "heif": "HEIF",
+        "mp4": "Video MP4",
+        "webm": "Video WebM",
+        "mov": "Video MOV",
+        "avi": "Video AVI",
+        "wmv": "Video WMV",
         "pdf": "PDF",
-        "video": "VID",
-        "document": "DOC",
-        "excel": "XLS",
-        "file": "FILE"
+        "word": "Word",
+        "excel": "Excel",
+        "powerpoint": "PowerPoint",
+        "text": "Texto",
+        "javascript": "JavaScript",
+        "typescript": "TypeScript",
+        "json": "JSON",
+        "zip": "ZIP",
+        "rar": "RAR",
+        "mp3": "Audio MP3",
+        "wav": "Audio WAV"
       }
-    },
-    "css": {
-      "container": "Contenedor",
-      "containerType": "Tipo de contenedor",
-      "containersPerWeek": "Contenedores por semana",
-      "floorConditions": "Condiciones del suelo",
-      "measurements": "Medidas del Contenedor",
-      "otherMeasurement": "Otra medida"
-    },
-    "industrial": {
-      "operationDescription": "Descripción de Operación",
-      "operationNotes": "Notas de operación",
-      "applicationData": "Datos de Aplicación",
-      "lastShelfLevel": "Altura último nivel estantería",
-      "maxLiftHeight": "Máxima altura de elevación",
-      "maxHeightLoadWeight": "Peso carga a máxima altura",
-      "firstLevelLoadWeight": "Peso carga primer nivel",
-      "workArea": "Área de trabajo",
-      "workShifts": "Turnos de trabajo",
-      "desiredPower": "Alimentación deseada",
-      "electricalEquipment": "Baterías / Equipos Eléctricos",
-      "currentType": "Tipo de corriente",
-      "voltage": "Voltaje",
-      "frequency": "Frecuencia",
-      "amperage": "Amperaje",
-      "ambientTemperature": "Temperatura ambiente",
-      "workHoursPerDay": "Horas trabajo/día",
-      "notes": "Notas",
-      "loadDimensions": "Dimensiones de Cargas",
-      "loadTable": {
-        "product": "Producto",
-        "length": "Largo (mm)",
-        "depth": "Fondo (mm)",
-        "height": "Alto (mm)",
-        "weight": "Peso (kg)",
-        "percentage": "%"
-      },
-      "aisleSpecs": "Especificaciones del Pasillo",
-      "productDepth": "Profundidad del producto",
-      "widthBetweenProducts": "Ancho libre entre productos",
-      "distBetweenRacks": "Distancia libre entre estanterías",
-      "rackUsefulDepth": "Fondo útil estantería",
-      "rackBaseHeight": "Altura base estantería",
-      "floorToFirstArm": "Altura suelo al primer brazo",
-      "columnThickness": "Grosor pilar/columna",
-      "maxInteriorHeight": "Altura máx. interior edificio"
-    },
-    "logistica": {
-      "operationDescription": "Descripción de Operación",
-      "operationNotes": "Notas de operación",
-      "placeConditions": "Condiciones del lugar",
-      "hasRamps": "Tiene rampas",
-      "rampDetails": "Detalles rampas",
-      "hasDoorways": "Tiene pasos/puertas",
-      "doorwayDetails": "Detalles pasos/puertas",
-      "hasRestrictions": "Tiene restricciones",
-      "restrictionDetails": "Detalles restricciones",
-      "warehouseMeasurements": "Medidas de la nave",
-      "maxWarehouseHeight": "Altura máxima nave",
-      "currentAisleWidth": "Ancho pasillo actual",
-      "workSurface": "Superficie de trabajo",
-      "floorConditions": "Condiciones del suelo",
-      "operationType": "Tipo de operación",
-      "applicationData": "Datos de Aplicación",
-      "lastShelfLevel": "Altura último nivel estantería",
-      "maxLiftHeight": "Máxima altura de elevación",
-      "maxHeightLoadWeight": "Peso carga a máxima altura",
-      "firstLevelLoadWeight": "Peso carga primer nivel",
-      "workArea": "Área de trabajo",
-      "workShifts": "Turnos de trabajo",
-      "desiredPower": "Alimentación deseada",
-      "electricalEquipment": "Baterías / Equipos Eléctricos",
-      "loadDimensions": "Dimensiones de Cargas",
-      "currentAisle": "Pasillo Actual",
-      "distBetweenRacks": "Distancia entre estanterías",
-      "distBetweenProducts": "Distancia entre productos",
-      "availableAisleWidth": "Ancho pasillo disponible",
-      "rackType": "Tipo de estanterías",
-      "rackLevels": "Niveles de estanterías",
-      "maxRackHeight": "Altura máx. estantería"
-    },
-    "straddleCarrier": {
-      "handlingType": "Tipo de Manejo",
-      "handlesContainers": "Maneja contenedores",
-      "handlesSpecialLoad": "Maneja carga especial",
-      "containers": "Contenedores",
-      "individualContainers": "Contenedores individuales",
-      "doubleStacking": "Doble apilamiento",
-      "containerSizes": "Tamaños de contenedores",
-      "maxContainerWeight": "Peso máx. contenedor",
-      "additionalInfo": "Información adicional",
-      "specialLoad": "Carga Especial",
-      "productDimensions": "Dimensiones de productos",
-      "longestProduct": "Producto más largo",
-      "shortestProduct": "Producto más corto",
-      "widestProduct": "Producto más ancho",
-      "narrowestProduct": "Producto más estrecho",
-      "tallestProduct": "Producto más alto",
-      "liftPointsAndWeights": "Puntos de elevación y pesos",
-      "liftPointsLength": "Puntos elevación (longitud)",
-      "liftPointsWidth": "Puntos elevación (ancho)",
-      "maxWeightLongProduct": "Peso máx. producto largo",
-      "maxWeightShortProduct": "Peso máx. producto corto",
-      "additionalConditions": "Condiciones Adicionales",
-      "passageZones": "Zonas de paso",
-      "passageWidth": "Ancho zonas de paso",
-      "passageHeight": "Alto zonas de paso",
-      "floorConditions": "Condiciones del piso",
-      "floorConditionsLabel": "Condiciones del piso",
-      "flatFloor": "Piso plano",
-      "restrictions": "Restricciones",
-      "heightRestriction": "Restricción de altura",
-      "widthRestriction": "Restricción de anchura",
-      "additionalNotes": "Notas adicionales"
-    },
-    "plainText": {
-      "header": "COMBISALES",
-      "visitCompleted": "Visita completada",
-      "visitDraft": "Borrador de visita",
-      "unknownStatus": "Estado desconocido",
-      "type": "Tipo",
-      "company": "Empresa",
-      "seller": "Vendedor",
-      "date": "Fecha",
-      "productDescription": "Descripción del producto",
-      "container": "Contenedor",
-      "types": "Tipos",
-      "containersPerWeek": "Contenedores/sem",
-      "floorConditions": "Condiciones suelo",
-      "containerMeasurements": "Medidas del contenedor",
-      "measurements": "Medidas",
-      "otherMeasurement": "Otra medida",
-      "applicationData": "Datos de aplicación",
-      "lastShelfLevel": "Altura último nivel",
-      "maxLiftHeight": "Máx. altura elevación",
-      "maxHeightLoadWeight": "Peso carga máx. altura",
-      "firstLevelLoadWeight": "Peso carga primer nivel",
-      "workShifts": "Turnos trabajo",
-      "power": "Alimentación",
-      "operationNotes": "Notas de operación",
-      "operatingConditions": "Condiciones de operación",
-      "maxWarehouseHeight": "Altura máx. nave",
-      "aisleWidth": "Ancho pasillo",
-      "workSurface": "Superficie trabajo",
-      "operationType": "Tipo operación",
-      "handlingType": "Tipo de manejo",
-      "handlesContainers": "Maneja contenedores",
-      "handlesSpecialLoad": "Maneja carga especial",
-      "containers": "Contenedores",
-      "individualContainers": "Contenedores indiv.",
-      "doubleStacking": "Doble apilamiento",
-      "maxContainerWeight": "Peso máx. contenedor",
-      "specialLoad": "Carga especial",
-      "longestProduct": "Producto más largo",
-      "shortestProduct": "Producto más corto",
-      "widestProduct": "Producto más ancho",
-      "tallestProduct": "Producto más alto",
-      "additionalNotes": "Notas adicionales",
-      "attachedFiles": "Archivos adjuntos",
-      "fileType": "Tipo",
-      "fileSize": "Tamaño"
-    }
-  },
-  "attachments": {
-    "title": "Archivos adjuntos",
-    "filesAttached": "archivo(s) adjunto(s)",
-    "viewMode": {
-      "grid": "Vista cuadrícula",
-      "list": "Vista lista"
-    },
-    "actions": {
-      "view": "Ver",
-      "download": "Descargar",
-      "downloadFile": "Descargar archivo",
-      "close": "Cerrar",
-      "zoom": "Zoom",
-      "navigate": "Navegar",
-      "goToFile": "Ir al archivo {{number}}",
-      "goToFirstFile": "Ir al primer archivo",
-      "goToLastFile": "Ir al último archivo"
-    },
-    "preview": {
-      "title": "Vista previa de {{name}}",
-      "loadingImage": "Cargando imagen...",
-      "videoNotSupported": "Tu navegador no soporta la reproducción de video."
-    },
-    "fileTypes": {
-      "image": "Imagen",
-      "video": "Video",
-      "document": "Documento",
-      "archivo": "Archivo",
-      "jpg": "Imagen JPG",
-      "jpeg": "Imagen JPEG",
-      "png": "Imagen PNG",
-      "gif": "GIF",
-      "webp": "WebP",
-      "svg": "SVG",
-      "heic": "HEIC",
-      "heif": "HEIF",
-      "mp4": "Video MP4",
-      "webm": "Video WebM",
-      "mov": "Video MOV",
-      "avi": "Video AVI",
-      "wmv": "Video WMV",
-      "pdf": "PDF",
-      "word": "Word",
-      "excel": "Excel",
-      "powerpoint": "PowerPoint",
-      "text": "Texto",
-      "javascript": "JavaScript",
-      "typescript": "TypeScript",
-      "json": "JSON",
-      "zip": "ZIP",
-      "rar": "RAR",
-      "mp3": "Audio MP3",
-      "wav": "Audio WAV"
     }
   }
-}
