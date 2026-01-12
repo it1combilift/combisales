@@ -97,10 +97,6 @@ export function SellersSelection({
     filteredSellers.length > 0 &&
     filteredSellers.every((s) => selectedSellerIds.includes(s.id));
 
-  const someSelected =
-    filteredSellers.some((s) => selectedSellerIds.includes(s.id)) &&
-    !allSelected;
-
   return (
     <Card className={cn("w-full p-0 m-0 border-none shadow-none", className)}>
       <CardHeader className="p-0">
@@ -108,6 +104,18 @@ export function SellersSelection({
           {t("users.form.sellers.title")}
         </CardTitle>
         <CardDescription>{t("users.form.sellers.description")}</CardDescription>
+
+        {/* Selection count */}
+        {selectedSellerIds.length > 0 && (
+          <div className="flex items-center justify-between px-4 py-2 bg-primary/5 rounded-md border border-primary/20">
+            <span className="text-sm font-medium">
+              {t("users.form.sellers.selected", {
+                count: selectedSellerIds.length,
+              })}
+            </span>
+            <Badge variant="default">{selectedSellerIds.length}</Badge>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4 w-full p-0 m-0">
         {/* Search and bulk actions */}
@@ -147,18 +155,6 @@ export function SellersSelection({
             </Button>
           </div>
         </div>
-
-        {/* Selection count */}
-        {selectedSellerIds.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-2 bg-primary/5 rounded-md border border-primary/20">
-            <span className="text-sm font-medium">
-              {t("users.form.sellers.selected", {
-                count: selectedSellerIds.length,
-              })}
-            </span>
-            <Badge variant="default">{selectedSellerIds.length}</Badge>
-          </div>
-        )}
 
         {/* Loading state */}
         {isLoading && (

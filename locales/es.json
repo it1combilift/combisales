@@ -812,7 +812,7 @@
       "noUsersInSystem": "No se encontraron usuarios en el sistema",
       "deleteMultipleSuccess": "Usuarios eliminados exitosamente",
       "roles": {
-        "admin": "Administrador",
+        "admin": "Admin",
         "seller": "Vendedor",
         "dealer": "Distribuidor"
       },

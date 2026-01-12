@@ -814,7 +814,7 @@
     "noUsersInSystem": "No users found in the system",
     "deleteMultipleSuccess": "Users deleted successfully",
     "roles": {
-      "admin": "Administrator",
+      "admin": "Admin",
       "seller": "Seller",
       "dealer": "Dealer"
     },
