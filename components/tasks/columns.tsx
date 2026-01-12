@@ -61,7 +61,7 @@ const getStatusConfig = (status?: string, t?: (key: string) => string) => {
   }
 
   return {
-    label: t ? t("tasks.noState") : status || "Sin estado",
+    label: t ? t("tasks.noState") : "—",
     className: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
   };
 };
@@ -112,7 +112,21 @@ const getPriorityConfig = (priority?: string, t?: (key: string) => string) => {
     className: "",
   };
 };
-
+const getTaskTypeLabel = (
+  value: string | undefined,
+  t: (key: string) => string
+): string => {
+  if (!value) return "—";
+  const typeMap: Record<string, string> = {
+    "Propuesta de Visita": "tasks.types.visitProposal",
+    "Visita Comercial": "tasks.types.visitCommercial",
+    Demostración: "tasks.types.demonstration",
+    Oferta: "tasks.types.offer",
+    Cotización: "tasks.types.quote",
+    "Oferta / Cotización": "tasks.types.offerQuote",
+  };
+  return t(typeMap[value] || "tasks.type");
+};
 const formatDate = (dateString?: string, locale: string = "es-ES") => {
   if (!dateString) return "—";
   try {
@@ -180,10 +194,11 @@ export const columns: ColumnDef<ZohoTask>[] = [
       );
     },
     cell: ({ row }) => {
+      const { t } = useTranslation();
       const tipoDeTarea = row.getValue("Tipo_de_Tarea") as string | undefined;
       return (
         <span className="text-sm text-muted-foreground whitespace-nowrap">
-          {tipoDeTarea || "—"}
+          {getTaskTypeLabel(tipoDeTarea, t)}
         </span>
       );
     },

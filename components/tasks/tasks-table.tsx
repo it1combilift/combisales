@@ -5,6 +5,7 @@ import { Label } from "../ui/label";
 import { TaskCard } from "./task-card";
 import { Spinner } from "../ui/spinner";
 import { Skeleton } from "../ui/skeleton";
+import { EmptyCard } from "../empty-card";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +64,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { EmptyCard } from "../empty-card";
 
 const getTaskTypeLabel = (
   value: string,

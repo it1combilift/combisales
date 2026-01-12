@@ -37,6 +37,19 @@ export const TaskCard = ({
   const TASK_DETAIL_URL = (taskId: string) =>
     `/dashboard/tasks/${taskId}/details`;
 
+  const getTaskTypeLabel = (value?: string): string => {
+    if (!value) return "—";
+    const typeMap: Record<string, string> = {
+      "Propuesta de Visita": "tasks.types.visitProposal",
+      "Visita Comercial": "tasks.types.visitCommercial",
+      Demostración: "tasks.types.demonstration",
+      Oferta: "tasks.types.offer",
+      Cotización: "tasks.types.quote",
+      "Oferta / Cotización": "tasks.types.offerQuote",
+    };
+    return t(typeMap[value] || "tasks.type");
+  };
+
   const getStatusConfig = (status?: string) => {
     const statusMap: Record<
       string,
@@ -292,7 +305,7 @@ export const TaskCard = ({
         {/* Badges Row */}
         <div className="flex flex-wrap items-center gap-2">
           {task.Tipo_de_Tarea && (
-            <Badge variant="info">{task.Tipo_de_Tarea}</Badge>
+            <Badge variant="info">{getTaskTypeLabel(task.Tipo_de_Tarea)}</Badge>
           )}
 
           <Badge
