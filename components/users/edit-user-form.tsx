@@ -6,14 +6,15 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { updateUserSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditUserFormProps } from "@/interfaces/user";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SellersSelection } from "./sellers-selection";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
   Loader2,
@@ -44,7 +45,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useI18n } from "@/lib/i18n/context";
 
 const formSchema = updateUserSchema.omit({ id: true });
 
