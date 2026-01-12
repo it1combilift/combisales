@@ -3,18 +3,18 @@
 import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
-import { useState, useCallback } from "react";
 import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { createUserSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateUserFormProps } from "@/interfaces/user";
-import { useI18n } from "@/lib/i18n/context";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SellersSelection } from "./sellers-selection";
+import { CreateUserFormProps } from "@/interfaces/user";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
   Loader2,
@@ -103,7 +103,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
           <TabsList
             className={`grid w-full ${
               isDealerRole ? "grid-cols-4" : "grid-cols-3"
-            } mb-6 h-auto bg-muted/30 dark:bg-muted/50 p-1 rounded-lg border border-border/40`}
+            } mb-4 h-auto bg-muted/30 dark:bg-muted/50 p-0.5 rounded-lg border border-border/40`}
           >
             <TabsTrigger
               value="personal"
@@ -146,7 +146,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
           </TabsList>
 
           {/* Personal Information Tab */}
-          <TabsContent value="personal" className="space-y-4 mt-0">
+          <TabsContent value="personal" className="space-y-3 mt-0">
             <div className="grid grid-cols-1 gap-4">
               {/* Name Field */}
               <FormField
@@ -203,7 +203,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
           </TabsContent>
 
           {/* Security Tab */}
-          <TabsContent value="security" className="space-y-4 mt-0">
+          <TabsContent value="security" className="space-y-3 mt-0">
             <div className="grid grid-cols-1 gap-4">
               <FormField
                 control={form.control}
@@ -258,7 +258,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
           </TabsContent>
 
           {/* Configuration Tab */}
-          <TabsContent value="config" className="space-y-4 mt-0">
+          <TabsContent value="config" className="space-y-3 mt-0">
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -366,7 +366,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
               control={form.control}
               name="isActive"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                   <div className="space-y-0.5">
                     <FormLabel className="text-sm font-semibold flex items-center gap-2">
                       <CheckCircle2 className="size-4 text-muted-foreground" />
@@ -411,7 +411,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
         </Tabs>
 
         {/* Action Buttons */}
-        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-6 mt-6 border-t">
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-4 mt-4 border-t">
           <Button
             type="button"
             variant="outline"

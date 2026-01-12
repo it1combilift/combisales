@@ -1,9 +1,8 @@
 "use client";
 
-import axios from "axios";
 import { z } from "zod";
+import axios from "axios";
 import { toast } from "sonner";
-import { useState } from "react";
 import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { useI18n } from "@/lib/i18n/context";
@@ -14,6 +13,7 @@ import { updateUserSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditUserFormProps } from "@/interfaces/user";
 import { SellersSelection } from "./sellers-selection";
+import { useState, useCallback, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
@@ -52,6 +52,10 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useI18n();
 
+  // Extract assigned seller IDs
+  const assignedSellerIds = (user.assignedSellers?.map((as) => as.seller.id) ||
+    []) as string[];
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,13 +65,53 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       country: user.country || "",
       isActive: user.isActive,
       password: "",
-      assignedSellerIds: (user.assignedSellers?.map((as) => as.seller.id) ||
-        []) as string[],
+      assignedSellerIds: assignedSellerIds,
     },
   });
 
   const selectedRole = form.watch("role");
   const isDealerRole = selectedRole === Role.DEALER;
+
+  // Reset form when user changes (fixes assigned sellers not showing)
+  useEffect(() => {
+    const newAssignedSellerIds = (user.assignedSellers?.map(
+      (as) => as.seller.id
+    ) || []) as string[];
+
+    form.reset({
+      name: user.name || "",
+      email: user.email,
+      role: user.role,
+      country: user.country || "",
+      isActive: user.isActive,
+      password: "",
+      assignedSellerIds: newAssignedSellerIds,
+    });
+  }, [user.id]); // Only reset when user ID changes, not on every user object reference change
+
+  // Clear seller IDs when role changes FROM DEALER to another role
+  const handleRoleChange = useCallback(
+    (newRole: Role) => {
+      form.setValue("role", newRole, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      if (newRole !== Role.DEALER) {
+        form.setValue("assignedSellerIds", []);
+      }
+    },
+    [form]
+  );
+
+  const handleSellerSelectionChange = useCallback(
+    (ids: string[]) => {
+      form.setValue("assignedSellerIds", ids, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    },
+    [form]
+  );
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -139,11 +183,11 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
           <TabsList
             className={`grid w-full ${
               isDealerRole ? "grid-cols-3" : "grid-cols-2"
-            } mb-6 h-auto bg-muted/30 dark:bg-muted/50 p-1 rounded-lg border border-border/40`}
+            } mb-4 h-auto bg-muted/30 dark:bg-muted/50 p-0.5 rounded-lg border border-border/40`}
           >
             <TabsTrigger
               value="personal"
-              className="text-xs sm:text-sm py-2.5 sm:py-3 px-4 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
+              className="text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
             >
               <User className="size-4" />
               <span className="hidden xs:inline">
@@ -152,7 +196,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
             </TabsTrigger>
             <TabsTrigger
               value="config"
-              className="text-xs sm:text-sm py-2.5 sm:py-3 px-4 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
+              className="text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
             >
               <Settings className="size-4" />
               <span className="hidden xs:inline">{t("users.form.config")}</span>
@@ -160,7 +204,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
             {isDealerRole && (
               <TabsTrigger
                 value="sellers"
-                className="text-xs sm:text-sm py-2.5 sm:py-3 px-4 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
+                className="text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
               >
                 <Users className="size-4" />
                 <span className="hidden xs:inline">
@@ -171,8 +215,8 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
           </TabsList>
 
           {/* Personal & Security Tab */}
-          <TabsContent value="personal" className="space-y-4 mt-0">
-            <div className="grid grid-cols-1 gap-4">
+          <TabsContent value="personal" className="space-y-3 mt-0">
+            <div className="grid grid-cols-1 gap-3">
               <FormField
                 control={form.control}
                 name="name"
@@ -262,8 +306,8 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
           </TabsContent>
 
           {/* Configuration Tab */}
-          <TabsContent value="config" className="space-y-4 mt-0">
-            <div className="grid grid-cols-2 gap-4">
+          <TabsContent value="config" className="space-y-3 mt-0">
+            <div className="grid grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="role"
@@ -273,8 +317,8 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
                       {t("users.form.roleLabel")}
                     </FormLabel>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(value) => handleRoleChange(value as Role)}
+                      value={field.value}
                       disabled={isLoading}
                     >
                       <FormControl>
@@ -296,6 +340,17 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
                             <div className="size-2 rounded-full bg-blue-500" />
                             <span className="font-medium">
                               {t("users.roles.admin")}
+                            </span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem
+                          value={Role.DEALER}
+                          className="cursor-pointer text-xs sm:text-sm"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="size-2 rounded-full bg-amber-500" />
+                            <span className="font-medium">
+                              {t("users.roles.dealer")}
                             </span>
                           </div>
                         </SelectItem>
@@ -344,7 +399,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
               />
             </div>
 
-            <div className="pt-2">
+            <div className="pt-1">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-3.5 text-muted-foreground" />
                 <h4 className="text-xs font-medium text-muted-foreground">
@@ -357,7 +412,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
               control={form.control}
               name="isActive"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                   <div className="space-y-0.5">
                     <FormLabel className="text-sm font-semibold flex items-center gap-2">
                       <CheckCircle2 className="size-4 text-muted-foreground" />
@@ -389,10 +444,9 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
                   <FormItem>
                     <FormControl>
                       <SellersSelection
+                        key={`sellers-${user.id}`}
                         selectedSellerIds={field.value ?? []}
-                        onSelectionChange={(ids) => {
-                          field.onChange(ids);
-                        }}
+                        onSelectionChange={handleSellerSelectionChange}
                       />
                     </FormControl>
                     <FormMessage />
@@ -404,7 +458,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         </Tabs>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-2.5 sm:gap-3 pt-6 mt-6 border-t">
+        <div className="flex justify-end gap-2.5 sm:gap-3 pt-4 mt-4 border-t">
           <Button
             type="submit"
             disabled={isLoading || !form.formState.isDirty}

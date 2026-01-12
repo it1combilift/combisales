@@ -53,6 +53,17 @@ export async function GET() {
           },
           take: 1,
         },
+        assignedSellers: {
+          select: {
+            seller: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -94,6 +105,7 @@ export async function GET() {
           lastLoginAt: lastLogin?.createdAt || null,
           zohoId: zohoAccount?.providerAccountId || null, // ZUID
           hasActiveSession: user.sessions.length > 0,
+          assignedSellers: user.assignedSellers, // Include assigned sellers for DEALER users
         };
       })
     );

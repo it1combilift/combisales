@@ -3,11 +3,11 @@
 import * as React from "react";
 import { Role } from "@prisma/client";
 import { CheckCheck, X } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { ColumnFiltersState } from "@tanstack/react-table";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   Users,

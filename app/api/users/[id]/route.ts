@@ -188,6 +188,13 @@ export async function PATCH(
       }
     }
 
+    // Si cambia de DEALER a otro rol, eliminar todas las relaciones
+    if (role && role !== Role.DEALER && userToUpdate.role === Role.DEALER) {
+      await prisma.dealerSeller.deleteMany({
+        where: { dealerId: id },
+      });
+    }
+
     const updateData: UpdateUserInput = {};
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;

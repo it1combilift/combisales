@@ -894,7 +894,16 @@
           "selected": "{{count}} vendedor(es) seleccionado(s)",
           "selectAll": "Seleccionar todos",
           "deselectAll": "Deseleccionar todos",
-          "errorLoading": "Error al cargar vendedores"
+          "errorLoading": "Error al cargar vendedores",
+          "assigned": "Vendedores asignados",
+          "assignedDescription": "Vendedores que reportan a este dealer",
+          "noAssigned": "No hay vendedores asignados",
+          "available": "Vendedores disponibles",
+          "availableDescription": "Selecciona vendedores para asignar",
+          "noAvailable": "Todos los vendedores activos ya están asignados",
+          "noResults": "No se encontraron vendedores con ese criterio",
+          "addSeller": "Asignar vendedor",
+          "removeSeller": "Eliminar vendedor"
         }
       },
       "table": {

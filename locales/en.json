@@ -896,7 +896,16 @@
         "selected": "{{count}} seller(s) selected",
         "selectAll": "Select all",
         "deselectAll": "Deselect all",
-        "errorLoading": "Error loading sellers"
+        "errorLoading": "Error loading sellers",
+        "assigned": "Assigned sellers",
+        "assignedDescription": "Sellers reporting to this dealer",
+        "noAssigned": "No sellers assigned",
+        "available": "Available sellers",
+        "availableDescription": "Select sellers to assign",
+        "noAvailable": "All active sellers are already assigned",
+        "noResults": "No sellers found with that criteria",
+        "addSeller": "Add seller",
+        "removeSeller": "Remove seller"
       }
     },
     "table": {
