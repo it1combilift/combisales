@@ -177,7 +177,7 @@ export function TasksTable({
     parseAsString.withDefault("")
   );
   const [tipoFilter, setTipoFilter] = useQueryState(
-    "tipo",
+    "type",
     parseAsString.withDefault("")
   );
   const [showFilters, setShowFilters] = React.useState(false);
@@ -579,7 +579,9 @@ export function TasksTable({
               <div className="flex items-center gap-2">
                 <Select
                   value={tipoFilter || undefined}
-                  onValueChange={(value) => setTipoFilter(value)}
+                  onValueChange={(value) => {
+                    setTipoFilter(value);
+                  }}
                 >
                   <SelectTrigger className="h-9 text-sm">
                     <SelectValue
