@@ -56,7 +56,7 @@ export function UserCard({
   const { t, locale } = useI18n();
   return (
     <Card className="relative">
-      <CardHeader className="pb-4 px-1">
+      <CardHeader className="pb-4 px-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <Checkbox
