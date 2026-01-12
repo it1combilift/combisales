@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { Shield, Key, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { useI18n } from "@/lib/i18n/context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   Card,
   CardContent,
@@ -38,7 +39,6 @@ export default function ProfileContent({ user }: ProfileContentProps) {
         <TabsTrigger value="personal">{t("profile.tabs.personal")}</TabsTrigger>
         <TabsTrigger value="account">{t("profile.tabs.account")}</TabsTrigger>
         <TabsTrigger value="security">{t("profile.tabs.security")}</TabsTrigger>
-        <TabsTrigger value="notifications">{t("profile.tabs.notifications")}</TabsTrigger>
       </TabsList>
 
       {/* Personal Information */}
@@ -240,71 +240,6 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                   <Shield className="mr-2 h-4 w-4" />
                   {t("profile.security.viewSessions")}
                 </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      {/* Notification Settings */}
-      <TabsContent value="notifications" className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("profile.notifications.title")}</CardTitle>
-            <CardDescription>
-              {t("profile.notifications.description")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">{t("profile.notifications.email")}</Label>
-                  <p className="text-muted-foreground text-sm">
-                    {t("profile.notifications.emailDescription")}
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">{t("profile.notifications.push")}</Label>
-                  <p className="text-muted-foreground text-sm">
-                    {t("profile.notifications.pushDescription")}
-                  </p>
-                </div>
-                <Switch />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">{t("profile.notifications.marketing")}</Label>
-                  <p className="text-muted-foreground text-sm">
-                    {t("profile.notifications.marketingDescription")}
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">{t("profile.notifications.weeklySummary")}</Label>
-                  <p className="text-muted-foreground text-sm">
-                    {t("profile.notifications.weeklySummaryDescription")}
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-base">{t("profile.notifications.securityAlerts")}</Label>
-                  <p className="text-muted-foreground text-sm">
-                    {t("profile.notifications.securityAlertsDescription")}
-                  </p>
-                </div>
-                <Switch checked disabled />
               </div>
             </div>
           </CardContent>

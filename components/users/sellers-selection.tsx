@@ -1,8 +1,17 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { cn } from "@/lib/utils";
+import { Spinner } from "../ui/spinner";
 import { useI18n } from "@/lib/i18n/context";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { SellerInfo } from "@/interfaces/user";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState, useEffect, useMemo } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Search, User, CheckSquare, Square } from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -10,14 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, User, CheckSquare, Square } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Spinner } from "../ui/spinner";
 
 interface SellersSelectionProps {
   selectedSellerIds: string[];

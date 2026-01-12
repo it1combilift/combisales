@@ -65,8 +65,23 @@ import {
 } from "../ui/select";
 import { EmptyCard } from "../empty-card";
 
+const getTaskTypeLabel = (
+  value: string,
+  t: (key: string) => string
+): string => {
+  const typeMap: Record<string, string> = {
+    "Propuesta de Visita": "tasks.types.visitProposal",
+    "Visita Comercial": "tasks.types.visitCommercial",
+    Demostración: "tasks.types.demonstration",
+    Oferta: "tasks.types.offer",
+    Cotización: "tasks.types.quote",
+    "Oferta / Cotización": "tasks.types.offerQuote",
+  };
+  return t(typeMap[value] || "tasks.type");
+};
+
 const getFilterLabel = (
-  type: "status" | "priority",
+  type: "status" | "priority" | "taskType",
   value: string,
   t: (key: string) => string
 ): string => {
@@ -90,6 +105,10 @@ const getFilterLabel = (
       Lowest: "tasks.priorities.lowest",
     };
     return t(priorityMap[value] || "tasks.priority");
+  }
+
+  if (type === "taskType") {
+    return getTaskTypeLabel(value, t);
   }
 
   return value;
@@ -285,8 +304,8 @@ export function TasksTable({
     <div className="w-full space-y-4">
       {/* Search and Filter Bar */}
       <div className="flex flex-col gap-3">
-        <div className="flex flex-row items-center justify-between gap-3">
-          <div className="flex flex-col items-start justify-center gap-2">
+        <div className="flex flex-row items-center justify-between gap-3 flex-wrap">
+          <div className="flex flex-col items-start justify-center gap-2 flex-wrap">
             <div className="relative flex-1 max-w-full sm:max-w-sm">
               <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -310,13 +329,13 @@ export function TasksTable({
             </div>
 
             {externalSearchQuery && !isSearching && (
-              <span className="hidden sm:inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary whitespace-nowrap">
+              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary whitespace-nowrap">
                 {t("common.resultsFor")} &quot;{externalSearchQuery}&quot;
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {(statusFilter || priorityFilter || tipoFilter) && (
               <div className="flex items-center gap-2 flex-wrap">
                 {statusFilter && (
@@ -345,7 +364,8 @@ export function TasksTable({
                 )}
                 {tipoFilter && (
                   <Badge variant="secondary" className="text-xs">
-                    {t("taskPage.filters.type")}: {tipoFilter}
+                    {t("taskPage.filters.type")}:{" "}
+                    {getFilterLabel("taskType", tipoFilter, t)}
                     <button
                       onClick={() => setTipoFilter("")}
                       className="ml-1 hover:text-destructive"
@@ -569,7 +589,7 @@ export function TasksTable({
                   <SelectContent>
                     {COMMERCIAL_TASK_TYPES.map((tipo) => (
                       <SelectItem key={tipo} value={tipo}>
-                        {tipo}
+                        {getTaskTypeLabel(tipo, t)}
                       </SelectItem>
                     ))}
                   </SelectContent>

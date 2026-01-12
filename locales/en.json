@@ -421,6 +421,7 @@
     "createdDate": "Created date",
     "noTasksFound": "No tasks found",
     "searchPlaceholder": "Search tasks...",
+    "moreTasksLoaded": "{{count}} more tasks loaded",
     "createTask": "Create task",
     "viewDetails": "View details",
     "createVisit": "Create visit",
@@ -451,11 +452,12 @@
     "tryDifferentSearch": "Try different search terms",
     "clearFiltersToSeeAll": "Clear filters to see all tasks",
     "types": {
-      "visitProposal": "Visit proposal",
+      "visitProposal": "Visit Proposal",
+      "visitCommercial": "Commercial Visit",
       "demonstration": "Demonstration",
       "offer": "Offer",
       "quote": "Quote",
-      "offerQuote": "Offer/Quote"
+      "offerQuote": "Offer / Quote"
     },
     "statuses": {
       "notStarted": "Not started",

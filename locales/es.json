@@ -419,6 +419,7 @@
     "createdDate": "Fecha de creación",
     "noTasksFound": "No se encontraron tareas",
     "searchPlaceholder": "Buscar tareas...",
+    "moreTasksLoaded": "{{count}} tareas más cargadas",
     "createTask": "Crear tarea",
     "viewDetails": "Ver detalles",
     "createVisit": "Crear visita",
@@ -449,11 +450,12 @@
     "tryDifferentSearch": "Intenta con otros términos de búsqueda",
     "clearFiltersToSeeAll": "Limpia los filtros para ver todas las tareas",
     "types": {
-      "visitProposal": "Propuesta de visita",
+      "visitProposal": "Propuesta de Visita",
+      "visitCommercial": "Visita Comercial",
       "demonstration": "Demostración",
       "offer": "Oferta",
       "quote": "Cotización",
-      "offerQuote": "Oferta/Cotización"
+      "offerQuote": "Oferta / Cotización"
     },
     "statuses": {
       "notStarted": "No iniciada",

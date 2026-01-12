@@ -7,6 +7,7 @@ import { Customer } from "@/interfaces/visits";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useTranslation } from "@/lib/i18n/context";
+import { EmptyCard } from "@/components/empty-card";
 import { columns } from "@/components/tasks/columns";
 import { H1, Paragraph } from "@/components/fonts/fonts";
 import { ColumnFiltersState } from "@tanstack/react-table";
@@ -14,7 +15,6 @@ import { TasksTable } from "@/components/tasks/tasks-table";
 import { RefreshCw, ListTodo, FilterX } from "lucide-react";
 import { useState, useCallback, useRef, useEffect } from "react";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
-import { EmptyCard } from "@/components/empty-card";
 
 const PER_PAGE = 200;
 const INITIAL_LOAD_ONLY_FIRST_PAGE = true;
@@ -193,11 +193,7 @@ export default function TasksPage() {
         isLoadingMore: false,
       });
 
-      toast.success(
-        t("plurals.items_other", { count: newTasks.length }) +
-          " " +
-          t("common.tasks").toLowerCase()
-      );
+      toast.success(t("tasks.moreTasksLoaded", { count: newTasks.length }));
     } catch (err) {
       console.error("Error loading more tasks:", err);
       toast.error(t("errors.loadingMore"));

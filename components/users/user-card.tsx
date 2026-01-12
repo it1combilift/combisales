@@ -1,8 +1,9 @@
 "use client";
 
-import { UserListItem } from "@/interfaces/user";
+import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UserListItem } from "@/interfaces/user";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { getInitials, formatDate, getRoleBadge } from "@/lib/utils";
@@ -25,7 +26,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   DropdownMenu,
@@ -56,7 +56,7 @@ export function UserCard({
   const { t, locale } = useI18n();
   return (
     <Card className="relative">
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4 px-1">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <Checkbox
@@ -76,8 +76,8 @@ export function UserCard({
                 {getInitials(user.name)}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col min-w-0 flex-1">
-              <CardTitle className="text-base truncate">
+            <div className="flex flex-col max-w-xs overflow-hidden">
+              <CardTitle className="text-base truncate font-semibold">
                 {user.name || t("users.card.noName")}
               </CardTitle>
               <CardDescription className="truncate">

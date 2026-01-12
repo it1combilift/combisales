@@ -301,7 +301,7 @@ export default function UsersPage() {
               <Paragraph>{t("users.description")}</Paragraph>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap md:justify-end">
               {selectedUserIds.length > 0 && (
                 <div className="flex items-center gap-2">
                   <Button
