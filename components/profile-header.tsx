@@ -7,10 +7,8 @@ import { H1, Paragraph } from "./fonts/fonts";
 import { Button } from "@/components/ui/button";
 import { getInitials, getRoleBadge } from "@/lib/utils";
 import { ProfileUser } from "@/components/profile/profile-edit-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import { Camera, LogOut, Mail, Pencil, ShieldCheck } from "lucide-react";
-import { Separator } from "./ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileHeaderProps {
   user: ProfileUser;
