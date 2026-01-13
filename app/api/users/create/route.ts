@@ -46,6 +46,7 @@ export async function POST(request: Request) {
       role,
       country,
       isActive,
+      image,
       assignedSellerIds,
     } = validation.data;
 
@@ -92,6 +93,7 @@ export async function POST(request: Request) {
         role,
         country: country || null,
         isActive: isActive ?? true,
+        image: image || null,
         ...(role === Role.DEALER &&
         assignedSellerIds &&
         assignedSellerIds.length > 0
@@ -111,6 +113,7 @@ export async function POST(request: Request) {
         role: true,
         country: true,
         isActive: true,
+        image: true,
         createdAt: true,
         assignedSellers: {
           select: {

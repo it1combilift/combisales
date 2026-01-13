@@ -7,13 +7,14 @@ import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { createUserSchema } from "@/schemas/auth";
+import { createUserSchemaFactory } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SellersSelection } from "./sellers-selection";
 import { CreateUserFormProps } from "@/interfaces/user";
+import { ProfileImageUpload } from "./profile-image-upload";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
@@ -50,6 +51,9 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
 
+  // Create schema with translations
+  const createUserSchema = useMemo(() => createUserSchemaFactory(t), [t]);
+
   const form = useForm<z.infer<typeof createUserSchema>>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
@@ -60,6 +64,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       role: Role.SELLER,
       country: "",
       isActive: true,
+      image: null,
       assignedSellerIds: [] as string[],
     },
   });
@@ -70,6 +75,16 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   const handleSellerSelectionChange = useCallback(
     (ids: string[]) => {
       form.setValue("assignedSellerIds", ids, { shouldValidate: true });
+    },
+    [form]
+  );
+
+  const handleImageChange = useCallback(
+    (imageUrl: string | null) => {
+      form.setValue("image", imageUrl, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     },
     [form]
   );
@@ -147,6 +162,25 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
 
           {/* Personal Information Tab */}
           <TabsContent value="personal" className="space-y-3 mt-0">
+            {/* Profile Image */}
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem className="flex flex-col items-center">
+                  <FormControl>
+                    <ProfileImageUpload
+                      currentImage={field.value}
+                      userName={form.watch("name")}
+                      onImageChange={handleImageChange}
+                      disabled={isLoading}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
             <div className="grid grid-cols-1 gap-4">
               {/* Name Field */}
               <FormField

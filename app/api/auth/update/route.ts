@@ -52,9 +52,9 @@ export async function PATCH(request: Request) {
       }
     }
 
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (name) updateData.name = name;
-    if (image) updateData.image = image;
+    if (image !== undefined) updateData.image = image;
     if (newPassword) {
       updateData.password = await hash(newPassword, 12);
     }

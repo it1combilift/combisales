@@ -125,6 +125,7 @@ export async function PATCH(
       country,
       isActive,
       password,
+      image,
       assignedSellerIds,
     } = validation.data;
 
@@ -201,6 +202,7 @@ export async function PATCH(
     if (role !== undefined) updateData.role = role;
     if (country !== undefined) updateData.country = country;
     if (isActive !== undefined) updateData.isActive = isActive;
+    if (image !== undefined) updateData.image = image;
     if (password) {
       updateData.password = await hash(password, 12);
     }

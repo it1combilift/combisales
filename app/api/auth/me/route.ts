@@ -21,9 +21,13 @@ export async function GET() {
         name: true,
         email: true,
         image: true,
+        role: true,
+        country: true,
+        isActive: true,
         emailVerified: true,
         createdAt: true,
         updatedAt: true,
+        password: true, // To check if password is configured
         accounts: {
           select: {
             provider: true,
@@ -40,7 +44,15 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ user });
+    // Return user data without exposing password hash
+    const { password, ...userData } = user;
+
+    return NextResponse.json({
+      user: {
+        ...userData,
+        hasPassword: !!password, // Indicate if user has password configured
+      },
+    });
   } catch (error) {
     console.error("Error al obtener usuario:", error);
     return NextResponse.json(

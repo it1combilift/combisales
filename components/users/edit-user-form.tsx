@@ -9,11 +9,12 @@ import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { updateUserSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditUserFormProps } from "@/interfaces/user";
 import { SellersSelection } from "./sellers-selection";
-import { useState, useCallback, useEffect } from "react";
+import { ProfileImageUpload } from "./profile-image-upload";
+import { createUpdateUserSchemaFactory } from "@/schemas/auth";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
@@ -46,11 +47,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const formSchema = updateUserSchema.omit({ id: true });
-
 export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useI18n();
+
+  // Create schema with translations
+  const updateUserSchema = useMemo(
+    () =>
+      createUpdateUserSchemaFactory(
+        t as (key: string, values?: Record<string, string | number>) => string
+      ),
+    [t]
+  );
+  const formSchema = useMemo(
+    () => updateUserSchema.omit({ id: true }),
+    [updateUserSchema]
+  );
 
   // Extract assigned seller IDs
   const assignedSellerIds = (user.assignedSellers?.map((as) => as.seller.id) ||
@@ -65,6 +77,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       country: user.country || "",
       isActive: user.isActive,
       password: "",
+      image: user.image || null,
       assignedSellerIds: assignedSellerIds,
     },
   });
@@ -85,6 +98,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       country: user.country || "",
       isActive: user.isActive,
       password: "",
+      image: user.image || null,
       assignedSellerIds: newAssignedSellerIds,
     });
   }, [user.id]); // Only reset when user ID changes, not on every user object reference change
@@ -106,6 +120,16 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   const handleSellerSelectionChange = useCallback(
     (ids: string[]) => {
       form.setValue("assignedSellerIds", ids, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    },
+    [form]
+  );
+
+  const handleImageChange = useCallback(
+    (imageUrl: string | null) => {
+      form.setValue("image", imageUrl, {
         shouldValidate: true,
         shouldDirty: true,
       });
@@ -138,6 +162,11 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       }
       if (values.password && values.password.trim().length > 0) {
         updateData.password = values.password;
+      }
+
+      // Handle image update (including removal with null)
+      if (values.image !== user.image) {
+        updateData.image = values.image;
       }
 
       // Handle DEALER sellers assignment
@@ -216,6 +245,25 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
 
           {/* Personal & Security Tab */}
           <TabsContent value="personal" className="space-y-3 mt-0">
+            {/* Profile Image */}
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem className="flex flex-col items-center">
+                  <FormControl>
+                    <ProfileImageUpload
+                      currentImage={field.value}
+                      userName={form.watch("name")}
+                      onImageChange={handleImageChange}
+                      disabled={isLoading}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
             <div className="grid grid-cols-1 gap-3">
               <FormField
                 control={form.control}

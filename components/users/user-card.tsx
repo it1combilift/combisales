@@ -66,10 +66,11 @@ export function UserCard({
               })}
               className="mt-1"
             />
-            <Avatar className="size-12 rounded-lg shrink-0">
+            <Avatar className="size-16 rounded-lg shrink-0">
               <AvatarImage
                 src={user.image || undefined}
                 alt={user.name || ""}
+                className="object-cover object-center"
               />
               <AvatarFallback className="text-sm font-semibold rounded-lg bg-linear-to-br from-primary/20 to-primary/5">
                 {getInitials(user.name)}

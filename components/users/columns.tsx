@@ -84,7 +84,9 @@ export const createColumns = ({
       return (
         <div className="flex items-center gap-3">
           <Avatar className="size-10 rounded-lg">
-            <AvatarImage src={user.image || undefined} alt={user.name || ""} />
+            <AvatarImage src={user.image || undefined} alt={user.name || ""}
+            className="object-cover object-center"
+            />
             <AvatarFallback className="text-sm font-semibold rounded-lg bg-linear-to-br from-primary/20 to-primary/5">
               {getInitials(user.name)}
             </AvatarFallback>

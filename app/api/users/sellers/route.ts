@@ -38,6 +38,7 @@ export async function GET() {
         name: true,
         email: true,
         country: true,
+        image: true,
       },
       orderBy: {
         name: "asc",

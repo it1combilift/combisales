@@ -83,7 +83,16 @@
       "minLength": "Mínimo {{min}} caracteres",
       "maxLength": "Máximo {{max}} caracteres",
       "passwordMatch": "Las contraseñas no coinciden",
-      "invalidFormat": "Formato inválido"
+      "invalidFormat": "Formato inválido",
+      "invalidEmail": "Por favor ingresa un correo válido",
+      "invalidRole": "Rol inválido",
+      "invalidUserId": "ID de usuario inválido",
+      "invalidImageUrl": "URL de imagen inválida",
+      "nameMinLength": "El nombre debe tener al menos 2 caracteres",
+      "passwordMinLength": "La contraseña debe tener al menos {{min}} caracteres",
+      "passwordMinLength6": "La contraseña debe tener al menos 6 caracteres",
+      "passwordMinLength8": "La contraseña debe tener al menos 8 caracteres",
+      "minOneId": "Debe proporcionar al menos un ID"
     },
     "messages": {
       "success": "Operación exitosa",
@@ -905,6 +914,16 @@
           "noResults": "No se encontraron vendedores con ese criterio",
           "addSeller": "Asignar vendedor",
           "removeSeller": "Eliminar vendedor"
+        },
+        "image": {
+          "upload": "Subir foto",
+          "change": "Cambiar",
+          "remove": "Eliminar",
+          "uploading": "Subiendo...",
+          "uploadError": "Error al subir imagen",
+          "invalidType": "Solo se permiten imágenes JPG, PNG, WebP o GIF",
+          "tooLarge": "La imagen debe ser menor a 5MB",
+          "hint": "Arrastra o haz clic para subir"
         }
       },
       "table": {
@@ -1010,7 +1029,53 @@
         "description": "Acciones irreversibles y destructivas",
         "deleteAccount": "Eliminar cuenta",
         "deleteAccountDescription": "Eliminar permanentemente tu cuenta y todos los datos"
-      }
+      },
+      "header": {
+        "editProfile": "Editar perfil",
+        "changePhoto": "Cambiar foto",
+        "authenticatedWith": "Autenticado con {{provider}}",
+        "company": "Combilift"
+      },
+      "edit": {
+        "title": "Editar perfil",
+        "description": "Actualiza tu información personal e imagen de perfil",
+        "name": "Nombre completo",
+        "namePlaceholder": "Juan Pérez",
+        "nameRequired": "El nombre es requerido",
+        "nameMinLength": "El nombre debe tener al menos 2 caracteres",
+        "image": "Imagen de perfil",
+        "currentPassword": "Contraseña actual",
+        "currentPasswordPlaceholder": "Ingresa tu contraseña actual",
+        "currentPasswordRequired": "La contraseña actual es requerida para cambiar la contraseña",
+        "newPassword": "Nueva contraseña",
+        "newPasswordPlaceholder": "Ingresa tu nueva contraseña",
+        "newPasswordHint": "Deja en blanco para mantener la contraseña actual",
+        "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
+        "passwordSection": "Cambiar contraseña",
+        "passwordSectionDescription": "Deja ambos campos vacíos para mantener tu contraseña actual",
+        "saving": "Guardando...",
+        "save": "Guardar cambios",
+        "cancel": "Cancelar",
+        "success": "Perfil actualizado correctamente",
+        "error": "Error al actualizar el perfil",
+        "invalidCurrentPassword": "La contraseña actual es incorrecta",
+        "noPasswordConfigured": "No hay contraseña configurada para esta cuenta"
+      },
+      "info": {
+        "title": "Información de cuenta",
+        "description": "Detalles y estado de tu cuenta",
+        "createdAt": "Cuenta creada",
+        "updatedAt": "Última actualización",
+        "authMethods": "Métodos de autenticación",
+        "credentials": "Correo y contraseña",
+        "zoho": "Zoho",
+        "google": "Google",
+        "status": "Estado de cuenta",
+        "statusActive": "Activa",
+        "statusInactive": "Inactiva"
+      },
+      "loading": "Cargando perfil...",
+      "errorLoading": "Error al cargar el perfil"
     },
     "forms": {
       "selectOption": "Seleccionar opción",

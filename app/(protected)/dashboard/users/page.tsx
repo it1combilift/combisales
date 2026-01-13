@@ -299,6 +299,11 @@ export default function UsersPage() {
             <div className="space-y-1">
               <H1>{t("users.title")}</H1>
               <Paragraph>{t("users.description")}</Paragraph>
+              <Paragraph>
+                {isLoading || isRefreshing
+                  ? t("common.loading")
+                  : t("users.usersLoaded", { count: filteredUsers.length })}
+              </Paragraph>
             </div>
 
             <div className="flex gap-2 flex-wrap md:justify-end">

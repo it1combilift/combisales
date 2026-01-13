@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { getInitials } from "@/lib/utils";
 import { Spinner } from "../ui/spinner";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, User, X, Plus, ChevronDown, ChevronUp } from "lucide-react";
 
 import {
@@ -176,6 +178,15 @@ export function SellersSelection({
                           key={seller.id}
                           className="flex items-center gap-2 py-1.5 px-2 rounded-md bg-background border touch-manipulation"
                         >
+                          <Avatar className="size-7 shrink-0">
+                            <AvatarImage
+                              src={seller.image || undefined}
+                              alt={seller.name || seller.email}
+                            />
+                            <AvatarFallback className="text-[10px] bg-primary/10">
+                              {getInitials(seller.name)}
+                            </AvatarFallback>
+                          </Avatar>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-[11px] truncate leading-tight">
                               {seller.name || seller.email}
@@ -262,9 +273,18 @@ export function SellersSelection({
                       {availableSellers.map((seller) => (
                         <div
                           key={seller.id}
-                          className="flex items-center gap-2 py-1.5 px-2 rounded-md border hover:bg-accent/50 active:bg-accent transition-colors touch-manipulation"
+                          className="flex items-center gap-2 py-1.5 px-2 rounded-md border hover:bg-accent/50 active:bg-accent transition-colors touch-manipulation cursor-pointer"
                           onClick={() => handleAddSeller(seller.id)}
                         >
+                          <Avatar className="size-7 shrink-0">
+                            <AvatarImage
+                              src={seller.image || undefined}
+                              alt={seller.name || seller.email}
+                            />
+                            <AvatarFallback className="text-[10px] bg-muted">
+                              {getInitials(seller.name)}
+                            </AvatarFallback>
+                          </Avatar>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-[11px] truncate leading-tight">
                               {seller.name || seller.email}

@@ -67,6 +67,7 @@ export interface SellerInfo {
   name: string | null;
   email: string;
   country: string | null;
+  image?: string | null;
 }
 
 export interface EditUserFormProps {

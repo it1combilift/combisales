@@ -83,7 +83,16 @@
     "minLength": "Minimum {{min}} characters",
     "maxLength": "Maximum {{max}} characters",
     "passwordMatch": "Passwords do not match",
-    "invalidFormat": "Invalid format"
+    "invalidFormat": "Invalid format",
+    "invalidEmail": "Please enter a valid email",
+    "invalidRole": "Invalid role",
+    "invalidUserId": "Invalid user ID",
+    "invalidImageUrl": "Invalid image URL",
+    "nameMinLength": "Name must be at least 2 characters",
+    "passwordMinLength": "Password must be at least {{min}} characters",
+    "passwordMinLength6": "Password must be at least 6 characters",
+    "passwordMinLength8": "Password must be at least 8 characters",
+    "minOneId": "Must provide at least one ID"
   },
   "messages": {
     "success": "Operation successful",
@@ -907,6 +916,16 @@
         "noResults": "No sellers found with that criteria",
         "addSeller": "Add seller",
         "removeSeller": "Remove seller"
+      },
+      "image": {
+        "upload": "Upload photo",
+        "change": "Change",
+        "remove": "Remove",
+        "uploading": "Uploading...",
+        "uploadError": "Error uploading image",
+        "invalidType": "Only JPG, PNG, WebP or GIF images allowed",
+        "tooLarge": "Image must be less than 5MB",
+        "hint": "Drag & drop or click to upload"
       }
     },
     "table": {
@@ -1012,7 +1031,53 @@
       "description": "Irreversible and destructive actions",
       "deleteAccount": "Delete Account",
       "deleteAccountDescription": "Permanently delete your account and all data"
-    }
+    },
+    "header": {
+      "editProfile": "Edit profile",
+      "changePhoto": "Change photo",
+      "authenticatedWith": "Authenticated with {{provider}}",
+      "company": "Combilift"
+    },
+    "edit": {
+      "title": "Edit profile",
+      "description": "Update your personal information and profile image",
+      "name": "Full name",
+      "namePlaceholder": "John Doe",
+      "nameRequired": "Name is required",
+      "nameMinLength": "Name must be at least 2 characters",
+      "image": "Profile image",
+      "currentPassword": "Current password",
+      "currentPasswordPlaceholder": "Enter current password",
+      "currentPasswordRequired": "Current password is required to change password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Enter new password",
+      "newPasswordHint": "Leave blank to keep current password",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "passwordSection": "Change Password",
+      "passwordSectionDescription": "Leave both fields empty to keep your current password",
+      "saving": "Saving...",
+      "save": "Save changes",
+      "cancel": "Cancel",
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile",
+      "invalidCurrentPassword": "Current password is incorrect",
+      "noPasswordConfigured": "No password configured for this account"
+    },
+    "info": {
+      "title": "Account Information",
+      "description": "Your account details and status",
+      "createdAt": "Account created",
+      "updatedAt": "Last updated",
+      "authMethods": "Authentication methods",
+      "credentials": "Email & Password",
+      "zoho": "Zoho",
+      "google": "Google",
+      "status": "Account status",
+      "statusActive": "Active",
+      "statusInactive": "Inactive"
+    },
+    "loading": "Loading profile...",
+    "errorLoading": "Error loading profile"
   },
   "forms": {
     "selectOption": "Select option",
