@@ -7,13 +7,14 @@ import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { IconTruckDelivery } from "@tabler/icons-react";
 import type { ColumnFiltersState } from "@tanstack/react-table";
 
 import {
   Users,
   Search,
   ShieldCheck,
-  Package,
+  PackageCheck,
   CheckCircle2,
   XCircle,
 } from "lucide-react";
@@ -132,8 +133,14 @@ export function UsersFilters({
               </SelectItem>
               <SelectItem value={Role.SELLER}>
                 <div className="flex items-center gap-2">
-                  <Package className="size-3.5" />
+                  <PackageCheck className="size-3.5" />
                   <span>{t("users.roles.seller")}</span>
+                </div>
+              </SelectItem>
+              <SelectItem value={Role.DEALER}>
+                <div className="flex items-center gap-2">
+                  <IconTruckDelivery className="size-3.5" />
+                  <span>{t("users.roles.dealer")}</span>
                 </div>
               </SelectItem>
             </SelectContent>

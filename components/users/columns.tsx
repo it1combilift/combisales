@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Role, UserListItem } from "@/interfaces/user";
-import { getInitials, formatDate, getRoleBadge } from "@/lib/utils";
+import { getInitials, getRoleBadge, formatDateShort } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
@@ -140,7 +140,7 @@ export const createColumns = ({
     cell: ({ row }) => {
       return (
         <div className="text-sm text-muted-foreground">
-          {formatDate(row.getValue("createdAt"), locale)}
+          {formatDateShort(row.getValue("createdAt"), locale)}
         </div>
       );
     },
@@ -196,13 +196,13 @@ export const createColumns = ({
             >
               {method === "zoho" ? (
                 <>
-                  <KeyRound className="size-3 mr-1" />
+                  <KeyRound className="size-3" />
                   {t("users.providers.zoho")}
                 </>
               ) : (
                 <>
-                  <ShieldOff className="size-3 mr-1" />
-                  Email
+                  <ShieldOff className="size-3" />
+                  {t("users.providers.email")}
                 </>
               )}
             </Badge>
@@ -229,7 +229,9 @@ export const createColumns = ({
       const lastLogin = row.getValue("lastLoginAt") as Date | null;
       return (
         <div className="text-sm text-muted-foreground">
-          {lastLogin ? formatDate(lastLogin, locale) : t("users.card.never")}
+          {lastLogin
+            ? formatDateShort(lastLogin, locale)
+            : t("users.card.never")}
         </div>
       );
     },

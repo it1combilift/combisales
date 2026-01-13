@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { clsx, type ClassValue } from "clsx";
 import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, PackageCheck } from "lucide-react";
+import { IconTruckDelivery } from "@tabler/icons-react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -72,7 +73,7 @@ export function getRoleBadge(role: Role, label?: string) {
   if (role === Role.DEALER) {
     return (
       <Badge variant="outline-warning">
-        <ShieldCheck className="size-3.5" />
+        <IconTruckDelivery className="size-3.5" />
         {label || "Dealer"}
       </Badge>
     );

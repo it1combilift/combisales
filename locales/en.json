@@ -782,9 +782,9 @@
     "title": "Users",
     "description": "Manage system users",
     "createUser": "Create user",
-    "createUserDescription": "Create a new user",
+    "createUserDescription": "Create a new user in the system",
     "editUser": "Edit user",
-    "editUserDescription": "Edit user details",
+    "editUserDescription": "Edit existing user information and settings",
     "deleteUser": "Delete user",
     "deleteMultiple": "Delete selected",
     "noUsersFound": "No users found",
@@ -820,7 +820,8 @@
     },
     "providers": {
       "credentials": "Credentials",
-      "zoho": "Zoho"
+      "zoho": "Zoho",
+      "noAuthMethods": "Not specified"
     },
     "card": {
       "role": "Role",

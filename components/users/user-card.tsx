@@ -5,8 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserListItem } from "@/interfaces/user";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import { getInitials, formatDate, getRoleBadge } from "@/lib/utils";
+import { getInitials, getRoleBadge, formatDateShort } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
@@ -56,7 +55,7 @@ export function UserCard({
   const { t, locale } = useI18n();
   return (
     <Card className="relative">
-      <CardHeader className="pb-4 px-3">
+      <CardHeader className="p-0 px-3 border-b">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <Checkbox
@@ -121,8 +120,7 @@ export function UserCard({
           </DropdownMenu>
         </div>
       </CardHeader>
-      <Separator />
-      <CardContent className="pt-4 pb-4">
+      <CardContent className="p-0 px-3">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">
@@ -175,13 +173,15 @@ export function UserCard({
                     ) : (
                       <>
                         <ShieldOff className="size-3 mr-1" />
-                        Email
+                        {t("users.providers.email")}
                       </>
                     )}
                   </Badge>
                 ))
               ) : (
-                <span className="text-sm text-muted-foreground">-</span>
+                <span className="text-sm text-muted-foreground italic">
+                  {t("users.providers.noAuthMethods")}
+                </span>
               )}
             </div>
           </div>
@@ -191,7 +191,7 @@ export function UserCard({
             </p>
             <p className="text-sm font-medium">
               {user.lastLoginAt
-                ? formatDate(user.lastLoginAt, locale)
+                ? formatDateShort(user.lastLoginAt, locale)
                 : t("users.card.never")}
             </p>
           </div>
@@ -208,7 +208,7 @@ export function UserCard({
               {t("users.card.created")}
             </p>
             <p className="text-sm font-medium">
-              {formatDate(user.createdAt, locale)}
+              {formatDateShort(user.createdAt, locale)}
             </p>
           </div>
           {user.zohoId && (
