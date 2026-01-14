@@ -1,4 +1,8 @@
 {
+  "dealerPage": {
+    "title": "Dealer Management",
+    "description": "Manage your dealers and their assigned sellers"
+  },
   "dashboard": {
     "error": {
       "title": "Something went wrong",

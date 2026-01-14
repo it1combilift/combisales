@@ -1,14 +1,14 @@
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { StepContentProps } from "../types";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -33,13 +33,13 @@ import {
 } from "@/components/ui/popover";
 
 import {
-  CalendarIcon,
   ArrowUpDown,
   DoorOpen,
   AlertTriangle,
   Route,
   Layers,
   Building,
+  CalendarDays,
 } from "lucide-react";
 
 /**
@@ -48,7 +48,7 @@ import {
  * Includes fechaCierre and additional fields for ramps, doors, restrictions, etc.
  */
 export function Step1Content({ form }: StepContentProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const tieneRampas = form.watch("tieneRampas");
   const tienePasosPuertas = form.watch("tienePasosPuertas");
   const tieneRestricciones = form.watch("tieneRestricciones");
@@ -75,21 +75,23 @@ export function Step1Content({ form }: StepContentProps) {
                         !field.value && "text-muted-foreground"
                       )}
                     >
-                      <CalendarIcon className="size-3.5" />
+                      <CalendarDays className="size-4" />
                       {field.value
-                        ? format(new Date(field.value), "PPP", { locale: es })
-                        : t("common.selectDate")}
+                        ? format(field.value, "PPP", {
+                            locale: locale === "en" ? undefined : es,
+                          })
+                        : t("forms.selectDate")}
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value ? new Date(field.value) : undefined}
-                    onSelect={(date) => field.onChange(date ?? null)}
+                    selected={field.value!}
+                    onSelect={field.onChange}
                     disabled={(date) => date < new Date()}
                     initialFocus
-                    locale={es}
+                    locale={locale === "en" ? undefined : es}
                   />
                 </PopoverContent>
               </Popover>
@@ -112,7 +114,9 @@ export function Step1Content({ form }: StepContentProps) {
               </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t("forms.logistica.fields.operation.notes.placeholder")}
+                  placeholder={t(
+                    "forms.logistica.fields.operation.notes.placeholder"
+                  )}
                   className="min-h-[100px] text-xs bg-background/50 resize-none leading-relaxed"
                   {...field}
                 />
@@ -156,7 +160,9 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormItem>
                     <FormControl>
                       <Textarea
-                        placeholder={t("forms.logistica.fields.operation.ramps.placeholder")}
+                        placeholder={t(
+                          "forms.logistica.fields.operation.ramps.placeholder"
+                        )}
                         className="min-h-[60px] text-xs bg-background/50 resize-none"
                         {...field}
                       />
@@ -198,7 +204,9 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormItem>
                     <FormControl>
                       <Textarea
-                        placeholder={t("forms.logistica.fields.operation.doors.placeholder")}
+                        placeholder={t(
+                          "forms.logistica.fields.operation.doors.placeholder"
+                        )}
                         className="min-h-[60px] text-xs bg-background/50 resize-none"
                         {...field}
                       />
@@ -240,7 +248,9 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormItem>
                     <FormControl>
                       <Textarea
-                        placeholder={t("forms.logistica.fields.operation.restrictions.placeholder")}
+                        placeholder={t(
+                          "forms.logistica.fields.operation.restrictions.placeholder"
+                        )}
                         className="min-h-[60px] text-xs bg-background/50 resize-none"
                         {...field}
                       />
@@ -375,15 +385,22 @@ export function Step1Content({ form }: StepContentProps) {
                         {t("forms.logistica.options.operationType.storage")}
                       </SelectItem>
                       <SelectItem value="cross-docking" className="text-sm">
-                        {t("forms.logistica.options.operationType.crossDocking")}
+                        {t(
+                          "forms.logistica.options.operationType.crossDocking"
+                        )}
                       </SelectItem>
                       <SelectItem value="picking" className="text-sm">
                         {t("forms.logistica.options.operationType.picking")}
                       </SelectItem>
                       <SelectItem value="carga-descarga" className="text-sm">
-                        {t("forms.logistica.options.operationType.loadingUnloading")}
+                        {t(
+                          "forms.logistica.options.operationType.loadingUnloading"
+                        )}
                       </SelectItem>
-                      <SelectItem value="preparacion-pedidos" className="text-sm">
+                      <SelectItem
+                        value="preparacion-pedidos"
+                        className="text-sm"
+                      >
                         {t("forms.logistica.options.operationType.orderPrep")}
                       </SelectItem>
                       <SelectItem value="mixto" className="text-sm">
@@ -407,7 +424,9 @@ export function Step1Content({ form }: StepContentProps) {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t("forms.logistica.fields.operation.floor.placeholder")}
+                      placeholder={t(
+                        "forms.logistica.fields.operation.floor.placeholder"
+                      )}
                       className="text-sm h-9"
                       {...field}
                     />

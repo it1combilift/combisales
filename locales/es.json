@@ -1,4 +1,8 @@
   {
+    "dealerPage": {
+      "title": "Gestión de Distribuidores",
+      "description": "Administra tus distribuidores y sus vendedores asignados"
+    },
     "dashboard": {
       "error": {
         "title": "Error al cargar el panel",

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import * as React from "react";
 import { Session } from "next-auth";
-import { Role } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { Forklift, ListTodo } from "lucide-react";
@@ -211,7 +211,7 @@ export function AppSidebar({
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={userData} />
+        <NavUser user={userData as User} />
       </SidebarFooter>
     </Sidebar>
   );

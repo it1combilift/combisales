@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,7 +10,6 @@ import { es } from "date-fns/locale";
 import { StepContentProps } from "../types";
 import { FieldWrapper } from "../ui/field-wrapper";
 import { Briefcase, Phone, CalendarDays } from "lucide-react";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   Popover,
