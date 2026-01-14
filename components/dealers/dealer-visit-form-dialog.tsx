@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { VisitFormType } from "@prisma/client";
-import { FORM_TYPE_LABELS, Visit } from "@/interfaces/visits";
+import { Visit } from "@/interfaces/visits";
 import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
 import { FORM_OPTIONS } from "@/interfaces/visits";
 import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";

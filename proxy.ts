@@ -9,8 +9,18 @@ export async function proxy(request: NextRequest) {
     "/dashboard/users",
     "/dashboard/equipment",
     "/dashboard/tasks",
+    "/dashboard/dealers",
   ];
+
+  // Role-based path restrictions
   const adminOnlyPaths = ["/dashboard/users"];
+  
+  const sellerPaths = [
+    "/dashboard/tasks",
+    "/dashboard/clients",
+    "/dashboard/equipment",
+  ];
+  const dealerOnlyPaths = ["/dashboard/dealers"];
 
   const isProtectedPath = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
@@ -41,15 +51,53 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    const isAdminOnlyPath = adminOnlyPaths.some((path) =>
-      request.nextUrl.pathname.startsWith(path)
-    );
+    const userRole = token.role as Role;
+    const currentPath = request.nextUrl.pathname;
 
-    if (isAdminOnlyPath && token.role !== Role.ADMIN) {
-      console.log("Access denied: ADMIN role required");
-      const forbiddenUrl = new URL("/dashboard/tasks", request.url);
-      return NextResponse.redirect(forbiddenUrl);
+    // ADMIN can access everything
+    if (userRole === Role.ADMIN) {
+      return NextResponse.next();
     }
+
+    // DEALER can only access /dashboard/dealers
+    if (userRole === Role.DEALER) {
+      const isDealerPath = dealerOnlyPaths.some((path) =>
+        currentPath.startsWith(path)
+      );
+      if (!isDealerPath) {
+        console.log("Access denied: DEALER can only access /dashboard/dealers");
+        return NextResponse.redirect(
+          new URL("/dashboard/dealers", request.url)
+        );
+      }
+      return NextResponse.next();
+    }
+
+    // SELLER can access tasks, clients, equipment
+    if (userRole === Role.SELLER) {
+      const isAdminOnlyPath = adminOnlyPaths.some((path) =>
+        currentPath.startsWith(path)
+      );
+      const isDealerOnlyPath = dealerOnlyPaths.some((path) =>
+        currentPath.startsWith(path)
+      );
+
+      if (isAdminOnlyPath) {
+        console.log("Access denied: ADMIN role required");
+        return NextResponse.redirect(new URL("/dashboard/tasks", request.url));
+      }
+
+      if (isDealerOnlyPath) {
+        console.log("Access denied: DEALER role required for this path");
+        return NextResponse.redirect(new URL("/dashboard/tasks", request.url));
+      }
+
+      return NextResponse.next();
+    }
+
+    // Unknown role - deny access
+    console.log("Access denied: Unknown role");
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

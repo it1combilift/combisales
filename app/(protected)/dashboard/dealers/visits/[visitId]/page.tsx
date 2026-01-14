@@ -1,41 +1,58 @@
 "use client";
 
+import React from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { use, useEffect, useState } from "react";
+import { formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { Visit } from "@/interfaces/visits";
-import { Button } from "@/components/ui/button";
-import { EmptyCard } from "@/components/empty-card";
-import { H1 } from "@/components/fonts/fonts";
-import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { useI18n } from "@/lib/i18n/context";
-import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VisitFormType, VisitStatus } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { AlertMessage } from "@/components/alert";
+import { use, useEffect, useState } from "react";
+import { EmptyCard } from "@/components/empty-card";
+import { H1, Paragraph } from "@/components/fonts/fonts";
+import { Card, CardContent } from "@/components/ui/card";
+import { VisitStatus, VisitFormType } from "@prisma/client";
+import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 
-// Form components for editing
+import {
+  CSSDetail,
+  IndustrialDetail,
+  LogisticaDetail,
+  StraddleCarrierDetail,
+  StatCard,
+} from "@/components/visit-detail";
+
 import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
 import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
 import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
 import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
 
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
+import {
+  Visit,
+  FORM_TYPE_LABELS,
+  STATUS_CONFIG,
+  VISIT_STATUS_ICONS,
+} from "@/interfaces/visits";
+
+import {
+  ArrowLeft,
+  Calendar,
+  User,
+  Mail,
+  ClipboardList,
+  Clock,
+  FileX,
+  UserCheck,
+  PencilLine,
+} from "lucide-react";
+
 interface DealerVisitDetailPageProps {
   params: Promise<{ visitId: string }>;
 }
-
-const FORM_TYPE_LABELS: Record<VisitFormType, string> = {
-  ANALISIS_CSS: "CSS Analysis",
-  ANALISIS_INDUSTRIAL: "Industrial Analysis",
-  ANALISIS_LOGISTICA: "Logistics Analysis",
-  ANALISIS_STRADDLE_CARRIER: "Straddle Carrier Analysis",
-};
-
-const STATUS_COLORS: Record<VisitStatus, string> = {
-  BORRADOR: "bg-yellow-500",
-  COMPLETADA: "bg-green-500",
-};
 
 export default function DealerVisitDetailPage({
   params,
@@ -56,7 +73,7 @@ export default function DealerVisitDetailPage({
       try {
         setIsLoading(true);
         const response = await axios.get(`/api/visits/${visitId}`);
-        setVisit(response.data);
+        setVisit(response.data.visit || response.data);
       } catch (error) {
         console.error("Error fetching visit:", error);
         toast.error(t("dealerPage.errors.fetchVisits"));
@@ -72,11 +89,10 @@ export default function DealerVisitDetailPage({
 
   const handleSuccess = () => {
     setIsEditing(false);
-    // Refresh visit data
     axios.get(`/api/visits/${visitId}`).then((response) => {
-      setVisit(response.data);
+      setVisit(response.data.visit || response.data);
+      toast.success(t("toast.form.changesSuccess"));
     });
-    toast.success(t("toast.form.changesSuccess"));
   };
 
   const handleBack = () => {
@@ -87,7 +103,43 @@ export default function DealerVisitDetailPage({
     }
   };
 
-  // Render the appropriate form for editing
+  // Render the appropriate detail component
+  const renderFormularioDetail = () => {
+    if (!visit) return null;
+
+    switch (visit.formType) {
+      case VisitFormType.ANALISIS_CSS:
+        return visit.formularioCSSAnalisis ? (
+          <CSSDetail formulario={visit.formularioCSSAnalisis} />
+        ) : null;
+      case VisitFormType.ANALISIS_INDUSTRIAL:
+        return visit.formularioIndustrialAnalisis ? (
+          <IndustrialDetail formulario={visit.formularioIndustrialAnalisis} />
+        ) : null;
+      case VisitFormType.ANALISIS_LOGISTICA:
+        return visit.formularioLogisticaAnalisis ? (
+          <LogisticaDetail formulario={visit.formularioLogisticaAnalisis} />
+        ) : null;
+      case VisitFormType.ANALISIS_STRADDLE_CARRIER:
+        return visit.formularioStraddleCarrierAnalisis ? (
+          <StraddleCarrierDetail
+            formulario={visit.formularioStraddleCarrierAnalisis}
+          />
+        ) : null;
+      default:
+        return (
+          <AlertMessage
+            variant="info"
+            title={t("visits.unsupportedFormType")}
+            description={t("visits.unsupportedFormTypeDesc", {
+              type: FORM_TYPE_LABELS[visit.formType] || visit.formType,
+            })}
+          />
+        );
+    }
+  };
+
+  // Render the appropriate form for editing inside Dialog
   const renderEditForm = () => {
     if (!visit) return null;
 
@@ -99,152 +151,190 @@ export default function DealerVisitDetailPage({
     };
 
     switch (visit.formType) {
-      case "ANALISIS_CSS":
+      case VisitFormType.ANALISIS_CSS:
         return <FormularioCSSAnalisis {...formProps} />;
-      case "ANALISIS_INDUSTRIAL":
+      case VisitFormType.ANALISIS_INDUSTRIAL:
         return <FormularioIndustrialAnalisis {...formProps} />;
-      case "ANALISIS_LOGISTICA":
+      case VisitFormType.ANALISIS_LOGISTICA:
         return <FormularioLogisticaAnalisis {...formProps} />;
-      case "ANALISIS_STRADDLE_CARRIER":
+      case VisitFormType.ANALISIS_STRADDLE_CARRIER:
         return <FormularioStraddleCarrierAnalisis {...formProps} />;
       default:
         return null;
     }
   };
 
-  if (isLoading) {
-    return <DashboardPageSkeleton />;
-  }
+  const statusConfig = visit ? STATUS_CONFIG[visit.status] : null;
 
-  if (!visit) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 p-8">
-        <EmptyCard
-          title={t("common.notFound")}
-          description={t("visitDetail.notFound")}
-          icon={<AlertTriangle className="w-8 h-8" />}
-        />
-        <Button onClick={() => router.push("/dashboard/dealers")}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          {t("common.back")}
-        </Button>
-      </div>
-    );
-  }
-
-  // If editing, show the form
-  if (isEditing) {
-    return renderEditForm();
-  }
-
-  // Visit detail view
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleBack}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <H1>{t("visitDetail.title")}</H1>
-            <p className="text-sm text-muted-foreground">
-              {FORM_TYPE_LABELS[visit.formType]}
-            </p>
-          </div>
+    <section className="mx-auto w-full min-h-full">
+      {isLoading ? (
+        <DashboardPageSkeleton />
+      ) : !visit ? (
+        <div className="px-4 py-8">
+          <EmptyCard
+            icon={<FileX />}
+            title={t("visits.visitNotFound")}
+            description={t("visits.visitNotFoundDescription")}
+            actions={
+              <Button onClick={() => router.back()} variant="outline" size="sm">
+                <ArrowLeft className="size-4" />
+                {t("common.back")}
+              </Button>
+            }
+          />
         </div>
-        <div className="flex items-center gap-2">
-          <Badge className={STATUS_COLORS[visit.status]}>{visit.status}</Badge>
-          {visit.status !== "COMPLETADA" && (
-            <Button onClick={() => setIsEditing(true)}>
-              {t("common.edit")}
-            </Button>
-          )}
-        </div>
-      </div>
+      ) : (
+        <div className="space-y-4 sm:space-y-6 px-3 sm:px-4 lg:px-6 pb-8">
+          <header className="space-y-4">
+            <div>
+              <div className="flex flex-row justify-between items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-3 w-fit">
+                  <H1>
+                    {FORM_TYPE_LABELS[visit.formType]?.replace(
+                      "Análisis ",
+                      ""
+                    ) || t("visits.detailTitle")}
+                  </H1>
+                  <Badge
+                    variant={statusConfig?.variant}
+                    className="text-xs font-medium w-fit"
+                  >
+                    <span className="inline-flex">
+                      {React.createElement(
+                        VISIT_STATUS_ICONS[visit.status as VisitStatus],
+                        {
+                          className: "size-3.5",
+                        }
+                      )}
+                    </span>
+                    {t(
+                      `visits.statuses.${
+                        visit.status === VisitStatus.BORRADOR
+                          ? "draft"
+                          : "completed"
+                      }`
+                    )}
+                  </Badge>
+                </div>
 
-      {/* Visit Info */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("visitDetail.generalInfo")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">
-                {t("dealerPage.table.formType")}:
-              </span>
-              <span>{FORM_TYPE_LABELS[visit.formType]}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">
-                {t("dealerPage.table.status")}:
-              </span>
-              <Badge className={STATUS_COLORS[visit.status]}>
-                {visit.status}
-              </Badge>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">
-                {t("dealerPage.table.createdAt")}:
-              </span>
-              <span>{new Date(visit.createdAt).toLocaleDateString()}</span>
-            </div>
-            {visit.visitDate && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  {t("visitDetail.visitDate")}:
-                </span>
-                <span>{new Date(visit.visitDate).toLocaleDateString()}</span>
+                <div className="flex items-center justify-center gap-3 w-fit">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleBack}
+                    className="gap-1.5 text-muted-foreground hover:text-foreground -ml-2"
+                  >
+                    <ArrowLeft className="size-4" />
+                    <span className="hidden md:inline">{t("common.back")}</span>
+                  </Button>
+
+                  <div className="flex items-center gap-2 w-fit">
+                    {visit.status === VisitStatus.BORRADOR && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => setIsEditing(true)}
+                        className="gap-1.5"
+                      >
+                        <span className="hidden md:inline">
+                          {t("common.edit")}
+                        </span>
+                        <PencilLine className="size-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
+
+              <Paragraph>{t("visits.description")}</Paragraph>
+            </div>
+
+            {visit.status === VisitStatus.BORRADOR && (
+              <AlertMessage
+                variant="warning"
+                title={t("visits.visitWithDraftStateTitle")}
+                description={t("visits.visitWithDraftStateDescription")}
+              />
             )}
-          </CardContent>
-        </Card>
+          </header>
 
-        {visit.assignedSeller && (
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("dealerPage.dialog.assignedTo")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  {t("usersPage.form.name")}:
-                </span>
-                <span>{visit.assignedSeller.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  {t("usersPage.form.email")}:
-                </span>
-                <span className="text-sm">{visit.assignedSeller.email}</span>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+            <StatCard
+              icon={ClipboardList}
+              label={t("tasks.type")}
+              value={
+                FORM_TYPE_LABELS[visit.formType]?.replace("Análisis ", "") ||
+                visit.formType
+              }
+            />
+            <StatCard
+              icon={Calendar}
+              label={t("visits.visitDate")}
+              value={formatDate(visit.visitDate)}
+            />
+            <StatCard
+              icon={User}
+              label={t("visits.createdBySection")}
+              value={
+                visit.user?.name || visit.user?.email || t("visits.unassigned")
+              }
+            />
+            <StatCard
+              icon={Clock}
+              label={t("tasks.createdDate")}
+              value={visit.createdAt ? formatDate(visit.createdAt) : "N/A"}
+            />
+          </div>
 
-        {visit.user && (
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("visitDetail.createdBy")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  {t("usersPage.form.name")}:
-                </span>
-                <span>{visit.user.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  {t("usersPage.form.email")}:
-                </span>
-                <span className="text-sm">{visit.user.email}</span>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    </div>
+          {/* Assigned Seller Card - specific for dealer visits */}
+          {visit.assignedSeller && (
+            <Card className="overflow-hidden">
+              <CardContent>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <UserCheck className="size-4 text-primary" />
+                      <h3 className="text-base font-semibold text-foreground">
+                        {t("dealerPage.dialog.assignedTo")}
+                      </h3>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
+                      <span className="inline-flex items-center gap-1.5 text-foreground">
+                        <User className="size-3.5 text-muted-foreground" />
+                        <span>{visit.assignedSeller.name}</span>
+                      </span>
+                      {visit.assignedSeller.email && (
+                        <a
+                          href={`mailto:${visit.assignedSeller.email}`}
+                          className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          <Mail className="size-3.5" />
+                          <span className="truncate max-w-[180px]">
+                            {visit.assignedSeller.email}
+                          </span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Form Detail */}
+          {renderFormularioDetail()}
+        </div>
+      )}
+
+      {/* Edit Form Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="p-0 m-0 border-none shadow-none bg-none overflow-hidden">
+          {renderEditForm()}
+        </DialogContent>
+      </Dialog>
+    </section>
   );
 }

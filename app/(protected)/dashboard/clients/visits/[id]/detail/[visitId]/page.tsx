@@ -23,6 +23,13 @@ import {
   StatCard,
 } from "@/components/visit-detail";
 
+import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
+import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
+import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
+import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
+
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
 import {
   Visit,
   FORM_TYPE_LABELS,
@@ -37,16 +44,18 @@ import {
   User,
   Mail,
   Phone,
-  ArrowUpRight,
   ClipboardList,
   Clock,
   FileX,
+  PencilLine,
 } from "lucide-react";
 
 const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
   const [visit, setVisit] = useState<Visit | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [accountId, setAccountId] = useState<string>("");
+  const [visitId, setVisitId] = useState<string>("");
   const router = useRouter();
   const { t } = useI18n();
 
@@ -54,10 +63,11 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
     const fetchVisitDetail = async () => {
       try {
         const resolvedParams = await params;
-        const { id, visitId } = resolvedParams;
+        const { id, visitId: vId } = resolvedParams;
         setAccountId(id);
+        setVisitId(vId);
 
-        const response = await axios.get(`/api/visits/${visitId}`);
+        const response = await axios.get(`/api/visits/${vId}`);
         setVisit(response.data.visit);
       } catch (error) {
         console.error("Error fetching visit details:", error);
@@ -70,18 +80,33 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
     fetchVisitDetail();
   }, [params]);
 
-  const getFormulario = () => {
+  const handleSuccess = () => {
+    setIsEditing(false);
+    axios.get(`/api/visits/${visitId}`).then((response) => {
+      setVisit(response.data.visit || response.data);
+      toast.success(t("toast.form.changesSuccess"));
+    });
+  };
+
+  // Render the appropriate form for editing inside Dialog
+  const renderEditForm = () => {
     if (!visit) return null;
+
+    const formProps = {
+      onBack: () => setIsEditing(false),
+      onSuccess: handleSuccess,
+      existingVisit: visit,
+    };
 
     switch (visit.formType) {
       case VisitFormType.ANALISIS_CSS:
-        return visit.formularioCSSAnalisis;
+        return <FormularioCSSAnalisis {...formProps} />;
       case VisitFormType.ANALISIS_INDUSTRIAL:
-        return visit.formularioIndustrialAnalisis;
+        return <FormularioIndustrialAnalisis {...formProps} />;
       case VisitFormType.ANALISIS_LOGISTICA:
-        return visit.formularioLogisticaAnalisis;
+        return <FormularioLogisticaAnalisis {...formProps} />;
       case VisitFormType.ANALISIS_STRADDLE_CARRIER:
-        return visit.formularioStraddleCarrierAnalisis;
+        return <FormularioStraddleCarrierAnalisis {...formProps} />;
       default:
         return null;
     }
@@ -191,13 +216,13 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                       <Button
                         variant="default"
                         size="sm"
-                        onClick={() => console.log("Enviar datos")}
+                        onClick={() => setIsEditing(true)}
                         className="gap-1.5"
                       >
+                        <PencilLine className="size-4" />
                         <span className="hidden md:inline">
-                          {t("common.submit")}
+                          {t("common.edit")}
                         </span>
-                        <ArrowUpRight className="size-4" />
                       </Button>
                     )}
                   </div>
@@ -290,6 +315,13 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
           {renderFormularioDetail()}
         </div>
       )}
+
+      {/* Edit Form Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="p-0 m-0 border-none shadow-none bg-none overflow-hidden">
+          {renderEditForm()}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

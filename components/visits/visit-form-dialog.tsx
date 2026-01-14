@@ -4,7 +4,6 @@ import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { VisitFormType } from "@prisma/client";
-import { FORM_TYPE_LABELS } from "@/interfaces/visits";
 import FormularioCSSAnalisis from "../formulario-css-analisis";
 import { FORM_OPTIONS, VisitFormDialogProps } from "@/interfaces/visits";
 import FormularioLogisticaAnalisis from "../formulario-logistica-analisis";
@@ -137,7 +136,19 @@ export default function VisitFormDialog({
 
                       <div className="mt-2 space-y-1">
                         <h3 className="text-[10px] leading-tight line-clamp-2 text-balance font-balance font-semibold md:text-xs">
-                          {FORM_TYPE_LABELS[option.type]}
+                          {t(
+                            `visits.formTypes.${
+                              option.type === VisitFormType.ANALISIS_CSS
+                                ? "css"
+                                : option.type ===
+                                  VisitFormType.ANALISIS_INDUSTRIAL
+                                ? "industrial"
+                                : option.type ===
+                                  VisitFormType.ANALISIS_LOGISTICA
+                                ? "logistica"
+                                : "straddleCarrier"
+                            }` as any
+                          )}
                         </h3>
                         <p className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate">
                           {t(

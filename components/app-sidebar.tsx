@@ -164,16 +164,31 @@ export function AppSidebar({
   const userData = session?.user || data.user;
   const userRole = session?.user?.role || Role.SELLER;
 
+  // Filter navigation items based on user role
+  // ADMIN: All routes
+  // SELLER: Tasks, Clients, Equipment
+  // DEALER: Only Dealers
   const filteredNavMain = data.navMain.filter((item) => {
-    // Solo ADMIN puede ver la página de usuarios
-    if (item.url === "/dashboard/users") {
-      return userRole === Role.ADMIN;
+    // ADMIN can access everything
+    if (userRole === Role.ADMIN) {
+      return true;
     }
-    // Solo DEALER puede ver la página de distribuidores
-    if (item.url === "/dashboard/dealers") {
-      return userRole === Role.DEALER;
+
+    // DEALER can only access /dashboard/dealers
+    if (userRole === Role.DEALER) {
+      return item.url === "/dashboard/dealers";
     }
-    return true;
+
+    // SELLER can access Tasks, Clients, Equipment (not Users, not Dealers)
+    if (userRole === Role.SELLER) {
+      return (
+        item.url === "/dashboard/tasks" ||
+        item.url === "/dashboard/clients" ||
+        item.url === "/dashboard/equipment"
+      );
+    }
+
+    return false;
   });
 
   return (
@@ -212,7 +227,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={filteredNavMain} />
-        <NavDocuments items={data.documents} />
+        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

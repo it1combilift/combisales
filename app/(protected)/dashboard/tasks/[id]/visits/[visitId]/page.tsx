@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -12,9 +13,15 @@ import { EmptyCard } from "@/components/empty-card";
 import { Separator } from "@/components/ui/separator";
 import { CopyButton } from "@/components/copy-button";
 import { H1, Paragraph } from "@/components/fonts/fonts";
-import { ArrowLeft, Calendar, FileText, User, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, FileText, User, Tag, PencilLine } from "lucide-react";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
+import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
+import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
+import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
+import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
 
 import {
   Visit,
@@ -31,6 +38,7 @@ import {
   FormularioLogisticaDetail,
   FormularioStraddleCarrierDetail,
 } from "@/components/visit-detail";
+import { AlertMessage } from "@/components/alert";
 
 interface VisitDetailPageProps {
   params: Promise<{ id: string; visitId: string }>;
@@ -39,7 +47,9 @@ interface VisitDetailPageProps {
 const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
   const [visit, setVisit] = useState<Visit | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [taskId, setTaskId] = useState<string>("");
+  const [visitId, setVisitId] = useState<string>("");
   const router = useRouter();
   const { t, locale } = useI18n();
 
@@ -48,6 +58,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
       try {
         const resolvedParams = await params;
         setTaskId(resolvedParams.id);
+        setVisitId(resolvedParams.visitId);
 
         const response = await fetch(`/api/visits/${resolvedParams.visitId}`);
         if (!response.ok) {
@@ -65,6 +76,38 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
 
     fetchVisitDetail();
   }, [params]);
+
+  const handleSuccess = () => {
+    setIsEditing(false);
+    axios.get(`/api/visits/${visitId}`).then((response) => {
+      setVisit(response.data.visit || response.data);
+      toast.success(t("toast.form.changesSuccess"));
+    });
+  };
+
+  // Render the appropriate form for editing inside Dialog
+  const renderEditForm = () => {
+    if (!visit) return null;
+
+    const formProps = {
+      onBack: () => setIsEditing(false),
+      onSuccess: handleSuccess,
+      existingVisit: visit,
+    };
+
+    switch (visit.formType) {
+      case VisitFormType.ANALISIS_CSS:
+        return <FormularioCSSAnalisis {...formProps} />;
+      case VisitFormType.ANALISIS_INDUSTRIAL:
+        return <FormularioIndustrialAnalisis {...formProps} />;
+      case VisitFormType.ANALISIS_LOGISTICA:
+        return <FormularioLogisticaAnalisis {...formProps} />;
+      case VisitFormType.ANALISIS_STRADDLE_CARRIER:
+        return <FormularioStraddleCarrierAnalisis {...formProps} />;
+      default:
+        return null;
+    }
+  };
 
   const getFormularioContent = () => {
     if (!visit) return null;
@@ -159,7 +202,7 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
               <Paragraph>{t("visits.detailDescription")}</Paragraph>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <Button
                 variant="secondary"
                 size="sm"
@@ -170,7 +213,26 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                 <ArrowLeft className="size-4" />
                 <span className="hidden md:block">{t("common.back")}</span>
               </Button>
+
+              {visit.status === VisitStatus.BORRADOR && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <PencilLine className="size-4" />
+                  <span className="hidden md:block">{t("common.edit")}</span>
+                </Button>
+              )}
             </div>
+
+            {visit.status === VisitStatus.BORRADOR && (
+              <AlertMessage
+                variant="warning"
+                title={t("visits.visitWithDraftStateTitle")}
+                description={t("visits.visitWithDraftStateDescription")}
+              />
+            )}
           </header>
 
           {/* Visit Metadata */}
@@ -287,6 +349,13 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
           <div className="px-4 pb-8">{renderFormularioDetail()}</div>
         </div>
       )}
+
+      {/* Edit Form Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="p-0 m-0 border-none shadow-none bg-none overflow-hidden">
+          {renderEditForm()}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
