@@ -24,6 +24,7 @@ import {
   IconUsers,
   IconFileWord,
   IconBuildings,
+  IconTruckDelivery,
 } from "@tabler/icons-react";
 
 import {
@@ -63,6 +64,11 @@ export function AppSidebar({
         title: t("navigation.equipment"),
         url: "/dashboard/equipment",
         icon: Forklift,
+      },
+      {
+        title: t("navigation.dealers"),
+        url: "/dashboard/dealers",
+        icon: IconTruckDelivery,
       },
       {
         title: t("navigation.users"),

@@ -7,6 +7,11 @@
       "goBack": "Go Back"
     }
   },
+  "modeToggle": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "common": {
     "appName": "Combisales",
     "description": "Combilift Sales and Customer Management",
@@ -43,7 +48,7 @@
     "filters": "Filters",
     "results": "Results",
     "resultsFor": "Results for",
-    "status ": "Status",
+    "status": "Status",
     "loadMore": "Load More",
     "clearFilters": "Clear filters",
     "actions": "Actions",
@@ -64,7 +69,8 @@
     "users": "Users",
     "reports": "Reports",
     "documents": "Documents",
-    "assistant": "Assistant"
+    "assistant": "Assistant",
+    "dealers": "Dealers"
   },
   "header": {
     "welcome": "Welcome",

@@ -7,6 +7,11 @@
         "goBack": "Regresar"
       }
     },
+    "modeToggle": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    },
     "common": {
       "appName": "Combisales",
       "description": "Gestión de ventas y clientes de Combilift",
@@ -64,7 +69,8 @@
       "users": "Usuarios",
       "reports": "Informes",
       "documents": "Documentos",
-      "assistant": "Asistente"
+      "assistant": "Asistente",
+      "dealers": "Distribuidores"
     },
     "header": {
       "welcome": "Bienvenido",

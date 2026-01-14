@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import { getRoleBadge } from "@/lib/utils";
 import { Role, User } from "@prisma/client";
 import { useI18n } from "@/lib/i18n/context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,7 +29,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { getRoleBadge } from "@/lib/utils";
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
@@ -52,16 +52,14 @@ export function NavUser({ user }: { user: User }) {
   const userName = user.name || "Usuario";
   const userEmail = user.email || "email@example.com";
   const userRole = user.role || Role.SELLER;
-  const userCountry = user.country || "PA";
+  const userCountry = user.country || "";
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground bg-muted cursor-pointer hover:bg-muted/80 h-16 w-full"
-            >
+            <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground bg-muted cursor-pointer hover:bg-muted/80 h-16 w-full">
               <Avatar className="size-10 rounded-lg">
                 <AvatarImage
                   src={userImage || undefined}
@@ -107,6 +105,9 @@ export function NavUser({ user }: { user: User }) {
                   <span className="truncate font-medium">{userName}</span>
                   <span className="text-muted-foreground truncate text-xs">
                     {userEmail}
+                  </span>
+                  <span className="text-muted-foreground truncate text-xs">
+                    {user.country}
                   </span>
                 </div>
               </div>
