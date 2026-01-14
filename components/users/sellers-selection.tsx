@@ -176,22 +176,23 @@ export function SellersSelection({
                       {assignedSellers.map((seller) => (
                         <div
                           key={seller.id}
-                          className="flex items-center gap-2 py-1.5 px-2 rounded-md bg-background border touch-manipulation"
+                          className="flex items-center gap-2 py-1.5 px-2 rounded-md bg-background border touch-manipulation h-14"
                         >
-                          <Avatar className="size-7 shrink-0">
+                          <Avatar className="size-10 shrink-0">
                             <AvatarImage
                               src={seller.image || undefined}
                               alt={seller.name || seller.email}
+                              className="object-center object-cover"
                             />
-                            <AvatarFallback className="text-[10px] bg-primary/10">
+                            <AvatarFallback className="text-xs bg-primary/10">
                               {getInitials(seller.name)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-[11px] truncate leading-tight">
+                            <p className="font-medium text-xs truncate leading-tight">
                               {seller.name || seller.email}
                             </p>
-                            <p className="text-[10px] text-muted-foreground truncate leading-tight">
+                            <p className="text-xs text-muted-foreground truncate leading-tight">
                               {seller.email}
                             </p>
                           </div>
@@ -273,23 +274,23 @@ export function SellersSelection({
                       {availableSellers.map((seller) => (
                         <div
                           key={seller.id}
-                          className="flex items-center gap-2 py-1.5 px-2 rounded-md border hover:bg-accent/50 active:bg-accent transition-colors touch-manipulation cursor-pointer"
-                          onClick={() => handleAddSeller(seller.id)}
+                          className="flex items-center gap-2 py-1.5 px-2 rounded-md bg-background border touch-manipulation h-14"
                         >
-                          <Avatar className="size-7 shrink-0">
+                          <Avatar className="size-10 shrink-0">
                             <AvatarImage
                               src={seller.image || undefined}
                               alt={seller.name || seller.email}
+                              className="object-center object-cover"
                             />
-                            <AvatarFallback className="text-[10px] bg-muted">
+                            <AvatarFallback className="text-xs bg-primary/10">
                               {getInitials(seller.name)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-[11px] truncate leading-tight">
+                            <p className="font-medium text-xs truncate leading-tight">
                               {seller.name || seller.email}
                             </p>
-                            <p className="text-[10px] text-muted-foreground truncate leading-tight">
+                            <p className="text-xs text-muted-foreground truncate leading-tight">
                               {seller.email}
                             </p>
                           </div>
@@ -297,11 +298,11 @@ export function SellersSelection({
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="size-6 shrink-0 hover:bg-primary/10 touch-manipulation"
+                            className="shrink-0 touch-manipulation text-muted-foreground"
                             onClick={() => handleAddSeller(seller.id)}
                             title={t("users.form.sellers.addSeller")}
                           >
-                            <Plus className="size-3" />
+                            <Plus className="size-4" />
                           </Button>
                         </div>
                       ))}

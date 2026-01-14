@@ -849,7 +849,7 @@
     "actions": {
       "title": "Actions",
       "edit": "Edit",
-      "revokeSession": "Revoke Session",
+      "revokeSession": "Revoke session",
       "delete": "Delete"
     },
     "filters": {

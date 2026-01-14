@@ -20,7 +20,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-
 import {
   Table,
   TableBody,
@@ -135,9 +134,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
@@ -200,7 +199,7 @@ export function DataTable<TData, TValue>({
           </span>{" "}
           {t("pagination.of")}{" "}
           <span className="font-medium text-foreground">{data.length}</span>{" "}
-          {t("pagination.users")}
+          {t("pagination.rows")}
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -212,7 +211,9 @@ export function DataTable<TData, TValue>({
             {t("pagination.previous")}
           </Button>
           <div className="flex items-center gap-1 text-sm">
-            <span className="text-muted-foreground">{t("pagination.page")}</span>
+            <span className="text-muted-foreground">
+              {t("pagination.page")}
+            </span>
             <span className="font-medium">
               {table.getState().pagination.pageIndex + 1}
             </span>

@@ -7,7 +7,7 @@ import { H1, Paragraph } from "./fonts/fonts";
 import { Button } from "@/components/ui/button";
 import { getInitials, getRoleBadge } from "@/lib/utils";
 import { ProfileUser } from "@/components/profile/profile-edit-dialog";
-import { Camera, LogOut, Mail, Pencil, ShieldCheck } from "lucide-react";
+import { Camera, LogOut, Mail, PencilLine, ShieldCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileHeaderProps {
@@ -104,7 +104,7 @@ export default function ProfileHeader({
               {/* Action Buttons Section */}
               <div className="flex items-center gap-3">
                 <Button variant="outline" onClick={onEditClick} size="sm">
-                  <Pencil className="size-4" />
+                  <PencilLine className="size-4" />
                   {t("profile.header.editProfile")}
                 </Button>
                 <Button variant="destructive" onClick={handleLogout} size="sm">
@@ -182,7 +182,7 @@ export default function ProfileHeader({
             {/* Action Buttons Stacked */}
             <div className="space-y-2 grid grid-cols-2 gap-2">
               <Button variant="outline" onClick={onEditClick} size="sm">
-                <Pencil className="size-4" />
+                <PencilLine className="size-4" />
                 {t("profile.header.editProfile")}
               </Button>
               <Button variant="destructive" onClick={handleLogout} size="sm">

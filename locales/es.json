@@ -847,7 +847,7 @@
       "actions": {
         "title": "Acciones",
         "edit": "Editar",
-        "revokeSession": "Revocar Sesión",
+        "revokeSession": "Revocar sesión",
         "delete": "Eliminar"
       },
       "filters": {
