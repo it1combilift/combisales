@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, User, ChevronLeft } from "lucide-react";
+import { ArrowRight, ChevronLeft, UserCheck } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -149,7 +149,7 @@ export default function DealerVisitFormDialog({
               </DialogHeader>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-2 md:px-3 py-2 md:py-3">
+            <div className="flex-1 overflow-y-auto px-2 md:px-3 py-2">
               <DealerSellerSelector
                 sellers={sellers}
                 isLoading={isLoadingSellers}
@@ -186,7 +186,7 @@ export default function DealerVisitFormDialog({
               {/* Selected seller indicator */}
               {selectedSeller && (
                 <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-                  <User className="size-3" />
+                  <UserCheck className="size-3" />
                   <span>
                     {t("dealerPage.dialog.assignedTo")}:{" "}
                     <strong>
@@ -249,7 +249,19 @@ export default function DealerVisitFormDialog({
 
                       <div className="mt-2 space-y-1">
                         <h3 className="text-[10px] leading-tight line-clamp-2 text-balance font-balance font-semibold md:text-xs">
-                          {FORM_TYPE_LABELS[option.type]}
+                          {t(
+                            `visits.formTypes.${
+                              option.type === VisitFormType.ANALISIS_CSS
+                                ? "css"
+                                : option.type ===
+                                  VisitFormType.ANALISIS_INDUSTRIAL
+                                ? "industrial"
+                                : option.type ===
+                                  VisitFormType.ANALISIS_LOGISTICA
+                                ? "logistica"
+                                : "straddleCarrier"
+                            }` as any
+                          )}
                         </h3>
                         <p className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate">
                           {t(
