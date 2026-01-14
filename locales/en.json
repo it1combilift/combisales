@@ -1,7 +1,38 @@
 {
   "dealerPage": {
-    "title": "Dealer Management",
-    "description": "Manage your dealers and their assigned sellers"
+    "title": "My Visits",
+    "description": "Manage your visits and documentation",
+    "createVisit": "Create Visit",
+    "viewMode": {
+      "table": "Table",
+      "cards": "Cards"
+    },
+    "empty": {
+      "title": "No visits yet",
+      "description": "Create your first visit to start documenting"
+    },
+    "table": {
+      "formType": "Form Type",
+      "status": "Status",
+      "assignedTo": "Assigned To",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "dialog": {
+      "selectSeller": "Select Seller",
+      "selectSellerDescription": "Choose the seller this visit will be assigned to",
+      "selectFormType": "Select Form Type",
+      "selectFormTypeDescription": "Choose the type of analysis form",
+      "noSellersAssigned": "You don't have any assigned sellers. Contact your administrator.",
+      "assignedTo": "Assigned to",
+      "loadingSellers": "Loading assigned sellers..."
+      
+    },
+    "errors": {
+      "fetchVisits": "Error loading visits",
+      "fetchSellers": "Error loading assigned sellers",
+      "deleteVisit": "Error deleting visit"
+    }
   },
   "dashboard": {
     "error": {

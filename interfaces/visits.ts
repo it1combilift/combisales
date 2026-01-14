@@ -118,12 +118,21 @@ export interface Visit {
   visitDate: Date;
   createdAt: Date;
   updatedAt: Date;
+  // Para visitas creadas por DEALER: vendedor asignado
+  assignedSellerId?: string | null;
   customer?: Customer;
   user?: {
     id: string;
     name: string | null;
     email: string;
+    role?: string;
   };
+  // Vendedor asignado (cuando un DEALER crea la visita)
+  assignedSeller?: {
+    id: string;
+    name: string | null;
+    email: string;
+  } | null;
   formularioCSSAnalisis?: FormularioCSSAnalisis;
   formularioIndustrialAnalisis?: FormularioIndustrialAnalisis;
   formularioLogisticaAnalisis?: FormularioLogisticaAnalisis;
@@ -475,6 +484,8 @@ export interface CreateVisitData {
   status?: VisitStatus;
   visitDate?: Date;
   locale?: string; // Idioma para la generación de emails
+  // Para visitas creadas por DEALER: vendedor al que se asigna
+  assignedSellerId?: string;
 }
 
 export interface CreateFormularioCSSData {

@@ -1,7 +1,37 @@
   {
     "dealerPage": {
-      "title": "Gestión de Distribuidores",
-      "description": "Administra tus distribuidores y sus vendedores asignados"
+      "title": "Mis Visitas",
+      "description": "Gestiona tus visitas y documentación",
+      "createVisit": "Crear Visita",
+      "viewMode": {
+        "table": "Tabla",
+        "cards": "Tarjetas"
+      },
+      "empty": {
+        "title": "Sin visitas",
+        "description": "Crea tu primera visita para comenzar a documentar"
+      },
+      "table": {
+        "formType": "Tipo de Formulario",
+        "status": "Estado",
+        "assignedTo": "Asignado a",
+        "createdAt": "Creado",
+        "actions": "Acciones"
+      },
+      "dialog": {
+        "selectSeller": "Seleccionar Vendedor",
+        "selectSellerDescription": "Elige el vendedor al que se asignará esta visita",
+        "selectFormType": "Seleccionar Tipo de Formulario",
+        "selectFormTypeDescription": "Elige el tipo de formulario de análisis",
+        "noSellersAssigned": "No tienes vendedores asignados. Contacta a tu administrador.",
+        "assignedTo": "Asignado a",
+        "loadingSellers": "Cargando vendedores asignados..."
+      },
+      "errors": {
+        "fetchVisits": "Error al cargar las visitas",
+        "fetchSellers": "Error al cargar los vendedores asignados",
+        "deleteVisit": "Error al eliminar la visita"
+      }
     },
     "dashboard": {
       "error": {

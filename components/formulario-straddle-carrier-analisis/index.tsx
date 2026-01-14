@@ -37,6 +37,7 @@ export default function FormularioStraddleCarrierAnalisis({
   onBack,
   onSuccess,
   existingVisit,
+  assignedSellerId,
 }: FormularioStraddleCarrierAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioStraddleCarrierAnalisis;
@@ -85,6 +86,7 @@ export default function FormularioStraddleCarrierAnalisis({
     onSuccess,
     t,
     locale,
+    assignedSellerId,
   });
 
   const {

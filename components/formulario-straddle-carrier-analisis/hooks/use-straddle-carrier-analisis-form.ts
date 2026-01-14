@@ -16,6 +16,8 @@ interface UseStraddleCarrierAnalisisFormProps {
   onSuccess: () => void;
   t: (key: string) => string;
   locale: string;
+  // Para visitas creadas por DEALER: vendedor asignado
+  assignedSellerId?: string;
 }
 
 export function useStraddleCarrierAnalisisForm({
@@ -27,6 +29,7 @@ export function useStraddleCarrierAnalisisForm({
   onSuccess,
   t,
   locale,
+  assignedSellerId,
 }: UseStraddleCarrierAnalisisFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -286,6 +289,8 @@ export function useStraddleCarrierAnalisisForm({
             formType: "ANALISIS_STRADDLE_CARRIER",
             status: visitStatus,
             locale,
+            // Para visitas de DEALER: asignar vendedor
+            assignedSellerId,
           },
           formularioData: {
             ...formData,

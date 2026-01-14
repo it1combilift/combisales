@@ -37,6 +37,7 @@ export default function FormularioLogisticaAnalisis({
   onBack,
   onSuccess,
   existingVisit,
+  assignedSellerId,
 }: FormularioLogisticaAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioLogisticaAnalisis;
@@ -85,6 +86,7 @@ export default function FormularioLogisticaAnalisis({
     onSuccess,
     t,
     locale,
+    assignedSellerId,
   });
 
   const {

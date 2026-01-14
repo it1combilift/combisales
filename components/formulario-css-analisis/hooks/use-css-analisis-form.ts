@@ -16,6 +16,8 @@ interface UseCSSAnalisisFormProps {
   onSuccess: () => void;
   t: (key: string) => string;
   locale: string;
+  // Para visitas creadas por DEALER: vendedor asignado
+  assignedSellerId?: string;
 }
 
 export function useCSSAnalisisForm({
@@ -27,6 +29,7 @@ export function useCSSAnalisisForm({
   onSuccess,
   t,
   locale,
+  assignedSellerId,
 }: UseCSSAnalisisFormProps) {
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
@@ -182,6 +185,8 @@ export function useCSSAnalisisForm({
             visitDate: new Date(),
             status,
             locale,
+            // Para visitas de DEALER: asignar vendedor
+            assignedSellerId,
           },
           formularioData: data,
         });

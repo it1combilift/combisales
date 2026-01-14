@@ -37,8 +37,11 @@ import {
 } from "@/lib/visit-notifications";
 
 /**
- * GET /api/visits?customerId=xxx OR GET /api/visits?zohoTaskId=xxx
- * Get visits for a specific customer or task
+ * GET /api/visits
+ * Query params:
+ * - customerId: Get visits for a specific customer
+ * - zohoTaskId: Get visits for a specific Zoho task
+ * - myVisits: Get visits created by the current user (for DEALER page)
  */
 export async function GET(req: NextRequest) {
   try {
@@ -50,6 +53,19 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const customerId = searchParams.get("customerId");
     const zohoTaskId = searchParams.get("zohoTaskId");
+    const myVisits = searchParams.get("myVisits");
+
+    // Para la página de DEALERS: obtener las visitas creadas por el usuario actual
+    if (myVisits === "true") {
+      const visits = await prisma.visit.findMany({
+        where: {
+          userId: session.user.id,
+        },
+        include: VISIT_INCLUDE,
+        orderBy: { visitDate: "desc" },
+      });
+      return createSuccessResponse({ visits });
+    }
 
     if (!customerId && !zohoTaskId) {
       return badRequestResponse("CUSTOMER_ID_OR_TASK_ID");
@@ -96,13 +112,28 @@ export async function POST(req: NextRequest) {
         | CreateFormularioStraddleCarrierData;
     };
 
-    // Validar que se proporcione customerId O zohoTaskId, pero no ambos
-    if (!visitData.customerId && !visitData.zohoTaskId) {
+    // Obtener el usuario actual para verificar su rol
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true },
+    });
+
+    const isDealer = currentUser?.role === "DEALER";
+
+    // Para DEALERS: pueden crear visitas sin customerId ni zohoTaskId (documentación propia)
+    // Para otros usuarios: deben proporcionar customerId O zohoTaskId
+    if (!isDealer && !visitData.customerId && !visitData.zohoTaskId) {
       return badRequestResponse("CUSTOMER_ID_OR_TASK_ID");
     }
 
+    // Si se proporcionan ambos, error
     if (visitData.customerId && visitData.zohoTaskId) {
       return badRequestResponse("ONLY_ONE_ASSOCIATION");
+    }
+
+    // Para DEALERS: validar que assignedSellerId esté presente
+    if (isDealer && !visitData.assignedSellerId) {
+      return badRequestResponse("ASSIGNED_SELLER_REQUIRED");
     }
 
     if (!visitData.formType) {
@@ -117,6 +148,21 @@ export async function POST(req: NextRequest) {
 
       if (!customer) {
         return notFoundResponse("CUSTOMER");
+      }
+    }
+
+    // Validar que el vendedor asignado existe y pertenece a los sellers del DEALER
+    if (visitData.assignedSellerId) {
+      const sellerExists = await prisma.user.findFirst({
+        where: {
+          id: visitData.assignedSellerId,
+          role: "SELLER",
+          isActive: true,
+        },
+      });
+
+      if (!sellerExists) {
+        return notFoundResponse("ASSIGNED_SELLER");
       }
     }
 
@@ -182,6 +228,8 @@ export async function POST(req: NextRequest) {
         formType: visitData.formType,
         status: visitData.status || VisitStatus.COMPLETADA,
         visitDate: visitData.visitDate || new Date(),
+        // Para visitas creadas por DEALER: asignar vendedor
+        assignedSellerId: visitData.assignedSellerId || null,
         ...formDataCreate,
       },
       include: VISIT_INCLUDE,

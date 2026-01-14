@@ -37,7 +37,10 @@ model User {
   // Relaciones
   accounts Account[]
   sessions Session[]
-  visits   Visit[] // Visitas realizadas por el vendedor
+  visits   Visit[] // Visitas realizadas por el usuario (SELLER o DEALER)
+
+  // Visitas asignadas a este vendedor (cuando un DEALER crea una visita y la asigna)
+  assignedVisits Visit[] @relation("AssignedSellerVisits")
 
   // Relaciones DEALER ↔ SELLER
   // Un DEALER puede tener múltiples SELLERs asignados
@@ -284,9 +287,14 @@ model Visit {
   status     VisitStatus   @default(BORRADOR)
   visitDate  DateTime      @default(now())
 
+  // Para visitas creadas por DEALER: vendedor asignado
+  // El DEALER selecciona a qué vendedor se asocia la documentación
+  assignedSellerId String?
+
   // Relaciones
   customer                          Customer?                          @relation(fields: [customerId], references: [id], onDelete: Cascade)
   user                              User                               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedSeller                    User?                              @relation("AssignedSellerVisits", fields: [assignedSellerId], references: [id], onDelete: SetNull)
   formularioCSSAnalisis             FormularioCSSAnalisis?
   formularioIndustrialAnalisis      FormularioIndustrialAnalisis?
   formularioLogisticaAnalisis       FormularioLogisticaAnalisis?
@@ -299,6 +307,7 @@ model Visit {
   @@index([customerId])
   @@index([zohoTaskId])
   @@index([userId])
+  @@index([assignedSellerId])
   @@index([visitDate])
   @@index([status])
   @@index([formType])

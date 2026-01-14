@@ -16,6 +16,8 @@ interface UseIndustrialAnalisisFormProps {
   onSuccess: () => void;
   t: (key: string) => string;
   locale: string;
+  // Para visitas creadas por DEALER: vendedor asignado
+  assignedSellerId?: string;
 }
 
 export function useIndustrialAnalisisForm({
@@ -27,6 +29,7 @@ export function useIndustrialAnalisisForm({
   onSuccess,
   t,
   locale,
+  assignedSellerId,
 }: UseIndustrialAnalisisFormProps) {
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
@@ -337,6 +340,8 @@ export function useIndustrialAnalisisForm({
             formType: "ANALISIS_INDUSTRIAL",
             status: visitStatus,
             locale,
+            // Para visitas de DEALER: asignar vendedor
+            assignedSellerId,
           },
           formularioData: {
             ...formData,

@@ -16,6 +16,8 @@ interface UseLogisticaAnalisisFormProps {
   onSuccess: () => void;
   t: (key: string) => string;
   locale: string;
+  // Para visitas creadas por DEALER: vendedor asignado
+  assignedSellerId?: string;
 }
 
 export function useLogisticaAnalisisForm({
@@ -27,6 +29,7 @@ export function useLogisticaAnalisisForm({
   onSuccess,
   t,
   locale,
+  assignedSellerId,
 }: UseLogisticaAnalisisFormProps) {
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
@@ -316,6 +319,8 @@ export function useLogisticaAnalisisForm({
             formType: "ANALISIS_LOGISTICA",
             status: visitStatus,
             locale,
+            // Para visitas de DEALER: asignar vendedor
+            assignedSellerId,
           },
           formularioData: {
             ...formData,

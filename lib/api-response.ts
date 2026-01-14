@@ -28,6 +28,7 @@ export const API_ERRORS = {
   OPERATION: {
     FETCH_VISIT: "Error al obtener la visita",
     FETCH_VISITS: "Error al obtener las visitas",
+    FETCH_ASSIGNED_SELLERS: "Error al obtener los vendedores asignados",
     CREATE_VISIT: "Error al crear la visita",
     UPDATE_VISIT: "Error al actualizar la visita",
     DELETE_VISIT: "Error al eliminar la visita",

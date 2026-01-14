@@ -30,6 +30,7 @@ export default function FormularioCSSAnalisis({
   onBack,
   onSuccess,
   existingVisit,
+  assignedSellerId,
 }: FormularioCSSAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioCSSAnalisis;
@@ -77,6 +78,7 @@ export default function FormularioCSSAnalisis({
     onSuccess,
     t,
     locale,
+    assignedSellerId,
   });
 
   const {

@@ -36,6 +36,7 @@ export default function FormularioIndustrialAnalisis({
   onBack,
   onSuccess,
   existingVisit,
+  assignedSellerId,
 }: FormularioIndustrialAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioIndustrialAnalisis;
@@ -83,6 +84,7 @@ export default function FormularioIndustrialAnalisis({
     onSuccess,
     t,
     locale,
+    assignedSellerId,
   });
 
   const {

@@ -18,6 +18,15 @@ export const VISIT_INCLUDE = {
       id: true,
       name: true,
       email: true,
+      role: true,
+    },
+  },
+  // Vendedor asignado (para visitas creadas por DEALER)
+  assignedSeller: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
     },
   },
   customer: true,

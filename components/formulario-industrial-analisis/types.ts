@@ -11,6 +11,8 @@ export interface FormularioIndustrialAnalisisProps {
   onBack: () => void;
   onSuccess: () => void;
   existingVisit?: any;
+  // Para visitas creadas por DEALER: vendedor asignado
+  assignedSellerId?: string;
 }
 
 // ==================== ARCHIVO TYPES ====================

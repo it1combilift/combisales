@@ -165,8 +165,13 @@ export function AppSidebar({
   const userRole = session?.user?.role || Role.SELLER;
 
   const filteredNavMain = data.navMain.filter((item) => {
+    // Solo ADMIN puede ver la página de usuarios
     if (item.url === "/dashboard/users") {
       return userRole === Role.ADMIN;
+    }
+    // Solo DEALER puede ver la página de distribuidores
+    if (item.url === "/dashboard/dealers") {
+      return userRole === Role.DEALER;
     }
     return true;
   });
