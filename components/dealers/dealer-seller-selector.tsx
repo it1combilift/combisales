@@ -1,10 +1,11 @@
 "use client";
 
 import { User, Mail, Check, Loader2 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/lib/i18n/context";
 import { cn } from "@/lib/utils";
 import { Spinner } from "../ui/spinner";
+import { EmptyCard } from "../empty-card";
 
 interface SellerInfo {
   id: string;
@@ -38,12 +39,12 @@ export function DealerSellerSelector({
       .slice(0, 2);
   };
 
-  if (!isLoading) {
+  if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center gap-2">
+      <div className="flex flex-col items-center justify-center py-6 text-center gap-2">
         <Spinner variant="bars" className="size-4" />
         <span className="text-sm text-muted-foreground animate-pulse">
-            {t("dealerPage.dialog.loadingSellers")}
+          {t("dealerPage.dialog.loadingSellers")}
         </span>
       </div>
     );
@@ -51,14 +52,12 @@ export function DealerSellerSelector({
 
   if (sellers.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <User className="size-12 text-muted-foreground/50 mb-4" />
-        <p className="text-sm text-muted-foreground">
-          {t("dealerPage.dialog.noSellersAssigned")}
-        </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          {t("dealerPage.dialog.contactAdmin")}
-        </p>
+      <div className="flex flex-col items-center justify-center text-center gap-2">
+        <EmptyCard
+          icon={<User />}
+          title={t("dealerPage.dialog.noSellersTitle")}
+          description={t("dealerPage.dialog.noSellersAssigned")}
+        />
       </div>
     );
   }
@@ -73,7 +72,7 @@ export function DealerSellerSelector({
             key={seller.id}
             onClick={() => onSelect(seller)}
             className={cn(
-              "group relative flex items-center gap-3 p-3 rounded-lg border transition-all duration-200",
+              "group relative flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 cursor-pointer",
               "hover:border-primary/50 hover:shadow-md hover:-translate-y-px",
               isSelected
                 ? "border-primary bg-primary/5 ring-1 ring-primary"
@@ -81,10 +80,20 @@ export function DealerSellerSelector({
             )}
           >
             <Avatar className="size-10 shrink-0">
-              <AvatarFallback className={cn(
-                "text-sm font-medium",
-                isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
-              )}>
+              {seller.image ? (
+                <AvatarImage
+                  src={seller.image}
+                  alt={seller.name || "Seller"}
+                  className="object-center object-cover"
+                />
+              ) : null}
+
+              <AvatarFallback
+                className={cn(
+                  "text-sm font-medium",
+                  isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
+                )}
+              >
                 {getInitials(seller.name)}
               </AvatarFallback>
             </Avatar>

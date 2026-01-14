@@ -25,6 +25,7 @@
         "selectFormTypeDescription": "Elige el tipo de formulario de análisis",
         "noSellersAssigned": "No tienes vendedores asignados. Contacta a tu administrador.",
         "assignedTo": "Asignado a",
+        "noSellersTitle": "No hay vendedores asignados",
         "loadingSellers": "Cargando vendedores asignados..."
       },
       "errors": {

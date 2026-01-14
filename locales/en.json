@@ -25,6 +25,7 @@
       "selectFormTypeDescription": "Choose the type of analysis form",
       "noSellersAssigned": "You don't have any assigned sellers. Contact your administrator.",
       "assignedTo": "Assigned to",
+      "noSellersTitle": "No assigned sellers",
       "loadingSellers": "Loading assigned sellers..."
       
     },
