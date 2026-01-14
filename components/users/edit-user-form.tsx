@@ -51,7 +51,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useI18n();
 
-  // Create schema with translations
+  // Create the full update schema with translations
   const updateUserSchema = useMemo(
     () =>
       createUpdateUserSchemaFactory(
@@ -59,10 +59,53 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       ),
     [t]
   );
-  const formSchema = useMemo(
-    () => updateUserSchema.omit({ id: true }),
-    [updateUserSchema]
-  );
+
+  // Create form schema by defining the shape directly
+  const formSchema = useMemo(() => {
+    return z
+      .object({
+        name: z.string().min(2, t("validation.nameMinLength")).optional(),
+        email: z.string().email(t("validation.invalidEmail")).optional(),
+        role: z
+          .nativeEnum(Role, {
+            errorMap: () => ({ message: t("validation.invalidRole") }),
+          })
+          .optional(),
+        country: z
+          .string()
+          .optional()
+          .or(z.literal(""))
+          .transform((val) => (val === "" ? undefined : val)),
+        isActive: z.boolean().optional(),
+        password: z
+          .string()
+          .min(8, t("validation.passwordMinLength8"))
+          .optional()
+          .or(z.literal(""))
+          .transform((val) => (val === "" ? undefined : val)),
+        image: z
+          .string()
+          .url(t("validation.invalidImageUrl"))
+          .optional()
+          .nullable()
+          .or(z.literal(""))
+          .transform((val) => (val === "" ? null : val)),
+        assignedSellerIds: z.array(z.string().cuid()).optional(),
+      })
+      .refine(
+        (data) => {
+          // DEALER role requires at least one seller
+          if (data.role === Role.DEALER) {
+            return data.assignedSellerIds && data.assignedSellerIds.length > 0;
+          }
+          return true;
+        },
+        {
+          message: t("validation.dealerRequiresSellers"),
+          path: ["assignedSellerIds"],
+        }
+      );
+  }, [t]);
 
   // Extract assigned seller IDs
   const assignedSellerIds = (user.assignedSellers?.map((as) => as.seller.id) ||
@@ -84,6 +127,31 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
 
   const selectedRole = form.watch("role");
   const isDealerRole = selectedRole === Role.DEALER;
+  const watchedAssignedSellerIds = form.watch("assignedSellerIds");
+
+  // Check if form is valid for submission
+  const isFormValid = useMemo(() => {
+    const { name, email, role } = form.getValues();
+    const hasErrors = Object.keys(form.formState.errors).length > 0;
+
+    // Basic validation
+    if (!name || !email || hasErrors) {
+      return false;
+    }
+
+    // DEALER role requires sellers
+    if (role === Role.DEALER) {
+      return watchedAssignedSellerIds && watchedAssignedSellerIds.length > 0;
+    }
+
+    return true;
+  }, [
+    form.formState.errors,
+    watchedAssignedSellerIds,
+    form.watch("name"),
+    form.watch("email"),
+    form.watch("role"),
+  ]);
 
   // Reset form when user changes (fixes assigned sellers not showing)
   useEffect(() => {
@@ -111,11 +179,21 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         shouldDirty: true,
       });
       if (newRole !== Role.DEALER) {
-        form.setValue("assignedSellerIds", []);
+        form.setValue("assignedSellerIds", [], {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
       }
     },
     [form]
   );
+
+  // Trigger validation when role changes
+  useEffect(() => {
+    if (selectedRole) {
+      form.trigger("assignedSellerIds");
+    }
+  }, [selectedRole, form]);
 
   const handleSellerSelectionChange = useCallback(
     (ids: string[]) => {
@@ -509,7 +587,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         <div className="flex justify-end gap-2.5 sm:gap-3 pt-4 mt-4 border-t">
           <Button
             type="submit"
-            disabled={isLoading || !form.formState.isDirty}
+            disabled={isLoading || !form.formState.isDirty || !isFormValid}
             className="w-full sm:w-auto h-10 sm:h-11 gap-2 shadow-sm"
           >
             {isLoading ? (

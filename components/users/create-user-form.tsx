@@ -7,7 +7,7 @@ import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { createUserSchemaFactory } from "@/schemas/auth";
@@ -71,6 +71,33 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
 
   const selectedRole = form.watch("role");
   const isDealerRole = selectedRole === Role.DEALER;
+  const assignedSellerIds = form.watch("assignedSellerIds");
+
+  // Check if form is valid for submission
+  const isFormValid = useMemo(() => {
+    const { name, email, password, confirmPassword, role } = form.getValues();
+    const hasErrors = Object.keys(form.formState.errors).length > 0;
+
+    // Basic validation
+    if (!name || !email || !password || !confirmPassword || hasErrors) {
+      return false;
+    }
+
+    // DEALER role requires sellers
+    if (role === Role.DEALER) {
+      return assignedSellerIds && assignedSellerIds.length > 0;
+    }
+
+    return true;
+  }, [
+    form.formState.errors,
+    assignedSellerIds,
+    form.watch("name"),
+    form.watch("email"),
+    form.watch("password"),
+    form.watch("confirmPassword"),
+    form.watch("role"),
+  ]);
 
   const handleSellerSelectionChange = useCallback(
     (ids: string[]) => {
@@ -88,6 +115,13 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
     },
     [form]
   );
+
+  // Trigger validation when role changes
+  useEffect(() => {
+    if (selectedRole) {
+      form.trigger("assignedSellerIds");
+    }
+  }, [selectedRole, form]);
 
   async function onSubmit(values: z.infer<typeof createUserSchema>) {
     setIsLoading(true);
@@ -457,7 +491,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
           </Button>
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !isFormValid}
             className="w-full sm:w-auto h-10 sm:h-11 gap-2 shadow-sm"
           >
             {isLoading ? (

@@ -92,7 +92,9 @@
     "passwordMinLength": "Password must be at least {{min}} characters",
     "passwordMinLength6": "Password must be at least 6 characters",
     "passwordMinLength8": "Password must be at least 8 characters",
-    "minOneId": "Must provide at least one ID"
+    "minOneId": "Must provide at least one ID",
+    "dealerRequiresSellers": "Dealer role requires at least one assigned seller",
+    "minOneSeller": "At least one seller must be assigned"
   },
   "messages": {
     "success": "Operation successful",

@@ -57,7 +57,20 @@ export const createUserSchemaFactory = (t: TranslationFn) =>
     .refine((data) => data.password === data.confirmPassword, {
       message: t("validation.passwordMatch"),
       path: ["confirmPassword"],
-    });
+    })
+    .refine(
+      (data) => {
+        // DEALER role requires at least one seller
+        if (data.role === Role.DEALER) {
+          return data.assignedSellerIds && data.assignedSellerIds.length > 0;
+        }
+        return true;
+      },
+      {
+        message: t("validation.dealerRequiresSellers"),
+        path: ["assignedSellerIds"],
+      }
+    );
 
 // Create user schema (default - for backward compatibility)
 export const createUserSchema = z
@@ -97,38 +110,52 @@ export const createUserSchema = z
 
 // Update user schema factory (Admin only)
 export const createUpdateUserSchemaFactory = (t: TranslationFn) =>
-  z.object({
-    id: z.string().cuid(t("validation.invalidUserId")),
-    name: z.string().min(2, t("validation.nameMinLength")).optional(),
-    email: z.string().email(t("validation.invalidEmail")).optional(),
-    role: z
-      .nativeEnum(Role, {
-        errorMap: () => ({ message: t("validation.invalidRole") }),
-      })
-      .optional(),
-    country: z
-      .string()
-      .optional()
-      .or(z.literal(""))
-      .transform((val) => (val === "" ? undefined : val)),
-    isActive: z.boolean().optional(),
-    password: z
-      .string()
-      .min(8, t("validation.passwordMinLength8"))
-      .optional()
-      .or(z.literal(""))
-      .transform((val) => (val === "" ? undefined : val)),
-    // Profile image URL from Cloudinary (null to remove)
-    image: z
-      .string()
-      .url(t("validation.invalidImageUrl"))
-      .optional()
-      .nullable()
-      .or(z.literal(""))
-      .transform((val) => (val === "" ? null : val)),
-    // Para usuarios DEALER: IDs de sellers asignados
-    assignedSellerIds: z.array(z.string().cuid()).optional(),
-  });
+  z
+    .object({
+      id: z.string().cuid(t("validation.invalidUserId")),
+      name: z.string().min(2, t("validation.nameMinLength")).optional(),
+      email: z.string().email(t("validation.invalidEmail")).optional(),
+      role: z
+        .nativeEnum(Role, {
+          errorMap: () => ({ message: t("validation.invalidRole") }),
+        })
+        .optional(),
+      country: z
+        .string()
+        .optional()
+        .or(z.literal(""))
+        .transform((val) => (val === "" ? undefined : val)),
+      isActive: z.boolean().optional(),
+      password: z
+        .string()
+        .min(8, t("validation.passwordMinLength8"))
+        .optional()
+        .or(z.literal(""))
+        .transform((val) => (val === "" ? undefined : val)),
+      // Profile image URL from Cloudinary (null to remove)
+      image: z
+        .string()
+        .url(t("validation.invalidImageUrl"))
+        .optional()
+        .nullable()
+        .or(z.literal(""))
+        .transform((val) => (val === "" ? null : val)),
+      // Para usuarios DEALER: IDs de sellers asignados
+      assignedSellerIds: z.array(z.string().cuid()).optional(),
+    })
+    .refine(
+      (data) => {
+        // DEALER role requires at least one seller
+        if (data.role === Role.DEALER) {
+          return data.assignedSellerIds && data.assignedSellerIds.length > 0;
+        }
+        return true;
+      },
+      {
+        message: t("validation.dealerRequiresSellers"),
+        path: ["assignedSellerIds"],
+      }
+    );
 
 // Update user schema (default - for backward compatibility)
 export const updateUserSchema = z.object({
