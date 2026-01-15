@@ -872,7 +872,7 @@
     "deleteMultipleSuccess": "Users deleted successfully",
     "roles": {
       "admin": "Admin",
-      "seller": "Seller",
+      "seller": "P. Manager",
       "dealer": "Dealer"
     },
     "providers": {
