@@ -14,16 +14,50 @@ export async function proxy(request: NextRequest) {
 
   // Role-based path restrictions
   const adminOnlyPaths = ["/dashboard/users"];
-  
+
   const sellerPaths = [
     "/dashboard/tasks",
     "/dashboard/clients",
     "/dashboard/equipment",
   ];
+
   const dealerOnlyPaths = ["/dashboard/dealers"];
 
+  const currentPath = request.nextUrl.pathname;
+
+  // ==================== REDIRECT AUTHENTICATED USERS FROM LOGIN ====================
+  // If user is on the login page (/) and is authenticated, redirect to appropriate dashboard
+  if (currentPath === "/") {
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    // Only redirect if user has a valid, active token
+    if (token && token.isActive !== false) {
+      const userRole = token.role as Role;
+
+      console.log("=== LOGIN PAGE REDIRECT ===");
+      console.log("User is authenticated, role:", userRole);
+
+      // Redirect based on role
+      if (userRole === Role.DEALER) {
+        return NextResponse.redirect(
+          new URL("/dashboard/dealers", request.url)
+        );
+      }
+
+      // ADMIN and SELLER go to /dashboard/tasks
+      return NextResponse.redirect(new URL("/dashboard/tasks", request.url));
+    }
+
+    // User not authenticated, show login page
+    return NextResponse.next();
+  }
+
+  // ==================== PROTECTED PATHS LOGIC ====================
   const isProtectedPath = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
+    currentPath.startsWith(path)
   );
 
   if (isProtectedPath) {
@@ -52,7 +86,6 @@ export async function proxy(request: NextRequest) {
     }
 
     const userRole = token.role as Role;
-    const currentPath = request.nextUrl.pathname;
 
     // ADMIN can access everything
     if (userRole === Role.ADMIN) {
