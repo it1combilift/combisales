@@ -1126,6 +1126,12 @@
       "errorLoading": "Error al cargar el perfil"
     },
     "forms": {
+      "languageValidation": {
+        "title": "Idioma requerido: Inglés",
+        "description": "El formulario debe ser completado en inglés. Cambia el idioma a inglés para guardar o enviar.",
+        "switchLanguage": "Cambiar a inglés",
+        "currentLanguage": "Idioma actual: {{language}}"
+      },
       "selectOption": "Seleccionar",
       "selectFile": "Seleccionar archivo",
       "uploadFile": "Subir archivo",

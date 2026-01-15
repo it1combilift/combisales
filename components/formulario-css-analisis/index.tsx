@@ -23,6 +23,8 @@ import { Step4Content } from "./steps/step-7-archivos";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useCSSAnalisisForm } from "./hooks/use-css-analisis-form";
 import { VisitStatus } from "@prisma/client";
+import { useLanguageValidation } from "@/hooks/use-language-validation";
+import { LanguageValidationAlert } from "@/components/ui/language-validation-alert";
 
 export default function FormularioCSSAnalisis({
   customer,
@@ -37,6 +39,9 @@ export default function FormularioCSSAnalisis({
 
   const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioCSSSchema(t), [t]);
+
+  // ==================== LANGUAGE VALIDATION ====================
+  const { showLanguageWarning, canSubmit } = useLanguageValidation({ locale });
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioCSSSchema>({
@@ -152,6 +157,12 @@ export default function FormularioCSSAnalisis({
         >
           <main className="flex-1 overflow-y-auto scrollbar-thin">
             <div className="p-4 mx-auto w-full">
+              {/* Language validation alert for SELLER users */}
+              <LanguageValidationAlert
+                show={showLanguageWarning}
+                className="mb-4"
+              />
+
               <div className="animate-in fade-in-50 slide-in-from-right-4 duration-300">
                 {renderStepContent()}
               </div>
@@ -164,7 +175,7 @@ export default function FormularioCSSAnalisis({
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
             isEditing={isEditing}
-            allStepsComplete={allStepsComplete}
+            allStepsComplete={allStepsComplete && canSubmit}
             isSubmitting={isSubmitting}
             isSavingDraft={isSavingDraft}
             isSavingChanges={isSavingChanges}
@@ -173,8 +184,8 @@ export default function FormularioCSSAnalisis({
             onBack={onBack}
             onPrev={handlePrevStep}
             onNext={handleNextStep}
-            onSaveDraft={onSaveDraft}
-            onSaveChanges={onSaveChanges}
+            onSaveDraft={canSubmit ? onSaveDraft : undefined}
+            onSaveChanges={canSubmit ? onSaveChanges : undefined}
             visitIsCompleted={
               VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }

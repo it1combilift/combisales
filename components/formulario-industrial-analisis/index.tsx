@@ -9,6 +9,8 @@ import { FormNavigation } from "./ui/form-navigation";
 import { FormularioIndustrialAnalisisProps } from "./types";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useIndustrialAnalisisForm } from "./hooks/use-industrial-analisis-form";
+import { useLanguageValidation } from "@/hooks/use-language-validation";
+import { LanguageValidationAlert } from "@/components/ui/language-validation-alert";
 
 import { Step1Content } from "./steps/step-2-descripcion-operacion";
 import { Step2Content } from "./steps/step-3-datos-aplicacion";
@@ -41,6 +43,9 @@ export default function FormularioIndustrialAnalisis({
   const formulario = existingVisit?.formularioIndustrialAnalisis;
   const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioIndustrialSchema(t), [t]);
+
+  // ==================== LANGUAGE VALIDATION ====================
+  const { showLanguageWarning, canSubmit } = useLanguageValidation({ locale });
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioIndustrialSchema>({
@@ -162,6 +167,12 @@ export default function FormularioIndustrialAnalisis({
         >
           <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
             <div className="px-1.5 py-2 mx-auto w-full max-w-4xl">
+              {/* Language validation alert for SELLER users */}
+              <LanguageValidationAlert
+                show={showLanguageWarning}
+                className="mb-4"
+              />
+
               <div className="animate-in fade-in-20 duration-150">
                 {renderStepContent()}
               </div>
@@ -174,7 +185,7 @@ export default function FormularioIndustrialAnalisis({
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
             isEditing={isEditing}
-            allStepsComplete={allStepsComplete}
+            allStepsComplete={allStepsComplete && canSubmit}
             isSubmitting={isSubmitting}
             isSavingDraft={isSavingDraft}
             isSavingChanges={isSavingChanges}
@@ -183,8 +194,8 @@ export default function FormularioIndustrialAnalisis({
             onBack={onBack}
             onPrev={handlePrevStep}
             onNext={handleNextStep}
-            onSaveDraft={onSaveDraft}
-            onSaveChanges={onSaveChanges}
+            onSaveDraft={canSubmit ? onSaveDraft : undefined}
+            onSaveChanges={canSubmit ? onSaveChanges : undefined}
             visitIsCompleted={
               VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }

@@ -12,6 +12,8 @@ import { useFileUploader } from "./hooks/use-file-uploader";
 import { FormularioStraddleCarrierAnalisisProps } from "./types";
 import { useStraddleCarrierAnalisisForm } from "./hooks/use-straddle-carrier-analisis-form";
 import { FORM_STEPS } from "./constants";
+import { useLanguageValidation } from "@/hooks/use-language-validation";
+import { LanguageValidationAlert } from "@/components/ui/language-validation-alert";
 
 // Steps renumerados: Step 1 = Instrucciones, Step 2 = Contenedores, etc.
 import { Step1Content } from "./steps/step-2-instrucciones";
@@ -43,6 +45,9 @@ export default function FormularioStraddleCarrierAnalisis({
   const formulario = existingVisit?.formularioStraddleCarrierAnalisis;
   const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioStraddleCarrierSchema(t), [t]);
+
+  // ==================== LANGUAGE VALIDATION ====================
+  const { showLanguageWarning, canSubmit } = useLanguageValidation({ locale });
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioStraddleCarrierSchema>({
@@ -171,6 +176,12 @@ export default function FormularioStraddleCarrierAnalisis({
         >
           <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
             <div className="px-3 py-3 sm:px-4 sm:py-4 mx-auto w-full max-w-4xl">
+              {/* Language validation alert for SELLER users */}
+              <LanguageValidationAlert
+                show={showLanguageWarning}
+                className="mb-4"
+              />
+
               <div className="animate-in fade-in-20 duration-150">
                 {renderStepContent()}
               </div>
@@ -183,7 +194,7 @@ export default function FormularioStraddleCarrierAnalisis({
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
             isEditing={isEditing}
-            allStepsComplete={allStepsComplete}
+            allStepsComplete={allStepsComplete && canSubmit}
             isSubmitting={isSubmitting}
             isSavingDraft={isSavingDraft}
             isSavingChanges={isSavingChanges}
@@ -192,8 +203,8 @@ export default function FormularioStraddleCarrierAnalisis({
             onBack={onBack}
             onPrev={handlePrevStep}
             onNext={handleNextStep}
-            onSaveDraft={onSaveDraft}
-            onSaveChanges={onSaveChanges}
+            onSaveDraft={canSubmit ? onSaveDraft : undefined}
+            onSaveChanges={canSubmit ? onSaveChanges : undefined}
             visitIsCompleted={
               visitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }

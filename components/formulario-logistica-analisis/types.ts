@@ -94,8 +94,8 @@ export interface FormNavigationProps {
   onBack: () => void;
   onPrev: () => void;
   onNext: () => void;
-  onSaveDraft: () => void;
-  onSaveChanges: () => void;
+  onSaveDraft?: () => void;
+  onSaveChanges?: () => void;
   visitIsCompleted?: VisitStatus;
 }
 

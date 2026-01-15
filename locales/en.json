@@ -1128,6 +1128,12 @@
     "errorLoading": "Error loading profile"
   },
   "forms": {
+    "languageValidation": {
+      "title": "Required language: English",
+      "description": "Sellers must complete forms in English. Please switch the language to English to save or submit the form.",
+      "switchLanguage": "Switch to English",
+      "currentLanguage": "Current language: {{language}}"
+    },
     "selectOption": "Select option",
     "selectFile": "Select file",
     "uploadFile": "Upload file",

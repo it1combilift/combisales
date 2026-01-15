@@ -83,9 +83,11 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveChanges}
-                    disabled={isDisabled}
+                    disabled={isDisabled || !onSaveChanges}
                     title={
-                      !allStepsComplete
+                      !onSaveChanges
+                        ? t("forms.languageValidation.title")
+                        : !allStepsComplete
                         ? t("visits.formNavigation.completeAllSteps")
                         : t("visits.formNavigation.saveChanges")
                     }
@@ -131,10 +133,12 @@ export function FormNavigation({
                     variant="outline"
                     size="sm"
                     onClick={onSaveDraft}
-                    disabled={isDisabled}
+                    disabled={isDisabled || !onSaveDraft}
                     className={visitIsCompleted ? "hidden" : ""}
                     title={
-                      !allStepsComplete
+                      !onSaveDraft
+                        ? t("forms.languageValidation.title")
+                        : !allStepsComplete
                         ? t("visits.formNavigation.completeAllSteps")
                         : t("visits.formNavigation.saveDraft")
                     }
