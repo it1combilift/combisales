@@ -1126,7 +1126,7 @@
       "errorLoading": "Error al cargar el perfil"
     },
     "forms": {
-      "selectOption": "Seleccionar opción",
+      "selectOption": "Seleccionar",
       "selectFile": "Seleccionar archivo",
       "uploadFile": "Subir archivo",
       "dragDropFiles": "Arrastra y suelta archivos aquí",
