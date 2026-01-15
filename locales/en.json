@@ -690,7 +690,7 @@
             "placeholder": "Describe operation type..."
           },
           "closingDate": {
-            "label": "Closing Date"
+            "label": "Approximate date of project development"
           }
         },
         "aisle": {
@@ -1172,7 +1172,7 @@
       "postalCode": "Postal code",
       "distributor": "Distributor",
       "distributorContact": "Distributor contact",
-      "closingDate": "Estimated closing date",
+      "closingDate": "Approximate date of project development",
       "estimatedDefinitionDate": "Estimated definition date",
       "clientEndUserData": "End user client data",
       "containerType": "Container type",
@@ -1294,7 +1294,7 @@
           "placeholder": "Phone or email"
         },
         "closingDate": {
-          "label": "Estimated Closing Date",
+          "label": "Approximate date of project development",
           "placeholder": "Select date"
         }
       }
@@ -1401,7 +1401,7 @@
           "placeholder": "Describe the product in detail, including capacities, dimensions, frequency of use..."
         },
         "closingDate": {
-          "label": "Estimated closing date",
+          "label": "Approximate date of project development",
           "placeholder": "Select date"
         },
         "containerType": {
@@ -1901,7 +1901,7 @@
       },
       "fields": {
         "closingDate": {
-          "label": "Estimated closing date",
+          "label": "Approximate date of project development",
           "placeholder": "Select date"
         },
         "instructions": {

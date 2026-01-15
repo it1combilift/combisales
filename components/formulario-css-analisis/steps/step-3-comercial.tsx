@@ -95,8 +95,9 @@ export function Step3Content({ form }: StepContentProps) {
                 <FormControl>
                   <Button
                     variant="outline"
+                    size="sm"
                     className={cn(
-                      "h-11 sm:h-12 w-full justify-start text-left font-normal text-xs sm:text-sm rounded-lg border-input/80",
+                      "w-full justify-start text-left font-normal text-xs sm:text-sm rounded-lg border-input/80",
                       !field.value && "text-muted-foreground"
                     )}
                   >
