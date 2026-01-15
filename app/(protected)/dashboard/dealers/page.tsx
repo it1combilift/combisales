@@ -81,7 +81,7 @@ const DealersPage = () => {
     setIsRefreshing(true);
     await fetchVisits();
     setIsRefreshing(false);
-    toast.success(t("common.refreshing"));
+    toast.success(t("messages.updated"));
   };
 
   // View visit detail
@@ -102,13 +102,13 @@ const DealersPage = () => {
     try {
       const response = await axios.delete(`/api/visits/${visitToDelete.id}`);
       if (response.status === 200) {
-        toast.success(t("visits.deleteSuccess"));
+        toast.success(t("messages.deleted"));
         setVisits((prev) => prev.filter((v) => v.id !== visitToDelete.id));
         setVisitToDelete(null);
       }
     } catch (error) {
       console.error("Error deleting visit:", error);
-      toast.error(t("visits.deleteError"));
+      toast.error(t("messages.error"));
     }
   };
 
@@ -160,7 +160,13 @@ const DealersPage = () => {
             <RefreshCw
               className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}
             />
-            <span className="hidden md:inline">{t("common.refresh")}</span>
+            <span className="hidden md:inline">
+              {isLoading
+                ? t("common.loading")
+                : isRefreshing
+                ? t("common.refreshing")
+                : t("common.refresh")}
+            </span>
           </Button>
 
           {/* Only DEALER can create visits */}
