@@ -12,8 +12,6 @@ import { useFileUploader } from "./hooks/use-file-uploader";
 import { useLogisticaAnalisisForm } from "./hooks/use-logistica-analisis-form";
 import { useI18n } from "@/lib/i18n/context";
 import { useMemo } from "react";
-import { useLanguageValidation } from "@/hooks/use-language-validation";
-import { LanguageValidationAlert } from "@/components/ui/language-validation-alert";
 
 // Steps renumerados: Step 1 = Descripción operación, Step 2 = Datos aplicación, etc.
 import { Step1Content } from "./steps/step-2-descripcion-operacion";
@@ -46,9 +44,6 @@ export default function FormularioLogisticaAnalisis({
 
   const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioLogisticaSchema(t), [t]);
-
-  // ==================== LANGUAGE VALIDATION ====================
-  const { showLanguageWarning, canSubmit } = useLanguageValidation({ locale });
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioLogisticaSchema>({
@@ -170,12 +165,6 @@ export default function FormularioLogisticaAnalisis({
         >
           <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
             <div className="px-2 py-2 sm:px-4 mx-auto w-full max-w-4xl">
-              {/* Language validation alert for SELLER users */}
-              <LanguageValidationAlert
-                show={showLanguageWarning}
-                className="mb-4"
-              />
-
               <div className="animate-in fade-in-20 duration-150">
                 {renderStepContent()}
               </div>
@@ -188,7 +177,7 @@ export default function FormularioLogisticaAnalisis({
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
             isEditing={isEditing}
-            allStepsComplete={allStepsComplete && canSubmit}
+            allStepsComplete={allStepsComplete}
             isSubmitting={isSubmitting}
             isSavingDraft={isSavingDraft}
             isSavingChanges={isSavingChanges}
@@ -197,8 +186,8 @@ export default function FormularioLogisticaAnalisis({
             onBack={onBack}
             onPrev={handlePrevStep}
             onNext={handleNextStep}
-            onSaveDraft={canSubmit ? onSaveDraft : undefined}
-            onSaveChanges={canSubmit ? onSaveChanges : undefined}
+            onSaveDraft={onSaveDraft}
+            onSaveChanges={onSaveChanges}
             visitIsCompleted={
               VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }

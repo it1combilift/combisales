@@ -2,7 +2,6 @@
 
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { VisitFormType } from "@prisma/client";
 import FormularioCSSAnalisis from "../formulario-css-analisis";
 import { FORM_OPTIONS, VisitFormDialogProps } from "@/interfaces/visits";
@@ -10,6 +9,8 @@ import FormularioLogisticaAnalisis from "../formulario-logistica-analisis";
 import FormularioIndustrialAnalisis from "../formulario-industrial-analisis";
 import FormularioStraddleCarrierAnalisis from "../formulario-straddle-carrier-analisis";
 import { useI18n } from "@/lib/i18n/context";
+import { useLanguageValidation } from "@/hooks/use-language-validation";
+import { LanguageValidationAlert } from "@/components/ui/language-validation-alert";
 
 import {
   Dialog,
@@ -27,9 +28,12 @@ export default function VisitFormDialog({
   onSuccess,
   existingVisit,
 }: VisitFormDialogProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [selectedFormType, setSelectedFormType] =
     useState<VisitFormType | null>(null);
+
+  // ==================== LANGUAGE VALIDATION ====================
+  const { showLanguageWarning, canSubmit } = useLanguageValidation({ locale });
 
   useEffect(() => {
     if (existingVisit && open) {
@@ -85,10 +89,16 @@ export default function VisitFormDialog({
                 px-2 md:px-3 py-2 md:py-3
               "
             >
+              {/* Language validation alert for SELLER users */}
+              <LanguageValidationAlert
+                show={showLanguageWarning}
+                className="mb-4"
+              />
+
               <div className="grid grid-cols-2 gap-1 sm:gap-2 md:gap-3">
                 {FORM_OPTIONS.map((option) => {
                   const Icon = option.icon;
-                  const isAvailable = option.available;
+                  const isAvailable = option.available && canSubmit;
 
                   return (
                     <button
@@ -100,11 +110,10 @@ export default function VisitFormDialog({
                       className={`
                         group relative overflow-hidden rounded-lg p-3 text-left
                         border transition-all duration-300
-                        cursor-pointer
                         ${
                           isAvailable
-                            ? "bg-card border-border hover:border-primary/50 hover:shadow-md hover:-translate-y-px"
-                            : "bg-muted/30 border-border/30 cursor-not-allowed opacity-50"
+                            ? "bg-card border-border hover:border-primary/50 hover:shadow-md hover:-translate-y-px cursor-pointer"
+                            : "bg-muted border-border/30 cursor-not-allowed opacity-50"
                         }
                       `}
                       style={{ minHeight: "82px" }}
@@ -123,15 +132,6 @@ export default function VisitFormDialog({
                         >
                           <Icon className="size-4" />
                         </div>
-
-                        {!isAvailable && (
-                          <Badge
-                            variant="secondary"
-                            className="text-[9px] font-medium"
-                          >
-                            {t("visits.comingSoon")}
-                          </Badge>
-                        )}
                       </div>
 
                       <div className="mt-2 space-y-1">

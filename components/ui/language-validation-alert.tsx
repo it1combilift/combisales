@@ -2,8 +2,8 @@
 
 import { Languages } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface LanguageValidationAlertProps {
   /** Whether to show the alert */
@@ -35,7 +35,9 @@ export function LanguageValidationAlert({
       <Languages className="size-4" />
       <AlertTitle>{t("forms.languageValidation.title")}</AlertTitle>
       <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-xs text-balance">{t("forms.languageValidation.description")}</span>
+        <span className="text-xs text-balance">
+          {t("forms.languageValidation.description")}
+        </span>
         <Button
           type="button"
           variant="outline"
@@ -43,7 +45,7 @@ export function LanguageValidationAlert({
           onClick={handleSwitchToEnglish}
           className="shrink-0 gap-2"
         >
-          <Languages className="h-3.5 w-3.5" />
+          <Languages className="size-4" />
           {t("forms.languageValidation.switchLanguage")}
         </Button>
       </AlertDescription>
