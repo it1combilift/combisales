@@ -86,7 +86,7 @@ export function Step6Content({ form }: StepContentProps) {
       </div>
 
       {/* All fields in compact grid */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3">
         {/* Dimensiones del producto */}
         <FormField
           control={form.control}

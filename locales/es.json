@@ -1447,27 +1447,27 @@
       "industrial": {
         "steps": {
           "operation": {
-            "title": "Descripción de la Operación",
+            "title": "Descripción de la operación",
             "shortTitle": "Operación",
-            "description": "Detalles y restricciones de la operación"
+            "description": "Indicar si hay rampas, pasos por puertas, otros restricciones"
           },
           "application": {
-            "title": "Datos de la Aplicación",
+            "title": "Datos de la aplicación",
             "shortTitle": "Aplicación",
             "description": "Información técnica"
           },
           "batteries": {
-            "title": "Equipos Eléctricos",
+            "title": "Para equipos eléctricos, indicar información",
             "shortTitle": "Eléctrico",
-            "description": "Para carretilla eléctrica, complete la información a continuación"
+            "description": "Para equipos eléctricos, indicar información"
           },
           "loads": {
-            "title": "Dimensiones y Peso de las Cargas",
+            "title": "Dimensiones de las cargas",
             "shortTitle": "Cargas",
             "description": "Tabla de dimensiones"
           },
           "aisle": {
-            "title": "Especificaciones del Pasillo",
+            "title": "Especificación del pasillo",
             "shortTitle": "Pasillo",
             "description": "Medidas del pasillo"
           },
@@ -1479,39 +1479,39 @@
         },
         "fields": {
           "operationNotes": {
-            "label": "Descripción de la Operación",
-            "placeholder": "Por favor, especifique si hay rampas, pasos de puerta, otras restricciones...",
+            "label": "Descripción de la operación",
+            "placeholder": "Indicar si hay rampas, pasos por puertas, otros restricciones...",
             "required": "La descripción de la operación es requerida"
           },
           "closingDate": {
-            "label": "Fecha aproximada de desarrollo del proyecto",
+            "label": "Fecha aproximada en que se define el proyecto",
             "optional": "(opcional)",
             "placeholder": "Seleccionar fecha"
           },
           "productDescription": {
-            "header": "Datos de la Aplicación",
-            "label": "Descripción de las cargas",
-            "placeholder": "Describa las cargas a manipular...",
-            "required": "La descripción de las cargas es requerida"
+            "header": "Datos de la aplicación",
+            "label": "Descripción del producto",
+            "placeholder": "Describa el producto a manipular...",
+            "required": "La descripción del producto es requerida"
           },
           "dimensionsAndWeights": {
-            "header": "Datos de la Aplicación",
-            "lastLevelHeight": "Altura máxima de estantería",
-            "maxElevation": "Altura máxima de elevación",
-            "maxHeightLoadWeight": "Peso máx. hasta altura máx. de elevación",
-            "firstLevelLoadWeight": "Peso máx. en el primer nivel",
-            "areaWidth": "Dimensiones del área de almacenamiento Ancho",
-            "areaDepth": "Dimensiones del área de almacenamiento Fondo"
+            "header": "Datos de la aplicación",
+            "lastLevelHeight": "Altura del último nivel de estantería",
+            "maxElevation": "Máxima altura de elevación",
+            "maxHeightLoadWeight": "Peso de la carga a máxima altura de elevación",
+            "firstLevelLoadWeight": "Peso de la carga en el primer nivel",
+            "areaWidth": "Dimensiones del área de trabajo (almacén) frente",
+            "areaDepth": "Dimensiones del área de trabajo (almacén) fondo"
           },
           "operationAndPower": {
             "header": "Operación y Alimentación",
             "shifts": "Turnos de trabajo",
-            "definitionDate": "Fecha aproximada de desarrollo del proyecto",
-            "powerSource": "Alimentación"
+            "definitionDate": "Fecha aproximada en que se define el proyecto",
+            "powerSource": "Alimentación deseada"
           },
           "electrical": {
             "header": "Alimentación",
-            "subheader": "Para carretilla eléctrica, complete la información a continuación",
+            "subheader": "Para equipos eléctricos, indicar información",
             "notApplicable": {
               "label": "No aplica",
               "description": "Active esta opción si las especificaciones eléctricas no son aplicables para esta visita.",
@@ -1520,60 +1520,60 @@
                 "description": "Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puede continuar al siguiente paso."
               }
             },
-            "currentType": "Monofásica / Trifásica",
+            "currentType": "Tipo de corriente",
             "singlePhase": "Monofásica",
             "threePhase": "Trifásica",
-            "voltage": "Voltaje",
+            "voltage": "Voltaje instalación",
             "frequency": "Frecuencia (Hz)",
             "amperage": "Amperaje",
-            "ambientTemp": "Temperatura Ambiente",
-            "workHours": "Horas de trabajo/día",
+            "ambientTemp": "T° Ambiente",
+            "workHours": "Horas de trabajo / día",
             "notes": "Observaciones (opcional)",
             "notesPlaceholder": "Notas adicionales sobre los equipos eléctricos..."
           },
           "loads": {
-            "header": "Dimensiones y Peso de las Cargas",
+            "header": "Dimensiones de las cargas",
             "add": "Agregar",
             "addFirst": "Agregar primera carga",
             "empty": "Sin cargas agregadas. Agregue las dimensiones de las cargas a manipular.",
             "productName": "Producto",
             "productPlaceholder": "Nombre del producto",
-            "length": "Ancho",
-            "depth": "Fondo",
-            "height": "Alto",
-            "weight": "Peso",
+            "length": "Largo (L)",
+            "depth": "Fondo (D)",
+            "height": "Alto (H)",
+            "weight": "Peso (W)",
             "percentage": "%",
             "table": {
               "product": "Producto",
-              "length": "Ancho",
-              "depth": "Fondo",
-              "height": "Alto",
-              "weight": "Peso",
+              "length": "Largo (L)",
+              "depth": "Fondo (D)",
+              "height": "Alto (H)",
+              "weight": "Peso (W)",
               "percentage": "%"
             },
             "totalPercentage": "Porcentaje total:",
             "percentageError": "Los porcentajes deben sumar exactamente 100%"
           },
           "aisle": {
-            "header": "Especificaciones del Pasillo",
+            "header": "Especificación del pasillo",
             "distancesHeader": "Distancias del Pasillo",
             "shelfInfoHeader": "Información de Estantería",
             "shelfType": "Tipo de estantería",
             "guideRails": "Solo pasillo guiado",
             "guideRailsLabel": "Solo pasillo guiado",
             "productDepth": "Profundidad del producto",
-            "widthBetweenProducts": "Distancia entre productos más anchos",
-            "distBetweenRacks": "Distancia entre estanterías",
-            "rackUsefulDepth": "Longitud del brazo de estantería",
-            "rackBaseHeight": "Altura de la base de estantería",
-            "distUnderGuideRails": "Espacio libre bajo rieles guía",
-            "heightFloorFirstArm": "Altura hasta 1er brazo de estantería",
-            "floorToFirstArm": "Altura hasta 1er brazo de estantería",
-            "distBetweenGuideRails": "Distancia entre rieles guía",
-            "clearHeightToGuide": "Altura del riel guía",
-            "columnThickness": "Grosor del montante",
-            "lastLevelHeight": "Altura del riel guía",
-            "maxInteriorHeight": "Espacio libre superior"
+            "widthBetweenProducts": "Mínimo ancho libre entre productos",
+            "distBetweenRacks": "Distancia libre entre estanterías",
+            "rackUsefulDepth": "Fondo útil de estantería / brazo estantería",
+            "rackBaseHeight": "Altura de la base de la estantería",
+            "distUnderGuideRails": "Distancia bajo los rieles guía",
+            "heightFloorFirstArm": "Altura del suelo a primer brazo de estantería",
+            "floorToFirstArm": "Altura del suelo a primer brazo de estantería",
+            "distBetweenGuideRails": "Distancia entre los rieles guía",
+            "clearHeightToGuide": "Altura libre hasta guía",
+            "columnThickness": "Grosor de pilar / columna",
+            "lastLevelHeight": "Altura al último nivel de estantería",
+            "maxInteriorHeight": "Altura a cota más alta en interior de edificio"
           }
         },
         "validation": {
@@ -1587,7 +1587,7 @@
           "min0": "Mínimo 0%",
           "max100": "Máximo 100%",
           "operationNotesRequired": "La descripción de la operación es requerida",
-          "productDescriptionRequired": "La descripción de las cargas es requerida",
+          "productDescriptionRequired": "La descripción del producto es requerida",
           "positiveValueRequired": "Debe ser un valor positivo",
           "min1Shift": "Mínimo 1 turno",
           "electricalRequired": "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",

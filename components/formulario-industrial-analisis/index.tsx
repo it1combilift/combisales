@@ -161,7 +161,7 @@ export default function FormularioIndustrialAnalisis({
           className="flex flex-col flex-1 min-h-0 w-full overflow-hidden"
         >
           <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
-            <div className="px-2 py-2 sm:px-4 mx-auto w-full max-w-4xl">
+            <div className="px-1.5 py-2 mx-auto w-full max-w-4xl">
               <div className="animate-in fade-in-20 duration-150">
                 {renderStepContent()}
               </div>
