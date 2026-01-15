@@ -1447,129 +1447,137 @@
       "industrial": {
         "steps": {
           "operation": {
-            "title": "Descripción operación",
-            "shortTitle": "Descripción",
-            "description": "Detalles de la operación"
+            "title": "Descripción de la Operación",
+            "shortTitle": "Operación",
+            "description": "Detalles y restricciones de la operación"
           },
           "application": {
-            "title": "Datos aplicación",
+            "title": "Datos de la Aplicación",
             "shortTitle": "Aplicación",
             "description": "Información técnica"
           },
           "batteries": {
-            "title": "Baterías",
-            "shortTitle": "Baterías",
-            "description": "Especificaciones eléctricas"
+            "title": "Equipos Eléctricos",
+            "shortTitle": "Eléctrico",
+            "description": "Para carretilla eléctrica, complete la información a continuación"
           },
           "loads": {
-            "title": "Cargas",
+            "title": "Dimensiones y Peso de las Cargas",
             "shortTitle": "Cargas",
             "description": "Tabla de dimensiones"
           },
           "aisle": {
-            "title": "Especificaciones pasillo",
+            "title": "Especificaciones del Pasillo",
             "shortTitle": "Pasillo",
             "description": "Medidas del pasillo"
           },
           "files": {
-            "title": "Archivos adjuntos",
+            "title": "Archivos Adjuntos",
             "shortTitle": "Archivos",
             "description": "Fotos, videos y documentos"
           }
         },
         "fields": {
           "operationNotes": {
-            "label": "Notas sobre la operación",
-            "placeholder": "Describe las condiciones y restricciones del área de trabajo...",
-            "required": "Notas sobre la operación son requeridas"
+            "label": "Descripción de la Operación",
+            "placeholder": "Por favor, especifique si hay rampas, pasos de puerta, otras restricciones...",
+            "required": "La descripción de la operación es requerida"
           },
           "closingDate": {
-            "label": "Fecha de cierre estimada",
+            "label": "Fecha aproximada de desarrollo del proyecto",
             "optional": "(opcional)",
             "placeholder": "Seleccionar fecha"
           },
           "productDescription": {
-            "header": "Descripción del Producto",
-            "label": "Producto a manipular",
-            "placeholder": "Descripción del producto",
-            "required": "Descripción del producto es requerida"
+            "header": "Datos de la Aplicación",
+            "label": "Descripción de las cargas",
+            "placeholder": "Describa las cargas a manipular...",
+            "required": "La descripción de las cargas es requerida"
           },
           "dimensionsAndWeights": {
-            "header": "Dimensiones y Pesos",
-            "lastLevelHeight": "Alt. últ. nivel",
-            "maxElevation": "Máx. elevación",
-            "maxHeightLoadWeight": "Peso máx. alt.",
-            "firstLevelLoadWeight": "Peso 1er niv.",
-            "areaWidth": "Ancho área",
-            "areaDepth": "Fondo área"
+            "header": "Datos de la Aplicación",
+            "lastLevelHeight": "Altura máxima de estantería",
+            "maxElevation": "Altura máxima de elevación",
+            "maxHeightLoadWeight": "Peso máx. hasta altura máx. de elevación",
+            "firstLevelLoadWeight": "Peso máx. en el primer nivel",
+            "areaWidth": "Dimensiones del área de almacenamiento Ancho",
+            "areaDepth": "Dimensiones del área de almacenamiento Fondo"
           },
           "operationAndPower": {
             "header": "Operación y Alimentación",
-            "shifts": "Turnos",
-            "definitionDate": "Fecha definición",
+            "shifts": "Turnos de trabajo",
+            "definitionDate": "Fecha aproximada de desarrollo del proyecto",
             "powerSource": "Alimentación"
           },
           "electrical": {
-            "header": "Especificaciones Eléctricas",
+            "header": "Alimentación",
+            "subheader": "Para carretilla eléctrica, complete la información a continuación",
             "notApplicable": {
               "label": "No aplica",
-              "description": "Activa esta opción si las especificaciones eléctricas no son aplicables para esta visita.",
+              "description": "Active esta opción si las especificaciones eléctricas no son aplicables para esta visita.",
               "alert": {
                 "title": "Paso no aplicable",
-                "description": "Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puedes continuar al siguiente paso."
+                "description": "Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puede continuar al siguiente paso."
               }
             },
-            "currentType": "Tipo corriente",
+            "currentType": "Monofásica / Trifásica",
+            "singlePhase": "Monofásica",
+            "threePhase": "Trifásica",
             "voltage": "Voltaje",
-            "frequency": "Frecuencia",
+            "frequency": "Frecuencia (Hz)",
             "amperage": "Amperaje",
-            "ambientTemp": "Temp. ambiente",
-            "workHours": "Horas/día",
+            "ambientTemp": "Temperatura Ambiente",
+            "workHours": "Horas de trabajo/día",
             "notes": "Observaciones (opcional)",
             "notesPlaceholder": "Notas adicionales sobre los equipos eléctricos..."
           },
           "loads": {
-            "header": "Dimensiones de Cargas",
+            "header": "Dimensiones y Peso de las Cargas",
             "add": "Agregar",
             "addFirst": "Agregar primera carga",
-            "empty": "No hay cargas agregadas",
-            "productName": "Nombre del producto",
-            "length": "Largo",
+            "empty": "Sin cargas agregadas. Agregue las dimensiones de las cargas a manipular.",
+            "productName": "Producto",
+            "productPlaceholder": "Nombre del producto",
+            "length": "Ancho",
             "depth": "Fondo",
             "height": "Alto",
             "weight": "Peso",
+            "percentage": "%",
             "table": {
-              "product": "PRODUCTO",
-              "length": "LARGO",
-              "depth": "FONDO",
-              "height": "ALTO",
-              "weight": "PESO",
+              "product": "Producto",
+              "length": "Ancho",
+              "depth": "Fondo",
+              "height": "Alto",
+              "weight": "Peso",
               "percentage": "%"
             },
-            "totalPercentage": "Total porcentaje",
+            "totalPercentage": "Porcentaje total:",
             "percentageError": "Los porcentajes deben sumar exactamente 100%"
           },
           "aisle": {
             "header": "Especificaciones del Pasillo",
-            "guideRails": "+ Rieles guía",
-            "guideRailsLabel": "+ Rieles guía",
-            "productDepth": "Profundidad producto",
-            "widthBetweenProducts": "Ancho entre productos",
-            "distBetweenRacks": "Dist. entre estanterías",
-            "rackUsefulDepth": "Fondo útil estantería",
-            "rackBaseHeight": "Altura base estantería",
-            "distUnderGuideRails": "Dist. bajo rieles guía",
-            "heightFloorFirstArm": "Altura suelo→1er brazo",
-            "floorToFirstArm": "Altura suelo→1er brazo",
-            "distBetweenGuideRails": "Dist. entre rieles guía",
-            "clearHeightToGuide": "Altura libre→guía",
-            "columnThickness": "Grosor pilar/columna",
-            "lastLevelHeight": "Altura último nivel",
-            "maxInteriorHeight": "Altura máx. interior"
+            "distancesHeader": "Distancias del Pasillo",
+            "shelfInfoHeader": "Información de Estantería",
+            "shelfType": "Tipo de estantería",
+            "guideRails": "Solo pasillo guiado",
+            "guideRailsLabel": "Solo pasillo guiado",
+            "productDepth": "Profundidad del producto",
+            "widthBetweenProducts": "Distancia entre productos más anchos",
+            "distBetweenRacks": "Distancia entre estanterías",
+            "rackUsefulDepth": "Longitud del brazo de estantería",
+            "rackBaseHeight": "Altura de la base de estantería",
+            "distUnderGuideRails": "Espacio libre bajo rieles guía",
+            "heightFloorFirstArm": "Altura hasta 1er brazo de estantería",
+            "floorToFirstArm": "Altura hasta 1er brazo de estantería",
+            "distBetweenGuideRails": "Distancia entre rieles guía",
+            "clearHeightToGuide": "Altura del riel guía",
+            "columnThickness": "Grosor del montante",
+            "lastLevelHeight": "Altura del riel guía",
+            "maxInteriorHeight": "Espacio libre superior"
           }
         },
         "validation": {
-          "descriptionRequired": "Debe proporcionar una descripción detallada",
+          "descriptionRequired": "La descripción de la operación es requerida",
           "typeRequired": "Selecciona al menos un tipo",
           "measuresRequired": "Selecciona al menos una medida",
           "emailInvalid": "Email inválido",
@@ -1578,8 +1586,8 @@
           "positiveRequired": "Debe ser positivo",
           "min0": "Mínimo 0%",
           "max100": "Máximo 100%",
-          "operationNotesRequired": "Notas sobre la operación son requeridas",
-          "productDescriptionRequired": "Descripción del producto es requerida",
+          "operationNotesRequired": "La descripción de la operación es requerida",
+          "productDescriptionRequired": "La descripción de las cargas es requerida",
           "positiveValueRequired": "Debe ser un valor positivo",
           "min1Shift": "Mínimo 1 turno",
           "electricalRequired": "Los datos de equipos eléctricos son requeridos para alimentación eléctrica",
@@ -1589,7 +1597,7 @@
         "navigation": {
           "operation": "Operación",
           "application": "Aplicación",
-          "batteries": "Baterías",
+          "electrical": "Eléctrico",
           "loads": "Cargas",
           "aisle": "Pasillo",
           "files": "Archivos"
