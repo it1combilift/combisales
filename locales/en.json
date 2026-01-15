@@ -1189,19 +1189,19 @@
       "workAreaDepth": "Work area depth",
       "workShifts": "Work shifts",
       "desiredPower": "Desired power",
-      "currentType": "Current type",
+      "currentType": "Power Supply type",
       "voltage": "Voltage",
-      "frequency": "Frequency",
+      "frequency": "Frequency (Hz)",
       "amperage": "Amperage",
-      "ambientTemperature": "Ambient temperature",
-      "workHoursPerDay": "Work hours/day",
+      "ambientTemperature": "Ambient Temperature",
+      "workHoursPerDay": "Working hours per day",
       "availablePower": "Available power",
       "chargePointDistance": "Charge point distance",
       "loadNumber": "Load",
-      "length": "Length",
+      "length": "Width",
       "depth": "Depth",
       "width": "Width",
-      "height": "Height",
+      "height": "High",
       "weight": "Weight",
       "floorType": "Floor type",
       "aisleWidth": "Aisle width",
@@ -1610,7 +1610,7 @@
         "operation": {
           "title": "Operation Description",
           "shortTitle": "Operation",
-          "description": "Operation details"
+          "description": "Specify ramps, doorways, restrictions"
         },
         "application": {
           "title": "Application Details",
@@ -1618,19 +1618,19 @@
           "description": "Technical information"
         },
         "batteries": {
-          "title": "Batteries",
-          "shortTitle": "Batteries",
+          "title": "Electrical Equipment Specifications",
+          "shortTitle": "Electrical",
           "description": "Electrical specifications"
         },
         "loads": {
-          "title": "Loads",
+          "title": "Dimensions and Weights of Loads",
           "shortTitle": "Loads",
           "description": "Dimension table"
         },
         "aisle": {
-          "title": "Current Aisle",
+          "title": "Current Working Aisle",
           "shortTitle": "Aisle",
-          "description": "Aisle measurements"
+          "description": "Aisle information and additional data"
         },
         "files": {
           "title": "Attachments",
@@ -1640,29 +1640,29 @@
       },
       "fields": {
         "operationNotes": {
-          "label": "Operation notes",
-          "placeholder": "Describe the conditions and restrictions of the work area..."
+          "label": "Operation description",
+          "placeholder": "Specify ramps, doorways, restrictions..."
         },
         "operationType": "Operation type",
         "operation": {
           "closingDate": {
-            "label": "Estimated closing date"
+            "label": "Approximate date of project development"
           },
           "notes": {
-            "label": "Operation Notes",
-            "placeholder": "Describe the conditions and restrictions of the work area..."
+            "label": "Operation description",
+            "placeholder": "Specify ramps, doorways, restrictions..."
           },
           "ramps": {
-            "label": "Ramps",
-            "placeholder": "Notes about ramps..."
+            "label": "Are there ramps?",
+            "placeholder": "Describe the ramps (% slope, etc)..."
           },
           "doors": {
-            "label": "Doorways/Passages",
-            "placeholder": "Notes about doorways/passages..."
+            "label": "Are there doorways?",
+            "placeholder": "Height, width, quantity..."
           },
           "restrictions": {
-            "label": "Restrictions",
-            "placeholder": "Notes about restrictions..."
+            "label": "Other height restrictions?",
+            "placeholder": "Beams, pipes, lighting, sprinklers..."
           },
           "maxHeight": {
             "label": "Maximum building height"
@@ -1674,7 +1674,7 @@
             "label": "Work surface"
           },
           "floor": {
-            "label": "Floor conditions",
+            "label": "Floor conditions (Indoor/Outdoor)",
             "placeholder": "Describe the floor conditions..."
           },
           "type": {
@@ -1683,41 +1683,41 @@
         },
         "application": {
           "headers": {
-            "productDescription": "Product Description",
+            "productDescription": "Description of loads",
             "dimensionsAndWeights": "Heights, Weights and Area",
             "operationAndPower": "Operation and Power"
           },
           "productDescription": {
-            "label": "Product to handle",
-            "placeholder": "Product description"
+            "label": "Description of loads",
+            "placeholder": "Describe the load or product to be handled..."
           },
           "lastLevelHeight": {
-            "label": "Last level height"
+            "label": "Max rack height"
           },
           "maxLiftHeight": {
             "label": "Max lift height"
           },
           "maxLoadWeight": {
-            "label": "Max load weight"
+            "label": "Max weight up to max lift height"
           },
           "firstLevelLoadWeight": {
-            "label": "First level weight"
+            "label": "Max weight on the first level"
           },
           "workAreaWidth": {
-            "label": "Area width"
+            "label": "Dimensions of storage area (Front)"
           },
           "workAreaDepth": {
-            "label": "Area depth"
+            "label": "Dimensions of storage area (Depth)"
           },
           "shifts": {
-            "label": "Shifts",
+            "label": "Work shifts",
             "placeholder": "1"
           },
           "definitionDate": {
-            "label": "Definition date"
+            "label": "Approximate date of project development"
           },
           "powerSource": {
-            "label": "Power source"
+            "label": "Power Supply (Diesel, LPG, Electric)"
           }
         },
         "hasRamps": {
@@ -1739,27 +1739,28 @@
         "workSurface": "Work surface",
         "floorConditions": "Floor conditions",
         "productDescription": {
-          "header": "Product Description",
-          "label": "Product to handle",
-          "placeholder": "Product description"
+          "header": "Description of loads",
+          "label": "Description of loads",
+          "placeholder": "Describe the load or product to be handled..."
         },
         "dimensionsAndWeights": {
-          "header": "Dimensions and Weights",
-          "lastLevelHeight": "Last level height",
-          "maxElevation": "Max elevation",
-          "maxHeightLoadWeight": "Max height load weight",
-          "firstLevelLoadWeight": "First level weight",
-          "areaWidth": "Area width",
-          "areaDepth": "Area depth"
+          "header": "Heights, Weights and Area",
+          "lastLevelHeight": "Max rack height",
+          "maxElevation": "Max lift height",
+          "maxHeightLoadWeight": "Max weight up to max lift height",
+          "firstLevelLoadWeight": "Max weight on the first level",
+          "areaWidth": "Dimensions of storage area (Front)",
+          "areaDepth": "Dimensions of storage area (Depth)"
         },
         "operationAndPower": {
           "header": "Operation and Power",
-          "shifts": "Shifts",
-          "definitionDate": "Definition date",
-          "powerSource": "Power source"
+          "shifts": "Work shifts",
+          "definitionDate": "Approximate date of project development",
+          "powerSource": "Power Supply"
         },
         "electrical": {
-          "header": "Electrical Specifications",
+          "header": "Electrical Equipment Specifications",
+          "subheader": "Power Supply (Single or Three Phase)",
           "notApplicable": {
             "label": "Not applicable",
             "description": "Enable this option if electrical specifications are not applicable.",
@@ -1768,43 +1769,54 @@
               "description": "This step is only required when the desired power source is electric."
             }
           },
-          "currentType": "Current type",
+          "currentType": "Power Supply type",
+          "singlePhase": "Single Phase",
+          "threePhase": "Three Phase",
           "voltage": "Voltage",
-          "frequency": "Frequency",
+          "frequency": "Frequency (Hz)",
           "amperage": "Amperage",
-          "ambientTemp": "Ambient temp.",
-          "workHours": "Hours/day",
+          "ambientTemp": "Ambient Temperature",
+          "workHours": "Working hours per day",
           "notes": "Observations (optional)",
-          "notesPlaceholder": "Additional notes..."
+          "notesPlaceholder": "Additional notes about electrical equipment..."
         },
         "loads": {
-          "header": "Load Dimensions",
+          "header": "Dimensions and Weights of Loads",
           "add": "Add",
           "addFirst": "Add first load",
-          "empty": "No loads added",
-          "productName": "Product name",
+          "empty": "No loads added. Add dimensions and weights of the loads.",
+          "productName": "Product",
           "productPlaceholder": "Product name",
-          "length": "Length",
-          "depth": "Depth",
-          "height": "Height",
-          "weight": "Weight",
+          "length": "Width (W)",
+          "depth": "Depth (D)",
+          "height": "High (H)",
+          "weight": "Weight (W)",
           "percentage": "%",
+          "table": {
+            "product": "Product",
+            "length": "Width (W)",
+            "depth": "Depth (D)",
+            "height": "High (H)",
+            "weight": "Weight (W)",
+            "percentage": "%"
+          },
           "totalPercentage": "Total percentage:",
           "percentageError": "Percentages must sum exactly 100%"
         },
         "aisle": {
-          "header": "Current Aisle",
-          "distancesHeader": "Aisle Distances",
+          "header": "Current Working Aisle",
+          "distancesHeader": "Aisle Information",
           "shelfInfoHeader": "Shelf Information",
+          "additionalInfo": "Additional Information",
           "shelfType": "Shelf type",
           "productDepth": "Product depth",
-          "widthBetweenProducts": "Width between products",
-          "distBetweenRacks": "Dist. between racks",
+          "widthBetweenProducts": "Distance between products",
+          "distBetweenRacks": "Distance between racks",
           "rackUsefulDepth": "Rack useful depth",
           "rackBaseHeight": "Rack base height"
         },
         "electricEquipment": {
-          "header": "Electrical Specifications",
+          "header": "Electrical Equipment Specifications",
           "notApplicable": "Step not applicable",
           "notApplicableDescription": "This step is only required when the desired power is electric. You can continue to the next step.",
           "notApplicableToggle": "Not applicable",
@@ -1833,7 +1845,7 @@
         }
       },
       "validation": {
-        "descriptionRequired": "Must provide a detailed description",
+        "descriptionRequired": "Operation description is required",
         "typeRequired": "Select at least one type",
         "measuresRequired": "Select at least one measurement",
         "emailInvalid": "Invalid email",
@@ -1842,8 +1854,8 @@
         "positiveRequired": "Must be positive",
         "min0": "Minimum 0%",
         "max100": "Maximum 100%",
-        "operationNotesRequired": "Operation notes are required",
-        "productDescriptionRequired": "Product description is required",
+        "operationNotesRequired": "Operation description is required",
+        "productDescriptionRequired": "Description of loads is required",
         "positiveValueRequired": "Must be a positive value",
         "min1Shift": "Minimum 1 shift",
         "electricalRequired": "Electrical equipment data is required for electric power",
@@ -1853,7 +1865,7 @@
       "navigation": {
         "operation": "Operation",
         "application": "Application",
-        "batteries": "Batteries",
+        "electrical": "Electrical",
         "loads": "Loads",
         "aisle": "Aisle",
         "files": "Files"

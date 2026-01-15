@@ -54,53 +54,7 @@ export function Step1Content({ form }: StepContentProps) {
   const tieneRestricciones = form.watch("tieneRestricciones");
 
   return (
-    <div className="space-y-5">
-      {/* ==================== FECHA CIERRE ==================== */}
-      <section>
-        <FormField
-          control={form.control}
-          name="fechaCierre"
-          render={({ field }) => (
-            <FormItem className="max-w-xs">
-              <FormLabel className="text-[11px] font-medium">
-                {t("forms.logistica.fields.operation.closingDate.label")}
-              </FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-fit justify-start text-left font-normal h-8 text-xs",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarDays className="size-4" />
-                      {field.value
-                        ? format(field.value, "PPP", {
-                            locale: locale === "en" ? undefined : es,
-                          })
-                        : t("forms.selectDate")}
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value!}
-                    onSelect={field.onChange}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                    locale={locale === "en" ? undefined : es}
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage className="text-[10px]" />
-            </FormItem>
-          )}
-        />
-      </section>
-
+    <div className="space-y-4">
       {/* ==================== NOTAS OPERACIÓN ==================== */}
       <section>
         <FormField
@@ -268,7 +222,7 @@ export function Step1Content({ form }: StepContentProps) {
       <section>
         <div className="space-y-4">
           {/* Row 1: Dimensiones principales */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {/* Altura máxima nave */}
             <FormField
               control={form.control}
@@ -437,6 +391,52 @@ export function Step1Content({ form }: StepContentProps) {
             />
           </div>
         </div>
+      </section>
+
+      {/* ==================== FECHA CIERRE ==================== */}
+      <section className="w-full">
+        <FormField
+          control={form.control}
+          name="fechaCierre"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="text-[11px] font-medium">
+                {t("forms.logistica.fields.operation.closingDate.label")}
+              </FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal h-8 text-xs",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarDays className="size-4" />
+                      {field.value
+                        ? format(field.value, "PPP", {
+                            locale: locale === "en" ? undefined : es,
+                          })
+                        : t("forms.selectDate")}
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value!}
+                    onSelect={field.onChange}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    locale={locale === "en" ? undefined : es}
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage className="text-[10px]" />
+            </FormItem>
+          )}
+        />
       </section>
     </div>
   );

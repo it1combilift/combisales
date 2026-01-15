@@ -87,7 +87,7 @@ export function Step3Content({ form }: StepContentProps) {
       {/* ==================== ALTURAS, PESOS Y ÁREA ==================== */}
       <section>
         <SectionHeader icon={Ruler} title={t("forms.logistica.fields.application.headers.dimensionsAndWeights")} />
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {/* Altura último nivel estantería */}
           <FormField
             control={form.control}
@@ -285,7 +285,7 @@ export function Step3Content({ form }: StepContentProps) {
       {/* ==================== OPERACIÓN Y ALIMENTACIÓN ==================== */}
       <section>
         <SectionHeader icon={Clock} title={t("forms.logistica.fields.application.headers.operationAndPower")} />
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2 w-full">
           <FormField
             control={form.control}
             name="turnosTrabajo"
@@ -299,54 +299,12 @@ export function Step3Content({ form }: StepContentProps) {
                     type="number"
                     min="1"
                     placeholder={t("forms.logistica.fields.application.shifts.placeholder")}
-                    className="text-sm h-8"
+                    className="text-sm h-8 w-full"
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
                     value={field.value ?? ""}
                   />
                 </FormControl>
-                <FormMessage className="text-[10px]" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="fechaEstimadaDefinicion"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-[11px] font-medium">
-                  {t("forms.logistica.fields.application.definitionDate.label")}
-                </FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full h-8 text-left text-sm font-normal justify-start",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="size-3" />
-                        {field.value ? (
-                          format(field.value, "dd/MM/yy", { locale: es })
-                        ) : (
-                          <span className="text-xs">{t("common.select")}</span>
-                        )}
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value || undefined}
-                      onSelect={field.onChange}
-                      locale={es}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
                 <FormMessage className="text-[10px]" />
               </FormItem>
             )}
