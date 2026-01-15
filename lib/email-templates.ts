@@ -501,7 +501,7 @@ function buildIndustrialFormContent(
 
   // Section 2: Datos de aplicación
   html += startSection();
-  html += buildSectionHeader(t("email.industrial.applicationData", locale));
+  html += buildSectionHeader(t("email.industrial.applicationDetails", locale));
   html += buildRow(
     t("email.industrial.lastShelfLevel", locale),
     formatNumber(data.alturaUltimoNivelEstanteria, "mm", locale)
@@ -695,7 +695,7 @@ function buildLogisticaFormContent(
 
   // Section 2: Datos de aplicación
   html += startSection();
-  html += buildSectionHeader(t("email.logistica.applicationData", locale));
+  html += buildSectionHeader(t("email.logistica.applicationDetails", locale));
   html += buildRow(
     t("email.logistica.lastShelfLevel", locale),
     formatNumber(data.alturaUltimoNivelEstanteria, "mm", locale)

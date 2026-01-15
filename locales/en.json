@@ -1717,7 +1717,7 @@
             "label": "Approximate date of project development"
           },
           "powerSource": {
-            "label": "Power Supply (Diesel, LPG, Electric)"
+            "label": "Power Supply"
           }
         },
         "hasRamps": {

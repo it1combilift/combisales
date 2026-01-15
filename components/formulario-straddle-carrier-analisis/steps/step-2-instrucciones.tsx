@@ -62,55 +62,7 @@ export function Step1Content({ form }: StepContentProps) {
   }, [isMobile]);
 
   return (
-    <div className="space-y-4">
-      {/* ==================== FECHA CIERRE ==================== */}
-      <div className="">
-        <FormField
-          control={form.control}
-          name="fechaCierre"
-          render={({ field }) => (
-            <FormItem className="max-w-xs">
-              <FormLabel className="text-[11px] font-medium flex items-center gap-1.5">
-                {t("forms.straddleCarrier.fields.closingDate.label")}
-              </FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-fit justify-start text-left font-normal h-8 text-xs",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarDays className="size-3.5" />
-                      {field.value
-                        ? format(new Date(field.value), "PPP", {
-                            locale: locale === "en" ? undefined : es,
-                          })
-                        : t(
-                            "forms.straddleCarrier.fields.closingDate.placeholder"
-                          )}
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value ? new Date(field.value) : undefined}
-                    onSelect={(date) => field.onChange(date ?? null)}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                    locale={locale === "en" ? undefined : es}
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage className="text-[10px]" />
-            </FormItem>
-          )}
-        />
-      </div>
-
+    <div className="space-y-3">
       {/* ==================== INSTRUCCIONES - Collapsible ==================== */}
       <Collapsible
         open={isInstructionsOpen}
@@ -325,6 +277,51 @@ export function Step1Content({ form }: StepContentProps) {
           </div>
         )}
       </div>
+
+      <FormField
+        control={form.control}
+        name="fechaCierre"
+        render={({ field }) => (
+          <FormItem className="w-full">
+            <FormLabel className="text-[11px] font-medium flex items-center gap-1.5">
+              {t("forms.straddleCarrier.fields.closingDate.label")}
+            </FormLabel>
+            <Popover>
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-8 text-xs",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarDays className="size-3.5" />
+                    {field.value
+                      ? format(new Date(field.value), "PPP", {
+                          locale: locale === "en" ? undefined : es,
+                        })
+                      : t(
+                          "forms.straddleCarrier.fields.closingDate.placeholder"
+                        )}
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={field.value ? new Date(field.value) : undefined}
+                  onSelect={(date) => field.onChange(date ?? null)}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                  locale={locale === "en" ? undefined : es}
+                />
+              </PopoverContent>
+            </Popover>
+            <FormMessage className="text-[10px]" />
+          </FormItem>
+        )}
+      />
     </div>
   );
 }
