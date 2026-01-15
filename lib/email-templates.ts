@@ -1,4 +1,4 @@
-import { VisitStatus } from "@prisma/client";
+import { TipoAlimentacion, VisitStatus } from "@prisma/client";
 import { EMAIL_CONFIG } from "@/constants/constants";
 import { formatDateShort } from "@/lib/utils";
 import { formatFileSize } from "@/components/formulario-css-analisis/utils/file-utils";
@@ -538,7 +538,13 @@ function buildIndustrialFormContent(
   );
   html += buildRow(
     t("email.industrial.desiredPower", locale),
-    data.alimentacionDeseada || null,
+    data.alimentacionDeseada === TipoAlimentacion.ELECTRICO
+      ? t("visits.powerTypes.ELECTRICO", locale)
+      : data.alimentacionDeseada === TipoAlimentacion.DIESEL
+      ? t("visits.powerTypes.DIESEL", locale)
+      : data.alimentacionDeseada === TipoAlimentacion.GLP
+      ? t("visits.powerTypes.GLP", locale)
+      : null,
     {
       highlight: true,
     }
@@ -732,7 +738,13 @@ function buildLogisticaFormContent(
   );
   html += buildRow(
     t("email.logistica.desiredPower", locale),
-    data.alimentacionDeseada || null,
+    data.alimentacionDeseada === TipoAlimentacion.ELECTRICO
+      ? t("visits.powerTypes.ELECTRICO", locale)
+      : data.alimentacionDeseada === TipoAlimentacion.DIESEL
+      ? t("visits.powerTypes.DIESEL", locale)
+      : data.alimentacionDeseada === TipoAlimentacion.GLP
+      ? t("visits.powerTypes.GLP", locale)
+      : null,
     {
       highlight: true,
     }
