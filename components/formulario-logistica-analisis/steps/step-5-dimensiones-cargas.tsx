@@ -6,16 +6,23 @@ import { Progress } from "@/components/ui/progress";
 import { StepContentProps, DimensionCarga } from "../types";
 import { Plus, Trash2, Package, Ruler } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
+import { useState } from "react";
+import {
+  CollapsibleImageTrigger,
+  CollapsibleImageContent,
+} from "@/components/ui/collapsible-image";
 
 // ==================== SECTION HEADER ====================
 function SectionHeader({
   icon: Icon,
   title,
   action,
+  secondaryAction,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   action?: React.ReactNode;
+  secondaryAction?: React.ReactNode;
 }) {
   return (
     <div className="flex items-center justify-between pb-2 border-b mb-3">
@@ -27,7 +34,10 @@ function SectionHeader({
           {title}
         </h3>
       </div>
-      {action}
+      <div className="flex items-center gap-2">
+        {secondaryAction}
+        {action}
+      </div>
     </div>
   );
 }
@@ -177,12 +187,24 @@ export function Step5Content({ form }: StepContentProps) {
 
   const isValid = Math.abs(totalPorcentaje - 100) < 0.01;
 
+  // State for collapsible reference image
+  const [isImageOpen, setIsImageOpen] = useState(false);
+
   return (
     <div className="space-y-4">
-      {/* Header with add button */}
+      {/* Header with add button and reference image trigger */}
       <SectionHeader
         icon={Package}
         title={t("forms.logistica.fields.loads.header")}
+        secondaryAction={
+          <CollapsibleImageTrigger
+            buttonLabel={t(
+              "forms.logistica.fields.loads.referenceImage.button"
+            )}
+            isOpen={isImageOpen}
+            onClick={() => setIsImageOpen(!isImageOpen)}
+          />
+        }
         action={
           <Button
             type="button"
@@ -196,6 +218,14 @@ export function Step5Content({ form }: StepContentProps) {
           </Button>
         }
       />
+
+      {/* Reference Image - Collapsible Content */}
+      {isImageOpen && (
+        <CollapsibleImageContent
+          src="/logistic-Dimensions-and-Weights-of-Loads.png"
+          alt={t("forms.logistica.fields.loads.referenceImage.alt")}
+        />
+      )}
 
       {/* Empty state */}
       {dimensionesCargas.length === 0 ? (

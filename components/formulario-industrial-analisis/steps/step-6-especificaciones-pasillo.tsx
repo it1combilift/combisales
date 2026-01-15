@@ -3,6 +3,11 @@ import { Ruler } from "lucide-react";
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
 import { TipoAlimentacion } from "@prisma/client";
+import { useState } from "react";
+import {
+  CollapsibleImageTrigger,
+  CollapsibleImageContent,
+} from "@/components/ui/collapsible-image";
 
 import {
   FormField,
@@ -68,9 +73,12 @@ export function Step6Content({ form }: StepContentProps) {
   const alimentacion = form.watch("alimentacionDeseada");
   const isGuided = alimentacion === TipoAlimentacion.ELECTRICO;
 
+  // State for collapsible reference image
+  const [isImageOpen, setIsImageOpen] = useState(false);
+
   return (
     <div className="space-y-4">
-      {/* Header */}
+      {/* Header with reference image trigger */}
       <div className="hidden md:flex items-center gap-2 pb-2 border-b">
         <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
           <Ruler className="size-3 text-primary" />
@@ -78,12 +86,47 @@ export function Step6Content({ form }: StepContentProps) {
         <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
           {t("forms.industrial.fields.aisle.header")}
         </h3>
-        {isGuided && (
-          <span className="ml-auto text-[9px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
-            {t("forms.industrial.fields.aisle.guideRailsLabel")}
-          </span>
-        )}
+        <div className="ml-auto flex items-center gap-2">
+          {isGuided && (
+            <span className="text-[9px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
+              {t("forms.industrial.fields.aisle.guideRailsLabel")}
+            </span>
+          )}
+
+          <CollapsibleImageTrigger
+            buttonLabel={t(
+              "forms.industrial.fields.aisle.referenceImage.button"
+            )}
+            isOpen={isImageOpen}
+            onClick={() => setIsImageOpen(!isImageOpen)}
+          />
+        </div>
       </div>
+
+      {/* Mobile header with reference image trigger */}
+      <div className="md:hidden flex items-center justify-between pb-2 border-b">
+        <div className="flex items-center gap-2">
+          <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
+            <Ruler className="size-3 text-primary" />
+          </div>
+          <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("forms.industrial.fields.aisle.header")}
+          </h3>
+        </div>
+        <CollapsibleImageTrigger
+          buttonLabel={t("forms.industrial.fields.aisle.referenceImage.button")}
+          isOpen={isImageOpen}
+          onClick={() => setIsImageOpen(!isImageOpen)}
+        />
+      </div>
+
+      {/* Reference Image - Collapsible Content */}
+      {isImageOpen && (
+        <CollapsibleImageContent
+          src="/industrial-aisle-spec.png"
+          alt={t("forms.industrial.fields.aisle.referenceImage.alt")}
+        />
+      )}
 
       {/* All fields in compact grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3">
@@ -182,7 +225,9 @@ export function Step6Content({ form }: StepContentProps) {
               render={({ field }) => (
                 <NumberedInput
                   number={8}
-                  label={t("forms.industrial.fields.aisle.distBetweenGuideRails")}
+                  label={t(
+                    "forms.industrial.fields.aisle.distBetweenGuideRails"
+                  )}
                   field={field}
                   isConditional
                 />

@@ -787,7 +787,11 @@
           "weight": "Weight",
           "product": "Product",
           "totalPercentage": "Total percentage:",
-          "percentageError": "Percentages must sum exactly 100%"
+          "percentageError": "Percentages must sum exactly 100%",
+          "referenceImage": {
+            "button": "View diagram",
+            "alt": "Load dimensions and weights reference diagram"
+          }
         }
       },
       "options": {
@@ -1581,7 +1585,11 @@
           "clearHeightToGuide": "Height of guide rail",
           "columnThickness": "Upright thickness",
           "lastLevelHeight": "Height of guide rail",
-          "maxInteriorHeight": "Overhead clearance"
+          "maxInteriorHeight": "Overhead clearance",
+          "referenceImage": {
+            "button": "View diagram",
+            "alt": "Aisle specification measurements reference diagram"
+          }
         }
       },
       "validation": {
@@ -1807,7 +1815,11 @@
             "percentage": "%"
           },
           "totalPercentage": "Total percentage:",
-          "percentageError": "Percentages must sum exactly 100%"
+          "percentageError": "Percentages must sum exactly 100%",
+          "referenceImage": {
+            "button": "View diagram",
+            "alt": "Load dimensions and weights reference diagram"
+          }
         },
         "aisle": {
           "header": "Current Working Aisle",

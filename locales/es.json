@@ -785,7 +785,11 @@
             "weight": "Peso",
             "product": "Producto",
             "totalPercentage": "Total porcentaje:",
-            "percentageError": "Los porcentajes deben sumar exactamente 100%"
+            "percentageError": "Los porcentajes deben sumar exactamente 100%",
+            "referenceImage": {
+              "button": "Ver diagrama",
+              "alt": "Diagrama de referencia de dimensiones y pesos de cargas"
+            }
           }
         },
         "options": {
@@ -1579,7 +1583,11 @@
             "clearHeightToGuide": "Altura libre hasta guía",
             "columnThickness": "Grosor de pilar / columna",
             "lastLevelHeight": "Altura al último nivel de estantería",
-            "maxInteriorHeight": "Altura a cota más alta en interior de edificio"
+            "maxInteriorHeight": "Altura a cota más alta en interior de edificio",
+            "referenceImage": {
+              "button": "Ver diagrama",
+              "alt": "Diagrama de referencia de medidas del pasillo"
+            }
           }
         },
         "validation": {
@@ -1805,7 +1813,11 @@
               "percentage": "%"
             },
             "totalPercentage": "Porcentaje total:",
-            "percentageError": "Los porcentajes deben sumar exactamente 100%"
+            "percentageError": "Los porcentajes deben sumar exactamente 100%",
+            "referenceImage": {
+              "button": "Ver diagrama",
+              "alt": "Diagrama de referencia de dimensiones y pesos de cargas"
+            }
           },
           "aisle": {
             "header": "Pasillo actual de trabajo",
