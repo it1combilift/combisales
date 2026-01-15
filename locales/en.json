@@ -1494,7 +1494,7 @@
         },
         "dimensionsAndWeights": {
           "header": "Dimensions and Weights",
-          "lastLevelHeight": "Last Level Ht.",
+          "lastLevelHeight": "Last Level Height.",
           "maxElevation": "Max Elevation",
           "maxHeightLoadWeight": "Max Ht. Weight",
           "firstLevelLoadWeight": "1st Level Weight",

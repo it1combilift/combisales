@@ -169,10 +169,14 @@ export function ProfileEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full md:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-left">
-          <DialogTitle>{t("profile.edit.title")}</DialogTitle>
-          <DialogDescription>{t("profile.edit.description")}</DialogDescription>
+          <DialogTitle className="text-sm">
+            {t("profile.edit.title")}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground text-pretty">
+            {t("profile.edit.description")}
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -183,7 +187,7 @@ export function ProfileEditDialog({
               name="image"
               render={() => (
                 <FormItem>
-                  <FormLabel>{t("profile.edit.image")}</FormLabel>
+                  <FormLabel className="text-xs md:text-sm">{t("profile.edit.image")}</FormLabel>
                   <FormControl>
                     <ProfileImageUpload
                       currentImage={form.watch("image")}
@@ -203,12 +207,13 @@ export function ProfileEditDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("profile.edit.name")}</FormLabel>
+                  <FormLabel className="text-xs md:text-sm">{t("profile.edit.name")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder={t("profile.edit.namePlaceholder")}
                       disabled={isLoading}
+                      className="text-xs md:text-sm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -218,8 +223,8 @@ export function ProfileEditDialog({
 
             {/* Email (read-only) */}
             <div className="space-y-2">
-              <FormLabel>{t("profile.email")}</FormLabel>
-              <Input value={user.email} disabled className="bg-muted" />
+              <FormLabel className="text-xs md:text-sm">{t("profile.email")}</FormLabel>
+              <Input value={user.email} disabled className="bg-muted text-xs md:text-sm"  />
               <p className="text-xs text-muted-foreground">
                 {t("profile.info.authMethods")}:{" "}
                 {user.accounts.length > 0
@@ -238,10 +243,10 @@ export function ProfileEditDialog({
                   <div className="flex items-center gap-2">
                     <Lock className="size-4 text-muted-foreground" />
                     <div>
-                      <h4 className="text-sm font-medium">
+                      <h4 className="text-xs md:text-sm font-medium">
                         {t("profile.edit.passwordSection")}
                       </h4>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs md:text-sm text-muted-foreground hidden md:block">
                         {t("profile.edit.passwordSectionDescription")}
                       </p>
                     </div>
@@ -253,7 +258,7 @@ export function ProfileEditDialog({
                     name="currentPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
+                        <FormLabel className="text-xs md:text-sm">
                           {t("profile.edit.currentPassword")}
                         </FormLabel>
                         <FormControl>
@@ -264,6 +269,7 @@ export function ProfileEditDialog({
                               "profile.edit.currentPasswordPlaceholder"
                             )}
                             disabled={isLoading}
+                            className="text-xs md:text-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -277,7 +283,7 @@ export function ProfileEditDialog({
                     name="newPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("profile.edit.newPassword")}</FormLabel>
+                        <FormLabel className="text-xs md:text-sm">{t("profile.edit.newPassword")}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -286,9 +292,10 @@ export function ProfileEditDialog({
                               "profile.edit.newPasswordPlaceholder"
                             )}
                             disabled={isLoading}
+                            className="text-xs md:text-sm"
                           />
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-xs md:text-sm text-muted-foreground">
                           {t("profile.edit.newPasswordHint")}
                         </FormDescription>
                         <FormMessage />
@@ -300,16 +307,17 @@ export function ProfileEditDialog({
             )}
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex justify-end gap-x-2 md:gap-3 md:pt-2 pt-1">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={isLoading}
+                size="sm"
               >
                 {t("profile.edit.cancel")}
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading} size="sm">
                 {isLoading ? (
                   <>
                     <Spinner className="size-3" variant="bars" />

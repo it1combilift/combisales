@@ -165,7 +165,7 @@ export function ProfileImageUpload({
   }, [onImageChange]);
 
   return (
-    <div className={cn("flex flex-col items-center gap-3", className)}>
+    <div className={cn("flex flex-col items-center gap-2 md:gap-3", className)}>
       {/* Avatar with upload overlay */}
       <div
         className={cn(
@@ -189,7 +189,7 @@ export function ProfileImageUpload({
             alt={userName || "User"}
             className="object-cover"
           />
-          <AvatarFallback className="text-lg sm:text-xl bg-muted">
+          <AvatarFallback className="text-lg md:text-xl bg-muted">
             {isUploading ? (
               <Spinner className="size-3" variant="bars" />
             ) : (
@@ -254,7 +254,7 @@ export function ProfileImageUpload({
               type="button"
               variant="outline"
               size="sm"
-              className="gap-1.5 text-xs cursor-pointer"
+              className="text-xs cursor-pointer"
               disabled={disabled}
               asChild
             >
@@ -280,7 +280,7 @@ export function ProfileImageUpload({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="gap-1.5 text-xs cursor-pointer"
+                className="text-xs cursor-pointer"
                 disabled={disabled}
                 asChild
               >
@@ -313,7 +313,7 @@ export function ProfileImageUpload({
 
       {/* Hint text */}
       {!error && !displayImage && !isUploading && (
-        <p className="text-[10px] text-muted-foreground text-center max-w-[180px]">
+        <p className="text-[10px] md:text-xs text-muted-foreground text-center max-w-[180px]">
           {t("users.form.image.hint")}
         </p>
       )}
