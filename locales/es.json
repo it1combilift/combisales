@@ -2,6 +2,8 @@
     "dealerPage": {
       "title": "Mis Visitas",
       "description": "Gestiona tus visitas y documentación",
+      "titleAdmin": "Gestión de Visitas de Dealers",
+      "descriptionAdmin": "Ver y gestionar todas las visitas documentadas por dealers",
       "createVisit": "Crear Visita",
       "viewMode": {
         "table": "Tabla",
@@ -9,7 +11,9 @@
       },
       "empty": {
         "title": "Sin visitas",
-        "description": "Crea tu primera visita para comenzar a documentar"
+        "description": "Crea tu primera visita para comenzar a documentar",
+        "titleAdmin": "Sin visitas de dealers",
+        "descriptionAdmin": "Los dealers aún no han documentado ninguna visita"
       },
       "table": {
         "formType": "Tipo de Formulario",
@@ -145,7 +149,8 @@
       "updated": "Actualizado correctamente",
       "loading": "Cargando datos...",
       "noResults": "No se encontraron resultados",
-      "confirmDelete": "¿Está seguro de que desea eliminar este elemento?"
+      "confirmDelete": "¿Está seguro de que desea eliminar este elemento?",
+      "confirmDeleteDescription": "Esta acción no se puede deshacer."
     },
     "toast": {
       "form": {

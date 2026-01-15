@@ -2,6 +2,8 @@
   "dealerPage": {
     "title": "My Visits",
     "description": "Manage your visits and documentation",
+    "titleAdmin": "Dealer Visits Management",
+    "descriptionAdmin": "View and manage all visits documented by dealers",
     "createVisit": "Create Visit",
     "viewMode": {
       "table": "Table",
@@ -9,7 +11,9 @@
     },
     "empty": {
       "title": "No visits yet",
-      "description": "Create your first visit to start documenting"
+      "description": "Create your first visit to start documenting",
+      "titleAdmin": "No dealer visits yet",
+      "descriptionAdmin": "Dealers have not documented any visits yet"
     },
     "table": {
       "formType": "Form Type",
@@ -27,7 +31,6 @@
       "assignedTo": "Assigned to",
       "noSellersTitle": "No assigned sellers",
       "loadingSellers": "Loading assigned sellers..."
-      
     },
     "errors": {
       "fetchVisits": "Error loading visits",
@@ -147,7 +150,8 @@
     "loading": "Loading data...",
     "noResults": "No results found",
     "unableToLoadData": "Unable to load data",
-    "confirmDelete": "Are you sure you want to delete this item?"
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "confirmDeleteDescription": "This action cannot be undone."
   },
   "toast": {
     "form": {

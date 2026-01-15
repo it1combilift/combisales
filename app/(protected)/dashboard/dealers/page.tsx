@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { toast } from "sonner";
+import { Role } from "@prisma/client";
 import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -43,13 +44,23 @@ const DealersPage = () => {
   const [isVisitDialogOpen, setIsVisitDialogOpen] = useState(false);
   const [visitToDelete, setVisitToDelete] = useState<Visit | null>(null);
   const [visitToEdit, setVisitToEdit] = useState<Visit | null>(null);
+  const [userRole, setUserRole] = useState<Role | null>(null);
 
-  // Fetch visits created by the current DEALER
+  // Check if user is ADMIN
+  const isAdmin = userRole === Role.ADMIN;
+  const isDealer = userRole === Role.DEALER;
+
+  // Fetch visits based on role
+  // ADMIN: sees all visits created by DEALER users
+  // DEALER: sees only their own visits
   const fetchVisits = useCallback(async () => {
     try {
-      const response = await axios.get("/api/visits?myVisits=true");
+      const response = await axios.get("/api/visits?dealerVisits=true");
       if (response.status === 200) {
         setVisits(response.data.visits);
+        if (response.data.userRole) {
+          setUserRole(response.data.userRole as Role);
+        }
       }
     } catch (error) {
       console.error("Error fetching visits:", error);
@@ -126,9 +137,15 @@ const DealersPage = () => {
       {/* Header */}
       <div className="flex flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-0">
         <div>
-          <H1>{t("dealerPage.title")}</H1>
+          <H1>
+            {isAdmin ? t("dealerPage.titleAdmin") : t("dealerPage.title")}
+          </H1>
           <div className="flex flex-col justify-start">
-            <Paragraph>{t("dealerPage.description")}</Paragraph>
+            <Paragraph>
+              {isAdmin
+                ? t("dealerPage.descriptionAdmin")
+                : t("dealerPage.description")}
+            </Paragraph>
           </div>
         </div>
 
@@ -146,12 +163,15 @@ const DealersPage = () => {
             <span className="hidden md:inline">{t("common.refresh")}</span>
           </Button>
 
-          <Button size="sm" onClick={() => setIsVisitDialogOpen(true)}>
-            <Plus className="size-4" />
-            <span className="hidden md:inline">
-              {t("dealerPage.createVisit")}
-            </span>
-          </Button>
+          {/* Only DEALER can create visits */}
+          {isDealer && (
+            <Button size="sm" onClick={() => setIsVisitDialogOpen(true)}>
+              <Plus className="size-4" />
+              <span className="hidden md:inline">
+                {t("dealerPage.createVisit")}
+              </span>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -159,13 +179,23 @@ const DealersPage = () => {
       {visits.length === 0 ? (
         <EmptyCard
           icon={<ClipboardList className="size-12 text-muted-foreground" />}
-          title={t("dealerPage.empty.title")}
-          description={t("dealerPage.empty.description")}
+          title={
+            isAdmin
+              ? t("dealerPage.empty.titleAdmin")
+              : t("dealerPage.empty.title")
+          }
+          description={
+            isAdmin
+              ? t("dealerPage.empty.descriptionAdmin")
+              : t("dealerPage.empty.description")
+          }
           actions={
-            <Button onClick={() => setIsVisitDialogOpen(true)}>
-              <Plus className="size-4 mr-2" />
-              {t("dealerPage.createVisit")}
-            </Button>
+            isDealer ? (
+              <Button onClick={() => setIsVisitDialogOpen(true)}>
+                <Plus className="size-4 mr-2" />
+                {t("dealerPage.createVisit")}
+              </Button>
+            ) : undefined
           }
         />
       ) : isMobile ? (
@@ -213,19 +243,14 @@ const DealersPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t("visits.deleteConfirmTitle")}
-            </AlertDialogTitle>
+            <AlertDialogTitle>{t("messages.confirmDelete")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t("visits.deleteConfirmDescription")}
+              {t("messages.confirmDeleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteVisit}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={handleDeleteVisit}>
               {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>

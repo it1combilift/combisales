@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { VisitFormType, VisitStatus } from "@prisma/client";
+import { VisitFormType, VisitStatus, Role } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import {
@@ -41,7 +41,9 @@ import {
  * Query params:
  * - customerId: Get visits for a specific customer
  * - zohoTaskId: Get visits for a specific Zoho task
- * - myVisits: Get visits created by the current user (for DEALER page)
+ * - dealerVisits: Get dealer visits (for DealersPage)
+ *   - ADMIN: Returns ALL visits created by DEALER users
+ *   - DEALER: Returns only visits created by the current user
  */
 export async function GET(req: NextRequest) {
   try {
@@ -53,18 +55,50 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const customerId = searchParams.get("customerId");
     const zohoTaskId = searchParams.get("zohoTaskId");
+    const dealerVisits = searchParams.get("dealerVisits");
+    // Keep backward compatibility with myVisits param
     const myVisits = searchParams.get("myVisits");
 
-    // Para la página de DEALERS: obtener las visitas creadas por el usuario actual
-    if (myVisits === "true") {
-      const visits = await prisma.visit.findMany({
-        where: {
-          userId: session.user.id,
-        },
-        include: VISIT_INCLUDE,
-        orderBy: { visitDate: "desc" },
+    // Para la página de DEALERS: obtener visitas según el rol
+    if (dealerVisits === "true" || myVisits === "true") {
+      // Obtener el rol del usuario actual
+      const currentUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true },
       });
-      return createSuccessResponse({ visits });
+
+      if (!currentUser) {
+        return unauthorizedResponse();
+      }
+
+      // ADMIN: puede ver TODAS las visitas creadas por usuarios DEALER
+      if (currentUser.role === Role.ADMIN) {
+        const visits = await prisma.visit.findMany({
+          where: {
+            user: {
+              role: Role.DEALER,
+            },
+          },
+          include: VISIT_INCLUDE,
+          orderBy: { visitDate: "desc" },
+        });
+        return createSuccessResponse({ visits, userRole: currentUser.role });
+      }
+
+      // DEALER: solo puede ver sus propias visitas
+      if (currentUser.role === Role.DEALER) {
+        const visits = await prisma.visit.findMany({
+          where: {
+            userId: session.user.id,
+          },
+          include: VISIT_INCLUDE,
+          orderBy: { visitDate: "desc" },
+        });
+        return createSuccessResponse({ visits, userRole: currentUser.role });
+      }
+
+      // Otros roles: sin acceso a esta funcionalidad
+      return unauthorizedResponse();
     }
 
     if (!customerId && !zohoTaskId) {
