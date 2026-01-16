@@ -23,18 +23,18 @@
         "actions": "Acciones"
       },
       "dialog": {
-        "selectSeller": "Seleccionar Vendedor",
+        "selectSeller": "Seleccionar P. Managers",
         "selectSellerDescription": "Elige el vendedor al que se asignará esta visita",
         "selectFormType": "Seleccionar Tipo de Formulario",
         "selectFormTypeDescription": "Elige el tipo de formulario de análisis",
-        "noSellersAssigned": "No tienes vendedores asignados. Contacta a tu administrador.",
+        "noSellersAssigned": "No tienes P. Managers asignados. Contacta a tu administrador.",
         "assignedTo": "Asignado a",
-        "noSellersTitle": "No hay vendedores asignados",
-        "loadingSellers": "Cargando vendedores asignados..."
+        "noSellersTitle": "No hay P. Managers asignados",
+        "loadingSellers": "Cargando P. Managers asignados..."
       },
       "errors": {
         "fetchVisits": "Error al cargar las visitas",
-        "fetchSellers": "Error al cargar los vendedores asignados",
+        "fetchSellers": "Error al cargar los P. Managers asignados",
         "deleteVisit": "Error al eliminar la visita"
       }
     },
@@ -138,8 +138,8 @@
       "passwordMinLength6": "La contraseña debe tener al menos 6 caracteres",
       "passwordMinLength8": "La contraseña debe tener al menos 8 caracteres",
       "minOneId": "Debe proporcionar al menos un ID",
-      "dealerRequiresSellers": "El rol Dealer requiere al menos un vendedor asignado",
-      "minOneSeller": "Debe asignar al menos un vendedor"
+      "dealerRequiresSellers": "El rol Dealer requiere al menos un P. Manager asignado",
+      "minOneSeller": "Debe asignar al menos un P. Manager"
     },
     "messages": {
       "success": "Operación exitosa",
@@ -919,7 +919,7 @@
           "personal": "Personal",
           "security": "Seguridad",
           "config": "Config",
-          "sellers": "Vendedores"
+          "sellers": "P. Managers"
         },
         "personal": "Personal",
         "security": "Seguridad",
@@ -948,24 +948,24 @@
         "updateError": "Hubo un problema al actualizar el usuario. Por favor, intenta de nuevo.",
         "createError": "Error al crear el usuario. Por favor, intenta de nuevo.",
         "sellers": {
-          "title": "Vendedores asignados",
-          "description": "Selecciona los vendedores que reportarán a este dealer",
-          "search": "Buscar vendedor...",
-          "noSellers": "No hay vendedores disponibles",
-          "loading": "Cargando vendedores...",
-          "selected": "{{count}} vendedor(es) seleccionado(s)",
+          "title": "P. Managers asignados",
+          "description": "Selecciona los P. Managers que reportarán a este dealer",
+          "search": "Buscar P. Manager...",
+          "noSellers": "No hay P. Managers disponibles",
+          "loading": "Cargando P. Managers...",
+          "selected": "{{count}} P. Manager(s) seleccionado(s)",
           "selectAll": "Seleccionar todos",
           "deselectAll": "Deseleccionar todos",
-          "errorLoading": "Error al cargar vendedores",
-          "assigned": "Vendedores asignados",
-          "assignedDescription": "Vendedores que reportan a este dealer",
-          "noAssigned": "No hay vendedores asignados",
-          "available": "Vendedores disponibles",
-          "availableDescription": "Selecciona vendedores para asignar",
-          "noAvailable": "Todos los vendedores activos ya están asignados",
-          "noResults": "No se encontraron vendedores con ese criterio",
-          "addSeller": "Asignar vendedor",
-          "removeSeller": "Eliminar vendedor"
+          "errorLoading": "Error al cargar P. Managers",
+          "assigned": "P. Managers asignados",
+          "assignedDescription": "P. Managers que reportan a este dealer",
+          "noAssigned": "No hay P. Managers asignados",
+          "available": "P. Managers disponibles",
+          "availableDescription": "Selecciona P. Managers para asignar",
+          "noAvailable": "Todos los P. Managers activos ya están asignados",
+          "noResults": "No se encontraron P. Managers con ese criterio",
+          "addSeller": "Asignar P. Manager",
+          "removeSeller": "Eliminar P. Manager"
         },
         "image": {
           "upload": "Subir foto",
