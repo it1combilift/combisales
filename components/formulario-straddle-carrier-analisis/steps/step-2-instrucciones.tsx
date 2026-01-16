@@ -158,7 +158,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <Container className="size-4" />
                 </div>
                 <div className="flex-1 min-w-0 space-y-0.5">
-                  <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer leading-tight">
                     {t("forms.straddleCarrier.fields.handlesContainers.label")}
                   </FormLabel>
                   <FormDescription className="text-[10px] leading-tight text-pretty">
@@ -204,7 +204,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <Package className="size-4" />
                 </div>
                 <div className="flex-1 min-w-0 space-y-0.5">
-                  <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer leading-tight">
                     {t("forms.straddleCarrier.fields.handlesSpecialLoad.label")}
                   </FormLabel>
                   <FormDescription className="text-[10px] leading-tight text-pretty">
@@ -283,7 +283,7 @@ export function Step1Content({ form }: StepContentProps) {
         name="fechaCierre"
         render={({ field }) => (
           <FormItem className="w-full">
-            <FormLabel className="text-[11px] font-medium flex items-center gap-1.5">
+            <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1.5">
               {t("forms.straddleCarrier.fields.closingDate.label")}
             </FormLabel>
             <Popover>

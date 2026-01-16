@@ -177,7 +177,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="pesoCargaMaximaAltura"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-xs font-medium flex items-center gap-1">
+                <FormLabel className="text-[10px] sm:text-xs font-medium flex items-center gap-1 text-balance">
                   {t("forms.logistica.fields.application.maxLoadWeight.label")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -210,7 +210,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="pesoCargaPrimerNivel"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-xs font-medium flex items-center gap-1">
+                <FormLabel className="text-[10px] sm:text-xs font-medium flex items-center gap-1 text-balance">
                   {t(
                     "forms.logistica.fields.application.firstLevelLoadWeight.label"
                   )}{" "}
@@ -245,7 +245,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="dimensionesAreaTrabajoAncho"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-xs font-medium flex items-center gap-1">
+                <FormLabel className="text-[10px] sm:text-xs font-medium flex items-center gap-1 text-balance">
                   {t("forms.logistica.fields.application.workAreaWidth.label")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -278,7 +278,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="dimensionesAreaTrabajoFondo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-xs font-medium flex items-center gap-1">
+                <FormLabel className="text-[10px] sm:text-xs font-medium flex items-center gap-1 text-balance">
                   {t("forms.logistica.fields.application.workAreaDepth.label")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -321,7 +321,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="turnosTrabajo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-xs font-medium flex items-center gap-1">
+                <FormLabel className="text-[10px] sm:text-xs font-medium flex items-center gap-1 text-balance">
                   {t("forms.logistica.fields.application.shifts.label")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -348,7 +348,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="alimentacionDeseada"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-xs font-medium flex items-center gap-1">
+                <FormLabel className="text-[10px] sm:text-xs font-medium flex items-center gap-1 text-balance">
                   {t("forms.logistica.fields.application.powerSource.label")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>

@@ -66,7 +66,7 @@ function DimensionInput({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">
+          <FormLabel className="text-[10px] sm:text-[11px] md:text-sm font-medium text-muted-foreground">
             {label}
           </FormLabel>
           <FormControl>
@@ -77,7 +77,7 @@ function DimensionInput({
                 min="0"
                 step={step}
                 placeholder={placeholder}
-                className="text-xs sm:text-sm h-8 sm:h-9 pl-7 sm:pl-8 pr-7 sm:pr-8"
+                className="text-[10px] sm:text-xs md:text-sm h-8 sm:h-9 pl-7 sm:pl-8 pr-7 sm:pr-8"
                 value={field.value ?? ""}
                 onChange={(e) =>
                   field.onChange(
@@ -85,12 +85,12 @@ function DimensionInput({
                   )
                 }
               />
-              <span className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs text-muted-foreground">
+              <span className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs md:text-sm text-muted-foreground">
                 {unit}
               </span>
             </div>
           </FormControl>
-          <FormMessage className="text-[10px]" />
+          <FormMessage className="text-[10px] sm:text-xs md:text-sm" />
         </FormItem>
       )}
     />
@@ -119,7 +119,7 @@ export function Step4Content({ form }: StepContentProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* ==================== LONGITUD DE PRODUCTOS ==================== */}
       <section>
         <SectionHeader

@@ -69,7 +69,7 @@ function ContainerSizeCard({
                     isSelected ? "text-primary" : "text-muted-foreground"
                   )}
                 />
-                <FormLabel className="text-xs sm:text-sm font-semibold cursor-pointer">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm font-semibold cursor-pointer">
                   {label}
                 </FormLabel>
               </div>
@@ -161,12 +161,12 @@ export function Step3Content({ form }: StepContentProps) {
                   className="flex-1 min-w-0"
                   onClick={() => field.onChange(!field.value)}
                 >
-                  <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer leading-tight">
                     {t(
                       "forms.straddleCarrier.fields.containers.individualHandling.label"
                     )}
                   </FormLabel>
-                  <FormDescription className="text-[11px] leading-tight text-pretty">
+                  <FormDescription className="text-[11px] sm:text-xs md:text-sm leading-tight text-pretty">
                     {t(
                       "forms.straddleCarrier.fields.containers.individualHandling.description"
                     )}
@@ -199,12 +199,12 @@ export function Step3Content({ form }: StepContentProps) {
                   className="flex-1 min-w-0"
                   onClick={() => field.onChange(!field.value)}
                 >
-                  <FormLabel className="text-xs font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer leading-tight">
                     {t(
                       "forms.straddleCarrier.fields.containers.doubleStacking.label"
                     )}
                   </FormLabel>
-                  <FormDescription className="text-[11px] leading-tight text-pretty">
+                  <FormDescription className="text-[11px] sm:text-xs md:text-sm leading-tight text-pretty">
                     {t(
                       "forms.straddleCarrier.fields.containers.doubleStacking.description"
                     )}
@@ -240,7 +240,7 @@ export function Step3Content({ form }: StepContentProps) {
           name="pesoMaximoContenedor"
           render={({ field }) => (
             <FormItem className="max-w-xs">
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium">
                 {t("forms.straddleCarrier.fields.containers.maxWeight.label")}
               </FormLabel>
               <FormControl>
@@ -282,7 +282,7 @@ export function Step3Content({ form }: StepContentProps) {
                   placeholder={t(
                     "forms.straddleCarrier.fields.containers.additionalInfo.placeholder"
                   )}
-                  className="min-h-20 text-sm resize-none"
+                  className="min-h-20 text-sm resize-none text-[11px] sm:text-xs md:text-sm text-balance"
                   {...field}
                 />
               </FormControl>

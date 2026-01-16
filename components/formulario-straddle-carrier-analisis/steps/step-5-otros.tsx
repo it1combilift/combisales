@@ -81,7 +81,7 @@ function DimensionInput({
                 min="0"
                 step="0.01"
                 placeholder={placeholder}
-                className="text-xs sm:text-sm h-8 sm:h-9 pl-7 sm:pl-8 pr-7 sm:pr-8"
+                className="text-[11px] sm:text-xs md:text-sm h-8 sm:h-9 pl-7 sm:pl-8 pr-7 sm:pr-8"
                 value={field.value ?? ""}
                 onChange={(e) =>
                   field.onChange(
@@ -89,12 +89,12 @@ function DimensionInput({
                   )
                 }
               />
-              <span className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs text-muted-foreground">
+              <span className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
                 {unit}
               </span>
             </div>
           </FormControl>
-          <FormMessage className="text-[10px]" />
+          <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
         </FormItem>
       )}
     />
@@ -169,12 +169,12 @@ export function Step5Content({ form }: StepContentProps) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <FormLabel className="text-xs font-medium cursor-pointer">
+                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer">
                     {t(
                       "forms.straddleCarrier.fields.others.floorConditions.isFlat.label"
                     )}
                   </FormLabel>
-                  <FormDescription className="text-[12px]">
+                  <FormDescription className="text-[11px] sm:text-xs md:text-sm text-pretty">
                     {field.value
                       ? t(
                           "forms.straddleCarrier.fields.others.floorConditions.isFlat.flatDescription"
@@ -202,7 +202,7 @@ export function Step5Content({ form }: StepContentProps) {
             name="condicionesPiso"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">
+                <FormLabel className="text-[11px] sm:text-[11px] font-medium text-muted-foreground">
                   {t(
                     "forms.straddleCarrier.fields.others.floorConditions.description.label"
                   )}
@@ -218,11 +218,11 @@ export function Step5Content({ form }: StepContentProps) {
                             "forms.straddleCarrier.fields.others.floorConditions.description.placeholderIrregular"
                           )
                     }
-                    className="min-h-16 sm:min-h-20 text-xs sm:text-sm resize-none"
+                    className="min-h-16 sm:min-h-20 text-[11px] sm:text-sm resize-none"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
               </FormItem>
             )}
           />
@@ -267,11 +267,11 @@ export function Step5Content({ form }: StepContentProps) {
                   placeholder={t(
                     "forms.straddleCarrier.fields.others.additionalNotes.placeholder"
                   )}
-                  className="min-h-20 sm:min-h-24 text-xs sm:text-sm resize-none"
+                  className="min-h-20 sm:min-h-24 text-[11px] sm:text-sm resize-none"
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
             </FormItem>
           )}
         />
