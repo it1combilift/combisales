@@ -110,7 +110,7 @@ export function Step5Content({ form }: StepContentProps) {
   const pisoPlano = form.watch("pisoPlano");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* ==================== ZONAS DE PASO ==================== */}
       <section>
         <SectionHeader
@@ -174,7 +174,7 @@ export function Step5Content({ form }: StepContentProps) {
                       "forms.straddleCarrier.fields.others.floorConditions.isFlat.label"
                     )}
                   </FormLabel>
-                  <FormDescription className="text-[11px] sm:text-xs md:text-sm text-pretty">
+                  <FormDescription className="text-[11px] sm:text-xs text-pretty">
                     {field.value
                       ? t(
                           "forms.straddleCarrier.fields.others.floorConditions.isFlat.flatDescription"
