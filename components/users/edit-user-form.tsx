@@ -4,17 +4,16 @@ import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { Role } from "@prisma/client";
-import { useForm } from "react-hook-form";
 import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditUserFormProps } from "@/interfaces/user";
 import { SellersSelection } from "./sellers-selection";
 import { ProfileImageUpload } from "./profile-image-upload";
-import { createUpdateUserSchemaFactory } from "@/schemas/auth";
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
@@ -51,61 +50,50 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useI18n();
 
-  // Create the full update schema with translations
-  const updateUserSchema = useMemo(
-    () =>
-      createUpdateUserSchemaFactory(
-        t as (key: string, values?: Record<string, string | number>) => string
-      ),
-    [t]
-  );
-
-  // Create form schema by defining the shape directly
-  const formSchema = useMemo(() => {
-    return z
-      .object({
-        name: z.string().min(2, t("validation.nameMinLength")).optional(),
-        email: z.string().email(t("validation.invalidEmail")).optional(),
-        role: z
-          .nativeEnum(Role, {
-            errorMap: () => ({ message: t("validation.invalidRole") }),
-          })
-          .optional(),
-        country: z
-          .string()
-          .optional()
-          .or(z.literal(""))
-          .transform((val) => (val === "" ? undefined : val)),
-        isActive: z.boolean().optional(),
-        password: z
-          .string()
-          .min(8, t("validation.passwordMinLength8"))
-          .optional()
-          .or(z.literal(""))
-          .transform((val) => (val === "" ? undefined : val)),
-        image: z
-          .string()
-          .url(t("validation.invalidImageUrl"))
-          .optional()
-          .nullable()
-          .or(z.literal(""))
-          .transform((val) => (val === "" ? null : val)),
-        assignedSellerIds: z.array(z.string().cuid()).optional(),
-      })
-      .refine(
-        (data) => {
-          // DEALER role requires at least one seller
-          if (data.role === Role.DEALER) {
-            return data.assignedSellerIds && data.assignedSellerIds.length > 0;
-          }
-          return true;
-        },
-        {
-          message: t("validation.dealerRequiresSellers"),
-          path: ["assignedSellerIds"],
+  // Create form schema
+  const formSchema = z
+    .object({
+      name: z.string().min(2, t("validation.nameMinLength")).optional(),
+      email: z.string().email(t("validation.invalidEmail")).optional(),
+      role: z
+        .nativeEnum(Role, {
+          errorMap: () => ({ message: t("validation.invalidRole") }),
+        })
+        .optional(),
+      country: z
+        .string()
+        .optional()
+        .or(z.literal(""))
+        .transform((val) => (val === "" ? undefined : val)),
+      isActive: z.boolean().optional(),
+      password: z
+        .string()
+        .min(8, t("validation.passwordMinLength8"))
+        .optional()
+        .or(z.literal(""))
+        .transform((val) => (val === "" ? undefined : val)),
+      image: z
+        .string()
+        .url(t("validation.invalidImageUrl"))
+        .optional()
+        .nullable()
+        .or(z.literal(""))
+        .transform((val) => (val === "" ? null : val)),
+      assignedSellerIds: z.array(z.string().cuid()).optional().default([]),
+    })
+    .refine(
+      (data) => {
+        // DEALER role requires at least one seller
+        if (data.role === Role.DEALER) {
+          return data.assignedSellerIds && data.assignedSellerIds.length > 0;
         }
-      );
-  }, [t]);
+        return true;
+      },
+      {
+        message: t("validation.dealerRequiresSellers"),
+        path: ["assignedSellerIds"],
+      }
+    );
 
   // Extract assigned seller IDs
   const assignedSellerIds = (user.assignedSellers?.map((as) => as.seller.id) ||
@@ -113,6 +101,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
     defaultValues: {
       name: user.name || "",
       email: user.email,
@@ -125,33 +114,25 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     },
   });
 
-  const selectedRole = form.watch("role");
+  // Watch form values using useWatch for proper reactivity
+  const selectedRole = useWatch({ control: form.control, name: "role" });
   const isDealerRole = selectedRole === Role.DEALER;
-  const watchedAssignedSellerIds = form.watch("assignedSellerIds");
+  const watchedAssignedSellerIds = useWatch({
+    control: form.control,
+    name: "assignedSellerIds",
+  });
+  const watchedName = useWatch({ control: form.control, name: "name" });
+  const watchedEmail = useWatch({ control: form.control, name: "email" });
 
   // Check if form is valid for submission
-  const isFormValid = useMemo(() => {
-    const { name, email, role } = form.getValues();
-    const hasErrors = Object.keys(form.formState.errors).length > 0;
+  const hasErrors = Object.keys(form.formState.errors).length > 0;
 
-    // Basic validation
-    if (!name || !email || hasErrors) {
-      return false;
-    }
-
-    // DEALER role requires sellers
-    if (role === Role.DEALER) {
-      return watchedAssignedSellerIds && watchedAssignedSellerIds.length > 0;
-    }
-
-    return true;
-  }, [
-    form.formState.errors,
-    watchedAssignedSellerIds,
-    form.watch("name"),
-    form.watch("email"),
-    form.watch("role"),
-  ]);
+  const isFormValid =
+    !!watchedName &&
+    !!watchedEmail &&
+    !hasErrors &&
+    (selectedRole !== Role.DEALER ||
+      (watchedAssignedSellerIds && watchedAssignedSellerIds.length > 0));
 
   // Reset form when user changes (fixes assigned sellers not showing)
   useEffect(() => {
@@ -197,13 +178,40 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
 
   const handleSellerSelectionChange = useCallback(
     (ids: string[]) => {
+      console.log("🔄 Seller selection changed (Edit):", ids);
       form.setValue("assignedSellerIds", ids, {
         shouldValidate: true,
         shouldDirty: true,
       });
+      // Force trigger validation to ensure form state updates
+      form.trigger("assignedSellerIds");
     },
     [form]
   );
+
+  // Debug logging
+  useEffect(() => {
+    console.log("📊 EditUserForm State:", {
+      selectedRole,
+      isDealerRole,
+      watchedAssignedSellerIds,
+      assignedSellersCount: watchedAssignedSellerIds?.length ?? 0,
+      watchedName,
+      watchedEmail,
+      hasErrors,
+      isFormValid,
+      isDirty: form.formState.isDirty,
+    });
+  }, [
+    selectedRole,
+    isDealerRole,
+    watchedAssignedSellerIds,
+    watchedName,
+    watchedEmail,
+    hasErrors,
+    isFormValid,
+    form.formState.isDirty,
+  ]);
 
   const handleImageChange = useCallback(
     (imageUrl: string | null) => {

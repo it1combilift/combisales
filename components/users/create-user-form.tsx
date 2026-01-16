@@ -4,17 +4,17 @@ import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { Role } from "@prisma/client";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
-import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { createUserSchemaFactory } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SellersSelection } from "./sellers-selection";
 import { CreateUserFormProps } from "@/interfaces/user";
+import { createUserSchemaFactory } from "@/schemas/auth";
 import { ProfileImageUpload } from "./profile-image-upload";
+import { useState, useCallback, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
@@ -52,10 +52,11 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Create schema with translations
-  const createUserSchema = useMemo(() => createUserSchemaFactory(t), [t]);
+  const createUserSchema = createUserSchemaFactory(t);
 
   const form = useForm<z.infer<typeof createUserSchema>>({
     resolver: zodResolver(createUserSchema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       email: "",
@@ -65,46 +66,76 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       country: "",
       isActive: true,
       image: null,
-      assignedSellerIds: [] as string[],
+      assignedSellerIds: [],
     },
   });
 
-  const selectedRole = form.watch("role");
+  // Watch form values using useWatch for proper reactivity
+  const selectedRole = useWatch({ control: form.control, name: "role" });
   const isDealerRole = selectedRole === Role.DEALER;
-  const assignedSellerIds = form.watch("assignedSellerIds");
+  const assignedSellerIds = useWatch({
+    control: form.control,
+    name: "assignedSellerIds",
+  });
+  const name = useWatch({ control: form.control, name: "name" });
+  const email = useWatch({ control: form.control, name: "email" });
+  const password = useWatch({ control: form.control, name: "password" });
+  const confirmPassword = useWatch({
+    control: form.control,
+    name: "confirmPassword",
+  });
 
   // Check if form is valid for submission
-  const isFormValid = useMemo(() => {
-    const { name, email, password, confirmPassword, role } = form.getValues();
-    const hasErrors = Object.keys(form.formState.errors).length > 0;
+  const hasErrors = Object.keys(form.formState.errors).length > 0;
 
-    // Basic validation
-    if (!name || !email || !password || !confirmPassword || hasErrors) {
-      return false;
-    }
-
-    // DEALER role requires sellers
-    if (role === Role.DEALER) {
-      return assignedSellerIds && assignedSellerIds.length > 0;
-    }
-
-    return true;
-  }, [
-    form.formState.errors,
-    assignedSellerIds,
-    form.watch("name"),
-    form.watch("email"),
-    form.watch("password"),
-    form.watch("confirmPassword"),
-    form.watch("role"),
-  ]);
+  const isFormValid =
+    !!name &&
+    !!email &&
+    !!password &&
+    !!confirmPassword &&
+    !hasErrors &&
+    (selectedRole !== Role.DEALER ||
+      (assignedSellerIds && assignedSellerIds.length > 0));
 
   const handleSellerSelectionChange = useCallback(
     (ids: string[]) => {
-      form.setValue("assignedSellerIds", ids, { shouldValidate: true });
+      console.log("🔄 Seller selection changed:", ids);
+      form.setValue("assignedSellerIds", ids, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+      // Force trigger validation to ensure form state updates
+      form.trigger("assignedSellerIds");
     },
     [form]
   );
+
+  // Debug logging
+  useEffect(() => {
+    console.log("📊 CreateUserForm State:", {
+      selectedRole,
+      isDealerRole,
+      assignedSellerIds,
+      assignedSellersCount: assignedSellerIds?.length ?? 0,
+      name,
+      email,
+      password: password ? "***" : "",
+      confirmPassword: confirmPassword ? "***" : "",
+      hasErrors,
+      isFormValid,
+    });
+  }, [
+    selectedRole,
+    isDealerRole,
+    assignedSellerIds,
+    name,
+    email,
+    password,
+    confirmPassword,
+    hasErrors,
+    isFormValid,
+  ]);
 
   const handleImageChange = useCallback(
     (imageUrl: string | null) => {

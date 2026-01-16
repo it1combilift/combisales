@@ -1,11 +1,11 @@
 "use client";
 
-import { User, Mail, Check, Loader2 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useI18n } from "@/lib/i18n/context";
-import { cn } from "@/lib/utils";
 import { Spinner } from "../ui/spinner";
 import { EmptyCard } from "../empty-card";
+import { useI18n } from "@/lib/i18n/context";
+import { cn, getInitials } from "@/lib/utils";
+import { User, Mail, Check } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface SellerInfo {
   id: string;
@@ -28,16 +28,6 @@ export function DealerSellerSelector({
   selectedSellerId,
 }: DealerSellerSelectorProps) {
   const { t } = useI18n();
-
-  const getInitials = (name?: string | null) => {
-    if (!name) return "?";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
 
   if (isLoading) {
     return (

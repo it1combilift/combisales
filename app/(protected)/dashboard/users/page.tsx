@@ -154,11 +154,11 @@ export default function UsersPage() {
         (index) => users[parseInt(index)].id
       );
 
-      const response = await axios.post("/api/users/delete-multiple", {
+      await axios.post("/api/users/delete-multiple", {
         ids: userIdsToDelete,
       });
 
-      toast.success(response.data.message || t("users.deleteMultipleSuccess"));
+      toast.success(t("users.deleteMultipleSuccess"));
       setRowSelection({});
       setIsDeleteMultipleDialogOpen(false);
       fetchUsers(true);
