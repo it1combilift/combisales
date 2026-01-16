@@ -138,8 +138,8 @@
     "passwordMinLength6": "Password must be at least 6 characters",
     "passwordMinLength8": "Password must be at least 8 characters",
     "minOneId": "Must provide at least one ID",
-    "dealerRequiresSellers": "Dealer role requires at least one assigned seller",
-    "minOneSeller": "At least one seller must be assigned"
+    "dealerRequiresSellers": "Dealer role requires at least one assigned P. Manager",
+    "minOneSeller": "At least one P. Manager must be assigned"
   },
   "messages": {
     "success": "Operation successful",
