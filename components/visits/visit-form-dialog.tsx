@@ -74,10 +74,10 @@ export default function VisitFormDialog({
             {/* HEADER */}
             <div className="px-2 md:px-3 py-3 border-b border-border">
               <DialogHeader className="text-left">
-                <DialogTitle className="text-xs sm:text-sm font-semibold leading-tight tracking-tight text-balance">
+                <DialogTitle className="text-sm font-semibold leading-tight tracking-tight text-balance">
                   {t("visits.registerVisit")}
                 </DialogTitle>
-                <DialogDescription className="text-[10px] md:text-xs text-muted-foreground leading-snug text-balance">
+                <DialogDescription className="text-sm text-muted-foreground leading-snug text-balance">
                   {t("visits.selectFormTypeDescription")}
                 </DialogDescription>
               </DialogHeader>
