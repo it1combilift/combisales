@@ -79,14 +79,14 @@ function CargaRow({
   return (
     <div className="border rounded-lg p-3 bg-card hover:bg-muted/20 transition-colors">
       <div className="flex items-center gap-2 mb-3">
-        <span className="size-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center shrink-0">
+        <span className="size-6 rounded-full bg-primary/10 text-primary text-[11px] sm:text-xs md:text-sm font-bold flex items-center justify-center shrink-0">
           {index + 1}
         </span>
         <Input
           placeholder={labels.productPlaceholder}
           value={carga.producto}
           onChange={(e) => onUpdate("producto", e.target.value)}
-          className="h-9 text-sm flex-1"
+          className="h-9 text-[11px] sm:text-xs md:text-sm flex-1"
         />
         <Button
           type="button"
@@ -102,7 +102,7 @@ function CargaRow({
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {fields.map(({ key, label, unit, placeholder }) => (
           <div key={key} className="space-y-1">
-            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+            <label className="text-[11px] sm:text-xs md:text-sm font-medium text-muted-foreground uppercase tracking-wide">
               {label}
             </label>
             <div className="relative">
@@ -117,9 +117,9 @@ function CargaRow({
                     parseFloat(e.target.value) || null
                   )
                 }
-                className="h-9 text-sm pr-8 font-mono"
+                className="h-9 text-[11px] sm:text-xs md:text-sm pr-8 font-mono"
               />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground font-medium">
                 {unit}
               </span>
             </div>
@@ -239,7 +239,7 @@ export function Step5Content({ form }: StepContentProps) {
             type="button"
             variant="outline"
             size="sm"
-              className="text-xs md:text-sm"  
+            className="text-xs md:text-sm"
             onClick={handleAddRow}
           >
             <Plus className="size-3.5" />
@@ -266,13 +266,13 @@ export function Step5Content({ form }: StepContentProps) {
 
           {/* Percentage indicator */}
           <div className="space-y-2 pt-2 border-t">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground font-medium">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground font-medium text-[11px] sm:text-xs md:text-sm">
                 {t("forms.logistica.fields.loads.totalPercentage")}
               </span>
               <span
                 className={cn(
-                  "font-bold text-base",
+                  "font-bold text-[11px] sm:text-xs md:text-sm",
                   isValid
                     ? "text-green-600 dark:text-green-400"
                     : "text-destructive"
@@ -289,7 +289,7 @@ export function Step5Content({ form }: StepContentProps) {
               )}
             />
             {!isValid && dimensionesCargas.length > 0 && (
-              <p className="text-xs text-destructive flex items-center gap-1">
+              <p className="text-[11px] sm:text-xs md:text-sm text-destructive flex items-center gap-1">
                 <span className="size-1 rounded-full bg-destructive inline-block" />
                 {t("forms.logistica.fields.loads.percentageError")}
               </p>
@@ -299,7 +299,7 @@ export function Step5Content({ form }: StepContentProps) {
       )}
 
       {form.formState.errors.dimensionesCargas && (
-        <FormMessage className="text-xs">
+        <FormMessage className="text-[11px] sm:text-xs md:text-sm">
           {form.formState.errors.dimensionesCargas.message?.toString()}
         </FormMessage>
       )}

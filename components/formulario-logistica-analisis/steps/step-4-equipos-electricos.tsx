@@ -107,18 +107,18 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.tipoCorriente"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.fields.currentType")}
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
-                  <SelectTrigger className="h-8 text-sm w-full">
+                  <SelectTrigger className="h-8 text-[11px] sm:text-xs md:text-sm w-full">
                     <SelectValue placeholder={t("common.select")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {Object.values(TipoCorriente).map((tipo) => (
-                    <SelectItem key={tipo} value={tipo}>
+                    <SelectItem key={tipo} value={tipo} className="text-[11px] sm:text-xs md:text-sm">
                       {t(`visits.currentTypes.${tipo}` as any)}
                     </SelectItem>
                   ))}
@@ -135,7 +135,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.voltaje"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.fields.voltage")}
               </FormLabel>
               <FormControl>
@@ -143,7 +143,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="220"
-                    className="text-sm h-8 pr-6"
+                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-6"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -164,7 +164,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.frecuencia"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.fields.frequency")}
               </FormLabel>
               <FormControl>
@@ -172,7 +172,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="50"
-                    className="text-sm h-8 pr-7"
+                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-7"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -193,7 +193,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.amperaje"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.fields.amperage")}
               </FormLabel>
               <FormControl>
@@ -201,7 +201,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="16"
-                    className="text-sm h-8 pr-5"
+                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-5"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -222,7 +222,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.temperaturaAmbiente"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.fields.ambientTemperature")}
               </FormLabel>
               <FormControl>
@@ -230,7 +230,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="20"
-                    className="text-sm h-8 pr-6"
+                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-6"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -251,7 +251,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.horasTrabajoPorDia"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.fields.workHoursPerDay")}
               </FormLabel>
               <FormControl>
@@ -261,7 +261,7 @@ export function Step4Content({ form }: StepContentProps) {
                     min="0"
                     max="24"
                     placeholder="8"
-                    className="text-sm h-8 pr-5"
+                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-5"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -288,7 +288,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.notas"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.logistica.fields.electricEquipment.notesLabel")}
               </FormLabel>
               <FormControl>
@@ -296,7 +296,7 @@ export function Step4Content({ form }: StepContentProps) {
                   placeholder={t(
                     "forms.logistica.fields.electricEquipment.notesPlaceholder"
                   )}
-                  className="text-sm min-h-[60px] resize-none"
+                  className="text-[11px] sm:text-xs md:text-sm min-h-[60px] resize-none"
                   {...field}
                   value={field.value ?? ""}
                 />

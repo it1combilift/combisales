@@ -104,19 +104,19 @@ export function Step4Content({ form }: StepContentProps) {
           control={form.control}
           name="equiposElectricos.tipoCorriente"
           render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel className="text-[11px] font-medium">
+            <FormItem className="w-full md:col-span-2">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.industrial.fields.electrical.currentType")}
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
-                  <SelectTrigger className="text-xs w-full text-pretty">
+                  <SelectTrigger className="text-[11px] sm:text-xs md:text-sm w-full text-pretty">
                     <SelectValue placeholder={t("forms.selectOption")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {Object.values(TipoCorriente).map((tipo) => (
-                    <SelectItem key={tipo} value={tipo} className="text-xs text-pretty">
+                    <SelectItem key={tipo} value={tipo} className="text-[11px] sm:text-xs md:text-sm text-pretty">
                       {t(`visits.currentTypes.${tipo}` as any)}
                     </SelectItem>
                   ))}
@@ -133,7 +133,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.voltaje"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.industrial.fields.electrical.voltage")}
               </FormLabel>
               <FormControl>
@@ -141,7 +141,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="220"
-                    className="text-xs h-8 pr-6 text-pretty"
+                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-6 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -162,7 +162,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.frecuencia"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.industrial.fields.electrical.frequency")}
               </FormLabel>
               <FormControl>
@@ -170,7 +170,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="50"
-                    className="text-xs h-8 pr-7 text-pretty"
+                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-7 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -191,7 +191,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.amperaje"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.industrial.fields.electrical.amperage")}
               </FormLabel>
               <FormControl>
@@ -220,7 +220,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.temperaturaAmbiente"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.industrial.fields.electrical.ambientTemp")}
               </FormLabel>
               <FormControl>
@@ -249,7 +249,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.horasTrabajoPorDia"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.industrial.fields.electrical.workHours")}
               </FormLabel>
               <FormControl>
@@ -286,7 +286,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.notas"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                 {t("forms.industrial.fields.electrical.notes")}
               </FormLabel>
               <FormControl>

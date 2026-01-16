@@ -47,7 +47,7 @@ export function Step1Content({ form }: StepContentProps) {
         name="notasOperacion"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[11px] font-medium flex items-center gap-1">
+            <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-1">
               {t("forms.industrial.fields.operationNotes.label")}
               <span className="text-destructive">*</span>
             </FormLabel>
@@ -56,11 +56,11 @@ export function Step1Content({ form }: StepContentProps) {
                 placeholder={t(
                   "forms.industrial.fields.operationNotes.placeholder"
                 )}
-                className="min-h-[120px] sm:min-h-40 text-xs bg-background/50 resize-none leading-relaxed text-pretty"
+                className="min-h-[120px] sm:min-h-40 text-[11px] sm:text-xs md:text-sm bg-background/50 resize-none leading-relaxed text-pretty"
                 {...field}
               />
             </FormControl>
-            <FormMessage className="text-[10px]" />
+            <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
           </FormItem>
         )}
       />
@@ -71,7 +71,7 @@ export function Step1Content({ form }: StepContentProps) {
         name="fechaCierre"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[11px] font-medium flex items-center gap-1">
+            <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-1">
               {t("forms.industrial.fields.closingDate.label")}
               <span className="text-muted-foreground text-[10px] ml-1">
                 {t("forms.industrial.fields.closingDate.optional")}
@@ -83,7 +83,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <Button
                     variant="outline"
                     className={cn(
-                      "h-10 w-full sm:w-auto min-w-[220px] justify-start text-left font-normal text-xs rounded-lg border-input/80",
+                      "h-10 w-full sm:w-auto min-w-[220px] justify-start text-left font-normal text-[11px] sm:text-xs md:text-sm rounded-lg border-input/80",
                       !field.value && "text-muted-foreground"
                     )}
                   >
@@ -107,7 +107,7 @@ export function Step1Content({ form }: StepContentProps) {
                 />
               </PopoverContent>
             </Popover>
-            <FormMessage className="text-[10px]" />
+            <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
           </FormItem>
         )}
       />

@@ -76,21 +76,16 @@ function CargaRow({
   return (
     <div className="border rounded-lg p-3 bg-card hover:bg-muted/20 transition-colors">
       <div className="flex items-center gap-2 mb-3">
-        <span className="size-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center shrink-0">
+        <span className="size-6 rounded-full bg-primary/10 text-primary text-[11px] sm:text-xs md:text-sm font-bold flex items-center justify-center shrink-0">
           {index + 1}
         </span>
         <Input
           placeholder={t("forms.industrial.fields.loads.productName")}
           value={carga.producto}
           onChange={(e) => onUpdate("producto", e.target.value)}
-          className="h-9 text-xs flex-1 text-balance"
+          className="h-9 text-[11px] sm:text-xs md:text-sm flex-1 text-balance"
         />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={onRemove}
-        >
+        <Button type="button" variant="ghost" size="icon" onClick={onRemove}>
           <Trash2 className="size-4 text-destructive" />
         </Button>
       </div>
@@ -113,9 +108,9 @@ function CargaRow({
                     parseFloat(e.target.value) || null
                   )
                 }
-                className="h-9 text-xs pr-8 font-mono text-balance"
+                className="h-9 text-[11px] sm:text-xs md:text-sm pr-8 font-mono text-balance"
               />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground font-medium">
                 {unit}
               </span>
             </div>
@@ -186,7 +181,7 @@ export function Step5Content({ form }: StepContentProps) {
             type="button"
             variant="outline"
             size="sm"
-            className="h-7 text-xs"
+            className="h-7 text-[11px] sm:text-xs md:text-sm"
             onClick={handleAddRow}
           >
             <Plus className="size-3.5" />
@@ -199,7 +194,7 @@ export function Step5Content({ form }: StepContentProps) {
       {dimensionesCargas.length === 0 ? (
         <div className="border border-dashed rounded-lg p-3 space-y-2 text-center">
           <Ruler className="size-6 mx-auto text-muted-foreground/50 mb-2" />
-          <p className="text-xs text-muted-foreground text-balance">
+          <p className="text-[11px] sm:text-xs md:text-sm text-muted-foreground text-balance">
             {t("forms.industrial.fields.loads.empty")}
           </p>
           <Button
@@ -207,7 +202,7 @@ export function Step5Content({ form }: StepContentProps) {
             variant="outline"
             size="sm"
             onClick={handleAddRow}
-            className="text-xs mx-auto"
+            className="text-[11px] sm:text-xs md:text-sm mx-auto"
           >
             <Plus className="size-3.5" />
             {t("forms.industrial.fields.loads.addFirst")}
@@ -233,12 +228,12 @@ export function Step5Content({ form }: StepContentProps) {
           {/* Percentage indicator */}
           <div className="space-y-2 pt-2 border-t">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground font-medium text-xs">
+              <span className="text-muted-foreground font-medium text-[11px] sm:text-xs md:text-sm">
                 {t("forms.industrial.fields.loads.totalPercentage")}
               </span>
               <span
                 className={cn(
-                  "font-bold text-xs",
+                  "font-bold text-[11px] sm:text-xs md:text-sm",
                   isValid
                     ? "text-green-600 dark:text-green-400"
                     : "text-destructive"
@@ -255,8 +250,8 @@ export function Step5Content({ form }: StepContentProps) {
               )}
             />
             {!isValid && dimensionesCargas.length > 0 && (
-              <p className="text-xs text-destructive flex items-center gap-1">
-                <span className="size-1 rounded-full bg-destructive inline-block text-xs" />
+              <p className="text-[11px] sm:text-xs md:text-sm text-destructive flex items-center gap-1">
+                <span className="size-1 rounded-full bg-destructive inline-block text-[11px] sm:text-xs md:text-sm" />
                 {t("forms.industrial.fields.loads.percentageError")}
               </p>
             )}
@@ -265,7 +260,7 @@ export function Step5Content({ form }: StepContentProps) {
       )}
 
       {form.formState.errors.dimensionesCargas && (
-        <FormMessage className="text-xs">
+        <FormMessage className="text-[11px] sm:text-xs md:text-sm text-destructive">
           {form.formState.errors.dimensionesCargas.message?.toString()}
         </FormMessage>
       )}

@@ -71,7 +71,7 @@ export function Step3Content({ form }: StepContentProps) {
           name="descripcionProducto"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] font-medium flex items-center gap-1">
+              <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1">
                 {t("forms.industrial.fields.productDescription.label")}{" "}
                 <span className="text-destructive">*</span>
               </FormLabel>
@@ -80,11 +80,11 @@ export function Step3Content({ form }: StepContentProps) {
                   placeholder={t(
                     "forms.industrial.fields.productDescription.placeholder"
                   )}
-                  className="text-xs h-8 pr-7 text-pretty"
+                  className="text-[11px] sm:text-xs md:text-sm h-8 pr-7 text-pretty"
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
             </FormItem>
           )}
         />
@@ -99,7 +99,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="alturaUltimoNivelEstanteria"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] font-medium flex items-center gap-1 text-balance">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1 text-balance">
                   {t(
                     "forms.industrial.fields.dimensionsAndWeights.lastLevelHeight"
                   )}{" "}
@@ -111,19 +111,19 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-xs h-8 pr-7 text-pretty"
+                      className="text-[11px] sm:text-xs md:text-sm h-8 pr-7 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
                       }
                       value={field.value ?? ""}
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
                       m
                     </span>
                   </div>
                 </FormControl>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
               </FormItem>
             )}
           />
@@ -134,7 +134,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="maximaAlturaElevacion"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] font-medium flex items-center gap-1 text-balance">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1 text-balance">
                   {t(
                     "forms.industrial.fields.dimensionsAndWeights.maxElevation"
                   )}{" "}
@@ -146,19 +146,19 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-xs h-8 pr-7 text-pretty"
+                      className="text-[11px] sm:text-xs md:text-sm h-8 pr-7 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
                       }
                       value={field.value ?? ""}
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
                       m
                     </span>
                   </div>
                 </FormControl>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
               </FormItem>
             )}
           />
@@ -169,7 +169,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="pesoCargaMaximaAltura"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] font-medium flex items-center gap-1 text-balance">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1 text-balance">
                   {t(
                     "forms.industrial.fields.dimensionsAndWeights.maxHeightLoadWeight"
                   )}{" "}
@@ -181,19 +181,19 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0"
-                      className="text-xs h-8 pr-8 text-pretty"
+                      className="text-[11px] sm:text-xs md:text-sm h-8 pr-8 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
                       }
                       value={field.value ?? ""}
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
                       kg
                     </span>
                   </div>
                 </FormControl>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
               </FormItem>
             )}
           />
@@ -204,7 +204,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="pesoCargaPrimerNivel"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] font-medium flex items-center gap-1 text-balance">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1 text-balance">
                   {t(
                     "forms.industrial.fields.dimensionsAndWeights.firstLevelLoadWeight"
                   )}{" "}
@@ -216,7 +216,7 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0"
-                      className="text-xs h-8 pr-8 text-pretty"
+                      className="text-[11px] sm:text-xs md:text-sm h-8 pr-8 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
@@ -239,7 +239,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="dimensionesAreaTrabajoAncho"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] font-medium flex items-center gap-1 text-balance">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1 text-balance">
                   {t("forms.industrial.fields.dimensionsAndWeights.areaWidth")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -249,19 +249,19 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-xs h-8 pr-7 text-pretty"
+                      className="text-[11px] sm:text-xs md:text-sm h-8 pr-7 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
                       }
                       value={field.value ?? ""}
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
                       m
                     </span>
                   </div>
                 </FormControl>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
               </FormItem>
             )}
           />
@@ -272,7 +272,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="dimensionesAreaTrabajoFondo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] font-medium flex items-center gap-1 text-balance">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1 text-balance">
                   {t("forms.industrial.fields.dimensionsAndWeights.areaDepth")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -282,19 +282,19 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-xs h-8 pr-7 text-pretty"
+                      className="text-[11px] sm:text-xs md:text-sm h-8 pr-7 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
                       }
                       value={field.value ?? ""}
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
                       m
                     </span>
                   </div>
                 </FormControl>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
               </FormItem>
             )}
           />
@@ -313,7 +313,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="turnosTrabajo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] font-medium flex items-center gap-1 text-balance">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1 text-balance">
                   {t("forms.industrial.fields.operationAndPower.shifts")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>
@@ -322,13 +322,13 @@ export function Step3Content({ form }: StepContentProps) {
                     type="number"
                     min="1"
                     placeholder="1"
-                    className="text-xs h-8 text-pretty"
+                    className="text-[11px] sm:text-xs md:text-sm h-8 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
                     value={field.value ?? ""}
                   />
                 </FormControl>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
               </FormItem>
             )}
           />
@@ -338,25 +338,29 @@ export function Step3Content({ form }: StepContentProps) {
             name="alimentacionDeseada"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] font-medium flex items-center gap-1 text-balance">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1 text-balance">
                   {t("forms.industrial.fields.operationAndPower.powerSource")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="h-8 text-xs w-full text-pretty">
+                    <SelectTrigger className="h-8 text-[11px] sm:text-xs md:text-sm w-full text-pretty">
                       <SelectValue placeholder={t("forms.selectOption")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {Object.values(TipoAlimentacion).map((tipo) => (
-                      <SelectItem key={tipo} value={tipo} className="text-xs text-pretty">
+                      <SelectItem
+                        key={tipo}
+                        value={tipo}
+                        className="text-[11px] sm:text-xs md:text-sm text-pretty"
+                      >
                         {t(`visits.powerTypes.${tipo}` as any)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
               </FormItem>
             )}
           />
@@ -366,7 +370,7 @@ export function Step3Content({ form }: StepContentProps) {
             name="fechaEstimadaDefinicion"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] font-medium">
+                <FormLabel className="text-[11px] sm:text-xs md:text-sm">
                   {t(
                     "forms.industrial.fields.operationAndPower.definitionDate"
                   )}
@@ -377,7 +381,7 @@ export function Step3Content({ form }: StepContentProps) {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full h-8 text-left text-xs font-normal justify-start text-pretty",
+                          "w-full h-8 text-left text-[11px] sm:text-xs md:text-sm font-normal justify-start text-pretty",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -387,7 +391,7 @@ export function Step3Content({ form }: StepContentProps) {
                             locale: locale === "en" ? undefined : es,
                           })
                         ) : (
-                          <span className="text-xs text-pretty">
+                          <span className="text-[11px] sm:text-xs md:text-sm text-pretty">
                             {t("forms.selectOption")}
                           </span>
                         )}
