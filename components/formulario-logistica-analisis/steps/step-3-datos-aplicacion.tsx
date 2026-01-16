@@ -45,7 +45,7 @@ function SectionHeader({
       <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
         <Icon className="size-3 text-primary" />
       </div>
-      <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wide">
+      <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wide text-balance">
         {title}
       </h3>
     </div>

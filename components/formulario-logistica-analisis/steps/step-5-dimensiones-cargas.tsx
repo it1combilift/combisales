@@ -30,7 +30,7 @@ function SectionHeader({
         <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
           <Icon className="size-3 text-primary" />
         </div>
-        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground text-balance">
           {title}
         </h3>
       </div>
@@ -224,21 +224,22 @@ export function Step5Content({ form }: StepContentProps) {
         <CollapsibleImageContent
           src="/logistic-Dimensions-and-Weights-of-Loads.png"
           alt={t("forms.logistica.fields.loads.referenceImage.alt")}
+          maxHeight="medium"
         />
       )}
 
       {/* Empty state */}
       {dimensionesCargas.length === 0 ? (
-        <div className="border border-dashed rounded-lg p-6 text-center">
-          <Ruler className="size-6 mx-auto text-muted-foreground/50 mb-2" />
-          <p className="text-sm text-muted-foreground text-balance">
+        <div className="border border-dashed rounded-lg p-2 md:p-6 text-center space-y-2">
+          <Ruler className="size-4 mx-auto text-muted-foreground/50" />
+          <p className="text-xs md:text-sm text-muted-foreground text-balance">
             {t("forms.logistica.fields.loads.empty")}
           </p>
           <Button
             type="button"
             variant="outline"
             size="sm"
-            className="mt-3"
+              className="text-xs md:text-sm"  
             onClick={handleAddRow}
           >
             <Plus className="size-3.5" />

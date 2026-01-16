@@ -23,7 +23,7 @@ function SectionHeader({
         <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
           <Icon className="size-3 text-primary" />
         </div>
-        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground text-balance">
           {title}
         </h3>
       </div>
@@ -83,13 +83,12 @@ function CargaRow({
           placeholder={t("forms.industrial.fields.loads.productName")}
           value={carga.producto}
           onChange={(e) => onUpdate("producto", e.target.value)}
-          className="h-9 text-sm flex-1"
+          className="h-9 text-xs flex-1 text-balance"
         />
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="size-8 shrink-0 hover:bg-destructive/10"
           onClick={onRemove}
         >
           <Trash2 className="size-4 text-destructive" />
@@ -114,7 +113,7 @@ function CargaRow({
                     parseFloat(e.target.value) || null
                   )
                 }
-                className="h-9 text-sm pr-8 font-mono"
+                className="h-9 text-xs pr-8 font-mono text-balance"
               />
               <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">
                 {unit}
@@ -198,17 +197,17 @@ export function Step5Content({ form }: StepContentProps) {
 
       {/* Empty state */}
       {dimensionesCargas.length === 0 ? (
-        <div className="border border-dashed rounded-lg p-6 text-center">
+        <div className="border border-dashed rounded-lg p-3 space-y-2 text-center">
           <Ruler className="size-6 mx-auto text-muted-foreground/50 mb-2" />
-          <p className="text-sm text-muted-foreground text-balance">
+          <p className="text-xs text-muted-foreground text-balance">
             {t("forms.industrial.fields.loads.empty")}
           </p>
           <Button
             type="button"
             variant="outline"
             size="sm"
-            className="mt-3"
             onClick={handleAddRow}
+            className="text-xs mx-auto"
           >
             <Plus className="size-3.5" />
             {t("forms.industrial.fields.loads.addFirst")}
@@ -234,12 +233,12 @@ export function Step5Content({ form }: StepContentProps) {
           {/* Percentage indicator */}
           <div className="space-y-2 pt-2 border-t">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground font-medium">
+              <span className="text-muted-foreground font-medium text-xs">
                 {t("forms.industrial.fields.loads.totalPercentage")}
               </span>
               <span
                 className={cn(
-                  "font-bold text-base",
+                  "font-bold text-xs",
                   isValid
                     ? "text-green-600 dark:text-green-400"
                     : "text-destructive"
@@ -257,7 +256,7 @@ export function Step5Content({ form }: StepContentProps) {
             />
             {!isValid && dimensionesCargas.length > 0 && (
               <p className="text-xs text-destructive flex items-center gap-1">
-                <span className="size-1 rounded-full bg-destructive inline-block" />
+                <span className="size-1 rounded-full bg-destructive inline-block text-xs" />
                 {t("forms.industrial.fields.loads.percentageError")}
               </p>
             )}

@@ -32,10 +32,10 @@ function NumberedInput({
 }) {
   return (
     <FormItem>
-      <FormLabel className="text-[11px] font-medium flex items-center gap-1.5">
+      <FormLabel className="font-medium flex items-center gap-1.5 text-balance">
         <span
           className={cn(
-            "shrink-0 size-4 rounded-full flex items-center justify-center text-[9px] font-bold",
+            "shrink-0 size-4 rounded-full flex items-center justify-center text-[9px] md:text-xs font-bold",
             isConditional
               ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
               : "bg-muted text-muted-foreground"
@@ -43,24 +43,26 @@ function NumberedInput({
         >
           {number}
         </span>
-        <span className="truncate">{label}</span>
+        <span className="truncate text-balance text-[9px] md:text-xs">
+          {label}
+        </span>
       </FormLabel>
       <FormControl>
         <div className="relative">
           <Input
             type="number"
             placeholder="0"
-            className="h-8 text-sm pr-9"
+            className="h-8 text-xs pr-9 font-mono text-balance"
             {...field}
             onChange={(e) => field.onChange(parseFloat(e.target.value))}
             value={field.value ?? ""}
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
             mm
           </span>
         </div>
       </FormControl>
-      <FormMessage className="text-[10px]" />
+      <FormMessage className="text-xs" />
     </FormItem>
   );
 }
@@ -125,11 +127,12 @@ export function Step6Content({ form }: StepContentProps) {
         <CollapsibleImageContent
           src="/industrial-aisle-spec.png"
           alt={t("forms.industrial.fields.aisle.referenceImage.alt")}
+          maxHeight="medium"
         />
       )}
 
       {/* All fields in compact grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3">
+      <div className="grid grid-cols-2 gap-x-2 gap-y-3 place-items-center">
         {/* Dimensiones del producto */}
         <FormField
           control={form.control}

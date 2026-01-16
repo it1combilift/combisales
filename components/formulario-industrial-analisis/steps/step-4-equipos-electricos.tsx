@@ -37,7 +37,7 @@ export function Step4Content({ form }: StepContentProps) {
 
   if (alimentacion !== TipoAlimentacion.ELECTRICO) {
     return (
-      <div className="flex items-center justify-center py-8">
+      <div className="flex items-center justify-center py-4">
         <AlertMessage
           variant="info"
           title={t("forms.industrial.fields.electrical.notApplicable.alert.title")}
@@ -72,11 +72,11 @@ export function Step4Content({ form }: StepContentProps) {
             <div className="space-y-0.5">
               <div className="flex items-center gap-x-1.5">
                 <Ban className="size-3 text-muted-foreground" />
-                <FormLabel className="text-xs font-medium cursor-pointer text-pretty">
+                <FormLabel className="text-xs font-medium cursor-pointer text-balance">
                   {t("forms.industrial.fields.electrical.notApplicable.label")}
                 </FormLabel>
               </div>
-              <FormDescription className="text-xs text-muted-foreground text-pretty max-w-sm border-l-2 border-muted-foreground/30 pl-2">
+              <FormDescription className="text-xs text-muted-foreground text-balance max-w-sm border-l-2 border-muted-foreground/30 pl-2">
                 {t(
                   "forms.industrial.fields.electrical.notApplicable.description"
                 )}
@@ -110,13 +110,13 @@ export function Step4Content({ form }: StepContentProps) {
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
-                  <SelectTrigger className="h-8 text-sm w-full">
+                  <SelectTrigger className="text-xs w-full text-pretty">
                     <SelectValue placeholder={t("forms.selectOption")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {Object.values(TipoCorriente).map((tipo) => (
-                    <SelectItem key={tipo} value={tipo}>
+                    <SelectItem key={tipo} value={tipo} className="text-xs text-pretty">
                       {t(`visits.currentTypes.${tipo}` as any)}
                     </SelectItem>
                   ))}
@@ -141,7 +141,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="220"
-                    className="text-sm h-8 pr-6"
+                    className="text-xs h-8 pr-6 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -170,7 +170,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="50"
-                    className="text-sm h-8 pr-7"
+                    className="text-xs h-8 pr-7 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -199,7 +199,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="16"
-                    className="text-sm h-8 pr-5"
+                    className="text-xs h-8 pr-5 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -228,7 +228,7 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="20"
-                    className="text-sm h-8 pr-6"
+                    className="text-xs h-8 pr-6 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -259,7 +259,7 @@ export function Step4Content({ form }: StepContentProps) {
                     min="0"
                     max="24"
                     placeholder="8"
-                    className="text-sm h-8 pr-5"
+                    className="text-xs h-8 pr-5 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
@@ -294,7 +294,7 @@ export function Step4Content({ form }: StepContentProps) {
                   placeholder={t(
                     "forms.industrial.fields.electrical.notesPlaceholder"
                   )}
-                  className="text-sm min-h-[60px] resize-none"
+                  className="text-xs min-h-[60px] resize-none text-pretty"
                   {...field}
                   value={field.value ?? ""}
                 />

@@ -73,13 +73,9 @@ export function CollapsibleImageTrigger({
 }
 
 interface CollapsibleImageContentProps {
-  /** Source path for the image */
   src: string;
-  /** Alt text for accessibility */
   alt: string;
-  /** Max height class */
   maxHeight?: "compact" | "medium" | "large";
-  /** Optional className */
   className?: string;
 }
 

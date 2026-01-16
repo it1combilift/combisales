@@ -44,7 +44,7 @@ function SectionHeader({
       <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
         <Icon className="size-3 text-primary" />
       </div>
-      <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wide">
+      <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wide text-balance">
         {title}
       </h3>
     </div>
@@ -57,7 +57,7 @@ function SectionHeader({
  * Optimized layout with grouped fields
  */
 export function Step3Content({ form }: StepContentProps) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   return (
     <div className="space-y-4">
       {/* ==================== PRODUCTO ==================== */}
@@ -80,7 +80,7 @@ export function Step3Content({ form }: StepContentProps) {
                   placeholder={t(
                     "forms.industrial.fields.productDescription.placeholder"
                   )}
-                  className="text-sm h-8 pr-7"
+                  className="text-xs h-8 pr-7 text-pretty"
                   {...field}
                 />
               </FormControl>
@@ -111,7 +111,7 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-sm h-8 pr-7"
+                      className="text-xs h-8 pr-7 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
@@ -146,7 +146,7 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-sm h-8 pr-7"
+                      className="text-xs h-8 pr-7 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
@@ -181,7 +181,7 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0"
-                      className="text-sm h-8 pr-8"
+                      className="text-xs h-8 pr-8 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
@@ -216,7 +216,7 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0"
-                      className="text-sm h-8 pr-8"
+                      className="text-xs h-8 pr-8 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
@@ -249,7 +249,7 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-sm h-8 pr-7"
+                      className="text-xs h-8 pr-7 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
@@ -282,7 +282,7 @@ export function Step3Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-sm h-8 pr-7"
+                      className="text-xs h-8 pr-7 text-pretty"
                       {...field}
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value))
@@ -322,7 +322,7 @@ export function Step3Content({ form }: StepContentProps) {
                     type="number"
                     min="1"
                     placeholder="1"
-                    className="text-sm h-8"
+                    className="text-xs h-8 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
                     value={field.value ?? ""}
@@ -344,13 +344,13 @@ export function Step3Content({ form }: StepContentProps) {
                 </FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="h-8 text-sm w-full">
+                    <SelectTrigger className="h-8 text-xs w-full text-pretty">
                       <SelectValue placeholder={t("forms.selectOption")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {Object.values(TipoAlimentacion).map((tipo) => (
-                      <SelectItem key={tipo} value={tipo}>
+                      <SelectItem key={tipo} value={tipo} className="text-xs text-pretty">
                         {t(`visits.powerTypes.${tipo}` as any)}
                       </SelectItem>
                     ))}
@@ -377,7 +377,7 @@ export function Step3Content({ form }: StepContentProps) {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full h-8 text-left text-sm font-normal justify-start",
+                          "w-full h-8 text-left text-xs font-normal justify-start text-pretty",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -387,7 +387,7 @@ export function Step3Content({ form }: StepContentProps) {
                             locale: locale === "en" ? undefined : es,
                           })
                         ) : (
-                          <span className="text-xs">
+                          <span className="text-xs text-pretty">
                             {t("forms.selectOption")}
                           </span>
                         )}

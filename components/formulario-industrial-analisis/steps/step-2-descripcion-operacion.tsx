@@ -56,7 +56,7 @@ export function Step1Content({ form }: StepContentProps) {
                 placeholder={t(
                   "forms.industrial.fields.operationNotes.placeholder"
                 )}
-                className="min-h-[120px] sm:min-h-40 text-xs bg-background/50 resize-none leading-relaxed"
+                className="min-h-[120px] sm:min-h-40 text-xs bg-background/50 resize-none leading-relaxed text-pretty"
                 {...field}
               />
             </FormControl>
