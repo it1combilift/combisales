@@ -6,16 +6,23 @@ import { Progress } from "@/components/ui/progress";
 import { StepContentProps, DimensionCarga } from "../types";
 import { Plus, Trash2, Package, Ruler } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
+import { useState } from "react";
+import {
+  CollapsibleImageTrigger,
+  CollapsibleImageContent,
+} from "@/components/ui/collapsible-image";
 
 // ==================== SECTION HEADER ====================
 function SectionHeader({
   icon: Icon,
   title,
   action,
+  secondaryAction,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   action?: React.ReactNode;
+  secondaryAction?: React.ReactNode;
 }) {
   return (
     <div className="flex items-center justify-between pb-2 border-b mb-3">
@@ -27,7 +34,10 @@ function SectionHeader({
           {title}
         </h3>
       </div>
-      {action}
+      <div className="flex items-center gap-2">
+        {secondaryAction}
+        {action}
+      </div>
     </div>
   );
 }
@@ -105,7 +115,7 @@ function CargaRow({
                 onChange={(e) =>
                   onUpdate(
                     key as keyof DimensionCarga,
-                    parseFloat(e.target.value) || null
+                    parseFloat(e.target.value) || null,
                   )
                 }
                 className="h-9 text-[11px] sm:text-xs md:text-sm pr-8 font-mono text-balance"
@@ -147,7 +157,7 @@ export function Step5Content({ form }: StepContentProps) {
 
   const handleRemoveRow = (id: string) => {
     const updated = dimensionesCargas.filter(
-      (c: DimensionCarga) => c.id !== id
+      (c: DimensionCarga) => c.id !== id,
     );
     form.setValue("dimensionesCargas", updated, { shouldValidate: true });
   };
@@ -155,27 +165,39 @@ export function Step5Content({ form }: StepContentProps) {
   const handleUpdateRow = (
     id: string,
     field: keyof DimensionCarga,
-    value: any
+    value: any,
   ) => {
     const updated = dimensionesCargas.map((c: DimensionCarga) =>
-      c.id === id ? { ...c, [field]: value } : c
+      c.id === id ? { ...c, [field]: value } : c,
     );
     form.setValue("dimensionesCargas", updated, { shouldValidate: true });
   };
 
   const totalPorcentaje = dimensionesCargas.reduce(
     (sum: number, c: DimensionCarga) => sum + (c.porcentaje || 0),
-    0
+    0,
   );
 
   const isValid = Math.abs(totalPorcentaje - 100) < 0.01;
 
+  // State for collapsible reference image
+  const [isImageOpen, setIsImageOpen] = useState(false);
+
   return (
     <div className="space-y-4">
-      {/* Header with add button */}
+      {/* Header with add button and reference image trigger */}
       <SectionHeader
         icon={Package}
         title={t("forms.industrial.fields.loads.header")}
+        secondaryAction={
+          <CollapsibleImageTrigger
+            buttonLabel={t(
+              "forms.industrial.fields.loads.referenceImage.button",
+            )}
+            isOpen={isImageOpen}
+            onClick={() => setIsImageOpen(!isImageOpen)}
+          />
+        }
         action={
           <Button
             type="button"
@@ -189,6 +211,15 @@ export function Step5Content({ form }: StepContentProps) {
           </Button>
         }
       />
+
+      {/* Reference Image - Collapsible Content */}
+      {isImageOpen && (
+        <CollapsibleImageContent
+          src="/logistic-Dimensions-and-Weights-of-Loads.png"
+          alt={t("forms.industrial.fields.loads.referenceImage.alt")}
+          maxHeight="medium"
+        />
+      )}
 
       {/* Empty state */}
       {dimensionesCargas.length === 0 ? (
@@ -236,7 +267,7 @@ export function Step5Content({ form }: StepContentProps) {
                   "font-bold text-[11px] sm:text-xs md:text-sm",
                   isValid
                     ? "text-green-600 dark:text-green-400"
-                    : "text-destructive"
+                    : "text-destructive",
                 )}
               >
                 {totalPorcentaje.toFixed(1)}%
@@ -246,7 +277,7 @@ export function Step5Content({ form }: StepContentProps) {
               value={Math.min(totalPorcentaje, 100)}
               className={cn(
                 "h-2",
-                isValid ? "[&>div]:bg-green-500" : "[&>div]:bg-destructive"
+                isValid ? "[&>div]:bg-green-500" : "[&>div]:bg-destructive",
               )}
             />
             {!isValid && dimensionesCargas.length > 0 && (

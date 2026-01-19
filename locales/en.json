@@ -634,9 +634,9 @@
           "description": "Technical information"
         },
         "batteries": {
-          "title": "Batteries",
+          "title": "Electrical Specifications",
           "shortTitle": "Batteries",
-          "description": "Electrical specifications"
+          "description": "Power supply details"
         },
         "loads": {
           "title": "Loads",
@@ -1469,9 +1469,9 @@
           "description": "Technical information"
         },
         "batteries": {
-          "title": "Electrical Equipment",
-          "shortTitle": "Electrical",
-          "description": "For electric truck, please complete information below"
+          "title": "Electrical Specifications",
+          "shortTitle": "Batteries",
+          "description": "Power supply details"
         },
         "loads": {
           "title": "Dimensions and Weight of Loads",
@@ -1522,7 +1522,7 @@
           "powerSource": "Power Supply"
         },
         "electrical": {
-          "header": "Power Supply",
+          "header": "Power supply details",
           "subheader": "For electric truck, please complete information below",
           "notApplicable": {
             "label": "Not applicable",
@@ -1564,7 +1564,11 @@
             "percentage": "%"
           },
           "totalPercentage": "Total percentage:",
-          "percentageError": "Percentages must sum exactly 100%"
+          "percentageError": "Percentages must sum exactly 100%",
+          "referenceImage": {
+            "button": "View diagram",
+            "alt": "Load dimensions and weights reference diagram"
+          }
         },
         "aisle": {
           "header": "Aisle Specification",
@@ -1632,9 +1636,9 @@
           "description": "Technical information"
         },
         "batteries": {
-          "title": "Electrical Equipment Specifications",
-          "shortTitle": "Electrical",
-          "description": "Electrical specifications"
+          "title": "Electrical Specifications",
+          "shortTitle": "Batteries",
+          "description": "Power supply details"
         },
         "loads": {
           "title": "Dimensions and Weights of Loads",
@@ -1834,7 +1838,7 @@
           "rackBaseHeight": "Rack base height"
         },
         "electricEquipment": {
-          "header": "Electrical Equipment Specifications",
+          "header": "Power supply details",
           "notApplicable": "Step not applicable",
           "notApplicableDescription": "This step is only required when the desired power is electric. You can continue to the next step.",
           "notApplicableToggle": "Not applicable",

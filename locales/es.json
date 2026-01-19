@@ -1202,7 +1202,7 @@
         "frequency": "Frecuencia (Hz)",
         "amperage": "Amperaje",
         "ambientTemperature": "Temperatura ambiente",
-        "workHoursPerDay": "Horas de trabajo por día",
+        "workHoursPerDay": "Horas de trabajo / día",
         "availablePower": "Potencia disponible",
         "chargePointDistance": "Distancia al punto de carga",
         "loadNumber": "Carga",
@@ -1459,7 +1459,7 @@
           "operation": {
             "title": "Descripción de la operación",
             "shortTitle": "Operación",
-            "description": "Indicar si hay rampas, pasos por puertas, otros restricciones"
+            "description": "Detalles de la operación a realizar"
           },
           "application": {
             "title": "Datos de la aplicación",
@@ -1467,9 +1467,9 @@
             "description": "Información técnica"
           },
           "batteries": {
-            "title": "Para equipos eléctricos, indicar información",
-            "shortTitle": "Eléctrico",
-            "description": "Para equipos eléctricos, indicar información"
+            "title": "Datos de baterías",
+            "shortTitle": "Batería",
+            "description": "Información sobre baterías"
           },
           "loads": {
             "title": "Dimensiones de las cargas",
@@ -1520,7 +1520,7 @@
             "powerSource": "Alimentación deseada"
           },
           "electrical": {
-            "header": "Alimentación",
+            "header": "Fuente de alimentación eléctrica",
             "subheader": "Para equipos eléctricos, indicar información",
             "notApplicable": {
               "label": "No aplica",
@@ -1562,7 +1562,11 @@
               "percentage": "%"
             },
             "totalPercentage": "Porcentaje total:",
-            "percentageError": "Los porcentajes deben sumar exactamente 100%"
+            "percentageError": "Los porcentajes deben sumar exactamente 100%",
+            "referenceImage": {
+              "button": "Ver diagrama",
+              "alt": "Diagrama de referencia de dimensiones de las cargas"
+            }
           },
           "aisle": {
             "header": "Especificación del pasillo",
@@ -1622,7 +1626,7 @@
           "operation": {
             "title": "Descripción de la operación",
             "shortTitle": "Operación",
-            "description": "Indicar rampas, pasos por puertas, restricciones"
+            "description": "Detalles de la operación a realizar"
           },
           "application": {
             "title": "Datos de la aplicación",
@@ -1630,9 +1634,9 @@
             "description": "Información técnica"
           },
           "batteries": {
-            "title": "Especificaciones para equipos eléctricos",
-            "shortTitle": "Eléctrico",
-            "description": "Especificaciones eléctricas"
+            "title": "Datos de baterías",
+            "shortTitle": "Batería",
+            "description": "Información sobre baterías"
           },
           "loads": {
             "title": "Dimensiones y pesos de las cargas",
@@ -1788,12 +1792,12 @@
             "frequency": "Frecuencia (Hz)",
             "amperage": "Amperaje",
             "ambientTemp": "Temperatura ambiente",
-            "workHours": "Horas de trabajo por día",
+            "workHours": "Horas de trabajo / día",
             "notes": "Observaciones (opcional)",
             "notesPlaceholder": "Notas adicionales sobre los equipos eléctricos..."
           },
           "loads": {
-            "header": "Dimensiones y pesos de las cargas",
+            "header": "Dimensiones de las cargas",
             "add": "Agregar",
             "addFirst": "Agregar primera carga",
             "empty": "No hay cargas agregadas. Agregue las dimensiones y pesos de las cargas.",
@@ -1832,7 +1836,7 @@
             "rackBaseHeight": "Altura base de estantería"
           },
           "electricEquipment": {
-            "header": "Especificaciones para equipos eléctricos",
+            "header": "Fuente de alimentación eléctrica",
             "notApplicable": "Paso no aplicable",
             "notApplicableDescription": "Este paso solo es necesario cuando la alimentación deseada es eléctrica. Puede continuar al siguiente paso.",
             "notApplicableToggle": "No aplica",
