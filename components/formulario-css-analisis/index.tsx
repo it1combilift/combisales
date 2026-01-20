@@ -45,8 +45,8 @@ export default function FormularioCSSAnalisis({
       isEditing && formulario
         ? getDefaultValuesForEdit(formulario)
         : customer
-        ? getDefaultValuesForNew(customer)
-        : getDefaultValuesForNew({} as any),
+          ? getDefaultValuesForNew(customer)
+          : getDefaultValuesForNew({} as any),
   });
 
   // ==================== CUSTOM HOOKS ====================
@@ -65,6 +65,7 @@ export default function FormularioCSSAnalisis({
     handlePrevStep,
     goToStep,
     onSubmit,
+    onSubmitError,
     onSaveDraft,
     onSaveChanges,
     VisitIsCompleted,
@@ -146,7 +147,7 @@ export default function FormularioCSSAnalisis({
       {/* Form content */}
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit, onSubmitError)}
           className="flex flex-col flex-1 min-h-0 max-w-dvw mx-auto w-full"
         >
           <main className="flex-1 overflow-y-auto scrollbar-thin">

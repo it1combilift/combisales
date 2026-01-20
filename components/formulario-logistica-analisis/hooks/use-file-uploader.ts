@@ -3,10 +3,10 @@ import { toast } from "sonner";
 import { ArchivoSubido } from "../types";
 import { UseFormReturn } from "react-hook-form";
 import { MAX_FILES } from "@/constants/constants";
-import { getTipoArchivo, isAllowedFileType } from "@/lib/file-utils";
 import { useState, useCallback, useRef } from "react";
 import { FormularioLogisticaSchema } from "../schemas";
 import { UploadedFile } from "@/interfaces/claudinary";
+import { getTipoArchivo, isAllowedFileType } from "@/lib/file-utils";
 
 interface UseFileUploaderProps {
   form: UseFormReturn<FormularioLogisticaSchema>;

@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { ArchivoSubido } from "@/schemas/visits";
+import { deleteFromCloudinary } from "@/lib/cloudinary";
 
 import {
   CreateFormularioCSSData,
@@ -107,13 +109,117 @@ function transformArchivos(archivos: ArchivoSubido[]) {
   });
 }
 
+// ==================== ARCHIVO SYNC HELPERS ====================
+/**
+ * Sync files for a formulario - delete removed files, add new ones
+ * This ensures files in DB match what's sent from frontend
+ */
+export async function syncFormularioArchivos(
+  formularioId: string,
+  newArchivos: ArchivoSubido[],
+  tableName:
+    | "FormularioArchivo"
+    | "FormularioArchivoIndustrial"
+    | "FormularioArchivoLogistica"
+    | "FormularioArchivoStraddleCarrier",
+) {
+  // Get current files from database
+  let existingArchivos: { cloudinaryId: string; cloudinaryType: string }[] = [];
+
+  switch (tableName) {
+    case "FormularioArchivo":
+      existingArchivos = await prisma.formularioArchivo.findMany({
+        where: { formularioId },
+        select: { cloudinaryId: true, cloudinaryType: true },
+      });
+      break;
+    case "FormularioArchivoIndustrial":
+      existingArchivos = await prisma.formularioArchivoIndustrial.findMany({
+        where: { formularioId },
+        select: { cloudinaryId: true, cloudinaryType: true },
+      });
+      break;
+    case "FormularioArchivoLogistica":
+      existingArchivos = await prisma.formularioArchivoLogistica.findMany({
+        where: { formularioId },
+        select: { cloudinaryId: true, cloudinaryType: true },
+      });
+      break;
+    case "FormularioArchivoStraddleCarrier":
+      existingArchivos = await prisma.formularioArchivoStraddleCarrier.findMany(
+        {
+          where: { formularioId },
+          select: { cloudinaryId: true, cloudinaryType: true },
+        },
+      );
+      break;
+  }
+
+  const existingIds = new Set(existingArchivos.map((a) => a.cloudinaryId));
+  const newIds = new Set(newArchivos.map((a) => a.cloudinaryId));
+
+  // Find files to delete (exist in DB but not in new list)
+  const toDelete = existingArchivos.filter((a) => !newIds.has(a.cloudinaryId));
+
+  // Find files to add (exist in new list but not in DB)
+  const toAdd = newArchivos.filter((a) => !existingIds.has(a.cloudinaryId));
+
+  // Delete removed files from DB and Cloudinary
+  if (toDelete.length > 0) {
+    const deleteIds = toDelete.map((a) => a.cloudinaryId);
+
+    // Delete from database
+    switch (tableName) {
+      case "FormularioArchivo":
+        await prisma.formularioArchivo.deleteMany({
+          where: { cloudinaryId: { in: deleteIds } },
+        });
+        break;
+      case "FormularioArchivoIndustrial":
+        await prisma.formularioArchivoIndustrial.deleteMany({
+          where: { cloudinaryId: { in: deleteIds } },
+        });
+        break;
+      case "FormularioArchivoLogistica":
+        await prisma.formularioArchivoLogistica.deleteMany({
+          where: { cloudinaryId: { in: deleteIds } },
+        });
+        break;
+      case "FormularioArchivoStraddleCarrier":
+        await prisma.formularioArchivoStraddleCarrier.deleteMany({
+          where: { cloudinaryId: { in: deleteIds } },
+        });
+        break;
+    }
+
+    // Delete from Cloudinary (async, don't block)
+    for (const archivo of toDelete) {
+      deleteFromCloudinary(
+        archivo.cloudinaryId,
+        archivo.cloudinaryType as "image" | "video" | "raw",
+      ).catch((err) => {
+        console.error(
+          `[syncArchivos] Failed to delete from Cloudinary: ${archivo.cloudinaryId}`,
+          err,
+        );
+      });
+    }
+
+    console.log(
+      `[syncArchivos] Deleted ${toDelete.length} files from ${tableName}`,
+    );
+  }
+
+  return { toAdd, toDelete };
+}
+
 /**
  * Build Prisma upsert operation for FormularioCSSAnalisis
  */
 export function buildFormularioUpsert(data: CreateFormularioCSSData) {
   const transformedData = transformFormularioCSSData(data);
   const newArchivos = data.archivos?.filter(
-    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl
+    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl,
   );
 
   const archivosCreate = newArchivos?.length
@@ -164,7 +270,7 @@ export function buildFormularioCreate(data: CreateFormularioCSSData) {
  * Transform FormularioIndustrialData to Prisma create/update format
  */
 export function transformFormularioIndustrialData(
-  data: CreateFormularioIndustrialData
+  data: CreateFormularioIndustrialData,
 ) {
   return {
     razonSocial: data.razonSocial,
@@ -226,12 +332,12 @@ function transformArchivosIndustrial(archivos: ArchivoSubido[]) {
  * Build Prisma upsert operation for FormularioIndustrialAnalisis
  */
 export function buildFormularioIndustrialUpsert(
-  data: CreateFormularioIndustrialData
+  data: CreateFormularioIndustrialData,
 ) {
   const transformedData = transformFormularioIndustrialData(data);
 
   const newArchivos = data.archivos?.filter(
-    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl
+    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl,
   );
 
   const archivosCreate = newArchivos?.length
@@ -261,7 +367,7 @@ export function buildFormularioIndustrialUpsert(
  * Build Prisma create operation for new visit with FormularioIndustrialAnalisis
  */
 export function buildFormularioIndustrialCreate(
-  data: CreateFormularioIndustrialData
+  data: CreateFormularioIndustrialData,
 ) {
   const transformedData = transformFormularioIndustrialData(data);
 
@@ -284,7 +390,7 @@ export function buildFormularioIndustrialCreate(
  * Transform FormularioLogisticaData to Prisma create/update format
  */
 export function transformFormularioLogisticaData(
-  data: CreateFormularioLogisticaData
+  data: CreateFormularioLogisticaData,
 ) {
   return {
     razonSocial: data.razonSocial,
@@ -357,12 +463,12 @@ function transformArchivosLogistica(archivos: ArchivoSubido[]) {
  * Build Prisma upsert operation for FormularioLogisticaAnalisis
  */
 export function buildFormularioLogisticaUpsert(
-  data: CreateFormularioLogisticaData
+  data: CreateFormularioLogisticaData,
 ) {
   const transformedData = transformFormularioLogisticaData(data);
 
   const newArchivos = data.archivos?.filter(
-    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl
+    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl,
   );
 
   const archivosCreate = newArchivos?.length
@@ -392,7 +498,7 @@ export function buildFormularioLogisticaUpsert(
  * Build Prisma create operation for new visit with FormularioLogisticaAnalisis
  */
 export function buildFormularioLogisticaCreate(
-  data: CreateFormularioLogisticaData
+  data: CreateFormularioLogisticaData,
 ) {
   const transformedData = transformFormularioLogisticaData(data);
 
@@ -415,7 +521,7 @@ export function buildFormularioLogisticaCreate(
  * Transform FormularioStraddleCarrierData to Prisma create/update format
  */
 export function transformFormularioStraddleCarrierData(
-  data: CreateFormularioStraddleCarrierData
+  data: CreateFormularioStraddleCarrierData,
 ) {
   return {
     razonSocial: data.razonSocial,
@@ -489,12 +595,12 @@ function transformArchivosStraddleCarrier(archivos: ArchivoSubido[]) {
  * Build Prisma upsert operation for FormularioStraddleCarrierAnalisis
  */
 export function buildFormularioStraddleCarrierUpsert(
-  data: CreateFormularioStraddleCarrierData
+  data: CreateFormularioStraddleCarrierData,
 ) {
   const transformedData = transformFormularioStraddleCarrierData(data);
 
   const newArchivos = data.archivos?.filter(
-    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl
+    (archivo) => archivo.cloudinaryId && archivo.cloudinaryUrl,
   );
 
   const archivosCreate = newArchivos?.length
@@ -524,7 +630,7 @@ export function buildFormularioStraddleCarrierUpsert(
  * Build Prisma create operation for new visit with FormularioStraddleCarrierAnalisis
  */
 export function buildFormularioStraddleCarrierCreate(
-  data: CreateFormularioStraddleCarrierData
+  data: CreateFormularioStraddleCarrierData,
 ) {
   const transformedData = transformFormularioStraddleCarrierData(data);
 

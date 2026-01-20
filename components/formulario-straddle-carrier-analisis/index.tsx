@@ -52,8 +52,8 @@ export default function FormularioStraddleCarrierAnalisis({
       isEditing && formulario
         ? getDefaultValuesForEdit(formulario)
         : customer
-        ? getDefaultValuesForNew(customer)
-        : getDefaultValuesForNew({} as any),
+          ? getDefaultValuesForNew(customer)
+          : getDefaultValuesForNew({} as any),
   });
 
   // ==================== CUSTOM HOOKS ====================
@@ -74,6 +74,7 @@ export default function FormularioStraddleCarrierAnalisis({
     handlePrevStep,
     goToStep,
     onSubmit,
+    onSubmitError,
     onSaveDraft,
     onSaveChanges,
     visitIsCompleted,
@@ -166,7 +167,7 @@ export default function FormularioStraddleCarrierAnalisis({
       {/* Form content */}
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit, onSubmitError)}
           className="flex flex-col flex-1 min-h-0 w-full overflow-hidden"
         >
           <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">

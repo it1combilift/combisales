@@ -19,9 +19,9 @@ export interface UploadedFileItem {
   cloudinaryId: string;
   cloudinaryUrl: string;
   cloudinaryType: string;
-  ancho?: number;
-  alto?: number;
-  duracion?: number;
+  ancho?: number | null;
+  alto?: number | null;
+  duracion?: number | null;
   formato: string;
 }
 
@@ -29,7 +29,8 @@ export interface UploadedFilesListProps {
   archivos: UploadedFileItem[];
   deletingFileId: string | null;
   isUploading: boolean;
-  onRemoveFile: (archivo: UploadedFileItem) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onRemoveFile: (archivo: any) => void;
   maxFiles?: number;
   showHeader?: boolean;
   className?: string;

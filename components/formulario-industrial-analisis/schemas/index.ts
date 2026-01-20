@@ -14,9 +14,9 @@ export const archivoSubidoSchema = z.object({
   cloudinaryId: z.string(),
   cloudinaryUrl: z.string().url(),
   cloudinaryType: z.string(),
-  ancho: z.number().optional(),
-  alto: z.number().optional(),
-  duracion: z.number().optional(),
+  ancho: z.number().nullish(), // Can be null or undefined
+  alto: z.number().nullish(), // Can be null or undefined
+  duracion: z.number().nullish(), // Can be null or undefined
   formato: z.string(),
 });
 
@@ -95,119 +95,117 @@ export type EquiposElectricos = z.infer<typeof equiposElectricosSchema>;
 export const getFormularioIndustrialSchema = (t: any) =>
   z
     .object({
-    // ==================== DATOS DEL CLIENTE (pre-llenados, opcionales) ====================
-    razonSocial: z.string().optional().default(""),
-    personaContacto: z.string().optional().default(""),
-    email: z
-      .string()
-      .email(t("forms.industrial.validation.emailInvalid"))
-      .optional()
-      .or(z.literal("")),
-    direccion: z.string().optional().default(""),
-    localidad: z.string().optional().default(""),
-    provinciaEstado: z.string().optional().default(""),
-    pais: z.string().optional().default(""),
-    codigoPostal: z.string().optional().default(""),
-    website: z
-      .string()
-      .url(t("forms.industrial.validation.urlInvalid"))
-      .optional()
-      .or(z.literal("")),
-    numeroIdentificacionFiscal: z.string().optional().default(""),
-    distribuidor: z.string().optional(),
-    contactoDistribuidor: z.string().optional(),
-    fechaCierre: z.date().optional().nullable(),
+      // ==================== DATOS DEL CLIENTE (pre-llenados, opcionales) ====================
+      razonSocial: z.string().optional().default(""),
+      personaContacto: z.string().optional().default(""),
+      email: z
+        .string()
+        .email(t("forms.industrial.validation.emailInvalid"))
+        .optional()
+        .or(z.literal("")),
+      direccion: z.string().optional().default(""),
+      localidad: z.string().optional().default(""),
+      provinciaEstado: z.string().optional().default(""),
+      pais: z.string().optional().default(""),
+      codigoPostal: z.string().optional().default(""),
+      website: z
+        .string()
+        .url(t("forms.industrial.validation.urlInvalid"))
+        .optional()
+        .or(z.literal("")),
+      numeroIdentificacionFiscal: z.string().optional().default(""),
+      distribuidor: z.string().optional(),
+      contactoDistribuidor: z.string().optional(),
+      fechaCierre: z.date().optional().nullable(),
 
-    // ==================== DESCRIPCION DE LA OPERACION ====================
-    notasOperacion: z
-      .string()
-      .min(1, t("forms.industrial.validation.operationNotesRequired")),
+      // ==================== DESCRIPCION DE LA OPERACION ====================
+      notasOperacion: z
+        .string()
+        .min(1, t("forms.industrial.validation.operationNotesRequired")),
 
-    // ==================== DATOS DE LA APLICACION ====================
-    descripcionProducto: z
-      .string()
-      .min(1, t("forms.industrial.validation.productDescriptionRequired")),
-    alturaUltimoNivelEstanteria: z
-      .number()
-      .positive(t("forms.industrial.validation.positiveValueRequired"))
-      .nullable(),
-    maximaAlturaElevacion: z
-      .number()
-      .positive(t("forms.industrial.validation.positiveValueRequired"))
-      .nullable(),
-    pesoCargaMaximaAltura: z
-      .number()
-      .positive(t("forms.industrial.validation.positiveValueRequired"))
-      .nullable(),
-    pesoCargaPrimerNivel: z
-      .number()
-      .positive(t("forms.industrial.validation.positiveValueRequired"))
-      .nullable(),
-    dimensionesAreaTrabajoAncho: z
-      .number()
-      .positive(t("forms.industrial.validation.positiveValueRequired"))
-      .nullable(),
-    dimensionesAreaTrabajoFondo: z
-      .number()
-      .positive(t("forms.industrial.validation.positiveValueRequired"))
-      .nullable(),
-    turnosTrabajo: z
-      .number()
-      .min(1, t("forms.industrial.validation.min1Shift"))
-      .nullable(),
-    fechaEstimadaDefinicion: z.date().optional().nullable(),
-    alimentacionDeseada: z.enum([
-      TipoAlimentacion.ELECTRICO,
-      TipoAlimentacion.DIESEL,
-      TipoAlimentacion.GLP,
-    ]),
+      // ==================== DATOS DE LA APLICACION ====================
+      descripcionProducto: z
+        .string()
+        .min(1, t("forms.industrial.validation.productDescriptionRequired")),
+      alturaUltimoNivelEstanteria: z
+        .number()
+        .positive(t("forms.industrial.validation.positiveValueRequired"))
+        .nullable(),
+      maximaAlturaElevacion: z
+        .number()
+        .positive(t("forms.industrial.validation.positiveValueRequired"))
+        .nullable(),
+      pesoCargaMaximaAltura: z
+        .number()
+        .positive(t("forms.industrial.validation.positiveValueRequired"))
+        .nullable(),
+      pesoCargaPrimerNivel: z
+        .number()
+        .positive(t("forms.industrial.validation.positiveValueRequired"))
+        .nullable(),
+      dimensionesAreaTrabajoAncho: z
+        .number()
+        .positive(t("forms.industrial.validation.positiveValueRequired"))
+        .nullable(),
+      dimensionesAreaTrabajoFondo: z
+        .number()
+        .positive(t("forms.industrial.validation.positiveValueRequired"))
+        .nullable(),
+      turnosTrabajo: z
+        .number()
+        .min(1, t("forms.industrial.validation.min1Shift"))
+        .nullable(),
+      fechaEstimadaDefinicion: z.date().optional().nullable(),
+      alimentacionDeseada: z.enum([
+        TipoAlimentacion.ELECTRICO,
+        TipoAlimentacion.DIESEL,
+        TipoAlimentacion.GLP,
+      ]),
 
-    // ==================== EQUIPOS ELECTRICOS (CONDICIONAL) ====================
-    equiposElectricos: equiposElectricosSchema.optional(),
+      // ==================== EQUIPOS ELECTRICOS (CONDICIONAL) ====================
+      equiposElectricos: equiposElectricosSchema.optional(),
 
-    // ==================== DIMENSIONES DE LAS CARGAS ====================
-    dimensionesCargas: z
-      .array(getDimensionCargaSchema(t))
-      .min(1, t("forms.industrial.validation.loadRequired")),
+      // ==================== DIMENSIONES DE LAS CARGAS ====================
+      dimensionesCargas: z
+        .array(getDimensionCargaSchema(t))
+        .min(1, t("forms.industrial.validation.loadRequired")),
 
-    // ==================== ESPECIFICACIONES DEL PASILLO ====================
-    especificacionesPasillo: especificacionesPasilloSchema,
+      // ==================== ESPECIFICACIONES DEL PASILLO ====================
+      especificacionesPasillo: especificacionesPasilloSchema,
 
-    // ==================== ARCHIVOS ====================
-    archivos: z.array(archivoSubidoSchema).default([]),
-  })
-  .superRefine((data, ctx) => {
-    // Equipos eléctricos solo se validan si alimentación es ELECTRICO y noAplica es false
-    if (data.alimentacionDeseada === TipoAlimentacion.ELECTRICO) {
-      if (!data.equiposElectricos) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message:
-            t("forms.industrial.validation.electricalRequired"),
-          path: ["equiposElectricos"],
-        });
+      // ==================== ARCHIVOS ====================
+      archivos: z.array(archivoSubidoSchema).default([]),
+    })
+    .superRefine((data, ctx) => {
+      // Equipos eléctricos solo se validan si alimentación es ELECTRICO y noAplica es false
+      if (data.alimentacionDeseada === TipoAlimentacion.ELECTRICO) {
+        if (!data.equiposElectricos) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("forms.industrial.validation.electricalRequired"),
+            path: ["equiposElectricos"],
+          });
+        }
+        // Si noAplica está marcado, no se requieren otros campos
       }
-      // Si noAplica está marcado, no se requieren otros campos
-    }
 
-    // Validar que porcentajes sumen 100%
-    if (data.dimensionesCargas && data.dimensionesCargas.length > 0) {
-      const totalPorcentaje = data.dimensionesCargas.reduce(
-        (sum, carga) => sum + (carga.porcentaje || 0),
-        0
-      );
-      if (Math.abs(totalPorcentaje - 100) > 0.01) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t("forms.industrial.validation.percentageSumError").replace(
-            "{{current}}",
-            totalPorcentaje.toFixed(1)
-          ),
-          path: ["dimensionesCargas"],
-        });
+      // Validar que porcentajes sumen 100%
+      if (data.dimensionesCargas && data.dimensionesCargas.length > 0) {
+        const totalPorcentaje = data.dimensionesCargas.reduce(
+          (sum, carga) => sum + (carga.porcentaje || 0),
+          0,
+        );
+        if (Math.abs(totalPorcentaje - 100) > 0.01) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t(
+              "forms.industrial.validation.percentageSumError",
+            ).replace("{{current}}", totalPorcentaje.toFixed(1)),
+            path: ["dimensionesCargas"],
+          });
+        }
       }
-    }
-  });
+    });
 
 export type FormularioIndustrialSchema = z.infer<
   ReturnType<typeof getFormularioIndustrialSchema>

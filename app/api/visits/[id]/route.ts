@@ -16,6 +16,7 @@ import {
   buildFormularioIndustrialUpsert,
   buildFormularioLogisticaUpsert,
   buildFormularioStraddleCarrierUpsert,
+  syncFormularioArchivos,
 } from "@/lib/visits";
 
 import {
@@ -40,7 +41,7 @@ import {
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -71,7 +72,7 @@ export async function GET(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -104,6 +105,52 @@ export async function PUT(
       return notFoundResponse("VISIT");
     }
 
+    // ==================== SYNC FILES BEFORE UPDATE ====================
+    // This ensures files deleted in the form are also deleted from DB and Cloudinary
+    if (formularioData && "archivos" in formularioData) {
+      const newArchivos = (formularioData.archivos || []).filter(
+        (a: any) => a.cloudinaryId && a.cloudinaryUrl,
+      );
+
+      if (
+        existingVisit.formType === VisitFormType.ANALISIS_CSS &&
+        existingVisit.formularioCSSAnalisis
+      ) {
+        await syncFormularioArchivos(
+          existingVisit.formularioCSSAnalisis.id,
+          newArchivos,
+          "FormularioArchivo",
+        );
+      } else if (
+        existingVisit.formType === VisitFormType.ANALISIS_INDUSTRIAL &&
+        existingVisit.formularioIndustrialAnalisis
+      ) {
+        await syncFormularioArchivos(
+          existingVisit.formularioIndustrialAnalisis.id,
+          newArchivos,
+          "FormularioArchivoIndustrial",
+        );
+      } else if (
+        existingVisit.formType === VisitFormType.ANALISIS_LOGISTICA &&
+        existingVisit.formularioLogisticaAnalisis
+      ) {
+        await syncFormularioArchivos(
+          existingVisit.formularioLogisticaAnalisis.id,
+          newArchivos,
+          "FormularioArchivoLogistica",
+        );
+      } else if (
+        existingVisit.formType === VisitFormType.ANALISIS_STRADDLE_CARRIER &&
+        existingVisit.formularioStraddleCarrierAnalisis
+      ) {
+        await syncFormularioArchivos(
+          existingVisit.formularioStraddleCarrierAnalisis.id,
+          newArchivos,
+          "FormularioArchivoStraddleCarrier",
+        );
+      }
+    }
+
     let formDataUpdate = {};
     if (
       existingVisit.formType === VisitFormType.ANALISIS_CSS &&
@@ -112,7 +159,7 @@ export async function PUT(
       formDataUpdate = {
         formularioCSSAnalisis: {
           upsert: buildFormularioUpsert(
-            formularioData as CreateFormularioCSSData
+            formularioData as CreateFormularioCSSData,
           ),
         },
       };
@@ -123,7 +170,7 @@ export async function PUT(
       formDataUpdate = {
         formularioIndustrialAnalisis: {
           upsert: buildFormularioIndustrialUpsert(
-            formularioData as CreateFormularioIndustrialData
+            formularioData as CreateFormularioIndustrialData,
           ),
         },
       };
@@ -134,7 +181,7 @@ export async function PUT(
       formDataUpdate = {
         formularioLogisticaAnalisis: {
           upsert: buildFormularioLogisticaUpsert(
-            formularioData as CreateFormularioLogisticaData
+            formularioData as CreateFormularioLogisticaData,
           ),
         },
       };
@@ -145,7 +192,7 @@ export async function PUT(
       formDataUpdate = {
         formularioStraddleCarrierAnalisis: {
           upsert: buildFormularioStraddleCarrierUpsert(
-            formularioData as CreateFormularioStraddleCarrierData
+            formularioData as CreateFormularioStraddleCarrierData,
           ),
         },
       };
@@ -184,7 +231,7 @@ export async function PUT(
             }
           : undefined,
         customerName,
-        visitData?.locale || "es"
+        visitData?.locale || "es",
       );
 
       // Enviar notificacion de forma asincrona (no bloquea la respuesta)
@@ -194,19 +241,19 @@ export async function PUT(
             console.log(
               `[Email] Notificacion enviada para visita actualizada ${visit.id} (${currentStatus}):`,
               result.data?.id,
-              `Destinatarios: ${result.sentTo.join(", ")}`
+              `Destinatarios: ${result.sentTo.join(", ")}`,
             );
           } else {
             console.error(
               `[Email] Error enviando notificacion para visita ${visit.id}:`,
-              result.error
+              result.error,
             );
           }
         })
         .catch((error) => {
           console.error(
             `[Email] Error inesperado enviando notificacion para visita ${visit.id}:`,
-            error
+            error,
           );
         });
     }
@@ -226,7 +273,7 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);

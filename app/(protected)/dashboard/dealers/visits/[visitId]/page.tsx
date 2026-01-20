@@ -87,12 +87,21 @@ export default function DealerVisitDetailPage({
     }
   }, [visitId, t]);
 
-  const handleSuccess = () => {
+  const handleSuccess = async () => {
     setIsEditing(false);
-    axios.get(`/api/visits/${visitId}`).then((response) => {
-      setVisit(response.data.visit || response.data);
+    try {
+      // Force fresh data fetch with cache-busting
+      const response = await axios.get(`/api/visits/${visitId}`, {
+        headers: { "Cache-Control": "no-cache" },
+        params: { _t: Date.now() }, // Cache buster
+      });
+      const updatedVisit = response.data.visit || response.data;
+      setVisit(updatedVisit);
       toast.success(t("toast.form.changesSuccess"));
-    });
+    } catch (error) {
+      console.error("Error refreshing visit:", error);
+      toast.error(t("errors.fetchingData"));
+    }
   };
 
   const handleBack = () => {
@@ -143,6 +152,10 @@ export default function DealerVisitDetailPage({
   const renderEditForm = () => {
     if (!visit) return null;
 
+    // Use updatedAt as key to force re-mount when visit data changes
+    // This ensures form re-initializes with fresh data after save
+    const formKey = `${visit.id}-${visit.updatedAt}`;
+
     const formProps = {
       onBack: () => setIsEditing(false),
       onSuccess: handleSuccess,
@@ -152,13 +165,15 @@ export default function DealerVisitDetailPage({
 
     switch (visit.formType) {
       case VisitFormType.ANALISIS_CSS:
-        return <FormularioCSSAnalisis {...formProps} />;
+        return <FormularioCSSAnalisis key={formKey} {...formProps} />;
       case VisitFormType.ANALISIS_INDUSTRIAL:
-        return <FormularioIndustrialAnalisis {...formProps} />;
+        return <FormularioIndustrialAnalisis key={formKey} {...formProps} />;
       case VisitFormType.ANALISIS_LOGISTICA:
-        return <FormularioLogisticaAnalisis {...formProps} />;
+        return <FormularioLogisticaAnalisis key={formKey} {...formProps} />;
       case VisitFormType.ANALISIS_STRADDLE_CARRIER:
-        return <FormularioStraddleCarrierAnalisis {...formProps} />;
+        return (
+          <FormularioStraddleCarrierAnalisis key={formKey} {...formProps} />
+        );
       default:
         return null;
     }
@@ -193,7 +208,7 @@ export default function DealerVisitDetailPage({
                   <H1>
                     {FORM_TYPE_LABELS[visit.formType]?.replace(
                       "Análisis ",
-                      ""
+                      "",
                     ) || t("visits.detailTitle")}
                   </H1>
                   <Badge
@@ -205,7 +220,7 @@ export default function DealerVisitDetailPage({
                         VISIT_STATUS_ICONS[visit.status as VisitStatus],
                         {
                           className: "size-3.5",
-                        }
+                        },
                       )}
                     </span>
                     {t(
@@ -213,7 +228,7 @@ export default function DealerVisitDetailPage({
                         visit.status === VisitStatus.BORRADOR
                           ? "draft"
                           : "completed"
-                      }`
+                      }`,
                     )}
                   </Badge>
                 </div>

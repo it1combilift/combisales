@@ -13,7 +13,15 @@ import { EmptyCard } from "@/components/empty-card";
 import { Separator } from "@/components/ui/separator";
 import { CopyButton } from "@/components/copy-button";
 import { H1, Paragraph } from "@/components/fonts/fonts";
-import { ArrowLeft, Calendar, FileText, User, Tag, PencilLine } from "lucide-react";
+
+import {
+  ArrowLeft,
+  Calendar,
+  FileText,
+  User,
+  Tag,
+  PencilLine,
+} from "lucide-react";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -77,17 +85,30 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
     fetchVisitDetail();
   }, [params]);
 
-  const handleSuccess = () => {
+  const handleSuccess = async () => {
     setIsEditing(false);
-    axios.get(`/api/visits/${visitId}`).then((response) => {
-      setVisit(response.data.visit || response.data);
+    try {
+      // Force fresh data fetch with cache-busting
+      const response = await axios.get(`/api/visits/${visitId}`, {
+        headers: { "Cache-Control": "no-cache" },
+        params: { _t: Date.now() }, // Cache buster
+      });
+      const updatedVisit = response.data.visit || response.data;
+      setVisit(updatedVisit);
       toast.success(t("toast.form.changesSuccess"));
-    });
+    } catch (error) {
+      console.error("Error refreshing visit:", error);
+      toast.error(t("errors.fetchingData"));
+    }
   };
 
   // Render the appropriate form for editing inside Dialog
   const renderEditForm = () => {
     if (!visit) return null;
+
+    // Use updatedAt as key to force re-mount when visit data changes
+    // This ensures form re-initializes with fresh data after save
+    const formKey = `${visit.id}-${visit.updatedAt}`;
 
     const formProps = {
       onBack: () => setIsEditing(false),
@@ -97,13 +118,15 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
 
     switch (visit.formType) {
       case VisitFormType.ANALISIS_CSS:
-        return <FormularioCSSAnalisis {...formProps} />;
+        return <FormularioCSSAnalisis key={formKey} {...formProps} />;
       case VisitFormType.ANALISIS_INDUSTRIAL:
-        return <FormularioIndustrialAnalisis {...formProps} />;
+        return <FormularioIndustrialAnalisis key={formKey} {...formProps} />;
       case VisitFormType.ANALISIS_LOGISTICA:
-        return <FormularioLogisticaAnalisis {...formProps} />;
+        return <FormularioLogisticaAnalisis key={formKey} {...formProps} />;
       case VisitFormType.ANALISIS_STRADDLE_CARRIER:
-        return <FormularioStraddleCarrierAnalisis {...formProps} />;
+        return (
+          <FormularioStraddleCarrierAnalisis key={formKey} {...formProps} />
+        );
       default:
         return null;
     }
@@ -193,8 +216,8 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                     {visit.status === VisitStatus.BORRADOR
                       ? t("visits.statuses.draft")
                       : visit.status === VisitStatus.COMPLETADA
-                      ? t("visits.statuses.completed")
-                      : ""}
+                        ? t("visits.statuses.completed")
+                        : ""}
                   </Badge>
                 )}
               </div>
@@ -263,13 +286,13 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                       {visit.formType === VisitFormType.ANALISIS_CSS
                         ? t("visits.formTypes.css")
                         : visit.formType === VisitFormType.ANALISIS_INDUSTRIAL
-                        ? t("visits.formTypes.industrial")
-                        : visit.formType === VisitFormType.ANALISIS_LOGISTICA
-                        ? t("visits.formTypes.logistica")
-                        : visit.formType ===
-                          VisitFormType.ANALISIS_STRADDLE_CARRIER
-                        ? t("visits.formTypes.straddleCarrier")
-                        : FORM_TYPE_LABELS[visit.formType]}
+                          ? t("visits.formTypes.industrial")
+                          : visit.formType === VisitFormType.ANALISIS_LOGISTICA
+                            ? t("visits.formTypes.logistica")
+                            : visit.formType ===
+                                VisitFormType.ANALISIS_STRADDLE_CARRIER
+                              ? t("visits.formTypes.straddleCarrier")
+                              : FORM_TYPE_LABELS[visit.formType]}
                     </Badge>
                   </div>
 

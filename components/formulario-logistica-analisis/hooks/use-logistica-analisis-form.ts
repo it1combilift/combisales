@@ -37,7 +37,7 @@ export function useLogisticaAnalisisForm({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set()
+    isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set(),
   );
 
   const VisitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
@@ -70,7 +70,7 @@ export function useLogisticaAnalisisForm({
             }
             const totalPct = value.reduce(
               (sum: number, c: any) => sum + (c.porcentaje || 0),
-              0
+              0,
             );
             if (Math.abs(totalPct - 100) > 0.01) {
               return false;
@@ -140,7 +140,7 @@ export function useLogisticaAnalisisForm({
 
       return true;
     },
-    []
+    [],
   );
 
   // Function to recalculate all completed steps
@@ -162,7 +162,7 @@ export function useLogisticaAnalisisForm({
         return prev;
       });
     },
-    [validateStepFields]
+    [validateStepFields],
   );
 
   // ==================== REACTIVE STEP VALIDATION ====================
@@ -238,7 +238,7 @@ export function useLogisticaAnalisisForm({
 
       return isValid;
     },
-    [form]
+    [form],
   );
 
   // ==================== NAVIGATION HELPERS ====================
@@ -255,7 +255,7 @@ export function useLogisticaAnalisisForm({
       }
       return nextStep;
     },
-    [shouldSkipStep3]
+    [shouldSkipStep3],
   );
 
   const getPrevStep = useCallback(
@@ -266,7 +266,7 @@ export function useLogisticaAnalisisForm({
       }
       return prevStep;
     },
-    [shouldSkipStep3]
+    [shouldSkipStep3],
   );
 
   // ==================== NAVIGATION ====================
@@ -309,8 +309,8 @@ export function useLogisticaAnalisisForm({
         const equiposElectricosData = includeEquiposElectricos
           ? formData.equiposElectricos
           : formData.alimentacionDeseada === TipoAlimentacion.ELECTRICO
-          ? { noAplica: true }
-          : undefined;
+            ? { noAplica: true }
+            : undefined;
 
         const payload = {
           visitData: {
@@ -348,7 +348,7 @@ export function useLogisticaAnalisisForm({
         throw error;
       }
     },
-    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess, t]
+    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess, t],
   );
 
   // ==================== FORM SUBMIT ====================
@@ -361,7 +361,22 @@ export function useLogisticaAnalisisForm({
         setIsSubmitting(false);
       }
     },
-    [saveVisit]
+    [saveVisit],
+  );
+
+  const onSubmitError = useCallback(
+    (errors: any) => {
+      console.error("Form validation errors:", errors);
+      const errorMessages = Object.values(errors)
+        .map((error: any) => error?.message)
+        .filter(Boolean);
+      if (errorMessages.length > 0) {
+        toast.error(errorMessages[0] as string);
+      } else {
+        toast.error(t("toast.form.validationError"));
+      }
+    },
+    [t],
   );
 
   // ==================== SAVE DRAFT ====================
@@ -410,6 +425,7 @@ export function useLogisticaAnalisisForm({
     handlePrevStep,
     goToStep,
     onSubmit,
+    onSubmitError,
     onSaveDraft,
     onSaveChanges,
 

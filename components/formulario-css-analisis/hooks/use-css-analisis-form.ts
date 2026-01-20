@@ -37,7 +37,7 @@ export function useCSSAnalisisForm({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4]) : new Set()
+    isEditing ? new Set([1, 2, 3, 4]) : new Set(),
   );
 
   const VisitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
@@ -45,7 +45,7 @@ export function useCSSAnalisisForm({
   // ==================== COMPUTED VALUES ====================
   const progress = useMemo(
     () => Math.round((currentStep / FORM_STEPS.length) * 100),
-    [currentStep]
+    [currentStep],
   );
 
   // Watch required fields for real-time validation
@@ -57,7 +57,7 @@ export function useCSSAnalisisForm({
   const allStepsComplete = useMemo((): boolean => {
     // Step 1: descripcionProducto is required (min 10 chars)
     const step1Valid = Boolean(
-      descripcionProducto && descripcionProducto.trim().length >= 10
+      descripcionProducto && descripcionProducto.trim().length >= 10,
     );
 
     // Step 2: contenedorTipos is required (min 1 item)
@@ -65,7 +65,7 @@ export function useCSSAnalisisForm({
 
     // Step 3: contenedorMedidas is required (min 1 item)
     const step3Valid = Boolean(
-      contenedorMedidas && contenedorMedidas.length >= 1
+      contenedorMedidas && contenedorMedidas.length >= 1,
     );
 
     // Step 4: archivos is optional, no validation needed
@@ -119,7 +119,7 @@ export function useCSSAnalisisForm({
       }
       return isValid;
     },
-    [form]
+    [form],
   );
 
   // ==================== NAVIGATION ====================
@@ -141,14 +141,14 @@ export function useCSSAnalisisForm({
       await validateStep(currentStep);
       setCurrentStep(stepId);
     },
-    [currentStep, validateStep]
+    [currentStep, validateStep],
   );
 
   // ==================== SAVE LOGIC ====================
   const saveVisit = async (
     data: FormularioCSSSchema,
     status: VisitStatus,
-    saveType: SaveType = "submit"
+    saveType: SaveType = "submit",
   ) => {
     if (saveType === "submit") {
       setIsSubmitting(true);
@@ -195,7 +195,7 @@ export function useCSSAnalisisForm({
           toast.success(
             saveType === "submit"
               ? t("toast.form.visitCreatedSuccess")
-              : t("toast.form.draftSuccess")
+              : t("toast.form.draftSuccess"),
           );
           onSuccess();
         }
@@ -216,6 +216,18 @@ export function useCSSAnalisisForm({
 
   const onSubmit = async (data: FormularioCSSSchema) => {
     await saveVisit(data, VisitStatus.COMPLETADA, "submit");
+  };
+
+  const onSubmitError = (errors: any) => {
+    console.error("Form validation errors:", errors);
+    const errorMessages = Object.values(errors)
+      .map((error: any) => error?.message)
+      .filter(Boolean);
+    if (errorMessages.length > 0) {
+      toast.error(errorMessages[0] as string);
+    } else {
+      toast.error(t("toast.form.validationError"));
+    }
   };
 
   const onSaveDraft = async () => {
@@ -249,6 +261,7 @@ export function useCSSAnalisisForm({
     handlePrevStep,
     goToStep,
     onSubmit,
+    onSubmitError,
     onSaveDraft,
     onSaveChanges,
 

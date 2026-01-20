@@ -36,7 +36,7 @@ export function useStraddleCarrierAnalisisForm({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5]) : new Set()
+    isEditing ? new Set([1, 2, 3, 4, 5]) : new Set(),
   );
 
   const visitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
@@ -78,7 +78,7 @@ export function useStraddleCarrierAnalisisForm({
           case "contenedoresTamanios":
             if (manejaContenedores && value) {
               const hasSelected = Object.values(value).some(
-                (size: any) => size.selected
+                (size: any) => size.selected,
               );
               if (!hasSelected) {
                 return false;
@@ -105,7 +105,7 @@ export function useStraddleCarrierAnalisisForm({
 
       return true;
     },
-    []
+    [],
   );
 
   // Function to recalculate all completed steps
@@ -127,7 +127,7 @@ export function useStraddleCarrierAnalisisForm({
         return prev;
       });
     },
-    [validateStepFields]
+    [validateStepFields],
   );
 
   useEffect(() => {
@@ -213,7 +213,7 @@ export function useStraddleCarrierAnalisisForm({
 
       return isValid;
     },
-    [form]
+    [form],
   );
 
   const getNextStep = useCallback(
@@ -227,7 +227,7 @@ export function useStraddleCarrierAnalisisForm({
       }
       return nextStep;
     },
-    [shouldSkipStep2, shouldSkipStep3]
+    [shouldSkipStep2, shouldSkipStep3],
   );
 
   const getPrevStep = useCallback(
@@ -241,7 +241,7 @@ export function useStraddleCarrierAnalisisForm({
       }
       return prevStep;
     },
-    [shouldSkipStep2, shouldSkipStep3]
+    [shouldSkipStep2, shouldSkipStep3],
   );
 
   const handleNextStep = useCallback(async () => {
@@ -279,8 +279,8 @@ export function useStraddleCarrierAnalisisForm({
           saveType === "submit"
             ? VisitStatus.COMPLETADA
             : saveType === "draft"
-            ? VisitStatus.BORRADOR
-            : existingVisit?.status || VisitStatus.BORRADOR;
+              ? VisitStatus.BORRADOR
+              : existingVisit?.status || VisitStatus.BORRADOR;
 
         const payload = {
           visitData: {
@@ -317,7 +317,7 @@ export function useStraddleCarrierAnalisisForm({
         throw error;
       }
     },
-    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess, t]
+    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess, t],
   );
 
   const onSubmit = useCallback(
@@ -329,7 +329,22 @@ export function useStraddleCarrierAnalisisForm({
         setIsSubmitting(false);
       }
     },
-    [saveVisit]
+    [saveVisit],
+  );
+
+  const onSubmitError = useCallback(
+    (errors: any) => {
+      console.error("Form validation errors:", errors);
+      const errorMessages = Object.values(errors)
+        .map((error: any) => error?.message)
+        .filter(Boolean);
+      if (errorMessages.length > 0) {
+        toast.error(errorMessages[0] as string);
+      } else {
+        toast.error(t("toast.form.validationError"));
+      }
+    },
+    [t],
   );
 
   const onSaveDraft = useCallback(async () => {
@@ -374,6 +389,7 @@ export function useStraddleCarrierAnalisisForm({
     handlePrevStep,
     goToStep,
     onSubmit,
+    onSubmitError,
     onSaveDraft,
     onSaveChanges,
 

@@ -14,9 +14,9 @@ export const archivoSubidoSchema = z.object({
   cloudinaryId: z.string(),
   cloudinaryUrl: z.string().url(),
   cloudinaryType: z.string(),
-  ancho: z.number().optional(),
-  alto: z.number().optional(),
-  duracion: z.number().optional(),
+  ancho: z.number().nullish(), // Can be null or undefined
+  alto: z.number().nullish(), // Can be null or undefined
+  duracion: z.number().nullish(), // Can be null or undefined
   formato: z.string(),
 });
 
@@ -38,7 +38,7 @@ export const contenedoresTamaniosSchema = z.object({
 
 // ==================== MAIN FORM SCHEMA ====================
 export const getFormularioStraddleCarrierSchema = (
-  t: (key: string) => string
+  t: (key: string) => string,
 ) =>
   z
     .object({

@@ -37,7 +37,7 @@ export function useIndustrialAnalisisForm({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set()
+    isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set(),
   );
 
   const VisitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
@@ -70,7 +70,7 @@ export function useIndustrialAnalisisForm({
             }
             const totalPct = value.reduce(
               (sum: number, c: any) => sum + (c.porcentaje || 0),
-              0
+              0,
             );
             if (Math.abs(totalPct - 100) > 0.01) {
               return false;
@@ -128,7 +128,7 @@ export function useIndustrialAnalisisForm({
 
       return true;
     },
-    []
+    [],
   );
 
   // Function to recalculate all completed steps
@@ -150,7 +150,7 @@ export function useIndustrialAnalisisForm({
         return prev;
       });
     },
-    [validateStepFields]
+    [validateStepFields],
   );
 
   // ==================== REACTIVE STEP VALIDATION ====================
@@ -234,7 +234,7 @@ export function useIndustrialAnalisisForm({
 
       return isValid;
     },
-    [form]
+    [form],
   );
 
   // ==================== NAVIGATION HELPERS ====================
@@ -258,7 +258,7 @@ export function useIndustrialAnalisisForm({
       }
       return nextStep;
     },
-    [shouldSkipStep3]
+    [shouldSkipStep3],
   );
 
   /**
@@ -272,7 +272,7 @@ export function useIndustrialAnalisisForm({
       }
       return prevStep;
     },
-    [shouldSkipStep3]
+    [shouldSkipStep3],
   );
 
   // ==================== NAVIGATION ====================
@@ -312,7 +312,7 @@ export function useIndustrialAnalisisForm({
 
       setCurrentStep(step);
     },
-    [currentStep, validateStep]
+    [currentStep, validateStep],
   );
 
   // ==================== SAVE VISIT ====================
@@ -330,8 +330,8 @@ export function useIndustrialAnalisisForm({
         const equiposElectricosData = includeEquiposElectricos
           ? formData.equiposElectricos
           : formData.alimentacionDeseada === TipoAlimentacion.ELECTRICO
-          ? { noAplica: true } // Mantener el flag de noAplica
-          : undefined;
+            ? { noAplica: true } // Mantener el flag de noAplica
+            : undefined;
 
         const payload = {
           visitData: {
@@ -369,7 +369,7 @@ export function useIndustrialAnalisisForm({
         throw error;
       }
     },
-    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess, t]
+    [form, customerId, zohoTaskId, isEditing, existingVisit, onSuccess, t],
   );
 
   // ==================== FORM SUBMIT ====================
@@ -382,7 +382,22 @@ export function useIndustrialAnalisisForm({
         setIsSubmitting(false);
       }
     },
-    [saveVisit]
+    [saveVisit],
+  );
+
+  const onSubmitError = useCallback(
+    (errors: any) => {
+      console.error("Form validation errors:", errors);
+      const errorMessages = Object.values(errors)
+        .map((error: any) => error?.message)
+        .filter(Boolean);
+      if (errorMessages.length > 0) {
+        toast.error(errorMessages[0] as string);
+      } else {
+        toast.error(t("toast.form.validationError"));
+      }
+    },
+    [t],
   );
 
   // ==================== SAVE DRAFT ====================
@@ -431,6 +446,7 @@ export function useIndustrialAnalisisForm({
     handlePrevStep,
     goToStep,
     onSubmit,
+    onSubmitError,
     onSaveDraft,
     onSaveChanges,
 
