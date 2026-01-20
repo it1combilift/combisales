@@ -23,8 +23,8 @@
       "actions": "Actions"
     },
     "dialog": {
-      "selectSeller": "Select Seller",
-      "selectSellerDescription": "Choose the seller this visit will be assigned to",
+      "selectSeller": "Select P. Manager",
+      "selectSellerDescription": "Choose the P. Manager this visit will be assigned to",
       "selectFormType": "Select Form Type",
       "selectFormTypeDescription": "Choose the type of analysis form",
       "noSellersAssigned": "You don't have any assigned P. Managers. Contact your administrator.",
@@ -358,7 +358,7 @@
     "visitDate": "Visit date",
     "visitType": "Visit type",
     "status": "Status",
-    "seller": "Seller",
+    "seller": "P. Manager",
     "customer": "Customer",
     "formType": "Form type",
     "noVisitsFound": "No visits found",
@@ -921,7 +921,7 @@
         "personal": "Personal",
         "security": "Security",
         "config": "Config",
-        "sellers": "Sellers"
+        "sellers": "P. Managers"
       },
       "personal": "Personal",
       "security": "Security",

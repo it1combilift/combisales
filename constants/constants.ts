@@ -52,8 +52,13 @@ export const EMAIL_CONFIG = {
     "anyeloisaacbenavide@gmail.com",
     // "anyelobg.dev@gmail.com",
   ],
+  // Blue logo
   companyLogo:
-    "https://cdn-ilecokb.nitrocdn.com/hnMkqPskCLTYmYthFPcpNZClCZrSTwWV/assets/images/optimized/rev-f20b5bb/combilift.com/wp-content/uploads/2024/08/cropped-cropped-cropped-Combilift-logo-lg-1.jpg",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvaouoocfP1dTdTRxHMh_ZTwF5VozVThGujg&s",
+
+  // Gray logo
+  // companyLogo:
+  //   "https://www.tesmatic.com/wp-content/uploads/2021/08/combilift.png",
 } as const;
 
 export const NOTIFICATION_CONFIG = {

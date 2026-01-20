@@ -37,9 +37,9 @@ function t(key: string, locale: string = "es"): string {
 // ==================== COLOR PALETTE ====================
 const COLORS = {
   // Brand
-  brand: "#1a5632",
-  brandLight: "#22c55e",
-  brandDark: "#0d3320",
+  brand: "#60A82E",
+  brandLight: "#7BC043",
+  brandDark: "#4A8524",
 
   // Neutral
   white: "#ffffff",
@@ -212,7 +212,7 @@ function getFormTypeName(formType: string, locale: string = "es"): string {
 function buildSectionHeader(title: string): string {
   return `
     <tr>
-      <td colspan="2" style="padding: 12px 16px; background-color: #1a5632; background: linear-gradient(135deg, #1a5632 0%, #0d3320 100%); border-radius: 6px 6px 0 0;">
+      <td colspan="2" style="padding: 12px 16px; background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); border-radius: 6px 6px 0 0;">
         <span style="font-size: 14px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
           ${title}
         </span>
@@ -247,7 +247,7 @@ function buildRow(
   if (!value || value === "-" || value.trim() === "") return "";
 
   const labelColor = "#64748b";
-  const valueColor = options?.highlight ? "#1a5632" : "#1e293b";
+  const valueColor = options?.highlight ? "#60A82E" : "#1e293b";
   const bgColor = "#ffffff";
   const borderColor = "#e2e8f0";
 
@@ -285,7 +285,7 @@ function buildNotesBlock(label: string, content: string): string {
     <tr>
       <td colspan="2" style="padding: 12px 16px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
         <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">${label}</div>
-        <div style="font-size: 14px; color: #1e293b; line-height: 1.6; white-space: pre-wrap; background-color: #ffffff; padding: 12px; border-radius: 4px; border-left: 3px solid #1a5632;">${content}</div>
+        <div style="font-size: 14px; color: #1e293b; line-height: 1.6; white-space: pre-wrap; background-color: #ffffff; padding: 12px; border-radius: 4px; border-left: 3px solid #60A82E;">${content}</div>
       </td>
     </tr>
   `;
@@ -349,7 +349,7 @@ function buildCustomerInfoSection(
   if (data.email) {
     html += buildRow(
       t("email.customer.email", locale),
-      `<a href="mailto:${data.email}" style="color: #1a5632; text-decoration: none;">${data.email}</a>`,
+      `<a href="mailto:${data.email}" style="color: #60A82E; text-decoration: none;">${data.email}</a>`,
     );
   }
 
@@ -378,7 +378,7 @@ function buildCustomerInfoSection(
   if (data.website) {
     html += buildRow(
       t("email.customer.website", locale),
-      `<a href="${data.website.startsWith("http") ? data.website : `https://${data.website}`}" target="_blank" style="color: #1a5632; text-decoration: none;">${data.website}</a>`,
+      `<a href="${data.website.startsWith("http") ? data.website : `https://${data.website}`}" target="_blank" style="color: #60A82E; text-decoration: none;">${data.website}</a>`,
     );
   }
 
@@ -495,7 +495,7 @@ function buildDimensionsTable(
       <td style="${cellStyle} color: #475569; background-color: ${
         i % 2 === 0 ? "#ffffff" : "#f8fafc"
       };">${formatNumber(c.peso, undefined, locale)}</td>
-      <td style="${cellStyle} color: #1a5632; font-weight: 600; background-color: ${
+      <td style="${cellStyle} color: #60A82E; font-weight: 600; background-color: ${
         i % 2 === 0 ? "#ffffff" : "#f8fafc"
       };">${formatNumber(c.porcentaje, undefined, locale)}%</td>
     </tr>
@@ -1156,7 +1156,7 @@ function buildFilesSection(
           <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; background-color: ${bgColor};">
             <a href="${
               archivo.cloudinaryUrl
-            }" target="_blank" rel="noopener" style="color: #1a5632; text-decoration: none; font-size: 13px; font-weight: 500;">
+            }" target="_blank" rel="noopener" style="color: #60A82E; text-decoration: none; font-size: 13px; font-weight: 500;">
               ${archivo.nombre}
             </a>
           </td>
@@ -1178,7 +1178,7 @@ function buildFilesSection(
   return `
     ${startSection()}
     <tr>
-      <td colspan="2" style="padding: 12px 16px; background-color: #1a5632; background: linear-gradient(135deg, #1a5632 0%, #0d3320 100%); border-radius: 6px 6px 0 0;">
+      <td colspan="2" style="padding: 12px 16px; background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); border-radius: 6px 6px 0 0;">
         <span style="font-size: 14px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
           ${t("email.files.header", locale)} (${archivos.length})
         </span>
@@ -1232,7 +1232,7 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
     ? `
       ${startSection()}
       <tr>
-        <td colspan="2" style="padding: 12px 16px; background-color: #1a5632; background: linear-gradient(135deg, #1a5632 0%, #0d3320 100%); border-radius: 6px 6px 0 0;">
+        <td colspan="2" style="padding: 12px 16px; background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); border-radius: 6px 6px 0 0;">
           <span style="font-size: 14px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
             ${t("email.sections.productDescription", locale)}
           </span>
@@ -1308,7 +1308,7 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
           
           <!-- Header -->
           <tr>
-            <td style="background-color: #1a5632; background: linear-gradient(135deg, #1a5632 0%, #0d3320 100%); padding: 20px; text-align: center;">
+            <td style="background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); padding: 20px; text-align: center;">
               <!-- Logo -->
               <div style="display: inline-block; background-color: #ffffff; padding: 10px 18px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 <img src="${
