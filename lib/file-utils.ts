@@ -18,7 +18,7 @@ export { ALL_ALLOWED_TYPES };
  * Determine file type category from MIME type
  */
 export function getFileTypeCategory(
-  mimeType: string
+  mimeType: string,
 ): "image" | "video" | "document" {
   if (ALLOWED_IMAGE_TYPES.includes(mimeType)) return "image";
   if (ALLOWED_VIDEO_TYPES.includes(mimeType)) return "video";
@@ -27,12 +27,19 @@ export function getFileTypeCategory(
 
 /**
  * Determine file type for Cloudinary resource type
+ * NOTE: According to Cloudinary official documentation:
+ * - PDFs are uploaded as 'image' asset type (this enables viewing in browser)
+ * - Other documents (DOCX, XLSX, TXT, etc.) use 'raw' type
+ * - For raw files, the extension MUST be included in the public_id
  */
 export function getCloudinaryResourceType(
-  mimeType: string
+  mimeType: string,
 ): "image" | "video" | "raw" {
   if (ALLOWED_IMAGE_TYPES.includes(mimeType)) return "image";
   if (ALLOWED_VIDEO_TYPES.includes(mimeType)) return "video";
+  // PDFs are uploaded as 'image' type per Cloudinary docs - this enables browser viewing
+  if (mimeType === "application/pdf") return "image";
+  // All other documents (DOCX, XLSX, TXT, etc.) use 'raw' type with extension in public_id
   return "raw";
 }
 

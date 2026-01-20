@@ -38,7 +38,6 @@ import {
   Paperclip,
   Eye,
   Maximize2,
-  X,
 } from "lucide-react";
 
 export { TipoArchivo };
@@ -62,7 +61,7 @@ interface AttachmentsGalleryProps {
 }
 
 // ==================== FILE TYPE CONFIGURATION ====================
-const FILE_TYPE_CONFIG = {
+export const FILE_TYPE_CONFIG = {
   // Images
   jpg: {
     icon: ImageIcon,

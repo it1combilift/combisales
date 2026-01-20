@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
         if (!validateFileSize(file.type, file.size)) {
           const maxSize = getMaxSizeForType(file.type);
           errors.push(
-            `${file.name}: Excede el tamaño máximo (${formatFileSize(maxSize)})`
+            `${file.name}: Excede el tamaño máximo (${formatFileSize(maxSize)})`,
           );
           continue;
         }
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     return createSuccessResponse(
       response,
-      uploadedFiles.length > 0 ? 200 : 400
+      uploadedFiles.length > 0 ? 200 : 400,
     );
   } catch (error) {
     return serverErrorResponse("UPLOAD_FILE", error);

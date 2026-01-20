@@ -1,30 +1,16 @@
-import Image from "next/image";
+"use client";
+
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { TipoArchivo } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Progress } from "@/components/ui/progress";
-import { FileUploadProps, ArchivoSubido } from "../types";
+import { FileUploadProps } from "../types";
 import { useI18n } from "@/lib/i18n/context";
+import { MAX_FILES, ALL_ALLOWED_TYPES } from "@/constants/constants";
+import { UploadedFilesList } from "@/components/ui/uploaded-files-list";
 
-import {
-  Upload,
-  Camera,
-  Video,
-  FolderOpen,
-  Check,
-  EyeIcon,
-  Trash2,
-  Paperclip,
-} from "lucide-react";
-
-import {
-  getFileIcon,
-  formatFileSize,
-  MAX_FILES,
-  ALL_ALLOWED_TYPES,
-} from "../utils/file-utils";
+import { Upload, Camera, Video, FolderOpen, Paperclip } from "lucide-react";
 
 // ==================== SECTION HEADER ====================
 function SectionHeader({
@@ -74,7 +60,7 @@ export function Step7Content({
   const archivos = form.watch("archivos") || [];
 
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col h-full space-y-4">
       {/* Section Header */}
       <SectionHeader
         icon={Paperclip}
@@ -125,7 +111,7 @@ export function Step7Content({
             className={cn(
               "flex flex-col items-center justify-center gap-1.5 h-auto py-3 rounded-xl border-2",
               "transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/5",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
+              "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
             onClick={() => cameraPhotoRef.current?.click()}
             disabled={isUploading || archivos.length >= MAX_FILES}
@@ -145,7 +131,7 @@ export function Step7Content({
             className={cn(
               "flex flex-col items-center justify-center gap-1.5 h-auto py-3 rounded-xl border-2",
               "transition-all duration-200 hover:border-violet-500/50 hover:bg-violet-500/5",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
+              "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
             onClick={() => cameraVideoRef.current?.click()}
             disabled={isUploading || archivos.length >= MAX_FILES}
@@ -165,7 +151,7 @@ export function Step7Content({
             className={cn(
               "flex flex-col items-center justify-center gap-1.5 h-auto py-3 rounded-xl border-2",
               "transition-all duration-200 hover:border-amber-500/50 hover:bg-amber-500/5",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
+              "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading || archivos.length >= MAX_FILES}
@@ -219,7 +205,7 @@ export function Step7Content({
             className={cn(
               "flex items-center gap-2 h-9 px-3 rounded-lg border",
               "transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/5",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
+              "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
             onClick={() => cameraPhotoRef.current?.click()}
             disabled={isUploading || archivos.length >= MAX_FILES}
@@ -237,7 +223,7 @@ export function Step7Content({
             className={cn(
               "flex items-center gap-2 h-9 px-3 rounded-lg border",
               "transition-all duration-200 hover:border-violet-500/50 hover:bg-violet-500/5",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
+              "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
             onClick={() => cameraVideoRef.current?.click()}
             disabled={isUploading || archivos.length >= MAX_FILES}
@@ -255,7 +241,7 @@ export function Step7Content({
             className={cn(
               "flex items-center gap-2 h-9 px-3 rounded-lg border",
               "transition-all duration-200 hover:border-amber-500/50 hover:bg-amber-500/5",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
+              "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading || archivos.length >= MAX_FILES}
@@ -277,7 +263,7 @@ export function Step7Content({
               : "border-border hover:border-primary/40 hover:bg-muted/20",
             isUploading && "pointer-events-none opacity-70",
             archivos.length >= MAX_FILES &&
-              "opacity-50 pointer-events-none cursor-not-allowed"
+              "opacity-50 pointer-events-none cursor-not-allowed",
           )}
           onDragOver={(e) => {
             e.preventDefault();
@@ -321,13 +307,13 @@ export function Step7Content({
                   <div
                     className={cn(
                       "size-12 rounded-xl flex items-center justify-center transition-all duration-300",
-                      isDragging ? "bg-primary/15 scale-110" : "bg-muted/50"
+                      isDragging ? "bg-primary/15 scale-110" : "bg-muted/50",
                     )}
                   >
                     <Upload
                       className={cn(
                         "size-6 transition-all duration-300",
-                        isDragging ? "text-primary" : "text-muted-foreground"
+                        isDragging ? "text-primary" : "text-muted-foreground",
                       )}
                     />
                   </div>
@@ -364,131 +350,14 @@ export function Step7Content({
         </div>
       </div>
 
-      {/* ===== UPLOADED FILES LIST (shared) ===== */}
-      {archivos.length > 0 && (
-        <div className="space-y-2">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-foreground flex items-center gap-1.5">
-              <Check className="size-3.5 text-green-500" />
-              {t("forms.files.uploadedFiles")}
-            </p>
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              {archivos.length}/{MAX_FILES}
-            </span>
-          </div>
-
-          {/* Files grid */}
-          <div className="space-y-1.5">
-            {archivos.map((archivo: ArchivoSubido) => {
-              const IconComponent = getFileIcon(archivo.tipoArchivo);
-              const isDeleting = deletingFileId === archivo.cloudinaryId;
-
-              return (
-                <div
-                  key={archivo.cloudinaryId}
-                  className={cn(
-                    "flex items-center gap-2 sm:gap-3 p-2 rounded-lg border bg-card",
-                    "transition-all duration-200 group",
-                    "hover:border-primary/20 hover:bg-accent/30",
-                    isDeleting && "opacity-50"
-                  )}
-                >
-                  {/* Thumbnail */}
-                  {archivo.tipoArchivo === TipoArchivo.IMAGEN ? (
-                    <div
-                      className="size-10 rounded-lg overflow-hidden bg-muted shrink-0 cursor-pointer ring-1 ring-border hover:ring-primary/50 transition-all"
-                      onClick={() =>
-                        window.open(archivo.cloudinaryUrl, "_blank")
-                      }
-                    >
-                      <Image
-                        src={archivo.cloudinaryUrl}
-                        alt={archivo.nombre}
-                        className="w-full h-full object-cover"
-                        width={40}
-                        height={40}
-                        loading="lazy"
-                        unoptimized
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      className={cn(
-                        "size-10 rounded-lg flex items-center justify-center shrink-0",
-                        archivo.tipoArchivo === TipoArchivo.VIDEO
-                          ? "bg-violet-500/10 border border-violet-500/20"
-                          : "bg-amber-500/10 border border-amber-500/20"
-                      )}
-                    >
-                      <IconComponent
-                        className={cn(
-                          "size-5",
-                          archivo.tipoArchivo === TipoArchivo.VIDEO
-                            ? "text-violet-600"
-                            : "text-amber-600"
-                        )}
-                      />
-                    </div>
-                  )}
-
-                  {/* File info */}
-                  <div className="flex-1 max-w-[150px] md:max-w-sm">
-                    <p
-                      className="text-xs font-medium truncate"
-                      title={archivo.nombre}
-                    >
-                      {archivo.nombre}
-                    </p>
-                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                      <span>{formatFileSize(archivo.tamanio)}</span>
-                      <span className="text-border">•</span>
-                      <span className="uppercase">{archivo.formato}</span>
-                      {archivo.ancho && archivo.alto && (
-                        <span className="hidden sm:inline">
-                          • {archivo.ancho}×{archivo.alto}px
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex-1 flex justify-end items-center shrink-0">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-md opacity-70 hover:opacity-100 hover:bg-accent"
-                      title={t("forms.files.viewFile")}
-                      disabled={isUploading || isDeleting}
-                      onClick={() =>
-                        window.open(archivo.cloudinaryUrl, "_blank")
-                      }
-                    >
-                      <EyeIcon className="size-3.5" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-md opacity-70 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-                      title={t("forms.files.deleteFile")}
-                      onClick={() => onRemoveFile(archivo)}
-                      disabled={isUploading || deletingFileId !== null}
-                    >
-                      {isDeleting ? (
-                        <Spinner variant="ellipsis" size={12} />
-                      ) : (
-                        <Trash2 className="size-3.5" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {/* ===== UPLOADED FILES LIST - Uses unified component ===== */}
+      <UploadedFilesList
+        archivos={archivos}
+        deletingFileId={deletingFileId}
+        isUploading={isUploading}
+        onRemoveFile={onRemoveFile}
+        maxFiles={MAX_FILES}
+      />
 
       {/* ===== EMPTY STATE ===== */}
       {archivos.length === 0 && !isUploading && (

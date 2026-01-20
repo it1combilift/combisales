@@ -18,7 +18,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
   // ==================== STATE ====================
   const [uploadingFiles, setUploadingFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {}
+    {},
   );
   const [isUploading, setIsUploading] = useState(false);
   const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
@@ -43,13 +43,13 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
 
       // Validate files
       const invalidFiles = files.filter(
-        (file) => !isAllowedFileType(file.type)
+        (file) => !isAllowedFileType(file.type),
       );
       if (invalidFiles.length > 0) {
         toast.error(
           t("toast.file.filesTypeNotAllowed", {
             files: invalidFiles.map((f) => f.name).join(", "),
-          })
+          }),
         );
         return;
       }
@@ -60,14 +60,17 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
       try {
         const formData = new FormData();
         files.forEach((file) => formData.append("files", file));
-        formData.append("folder", `combisales/visitas/${customerId}`);
+        const uploadFolder = customerId
+          ? `combisales/visitas/${customerId}`
+          : "combisales/visitas/general";
+        formData.append("folder", uploadFolder);
 
         const response = await axios.post("/api/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
               const percentComplete = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
+                (progressEvent.loaded * 100) / progressEvent.total,
               );
               files.forEach((file) => {
                 setUploadProgress((prev) => ({
@@ -93,7 +96,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
               alto: file.alto,
               duracion: file.duracion,
               formato: file.formato,
-            })
+            }),
           );
 
           form.setValue("archivos", [...currentFiles, ...uploadedFiles], {
@@ -101,7 +104,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
           });
 
           toast.success(
-            t("toast.file.uploadSuccess", { count: uploadedFiles.length })
+            t("toast.file.uploadSuccess", { count: uploadedFiles.length }),
           );
         }
       } catch (error) {
@@ -114,7 +117,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
         if (event.target) event.target.value = "";
       }
     },
-    [form, customerId, t]
+    [form, customerId, t],
   );
 
   // ==================== FILE REMOVAL ====================
@@ -125,14 +128,15 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
       try {
         const currentFiles = form.getValues("archivos") || [];
 
-        await axios.delete(
-          `/api/upload/${encodeURIComponent(archivo.cloudinaryId)}?type=${
-            archivo.cloudinaryType
-          }`
-        );
+        // Use query params to properly handle cloudinaryId with slashes
+        const params = new URLSearchParams({
+          publicId: archivo.cloudinaryId,
+          type: archivo.cloudinaryType,
+        });
+        await axios.delete(`/api/upload/delete?${params.toString()}`);
 
         const updatedFiles = currentFiles.filter(
-          (f) => f.cloudinaryId !== archivo.cloudinaryId
+          (f) => f.cloudinaryId !== archivo.cloudinaryId,
         );
 
         form.setValue("archivos", updatedFiles, { shouldValidate: true });
@@ -144,7 +148,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
         setDeletingFileId(null);
       }
     },
-    [form, t]
+    [form, t],
   );
 
   // ==================== DRAG & DROP ====================
@@ -162,7 +166,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
         } as React.ChangeEvent<HTMLInputElement>);
       }
     },
-    [handleFileSelect]
+    [handleFileSelect],
   );
 
   return {

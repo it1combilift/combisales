@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { FormularioCSSAnalisisProps } from "./types";
@@ -38,7 +37,7 @@ export default function FormularioCSSAnalisis({
   const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioCSSSchema(t), [t]);
 
-  // ==================== FORM SETUP ==
+  // ==================== FORM SETUP ====================
   const form = useForm<FormularioCSSSchema>({
     resolver: zodResolver(schema),
     mode: "onChange",

@@ -16,7 +16,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
   // ==================== STATE ====================
   const [uploadingFiles, setUploadingFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {}
+    {},
   );
   const [isUploading, setIsUploading] = useState(false);
   const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
 
       if (files.length > remainingSlots) {
         toast.error(
-          t("toast.file.onlyCanUpload", { remaining: remainingSlots })
+          t("toast.file.onlyCanUpload", { remaining: remainingSlots }),
         );
         return;
       }
@@ -59,14 +59,17 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
       try {
         const formData = new FormData();
         validFiles.forEach((file) => formData.append("files", file));
-        formData.append("folder", `combisales/visitas/${customerId}`);
+        const uploadFolder = customerId
+          ? `combisales/visitas/${customerId}`
+          : "combisales/visitas/general";
+        formData.append("folder", uploadFolder);
 
         const response = await axios.post("/api/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
               const progress = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
+                (progressEvent.loaded * 100) / progressEvent.total,
               );
               setUploadProgress((prev) => ({ ...prev, total: progress }));
             }
@@ -77,7 +80,9 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
           const newArchivos = [...currentArchivos, ...response.data.files];
           form.setValue("archivos", newArchivos, { shouldValidate: true });
           toast.success(
-            t("toast.file.uploadSuccess", { count: response.data.files.length })
+            t("toast.file.uploadSuccess", {
+              count: response.data.files.length,
+            }),
           );
         }
 
@@ -96,7 +101,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
         }
       }
     },
-    [form, customerId, t]
+    [form, customerId, t],
   );
 
   // ==================== FILE REMOVAL ====================
@@ -104,15 +109,16 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
     async (archivo: ArchivoSubido) => {
       setDeletingFileId(archivo.cloudinaryId);
       try {
-        await axios.delete(
-          `/api/upload/${encodeURIComponent(archivo.cloudinaryId)}?type=${
-            archivo.cloudinaryType
-          }`
-        );
+        // Use query params to properly handle cloudinaryId with slashes
+        const params = new URLSearchParams({
+          publicId: archivo.cloudinaryId,
+          type: archivo.cloudinaryType,
+        });
+        await axios.delete(`/api/upload/delete?${params.toString()}`);
 
         const currentArchivos = form.getValues("archivos") || [];
         const newArchivos = currentArchivos.filter(
-          (a) => a.cloudinaryId !== archivo.cloudinaryId
+          (a) => a.cloudinaryId !== archivo.cloudinaryId,
         );
         form.setValue("archivos", newArchivos, { shouldValidate: true });
         toast.success(t("toast.file.deleteSuccess"));
@@ -123,7 +129,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
         setDeletingFileId(null);
       }
     },
-    [form, t]
+    [form, t],
   );
 
   // ==================== DRAG & DROP ====================
@@ -140,7 +146,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
         } as React.ChangeEvent<HTMLInputElement>);
       }
     },
-    [handleFileSelect]
+    [handleFileSelect],
   );
 
   return {

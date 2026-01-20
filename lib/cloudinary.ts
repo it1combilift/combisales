@@ -18,41 +18,139 @@ cloudinary.config({
   secure: true,
 });
 
-// Upload file to Cloudinary
+/**
+ * Upload file to Cloudinary
+ *
+ * IMPORTANT NOTES:
+ * - PDFs are uploaded as 'image' type per Cloudinary docs (enables browser viewing)
+ * - Other documents (DOCX, XLSX, TXT) use 'raw' type with extension in public_id
+ * - For raw files: access_mode: "public" is REQUIRED for browser access
+ * - For raw files: type: "upload" ensures public delivery
+ * - For raw files: DO NOT use the 'format' parameter
+ */
 export async function uploadToCloudinary(
   buffer: Buffer,
   options: {
     folder: string;
     resourceType: "image" | "video" | "raw";
     originalFilename: string;
-  }
+  },
 ): Promise<CloudinaryUploadResult> {
   return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
+    // Extract file extension
+    const getFileExtension = (): string => {
+      const match = options.originalFilename.match(/\.([^/.]+)$/);
+      return match ? match[1].toLowerCase() : "";
+    };
+
+    // Sanitize filename: remove special characters, keep only safe chars
+    const sanitizeFilename = (name: string): string => {
+      return name
+        .replace(/[^a-zA-Z0-9-_]/g, "_")
+        .replace(/_+/g, "_") // Replace multiple underscores with single
+        .substring(0, 50); // Limit length
+    };
+
+    // Generate unique identifier
+    const generateUniqueId = (): string => {
+      const timestamp = Date.now();
+      const randomStr = Math.random().toString(36).substring(2, 8);
+      return `${timestamp}_${randomStr}`;
+    };
+
+    const fileExtension = getFileExtension();
+    const fileNameWithoutExt = options.originalFilename.replace(
+      /\.[^/.]+$/,
+      "",
+    );
+    const sanitizedName = sanitizeFilename(fileNameWithoutExt);
+    const uniqueId = generateUniqueId();
+
+    // Build upload options based on resource type
+    const buildUploadOptions = () => {
+      const baseOptions: Record<string, unknown> = {
         folder: options.folder,
         resource_type: options.resourceType,
-        use_filename: true,
-        unique_filename: true,
         overwrite: false,
-        ...(options.resourceType === "image" && {
-          transformation: [{ quality: "auto:good" }, { fetch_format: "auto" }],
-        }),
+      };
 
-        ...(options.resourceType === "video" && {
+      if (options.resourceType === "raw") {
+        // For ALL raw files (PDF, DOCX, XLSX, TXT, etc.):
+        // - Include extension in public_id so the URL has the correct extension
+        // - This is CRITICAL for browsers to handle documents correctly
+        // - access_mode: "public" is REQUIRED to avoid 401 errors
+        // - type: "upload" ensures the file is publicly deliverable
+        const publicIdWithExtension = fileExtension
+          ? `${sanitizedName}_${uniqueId}.${fileExtension}`
+          : `${sanitizedName}_${uniqueId}`;
+
+        return {
+          ...baseOptions,
+          public_id: publicIdWithExtension,
+          use_filename: false,
+          unique_filename: false,
+          access_mode: "public",
+          type: "upload",
+        };
+      }
+
+      if (options.resourceType === "image") {
+        // Check if this is a PDF (uploaded as image type per Cloudinary docs)
+        const isPDF = fileExtension.toLowerCase() === "pdf";
+
+        if (isPDF) {
+          // PDFs uploaded as 'image' type - NO transformations to preserve original
+          // This allows PDFs to be viewed directly in the browser
+          return {
+            ...baseOptions,
+            use_filename: true,
+            unique_filename: true,
+            // No transformation for PDFs - deliver as-is
+          };
+        }
+
+        // Regular images - apply quality optimization
+        return {
+          ...baseOptions,
+          use_filename: true,
+          unique_filename: true,
+          transformation: [{ quality: "auto:good" }, { fetch_format: "auto" }],
+        };
+      }
+
+      if (options.resourceType === "video") {
+        return {
+          ...baseOptions,
+          use_filename: true,
+          unique_filename: true,
           eager: [{ width: 300, height: 200, crop: "fill", format: "jpg" }],
           eager_async: true,
-        }),
-      },
+        };
+      }
+
+      return baseOptions;
+    };
+
+    const uploadOptions = buildUploadOptions();
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      uploadOptions,
       (error, result) => {
         if (error) {
+          console.error("Cloudinary upload error:", error);
           reject(error);
         } else if (result) {
+          // For raw files, ensure the format is correctly extracted from filename
+          let format = result.format;
+          if (!format && options.resourceType === "raw") {
+            format = fileExtension;
+          }
+
           resolve({
             public_id: result.public_id,
             secure_url: result.secure_url,
             resource_type: result.resource_type,
-            format: result.format,
+            format: format || fileExtension,
             width: result.width,
             height: result.height,
             duration: result.duration,
@@ -62,7 +160,7 @@ export async function uploadToCloudinary(
         } else {
           reject(new Error("No result from Cloudinary"));
         }
-      }
+      },
     );
 
     uploadStream.end(buffer);
@@ -72,7 +170,7 @@ export async function uploadToCloudinary(
 // Delete file from Cloudinary
 export async function deleteFromCloudinary(
   publicId: string,
-  resourceType: "image" | "video" | "raw"
+  resourceType: "image" | "video" | "raw",
 ): Promise<boolean> {
   try {
     const result = await cloudinary.uploader.destroy(publicId, {
@@ -88,7 +186,7 @@ export async function deleteFromCloudinary(
 // Delete multiple files from Cloudinary
 export async function deleteMultipleFromCloudinary(
   publicIds: string[],
-  resourceType: "image" | "video" | "raw"
+  resourceType: "image" | "video" | "raw",
 ): Promise<void> {
   try {
     await cloudinary.api.delete_resources(publicIds, {
