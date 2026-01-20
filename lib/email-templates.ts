@@ -77,7 +77,7 @@ const COLORS = {
 
 function getStatusConfig(
   status: string,
-  locale: string = "es"
+  locale: string = "es",
 ): {
   label: string;
   bgColor: string;
@@ -111,7 +111,7 @@ function getStatusConfig(
 
 function getFileTypeLabel(
   tipoArchivo: string,
-  locale: string = "es"
+  locale: string = "es",
 ): {
   label: string;
   color: string;
@@ -177,7 +177,7 @@ function getFileTypeLabel(
 function formatNumber(
   value: number | null | undefined,
   unit?: string,
-  locale: string = "es"
+  locale: string = "es",
 ): string {
   if (value === null || value === undefined) return "-";
   const formatted = value.toLocaleString(locale === "en" ? "en-US" : "es-ES");
@@ -186,7 +186,7 @@ function formatNumber(
 
 function formatBoolean(
   value: boolean | undefined,
-  locale: string = "es"
+  locale: string = "es",
 ): string {
   return value ? t("email.common.yes", locale) : t("email.common.no", locale);
 }
@@ -242,7 +242,7 @@ function buildSubsectionHeader(title: string): string {
 function buildRow(
   label: string,
   value: string | null | undefined,
-  options?: { highlight?: boolean; fullWidth?: boolean }
+  options?: { highlight?: boolean; fullWidth?: boolean },
 ): string {
   if (!value || value === "-" || value.trim() === "") return "";
 
@@ -268,8 +268,8 @@ function buildRow(
         ${label}
       </td>
       <td style="padding: 8px 16px; font-size: 14px; color: ${valueColor}; font-weight: ${
-    options?.highlight ? "600" : "400"
-  }; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
+        options?.highlight ? "600" : "400"
+      }; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
         ${value}
       </td>
     </tr>
@@ -307,11 +307,110 @@ function endSection(): string {
   return `</table>`;
 }
 
+// ==================== CUSTOMER INFO SECTION ====================
+
+/**
+ * Build customer information section for email
+ */
+function buildCustomerInfoSection(
+  data: VisitEmailData,
+  locale: string = "es",
+): string {
+  let html = "";
+
+  // Only build section if there's meaningful customer data
+  const hasCustomerData =
+    data.razonSocial ||
+    data.personaContacto ||
+    data.email ||
+    data.direccion ||
+    data.localidad ||
+    data.pais;
+
+  if (!hasCustomerData) return "";
+
+  html += startSection();
+  html += buildSectionHeader(t("email.sections.customerInfo", locale));
+
+  // Company name
+  html += buildRow(
+    t("email.customer.company", locale),
+    data.razonSocial || null,
+    { highlight: true },
+  );
+
+  // Contact person
+  html += buildRow(
+    t("email.customer.contact", locale),
+    data.personaContacto || null,
+  );
+
+  // Email
+  if (data.email) {
+    html += buildRow(
+      t("email.customer.email", locale),
+      `<a href="mailto:${data.email}" style="color: #1a5632; text-decoration: none;">${data.email}</a>`,
+    );
+  }
+
+  // Build full address
+  const addressParts = [data.direccion].filter(Boolean);
+  const address = addressParts.join("");
+  if (address) {
+    html += buildRow(t("email.customer.address", locale), address);
+  }
+
+  // Location (city, state, postal code)
+  const locationParts = [
+    data.localidad,
+    data.provinciaEstado,
+    data.codigoPostal,
+  ].filter(Boolean);
+  const location = locationParts.join(", ");
+  if (location) {
+    html += buildRow(t("email.customer.city", locale), location);
+  }
+
+  // Country
+  html += buildRow(t("email.customer.country", locale), data.pais || null);
+
+  // Website
+  if (data.website) {
+    html += buildRow(
+      t("email.customer.website", locale),
+      `<a href="${data.website.startsWith("http") ? data.website : `https://${data.website}`}" target="_blank" style="color: #1a5632; text-decoration: none;">${data.website}</a>`,
+    );
+  }
+
+  // Tax ID
+  html += buildRow(
+    t("email.customer.taxId", locale),
+    data.numeroIdentificacionFiscal || null,
+  );
+
+  // Distributor info
+  if (data.distribuidor) {
+    html += buildSubsectionHeader(t("email.customer.distributor", locale));
+    html += buildRow(
+      t("email.customer.distributor", locale),
+      data.distribuidor,
+    );
+    html += buildRow(
+      t("email.customer.distributorContact", locale),
+      data.contactoDistribuidor || null,
+    );
+  }
+
+  html += endSection();
+
+  return html;
+}
+
 // ==================== CSS FORM CONTENT ====================
 
 function buildCSSFormContent(
   data: FormularioCSSEmailData,
-  locale: string = "es"
+  locale: string = "es",
 ): string {
   let html = "";
 
@@ -322,15 +421,15 @@ function buildCSSFormContent(
     t("forms.css.fields.containerType.label", locale),
     data.contenedorTipos
       ?.map((tipo) => t(`visits.containerTypes.${tipo}`, locale))
-      .join(", ") || null
+      .join(", ") || null,
   );
   html += buildRow(
     t("forms.css.fields.containersPerWeek.label", locale),
-    formatNumber(data.contenedoresPorSemana, undefined, locale)
+    formatNumber(data.contenedoresPorSemana, undefined, locale),
   );
   html += buildRow(
     t("forms.css.fields.floorConditions.label", locale),
-    data.condicionesSuelo || null
+    data.condicionesSuelo || null,
   );
   html += endSection();
 
@@ -341,13 +440,13 @@ function buildCSSFormContent(
     t("forms.css.fields.measurements.label", locale),
     data.contenedorMedidas
       ?.map((medida) => t(`visits.containerMeasures.${medida}`, locale))
-      .join(", ") || null
+      .join(", ") || null,
   );
 
   if (data.contenedorMedidaOtro) {
     html += buildRow(
       t("visits.containerMeasures.OTRO", locale),
-      data.contenedorMedidaOtro
+      data.contenedorMedidaOtro,
     );
   }
   html += endSection();
@@ -358,7 +457,7 @@ function buildCSSFormContent(
     html += buildSectionHeader(t("email.sections.additionalInfo", locale));
     html += buildNotesBlock(
       t("email.sections.endUserData", locale),
-      data.datosClienteUsuarioFinal
+      data.datosClienteUsuarioFinal,
     );
     html += endSection();
   }
@@ -370,7 +469,7 @@ function buildCSSFormContent(
 
 function buildDimensionsTable(
   cargas: DimensionCargaEmail[],
-  locale: string = "es"
+  locale: string = "es",
 ): string {
   if (!cargas || cargas.length === 0) return "";
 
@@ -400,7 +499,7 @@ function buildDimensionsTable(
         i % 2 === 0 ? "#ffffff" : "#f8fafc"
       };">${formatNumber(c.porcentaje, undefined, locale)}%</td>
     </tr>
-  `
+  `,
     )
     .join("");
 
@@ -411,29 +510,29 @@ function buildDimensionsTable(
           <thead>
             <tr>
               <th style="${headerStyle} text-align: left;">${t(
-    "email.industrial.loadTable.product",
-    locale
-  )}</th>
+                "email.industrial.loadTable.product",
+                locale,
+              )}</th>
               <th style="${headerStyle}">${t(
-    "email.industrial.loadTable.length",
-    locale
-  )}</th>
+                "email.industrial.loadTable.length",
+                locale,
+              )}</th>
               <th style="${headerStyle}">${t(
-    "email.industrial.loadTable.depth",
-    locale
-  )}</th>
+                "email.industrial.loadTable.depth",
+                locale,
+              )}</th>
               <th style="${headerStyle}">${t(
-    "email.industrial.loadTable.height",
-    locale
-  )}</th>
+                "email.industrial.loadTable.height",
+                locale,
+              )}</th>
               <th style="${headerStyle}">${t(
-    "email.industrial.loadTable.weight",
-    locale
-  )}</th>
+                "email.industrial.loadTable.weight",
+                locale,
+              )}</th>
               <th style="${headerStyle}">${t(
-    "email.industrial.loadTable.percentage",
-    locale
-  )}</th>
+                "email.industrial.loadTable.percentage",
+                locale,
+              )}</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -445,34 +544,34 @@ function buildDimensionsTable(
 
 function buildElectricalEquipmentRows(
   equipos: FormularioIndustrialEmailData["equiposElectricos"],
-  locale: string = "es"
+  locale: string = "es",
 ): string {
   if (!equipos || equipos.noAplica) return "";
 
   let rows = "";
   rows += buildRow(
     t("email.industrial.currentType", locale),
-    equipos.tipoCorriente || null
+    equipos.tipoCorriente || null,
   );
   rows += buildRow(
     t("email.industrial.voltage", locale),
-    formatNumber(equipos.voltaje, "V", locale)
+    formatNumber(equipos.voltaje, "V", locale),
   );
   rows += buildRow(
     t("email.industrial.frequency", locale),
-    formatNumber(equipos.frecuencia, "Hz", locale)
+    formatNumber(equipos.frecuencia, "Hz", locale),
   );
   rows += buildRow(
     t("email.industrial.amperage", locale),
-    formatNumber(equipos.amperaje, "A", locale)
+    formatNumber(equipos.amperaje, "A", locale),
   );
   rows += buildRow(
     t("email.industrial.ambientTemperature", locale),
-    formatNumber(equipos.temperaturaAmbiente, "°C", locale)
+    formatNumber(equipos.temperaturaAmbiente, "°C", locale),
   );
   rows += buildRow(
     t("email.industrial.workHoursPerDay", locale),
-    formatNumber(equipos.horasTrabajoPorDia, "h", locale)
+    formatNumber(equipos.horasTrabajoPorDia, "h", locale),
   );
   if (equipos.notas) {
     rows += buildNotesBlock(t("email.industrial.notes", locale), equipos.notas);
@@ -482,7 +581,7 @@ function buildElectricalEquipmentRows(
 
 function buildIndustrialFormContent(
   data: FormularioIndustrialEmailData,
-  locale: string = "es"
+  locale: string = "es",
 ): string {
   let html = "";
 
@@ -490,11 +589,11 @@ function buildIndustrialFormContent(
   if (data.notasOperacion) {
     html += startSection();
     html += buildSectionHeader(
-      t("email.industrial.operationDescription", locale)
+      t("email.industrial.operationDescription", locale),
     );
     html += buildNotesBlock(
       t("email.industrial.operationNotes", locale),
-      data.notasOperacion
+      data.notasOperacion,
     );
     html += endSection();
   }
@@ -504,19 +603,19 @@ function buildIndustrialFormContent(
   html += buildSectionHeader(t("email.industrial.applicationDetails", locale));
   html += buildRow(
     t("email.industrial.lastShelfLevel", locale),
-    formatNumber(data.alturaUltimoNivelEstanteria, "mm", locale)
+    formatNumber(data.alturaUltimoNivelEstanteria, "mm", locale),
   );
   html += buildRow(
     t("email.industrial.maxLiftHeight", locale),
-    formatNumber(data.maximaAlturaElevacion, "mm", locale)
+    formatNumber(data.maximaAlturaElevacion, "mm", locale),
   );
   html += buildRow(
     t("email.industrial.maxHeightLoadWeight", locale),
-    formatNumber(data.pesoCargaMaximaAltura, "kg", locale)
+    formatNumber(data.pesoCargaMaximaAltura, "kg", locale),
   );
   html += buildRow(
     t("email.industrial.firstLevelLoadWeight", locale),
-    formatNumber(data.pesoCargaPrimerNivel, "kg", locale)
+    formatNumber(data.pesoCargaPrimerNivel, "kg", locale),
   );
   if (data.dimensionesAreaTrabajoAncho && data.dimensionesAreaTrabajoFondo) {
     html += buildRow(
@@ -524,30 +623,30 @@ function buildIndustrialFormContent(
       `${formatNumber(
         data.dimensionesAreaTrabajoAncho,
         undefined,
-        locale
+        locale,
       )} × ${formatNumber(
         data.dimensionesAreaTrabajoFondo,
         undefined,
-        locale
-      )} mm`
+        locale,
+      )} mm`,
     );
   }
   html += buildRow(
     t("email.industrial.workShifts", locale),
-    formatNumber(data.turnosTrabajo, undefined, locale)
+    formatNumber(data.turnosTrabajo, undefined, locale),
   );
   html += buildRow(
     t("email.industrial.desiredPower", locale),
     data.alimentacionDeseada === TipoAlimentacion.ELECTRICO
       ? t("visits.powerTypes.ELECTRICO", locale)
       : data.alimentacionDeseada === TipoAlimentacion.DIESEL
-      ? t("visits.powerTypes.DIESEL", locale)
-      : data.alimentacionDeseada === TipoAlimentacion.GLP
-      ? t("visits.powerTypes.GLP", locale)
-      : null,
+        ? t("visits.powerTypes.DIESEL", locale)
+        : data.alimentacionDeseada === TipoAlimentacion.GLP
+          ? t("visits.powerTypes.GLP", locale)
+          : null,
     {
       highlight: true,
-    }
+    },
   );
   html += endSection();
 
@@ -555,7 +654,7 @@ function buildIndustrialFormContent(
   if (data.equiposElectricos && !data.equiposElectricos.noAplica) {
     html += startSection();
     html += buildSectionHeader(
-      t("email.industrial.electricalEquipment", locale)
+      t("email.industrial.electricalEquipment", locale),
     );
     html += buildElectricalEquipmentRows(data.equiposElectricos, locale);
     html += endSection();
@@ -585,35 +684,35 @@ function buildIndustrialFormContent(
     html += buildSectionHeader(t("email.industrial.aisleSpecs", locale));
     html += buildRow(
       t("email.industrial.productDepth", locale),
-      formatNumber(data.profundidadProducto, "mm", locale)
+      formatNumber(data.profundidadProducto, "mm", locale),
     );
     html += buildRow(
       t("email.industrial.widthBetweenProducts", locale),
-      formatNumber(data.anchoLibreEntreProductos, "mm", locale)
+      formatNumber(data.anchoLibreEntreProductos, "mm", locale),
     );
     html += buildRow(
       t("email.industrial.distBetweenRacks", locale),
-      formatNumber(data.distanciaLibreEntreEstanterias, "mm", locale)
+      formatNumber(data.distanciaLibreEntreEstanterias, "mm", locale),
     );
     html += buildRow(
       t("email.industrial.rackUsefulDepth", locale),
-      formatNumber(data.fondoUtilEstanteria, "mm", locale)
+      formatNumber(data.fondoUtilEstanteria, "mm", locale),
     );
     html += buildRow(
       t("email.industrial.rackBaseHeight", locale),
-      formatNumber(data.alturaBaseEstanteria, "mm", locale)
+      formatNumber(data.alturaBaseEstanteria, "mm", locale),
     );
     html += buildRow(
       t("email.industrial.floorToFirstArm", locale),
-      formatNumber(data.alturaSueloPrimerBrazo, "mm", locale)
+      formatNumber(data.alturaSueloPrimerBrazo, "mm", locale),
     );
     html += buildRow(
       t("email.industrial.columnThickness", locale),
-      formatNumber(data.grosorPilarColumna, "mm", locale)
+      formatNumber(data.grosorPilarColumna, "mm", locale),
     );
     html += buildRow(
       t("email.industrial.maxInteriorHeight", locale),
-      formatNumber(data.alturaMaximaInteriorEdificio, "mm", locale)
+      formatNumber(data.alturaMaximaInteriorEdificio, "mm", locale),
     );
     html += endSection();
   }
@@ -625,7 +724,7 @@ function buildIndustrialFormContent(
 
 function buildLogisticaFormContent(
   data: FormularioLogisticaEmailData,
-  locale: string = "es"
+  locale: string = "es",
 ): string {
   let html = "";
 
@@ -636,7 +735,7 @@ function buildLogisticaFormContent(
   if (data.notasOperacion) {
     html += buildNotesBlock(
       t("email.logistica.operationNotes", locale),
-      data.notasOperacion
+      data.notasOperacion,
     );
   }
 
@@ -644,58 +743,58 @@ function buildLogisticaFormContent(
   html += buildSubsectionHeader(t("email.logistica.placeConditions", locale));
   html += buildRow(
     t("email.logistica.hasRamps", locale),
-    formatBoolean(data.tieneRampas, locale)
+    formatBoolean(data.tieneRampas, locale),
   );
   if (data.tieneRampas && data.notasRampas) {
     html += buildRow(
       t("email.logistica.rampDetails", locale),
-      data.notasRampas
+      data.notasRampas,
     );
   }
   html += buildRow(
     t("email.logistica.hasDoorways", locale),
-    formatBoolean(data.tienePasosPuertas, locale)
+    formatBoolean(data.tienePasosPuertas, locale),
   );
   if (data.tienePasosPuertas && data.notasPasosPuertas) {
     html += buildRow(
       t("email.logistica.doorwayDetails", locale),
-      data.notasPasosPuertas
+      data.notasPasosPuertas,
     );
   }
   html += buildRow(
     t("email.logistica.hasRestrictions", locale),
-    formatBoolean(data.tieneRestricciones, locale)
+    formatBoolean(data.tieneRestricciones, locale),
   );
   if (data.tieneRestricciones && data.notasRestricciones) {
     html += buildRow(
       t("email.logistica.restrictionDetails", locale),
-      data.notasRestricciones
+      data.notasRestricciones,
     );
   }
 
   // Subsection: Medidas de nave
   html += buildSubsectionHeader(
-    t("email.logistica.warehouseMeasurements", locale)
+    t("email.logistica.warehouseMeasurements", locale),
   );
   html += buildRow(
     t("email.logistica.maxWarehouseHeight", locale),
-    formatNumber(data.alturaMaximaNave, "mm", locale)
+    formatNumber(data.alturaMaximaNave, "mm", locale),
   );
   html += buildRow(
     t("email.logistica.currentAisleWidth", locale),
-    formatNumber(data.anchoPasilloActual, "mm", locale)
+    formatNumber(data.anchoPasilloActual, "mm", locale),
   );
   html += buildRow(
     t("email.logistica.workSurface", locale),
-    formatNumber(data.superficieTrabajo, "m²", locale)
+    formatNumber(data.superficieTrabajo, "m²", locale),
   );
   html += buildRow(
     t("email.logistica.floorConditions", locale),
-    data.condicionesSuelo || null
+    data.condicionesSuelo || null,
   );
   html += buildRow(
     t("email.logistica.operationType", locale),
-    data.tipoOperacion || null
+    data.tipoOperacion || null,
   );
   html += endSection();
 
@@ -704,19 +803,19 @@ function buildLogisticaFormContent(
   html += buildSectionHeader(t("email.logistica.applicationDetails", locale));
   html += buildRow(
     t("email.logistica.lastShelfLevel", locale),
-    formatNumber(data.alturaUltimoNivelEstanteria, "mm", locale)
+    formatNumber(data.alturaUltimoNivelEstanteria, "mm", locale),
   );
   html += buildRow(
     t("email.logistica.maxLiftHeight", locale),
-    formatNumber(data.maximaAlturaElevacion, "mm", locale)
+    formatNumber(data.maximaAlturaElevacion, "mm", locale),
   );
   html += buildRow(
     t("email.logistica.maxHeightLoadWeight", locale),
-    formatNumber(data.pesoCargaMaximaAltura, "kg", locale)
+    formatNumber(data.pesoCargaMaximaAltura, "kg", locale),
   );
   html += buildRow(
     t("email.logistica.firstLevelLoadWeight", locale),
-    formatNumber(data.pesoCargaPrimerNivel, "kg", locale)
+    formatNumber(data.pesoCargaPrimerNivel, "kg", locale),
   );
   if (data.dimensionesAreaTrabajoAncho && data.dimensionesAreaTrabajoFondo) {
     html += buildRow(
@@ -724,30 +823,30 @@ function buildLogisticaFormContent(
       `${formatNumber(
         data.dimensionesAreaTrabajoAncho,
         undefined,
-        locale
+        locale,
       )} × ${formatNumber(
         data.dimensionesAreaTrabajoFondo,
         undefined,
-        locale
-      )} mm`
+        locale,
+      )} mm`,
     );
   }
   html += buildRow(
     t("email.logistica.workShifts", locale),
-    formatNumber(data.turnosTrabajo, undefined, locale)
+    formatNumber(data.turnosTrabajo, undefined, locale),
   );
   html += buildRow(
     t("email.logistica.desiredPower", locale),
     data.alimentacionDeseada === TipoAlimentacion.ELECTRICO
       ? t("visits.powerTypes.ELECTRICO", locale)
       : data.alimentacionDeseada === TipoAlimentacion.DIESEL
-      ? t("visits.powerTypes.DIESEL", locale)
-      : data.alimentacionDeseada === TipoAlimentacion.GLP
-      ? t("visits.powerTypes.GLP", locale)
-      : null,
+        ? t("visits.powerTypes.DIESEL", locale)
+        : data.alimentacionDeseada === TipoAlimentacion.GLP
+          ? t("visits.powerTypes.GLP", locale)
+          : null,
     {
       highlight: true,
-    }
+    },
   );
   html += endSection();
 
@@ -755,7 +854,7 @@ function buildLogisticaFormContent(
   if (data.equiposElectricos && !data.equiposElectricos.noAplica) {
     html += startSection();
     html += buildSectionHeader(
-      t("email.logistica.electricalEquipment", locale)
+      t("email.logistica.electricalEquipment", locale),
     );
     html += buildElectricalEquipmentRows(data.equiposElectricos, locale);
     html += endSection();
@@ -785,27 +884,27 @@ function buildLogisticaFormContent(
       html += buildSectionHeader(t("email.logistica.currentAisle", locale));
       html += buildRow(
         t("email.logistica.distBetweenRacks", locale),
-        formatNumber(p.distanciaEntreEstanterias, "mm", locale)
+        formatNumber(p.distanciaEntreEstanterias, "mm", locale),
       );
       html += buildRow(
         t("email.logistica.distBetweenProducts", locale),
-        formatNumber(p.distanciaEntreProductos, "mm", locale)
+        formatNumber(p.distanciaEntreProductos, "mm", locale),
       );
       html += buildRow(
         t("email.logistica.availableAisleWidth", locale),
-        formatNumber(p.anchoPasilloDisponible, "mm", locale)
+        formatNumber(p.anchoPasilloDisponible, "mm", locale),
       );
       html += buildRow(
         t("email.logistica.rackType", locale),
-        p.tipoEstanterias || null
+        p.tipoEstanterias || null,
       );
       html += buildRow(
         t("email.logistica.rackLevels", locale),
-        formatNumber(p.nivelEstanterias, undefined, locale)
+        formatNumber(p.nivelEstanterias, undefined, locale),
       );
       html += buildRow(
         t("email.logistica.maxRackHeight", locale),
-        formatNumber(p.alturaMaximaEstanteria, "mm", locale)
+        formatNumber(p.alturaMaximaEstanteria, "mm", locale),
       );
       html += endSection();
     }
@@ -818,7 +917,7 @@ function buildLogisticaFormContent(
 
 function buildStraddleCarrierFormContent(
   data: FormularioStraddleCarrierEmailData,
-  locale: string = "es"
+  locale: string = "es",
 ): string {
   let html = "";
 
@@ -830,14 +929,14 @@ function buildStraddleCarrierFormContent(
     formatBoolean(data.manejaContenedores, locale),
     {
       highlight: data.manejaContenedores,
-    }
+    },
   );
   html += buildRow(
     t("email.straddleCarrier.handlesSpecialLoad", locale),
     formatBoolean(data.manejaCargaEspecial, locale),
     {
       highlight: data.manejaCargaEspecial,
-    }
+    },
   );
   html += endSection();
 
@@ -848,11 +947,11 @@ function buildStraddleCarrierFormContent(
 
     html += buildRow(
       t("email.straddleCarrier.individualContainers", locale),
-      formatBoolean(data.manejaContenedoresIndiv, locale)
+      formatBoolean(data.manejaContenedoresIndiv, locale),
     );
     html += buildRow(
       t("email.straddleCarrier.doubleStacking", locale),
-      formatBoolean(data.dobleApilamiento, locale)
+      formatBoolean(data.dobleApilamiento, locale),
     );
 
     // Container sizes
@@ -872,20 +971,20 @@ function buildStraddleCarrierFormContent(
       if (sizes.length > 0) {
         html += buildRow(
           t("email.straddleCarrier.containerSizes", locale),
-          sizes.join(", ")
+          sizes.join(", "),
         );
       }
     }
 
     html += buildRow(
       t("email.straddleCarrier.maxContainerWeight", locale),
-      formatNumber(data.pesoMaximoContenedor, "kg", locale)
+      formatNumber(data.pesoMaximoContenedor, "kg", locale),
     );
 
     if (data.infoAdicionalContenedores) {
       html += buildNotesBlock(
         t("email.straddleCarrier.additionalInfo", locale),
-        data.infoAdicionalContenedores
+        data.infoAdicionalContenedores,
       );
     }
     html += endSection();
@@ -898,48 +997,48 @@ function buildStraddleCarrierFormContent(
 
     // Subsection: Dimensiones de productos
     html += buildSubsectionHeader(
-      t("email.straddleCarrier.productDimensions", locale)
+      t("email.straddleCarrier.productDimensions", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.longestProduct", locale),
-      formatNumber(data.productoMasLargo, "mm", locale)
+      formatNumber(data.productoMasLargo, "mm", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.shortestProduct", locale),
-      formatNumber(data.productoMasCorto, "mm", locale)
+      formatNumber(data.productoMasCorto, "mm", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.widestProduct", locale),
-      formatNumber(data.productoMasAncho, "mm", locale)
+      formatNumber(data.productoMasAncho, "mm", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.narrowestProduct", locale),
-      formatNumber(data.productoMasEstrecho, "mm", locale)
+      formatNumber(data.productoMasEstrecho, "mm", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.tallestProduct", locale),
-      formatNumber(data.productoMasAlto, "mm", locale)
+      formatNumber(data.productoMasAlto, "mm", locale),
     );
 
     // Subsection: Puntos de elevación
     html += buildSubsectionHeader(
-      t("email.straddleCarrier.liftPointsAndWeights", locale)
+      t("email.straddleCarrier.liftPointsAndWeights", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.liftPointsLength", locale),
-      formatNumber(data.puntosElevacionLongitud, "mm", locale)
+      formatNumber(data.puntosElevacionLongitud, "mm", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.liftPointsWidth", locale),
-      formatNumber(data.puntosElevacionAncho, "mm", locale)
+      formatNumber(data.puntosElevacionAncho, "mm", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.maxWeightLongProduct", locale),
-      formatNumber(data.pesoMaximoProductoLargo, "kg", locale)
+      formatNumber(data.pesoMaximoProductoLargo, "kg", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.maxWeightShortProduct", locale),
-      formatNumber(data.pesoMaximoProductoCorto, "kg", locale)
+      formatNumber(data.pesoMaximoProductoCorto, "kg", locale),
     );
     html += endSection();
   }
@@ -957,49 +1056,49 @@ function buildStraddleCarrierFormContent(
   if (hasOtrosData) {
     html += startSection();
     html += buildSectionHeader(
-      t("email.straddleCarrier.additionalConditions", locale)
+      t("email.straddleCarrier.additionalConditions", locale),
     );
 
     // Subsection: Zonas de paso
     if (data.zonasPasoAncho || data.zonasPasoAlto) {
       html += buildSubsectionHeader(
-        t("email.straddleCarrier.passageZones", locale)
+        t("email.straddleCarrier.passageZones", locale),
       );
       html += buildRow(
         t("email.straddleCarrier.passageWidth", locale),
-        formatNumber(data.zonasPasoAncho, "mm", locale)
+        formatNumber(data.zonasPasoAncho, "mm", locale),
       );
       html += buildRow(
         t("email.straddleCarrier.passageHeight", locale),
-        formatNumber(data.zonasPasoAlto, "mm", locale)
+        formatNumber(data.zonasPasoAlto, "mm", locale),
       );
     }
 
     // Subsection: Condiciones del piso
     html += buildSubsectionHeader(
-      t("email.straddleCarrier.floorConditions", locale)
+      t("email.straddleCarrier.floorConditions", locale),
     );
     html += buildRow(
       t("email.straddleCarrier.floorConditionsLabel", locale),
-      data.condicionesPiso || null
+      data.condicionesPiso || null,
     );
     html += buildRow(
       t("email.straddleCarrier.flatFloor", locale),
-      formatBoolean(data.pisoPlano, locale)
+      formatBoolean(data.pisoPlano, locale),
     );
 
     // Subsection: Restricciones
     if (data.restriccionesAltura || data.restriccionesAnchura) {
       html += buildSubsectionHeader(
-        t("email.straddleCarrier.restrictions", locale)
+        t("email.straddleCarrier.restrictions", locale),
       );
       html += buildRow(
         t("email.straddleCarrier.heightRestriction", locale),
-        formatNumber(data.restriccionesAltura, "mm", locale)
+        formatNumber(data.restriccionesAltura, "mm", locale),
       );
       html += buildRow(
         t("email.straddleCarrier.widthRestriction", locale),
-        formatNumber(data.restriccionesAnchura, "mm", locale)
+        formatNumber(data.restriccionesAnchura, "mm", locale),
       );
     }
 
@@ -1007,7 +1106,7 @@ function buildStraddleCarrierFormContent(
     if (data.notasAdicionales) {
       html += buildNotesBlock(
         t("email.straddleCarrier.additionalNotes", locale),
-        data.notasAdicionales
+        data.notasAdicionales,
       );
     }
     html += endSection();
@@ -1020,7 +1119,7 @@ function buildStraddleCarrierFormContent(
 
 function buildFormSpecificContent(
   data: VisitEmailData,
-  locale: string
+  locale: string,
 ): string {
   if (data.formularioCSS) {
     return buildCSSFormContent(data.formularioCSS, locale);
@@ -1034,7 +1133,7 @@ function buildFormSpecificContent(
   if (data.formularioStraddleCarrier) {
     return buildStraddleCarrierFormContent(
       data.formularioStraddleCarrier,
-      locale
+      locale,
     );
   }
   return "";
@@ -1044,7 +1143,7 @@ function buildFormSpecificContent(
 
 function buildFilesSection(
   archivos: VisitEmailData["archivos"],
-  locale: string = "es"
+  locale: string = "es",
 ): string {
   if (!archivos || archivos.length === 0) return "";
 
@@ -1065,8 +1164,8 @@ function buildFilesSection(
             <span style="display: inline-block; padding: 2px 8px; background-color: ${
               fileType.color
             }; border-radius: 10px; font-size: 10px; font-weight: 700; color: #ffffff;">${
-        fileType.label
-      }</span>
+              fileType.label
+            }</span>
           </td>
           <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 12px; color: #64748b; background-color: ${bgColor};">
             ${formatFileSize(archivo.tamanio)}
@@ -1092,15 +1191,15 @@ function buildFilesSection(
             <tr>
               <th style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; text-align: left; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
                 "email.files.file",
-                locale
+                locale,
               )}</th>
               <th style="padding: 8px 12px; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
                 "email.files.type",
-                locale
+                locale,
               )}</th>
               <th style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; text-align: right; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
                 "email.files.size",
-                locale
+                locale,
               )}</th>
             </tr>
           </thead>
@@ -1118,11 +1217,12 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
   const locale = data.locale || "es";
   const formTypeName = getFormTypeName(data.formType, locale);
   const statusConfig = getStatusConfig(data.status, locale);
+  const customerInfoSection = buildCustomerInfoSection(data, locale);
   const formSpecificContent = buildFormSpecificContent(data, locale);
   const filesSection = buildFilesSection(data.archivos, locale);
 
   // Minimal client info
-  const companyName = data.razonSocial;
+  const companyName = data.razonSocial || t("email.common.notAssigned", locale);
   const sellerInfo = data.vendedor
     ? `${data.vendedor.name}`
     : t("email.common.notAssigned", locale);
@@ -1176,7 +1276,7 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>${draftPrefix}${t(
     "email.subject.visit",
-    locale
+    locale,
   )}: ${companyName} - ${formTypeName}</title>
   <!--[if mso]>
   <noscript>
@@ -1233,10 +1333,10 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
                     <span style="display: inline-block; padding: 5px 12px; background-color: ${
                       statusConfig.bgColor
                     }; border-radius: 4px; border-left: 3px solid ${
-    statusConfig.borderColor
-  }; font-size: 11px; font-weight: 700; color: ${
-    statusConfig.textColor
-  }; text-transform: uppercase;">
+                      statusConfig.borderColor
+                    }; font-size: 11px; font-weight: 700; color: ${
+                      statusConfig.textColor
+                    }; text-transform: uppercase;">
                       ${statusConfig.label}
                     </span>
                   </td>
@@ -1247,7 +1347,7 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
                     <span style="font-size: 13px; color: #475569;">${sellerInfo}</span>
                     <span style="color: #64748b; margin: 0 6px;">|</span>
                     <span style="font-size: 12px; color: #64748b;">${formatDateShort(
-                      data.visitDate
+                      data.visitDate,
                     )}</span>
                   </td>
                 </tr>
@@ -1259,6 +1359,9 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
           <tr>
             <td style="padding: 20px; background-color: #ffffff;">
               
+              <!-- Customer Information -->
+              ${customerInfoSection}
+
               <!-- Description -->
               ${descriptionSection}
 
@@ -1277,14 +1380,14 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
               <p style="margin: 0 0 2px 0; font-size: 11px; color: #64748b;">
                 ${t(
                   "email.common.automaticMessage",
-                  locale
+                  locale,
                 )} <strong style="color: #1e293b;">Combilift Sales</strong>
               </p>
               <p style="margin: 0; font-size: 10px; color: #64748b;">
                 ${new Date().getFullYear()} Combilift. ${t(
-    "email.common.allRightsReserved",
-    locale
-  )}
+                  "email.common.allRightsReserved",
+                  locale,
+                )}
               </p>
             </td>
           </tr>
@@ -1310,8 +1413,17 @@ export function generateVisitCompletedEmailText(data: VisitEmailData): string {
     data.status === VisitStatus.COMPLETADA
       ? t("email.plainText.visitCompleted", locale).toUpperCase()
       : data.status === VisitStatus.BORRADOR
-      ? t("email.plainText.visitDraft", locale).toUpperCase()
-      : t("email.plainText.unknownStatus", locale).toUpperCase();
+        ? t("email.plainText.visitDraft", locale).toUpperCase()
+        : t("email.plainText.unknownStatus", locale).toUpperCase();
+
+  // Build location string
+  const locationParts = [
+    data.localidad,
+    data.provinciaEstado,
+    data.codigoPostal,
+    data.pais,
+  ].filter(Boolean);
+  const location = locationParts.join(", ");
 
   let text = `
 ${"═".repeat(55)}
@@ -1319,11 +1431,24 @@ COMBISALES - ${statusLabel}
 ${"═".repeat(55)}
 
 ${t("email.plainText.type", locale)}:     ${formTypeName}
-${t("email.plainText.company", locale)}:  ${data.razonSocial}
+${t("email.plainText.company", locale)}:  ${data.razonSocial || "-"}
 ${t("email.plainText.seller", locale)}: ${
     data.vendedor ? data.vendedor.name : t("email.common.notAssigned", locale)
   }
 ${t("email.plainText.date", locale)}:    ${formatDateShort(data.visitDate)}
+
+${"─".repeat(55)}
+${t("email.plainText.customerInfo", locale).toUpperCase()}
+${"─".repeat(55)}
+
+${t("email.plainText.contact", locale)}:      ${data.personaContacto || "-"}
+${t("email.plainText.email", locale)}:        ${data.email || "-"}
+${t("email.plainText.address", locale)}:      ${data.direccion || "-"}
+${t("email.plainText.location", locale)}:     ${location || "-"}
+${data.website ? `Website:      ${data.website}` : ""}
+${data.numeroIdentificacionFiscal ? `${t("email.plainText.taxId", locale)}:       ${data.numeroIdentificacionFiscal}` : ""}
+${data.distribuidor ? `${t("email.plainText.distributor", locale)}:   ${data.distribuidor}` : ""}
+${data.contactoDistribuidor ? `${t("email.plainText.distributorContact", locale)}: ${data.contactoDistribuidor}` : ""}
 
 ${"─".repeat(55)}
 ${t("email.plainText.productDescription", locale).toUpperCase()}
@@ -1377,27 +1502,27 @@ ${"─".repeat(55)}
 ${t("email.plainText.lastShelfLevel", locale)}:     ${formatNumber(
       ind.alturaUltimoNivelEstanteria,
       "mm",
-      locale
+      locale,
     )}
 ${t("email.plainText.maxLiftHeight", locale)}:   ${formatNumber(
       ind.maximaAlturaElevacion,
       "mm",
-      locale
+      locale,
     )}
 ${t("email.plainText.maxHeightLoadWeight", locale)}:  ${formatNumber(
       ind.pesoCargaMaximaAltura,
       "kg",
-      locale
+      locale,
     )}
 ${t("email.plainText.firstLevelLoadWeight", locale)}: ${formatNumber(
       ind.pesoCargaPrimerNivel,
       "kg",
-      locale
+      locale,
     )}
 ${t("email.plainText.workShifts", locale)}:          ${formatNumber(
       ind.turnosTrabajo,
       undefined,
-      locale
+      locale,
     )}
 ${t("email.plainText.power", locale)}:            ${
       ind.alimentacionDeseada || "-"
@@ -1425,17 +1550,17 @@ ${"─".repeat(55)}
 ${t("email.plainText.maxWarehouseHeight", locale)}:        ${formatNumber(
       log.alturaMaximaNave,
       "mm",
-      locale
+      locale,
     )}
 ${t("email.plainText.aisleWidth", locale)}:           ${formatNumber(
       log.anchoPasilloActual,
       "mm",
-      locale
+      locale,
     )}
 ${t("email.plainText.workSurface", locale)}:      ${formatNumber(
       log.superficieTrabajo,
       "m²",
-      locale
+      locale,
     )}
 ${t("email.plainText.floorConditions", locale)}:       ${
       log.condicionesSuelo || "-"
@@ -1451,12 +1576,12 @@ ${"─".repeat(55)}
 ${t("email.plainText.lastShelfLevel", locale)}:     ${formatNumber(
       log.alturaUltimoNivelEstanteria,
       "mm",
-      locale
+      locale,
     )}
 ${t("email.plainText.maxLiftHeight", locale)}:   ${formatNumber(
       log.maximaAlturaElevacion,
       "mm",
-      locale
+      locale,
     )}
 ${t("email.plainText.power", locale)}:            ${
       log.alimentacionDeseada || "-"
@@ -1483,11 +1608,11 @@ ${"─".repeat(55)}
 
 ${t("email.plainText.handlesContainers", locale)}:   ${formatBoolean(
       sc.manejaContenedores,
-      locale
+      locale,
     )}
 ${t("email.plainText.handlesSpecialLoad", locale)}: ${formatBoolean(
       sc.manejaCargaEspecial,
-      locale
+      locale,
     )}
 `;
     if (sc.manejaContenedores) {
@@ -1498,16 +1623,16 @@ ${"─".repeat(55)}
 
 ${t("email.plainText.individualContainers", locale)}:   ${formatBoolean(
         sc.manejaContenedoresIndiv,
-        locale
+        locale,
       )}
 ${t("email.plainText.doubleStacking", locale)}:     ${formatBoolean(
         sc.dobleApilamiento,
-        locale
+        locale,
       )}
 ${t("email.plainText.maxContainerWeight", locale)}:  ${formatNumber(
         sc.pesoMaximoContenedor,
         "kg",
-        locale
+        locale,
       )}
 `;
     }
@@ -1520,22 +1645,22 @@ ${"─".repeat(55)}
 ${t("email.plainText.longestProduct", locale)}:    ${formatNumber(
         sc.productoMasLargo,
         "mm",
-        locale
+        locale,
       )}
 ${t("email.plainText.shortestProduct", locale)}:    ${formatNumber(
         sc.productoMasCorto,
         "mm",
-        locale
+        locale,
       )}
 ${t("email.plainText.widestProduct", locale)}:    ${formatNumber(
         sc.productoMasAncho,
         "mm",
-        locale
+        locale,
       )}
 ${t("email.plainText.tallestProduct", locale)}:     ${formatNumber(
         sc.productoMasAlto,
         "mm",
-        locale
+        locale,
       )}
 `;
     }
@@ -1563,8 +1688,8 @@ ${archivos
       `${i + 1}. ${a.nombre}\n   ${t("email.plainText.fileType", locale)}: ${
         getFileTypeLabel(a.tipoArchivo, locale).label
       } | ${t("email.plainText.fileSize", locale)}: ${formatFileSize(
-        a.tamanio
-      )}`
+        a.tamanio,
+      )}`,
   )
   .join("\n\n")}
 `;
