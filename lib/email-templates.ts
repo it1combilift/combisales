@@ -1,6 +1,6 @@
-import { TipoAlimentacion, VisitStatus } from "@prisma/client";
-import { EMAIL_CONFIG } from "@/constants/constants";
 import { formatDateShort } from "@/lib/utils";
+import { EMAIL_CONFIG } from "@/constants/constants";
+import { TipoAlimentacion, VisitStatus } from "@prisma/client";
 import { formatFileSize } from "@/components/formulario-css-analisis/utils/file-utils";
 
 import {
@@ -27,7 +27,7 @@ function t(key: string, locale: string = "es"): string {
     if (value && typeof value === "object" && k in value) {
       value = value[k];
     } else {
-      return key; // Fallback to key if not found
+      return key;
     }
   }
 
@@ -37,9 +37,9 @@ function t(key: string, locale: string = "es"): string {
 // ==================== COLOR PALETTE ====================
 const COLORS = {
   // Brand
-  brand: "#60A82E",
+  brand: "#5FA82E",
   brandLight: "#7BC043",
-  brandDark: "#4A8524",
+  brandDark: "#38b000",
 
   // Neutral
   white: "#ffffff",
@@ -213,7 +213,7 @@ function buildSectionHeader(title: string): string {
   return `
     <tr>
       <td colspan="2" style="padding: 12px 16px; background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); border-radius: 6px 6px 0 0;">
-        <span style="font-size: 14px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
+        <span style="font-size: 14px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
           ${title}
         </span>
       </td>
@@ -228,7 +228,7 @@ function buildSubsectionHeader(title: string): string {
   return `
     <tr>
       <td colspan="2" style="padding: 10px 16px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
-        <span style="font-size: 12px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.3px;">
+        <span style="font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 0.3px;">
           ${title}
         </span>
       </td>
@@ -246,8 +246,8 @@ function buildRow(
 ): string {
   if (!value || value === "-" || value.trim() === "") return "";
 
-  const labelColor = "#64748b";
-  const valueColor = options?.highlight ? "#60A82E" : "#1e293b";
+  const labelColor = "#6c757d";
+  const valueColor = options?.highlight ? "#5FA82E" : "#1e293b";
   const bgColor = "#ffffff";
   const borderColor = "#e2e8f0";
 
@@ -255,7 +255,7 @@ function buildRow(
     return `
       <tr>
         <td colspan="2" style="padding: 8px 16px; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
-          <div style="font-size: 11px; font-weight: 600; color: ${labelColor}; text-transform: uppercase; margin-bottom: 4px;">${label}</div>
+          <div style="font-size: 11px; color: ${labelColor}; text-transform: uppercase; margin-bottom: 4px;">${label}</div>
           <div style="font-size: 14px; color: ${valueColor}; line-height: 1.5;">${value}</div>
         </td>
       </tr>
@@ -264,12 +264,10 @@ function buildRow(
 
   return `
     <tr>
-      <td style="padding: 8px 16px; font-size: 12px; font-weight: 600; color: ${labelColor}; width: 40%; vertical-align: top; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
+      <td style="padding: 8px 16px; font-size: 12px; color: ${labelColor}; width: 40%; vertical-align: top; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
         ${label}
       </td>
-      <td style="padding: 8px 16px; font-size: 14px; color: ${valueColor}; font-weight: ${
-        options?.highlight ? "600" : "400"
-      }; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
+      <td style="padding: 8px 16px; font-size: 14px; color: ${valueColor}; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
         ${value}
       </td>
     </tr>
@@ -284,8 +282,8 @@ function buildNotesBlock(label: string, content: string): string {
   return `
     <tr>
       <td colspan="2" style="padding: 12px 16px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
-        <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">${label}</div>
-        <div style="font-size: 14px; color: #1e293b; line-height: 1.6; white-space: pre-wrap; background-color: #ffffff; padding: 12px; border-radius: 4px; border-left: 3px solid #60A82E;">${content}</div>
+        <div style="font-size: 11px; color: #0a0908; text-transform: uppercase; margin-bottom: 6px;">${label}</div>
+        <div style="font-size: 14px; color: #1e293b; line-height: 1.6; white-space: pre-wrap; background-color: #ffffff; padding: 12px; border-radius: 4px; border-left: 3px solid #5FA82E;">${content}</div>
       </td>
     </tr>
   `;
@@ -336,7 +334,6 @@ function buildCustomerInfoSection(
   html += buildRow(
     t("email.customer.company", locale),
     data.razonSocial || null,
-    { highlight: true },
   );
 
   // Contact person
@@ -378,7 +375,7 @@ function buildCustomerInfoSection(
   if (data.website) {
     html += buildRow(
       t("email.customer.website", locale),
-      `<a href="${data.website.startsWith("http") ? data.website : `https://${data.website}`}" target="_blank" style="color: #60A82E; text-decoration: none;">${data.website}</a>`,
+      `<a href="${data.website.startsWith("http") ? data.website : `https://${data.website}`}" target="_blank" style="text-decoration: none;">${data.website}</a>`,
     );
   }
 
@@ -473,14 +470,14 @@ function buildDimensionsTable(
 ): string {
   if (!cargas || cargas.length === 0) return "";
 
-  const headerStyle = `padding: 10px 8px; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;`;
+  const headerStyle = `padding: 10px 8px; font-size: 11px; color: #64748b; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;`;
   const cellStyle = `padding: 8px; font-size: 13px; text-align: center; border-bottom: 1px solid #e2e8f0;`;
 
   const rows = cargas
     .map(
       (c, i) => `
     <tr>
-      <td style="${cellStyle} text-align: left; font-weight: 500; color: #1e293b; background-color: ${
+      <td style="${cellStyle} text-align: left; color: #1e293b; background-color: ${
         i % 2 === 0 ? "#ffffff" : "#f8fafc"
       };">${c.producto || "-"}</td>
       <td style="${cellStyle} color: #475569; background-color: ${
@@ -495,7 +492,7 @@ function buildDimensionsTable(
       <td style="${cellStyle} color: #475569; background-color: ${
         i % 2 === 0 ? "#ffffff" : "#f8fafc"
       };">${formatNumber(c.peso, undefined, locale)}</td>
-      <td style="${cellStyle} color: #60A82E; font-weight: 600; background-color: ${
+      <td style="${cellStyle} color: #60A82E; background-color: ${
         i % 2 === 0 ? "#ffffff" : "#f8fafc"
       };">${formatNumber(c.porcentaje, undefined, locale)}%</td>
     </tr>
@@ -644,9 +641,6 @@ function buildIndustrialFormContent(
         : data.alimentacionDeseada === TipoAlimentacion.GLP
           ? t("visits.powerTypes.GLP", locale)
           : null,
-    {
-      highlight: true,
-    },
   );
   html += endSection();
 
@@ -844,9 +838,6 @@ function buildLogisticaFormContent(
         : data.alimentacionDeseada === TipoAlimentacion.GLP
           ? t("visits.powerTypes.GLP", locale)
           : null,
-    {
-      highlight: true,
-    },
   );
   html += endSection();
 
@@ -1156,14 +1147,14 @@ function buildFilesSection(
           <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; background-color: ${bgColor};">
             <a href="${
               archivo.cloudinaryUrl
-            }" target="_blank" rel="noopener" style="color: #60A82E; text-decoration: none; font-size: 13px; font-weight: 500;">
+            }" target="_blank" rel="noopener" style="color: #60A82E; text-decoration: none; font-size: 13px;">
               ${archivo.nombre}
             </a>
           </td>
           <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: center; background-color: ${bgColor};">
             <span style="display: inline-block; padding: 2px 8px; background-color: ${
               fileType.color
-            }; border-radius: 10px; font-size: 10px; font-weight: 700; color: #ffffff;">${
+            }; border-radius: 10px; font-size: 10px; color: #ffffff;">${
               fileType.label
             }</span>
           </td>
@@ -1179,7 +1170,7 @@ function buildFilesSection(
     ${startSection()}
     <tr>
       <td colspan="2" style="padding: 12px 16px; background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); border-radius: 6px 6px 0 0;">
-        <span style="font-size: 14px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
+        <span style="font-size: 14px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
           ${t("email.files.header", locale)} (${archivos.length})
         </span>
       </td>
@@ -1189,15 +1180,15 @@ function buildFilesSection(
         <table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
           <thead>
             <tr>
-              <th style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; text-align: left; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
+              <th style="padding: 8px 16px; font-size: 11px; color: #64748b; text-transform: uppercase; text-align: left; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
                 "email.files.file",
                 locale,
               )}</th>
-              <th style="padding: 8px 12px; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
+              <th style="padding: 8px 12px; font-size: 11px; color: #64748b; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
                 "email.files.type",
                 locale,
               )}</th>
-              <th style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; text-align: right; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
+              <th style="padding: 8px 16px; font-size: 11px; color: #64748b; text-transform: uppercase; text-align: right; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
                 "email.files.size",
                 locale,
               )}</th>
@@ -1233,7 +1224,7 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
       ${startSection()}
       <tr>
         <td colspan="2" style="padding: 12px 16px; background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); border-radius: 6px 6px 0 0;">
-          <span style="font-size: 14px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
+          <span style="font-size: 14px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
             ${t("email.sections.productDescription", locale)}
           </span>
         </td>
@@ -1308,18 +1299,18 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
           
           <!-- Header -->
           <tr>
-            <td style="background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); padding: 20px; text-align: center;">
-              <!-- Logo -->
-              <div style="display: inline-block; background-color: #ffffff; padding: 10px 18px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <td style="background-color: #5FA82E; background: linear-gradient(135deg, #5FA82E 0%, #38b000 100%); padding: 24px 20px 20px 20px; text-align: center;">
+              <!-- Logo Container - Subtle white background that blends well -->
+              <div style="display: inline-block">
                 <img src="${
                   EMAIL_CONFIG.companyLogo
-                }" alt="Combilift" style="max-width: 160px; height: auto; display: block;" />
+                }" alt="Combilift" style="max-width: 150px; height: auto; display: block;" />
               </div>
               <!-- Title -->
-              <h1 style="color: #ffffff; margin: 0 0 4px 0; font-size: 20px; font-weight: 700;">
-                ${emailTitle}
+              <h1 style="margin: 0 0 6px 0; font-size: 18px; letter-spacing: -0.3px; color: #ced4da; font-weight: normal;">
+                ${emailTitle.toUpperCase()}
               </h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px;">${formTypeName}</p>
+              <p style="margin: 0; font-size: 16px; color: #ced4da; font-weight: normal;">${formTypeName}</p>
             </td>
           </tr>
 
@@ -1334,20 +1325,21 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
                       statusConfig.bgColor
                     }; border-radius: 4px; border-left: 3px solid ${
                       statusConfig.borderColor
-                    }; font-size: 11px; font-weight: 700; color: ${
+                    }; font-size: 11px; color: ${
                       statusConfig.textColor
-                    }; text-transform: uppercase;">
+                    }; text-transform: uppercase; font-weight: normal;">
                       ${statusConfig.label}
                     </span>
                   </td>
                   <!-- Company + Seller + Date -->
                   <td style="text-align: right; vertical-align: middle;">
-                    <span style="font-size: 14px; font-weight: 600; color: #1e293b;">${companyName}</span>
+                    <span style="font-size: 14px; color: #1e293b; font-weight: normal;">${companyName}</span>
                     <span style="color: #64748b; margin: 0 6px;">|</span>
-                    <span style="font-size: 13px; color: #475569;">${sellerInfo}</span>
+                    <span style="font-size: 13px; color: #475569; font-weight: normal;">${sellerInfo}</span>
                     <span style="color: #64748b; margin: 0 6px;">|</span>
-                    <span style="font-size: 12px; color: #64748b;">${formatDateShort(
+                    <span style="font-size: 12px; color: #64748b; font-weight: normal;">${formatDateShort(
                       data.visitDate,
+                      locale,
                     )}</span>
                   </td>
                 </tr>
@@ -1435,7 +1427,10 @@ ${t("email.plainText.company", locale)}:  ${data.razonSocial || "-"}
 ${t("email.plainText.seller", locale)}: ${
     data.vendedor ? data.vendedor.name : t("email.common.notAssigned", locale)
   }
-${t("email.plainText.date", locale)}:    ${formatDateShort(data.visitDate)}
+${t("email.plainText.date", locale)}:    ${formatDateShort(
+    data.visitDate,
+    locale,
+  )}
 
 ${"─".repeat(55)}
 ${t("email.plainText.customerInfo", locale).toUpperCase()}

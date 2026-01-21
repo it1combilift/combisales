@@ -54,7 +54,7 @@ export function StraddleCarrierDetail({
 
   // Get selected container sizes
   const selectedContainers = Object.entries(contenedoresTamanios).filter(
-    ([_, data]: [string, any]) => data?.selected
+    ([_, data]: [string, any]) => data?.selected,
   );
 
   return (

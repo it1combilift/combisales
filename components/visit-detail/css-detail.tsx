@@ -7,10 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { InfoField, InfoSection, NumberDisplay } from "./shared";
 import AttachmentsGallery from "@/components/attachments-gallery";
 
-import {
-  FormularioCSSAnalisis,
-  CONTENEDOR_MEDIDA_LABELS,
-} from "@/interfaces/visits";
+import { FormularioCSSAnalisis } from "@/interfaces/visits";
 
 import {
   Calendar,
@@ -34,7 +31,7 @@ interface CSSDetailProps {
 }
 
 export function CSSDetail({ formulario }: CSSDetailProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   return (
     <div className="space-y-4">
@@ -162,7 +159,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
                 {formulario.fechaCierre && (
                   <InfoField
                     label={t("forms.fields.closingDate")}
-                    value={formatDate(formulario.fechaCierre)}
+                    value={formatDate(formulario.fechaCierre, locale)}
                     icon={Calendar}
                   />
                 )}
@@ -190,7 +187,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
               className={cn(
                 "text-sm text-foreground whitespace-pre-wrap leading-relaxed",
                 !formulario.descripcionProducto &&
-                  "italic text-muted-foreground"
+                  "italic text-muted-foreground",
               )}
             >
               {formulario.descripcionProducto || t("forms.detail.notSpecified")}

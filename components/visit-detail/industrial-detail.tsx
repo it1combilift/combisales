@@ -67,7 +67,7 @@ interface IndustrialDetailProps {
 }
 
 export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const equipos = formulario.equiposElectricos;
   const especificaciones = formulario.especificacionesPasillo;
   const cargas = formulario.dimensionesCargas || [];
@@ -203,14 +203,14 @@ export function IndustrialDetail({ formulario }: IndustrialDetailProps) {
                 {formulario.fechaCierre && (
                   <InfoField
                     label={t("forms.fields.closingDate")}
-                    value={formatDate(formulario.fechaCierre)}
+                    value={formatDate(formulario.fechaCierre, locale)}
                     icon={Calendar}
                   />
                 )}
                 {formulario.fechaEstimadaDefinicion && (
                   <InfoField
                     label={t("forms.fields.estimatedDefinitionDate")}
-                    value={formatDate(formulario.fechaEstimadaDefinicion)}
+                    value={formatDate(formulario.fechaEstimadaDefinicion, locale)}
                     icon={Calendar}
                   />
                 )}

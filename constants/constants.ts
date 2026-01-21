@@ -47,18 +47,18 @@ export const MAX_FILES = 20;
 export const EMAIL_CONFIG = {
   fromEmail: "onboarding@resend.dev",
   fromName: "Combilift Sales",
-  draftRecipients: ["anyeloisaacbenavide@gmail.com"],
+  draftRecipients: ["it1@combilift.es"],
   completedRecipients: [
-    "anyeloisaacbenavide@gmail.com",
+    "it1@combilift.es",
     // "anyelobg.dev@gmail.com",
   ],
   // Blue logo
-  companyLogo:
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvaouoocfP1dTdTRxHMh_ZTwF5VozVThGujg&s",
+  // companyLogo:
+  //   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvaouoocfP1dTdTRxHMh_ZTwF5VozVThGujg&s",
 
   // Gray logo
-  // companyLogo:
-  //   "https://www.tesmatic.com/wp-content/uploads/2021/08/combilift.png",
+  companyLogo:
+    "https://res.cloudinary.com/dwjxcpfrf/image/upload/v1768957949/Untitled_design__1_-removebg-preview_t8oji9.png",
 } as const;
 
 export const NOTIFICATION_CONFIG = {

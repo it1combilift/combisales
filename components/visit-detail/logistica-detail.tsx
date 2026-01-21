@@ -82,7 +82,7 @@ interface LogisticaDetailProps {
 }
 
 export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const equipos = formulario.equiposElectricos;
   const pasilloActual = formulario.pasilloActual;
   const cargas = formulario.dimensionesCargas || [];
@@ -218,14 +218,14 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 {formulario.fechaCierre && (
                   <InfoField
                     label={t("forms.fields.closingDate")}
-                    value={formatDate(formulario.fechaCierre)}
+                    value={formatDate(formulario.fechaCierre, locale)}
                     icon={Calendar}
                   />
                 )}
                 {formulario.fechaEstimadaDefinicion && (
                   <InfoField
                     label={t("forms.fields.estimatedDefinitionDate")}
-                    value={formatDate(formulario.fechaEstimadaDefinicion)}
+                    value={formatDate(formulario.fechaEstimadaDefinicion, locale)}
                     icon={Calendar}
                   />
                 )}
