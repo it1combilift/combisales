@@ -13,6 +13,10 @@ export interface FormularioStraddleCarrierAnalisisProps {
   existingVisit?: any;
   // Para visitas creadas por DEALER: vendedor asignado
   assignedSellerId?: string;
+  // Archivos de la visita original (para clones - solo lectura)
+  originalArchivos?: ArchivoSubido[];
+  // Si es true, el formulario es solo lectura (SELLER viendo original)
+  readOnly?: boolean;
 }
 
 // ==================== ARCHIVO TYPES ====================
@@ -24,9 +28,9 @@ export interface ArchivoSubido {
   cloudinaryId: string;
   cloudinaryUrl: string;
   cloudinaryType: string;
-  ancho?: number;
-  alto?: number;
-  duracion?: number;
+  ancho?: number | null;
+  alto?: number | null;
+  duracion?: number | null;
   formato: string;
 }
 
@@ -71,6 +75,10 @@ export interface FileUploadProps {
   fileInputRef: RefObject<HTMLInputElement | null>;
   cameraPhotoRef: RefObject<HTMLInputElement | null>;
   cameraVideoRef: RefObject<HTMLInputElement | null>;
+  // Archivos de la visita original (para clones - solo lectura, no eliminables)
+  originalArchivos?: ArchivoSubido[];
+  // Si es true, el formulario es solo lectura
+  readOnly?: boolean;
 }
 
 // ==================== FORM HEADER PROPS ====================
@@ -102,6 +110,8 @@ export interface FormNavigationProps {
   onSaveDraft?: () => void;
   onSaveChanges?: () => void;
   visitIsCompleted?: VisitStatus;
+  /** When true, hides all action buttons (Save, Submit, etc.) - view mode only */
+  readOnly?: boolean;
 }
 
 // ==================== SAVE VISIT PARAMS ====================

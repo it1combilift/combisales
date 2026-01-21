@@ -15,13 +15,8 @@ export async function proxy(request: NextRequest) {
   // Role-based path restrictions
   const adminOnlyPaths = ["/dashboard/users"];
 
-  const sellerPaths = [
-    "/dashboard/tasks",
-    "/dashboard/clients",
-    "/dashboard/equipment",
-  ];
-
-  const dealerOnlyPaths = ["/dashboard/dealers"];
+  // Paths accessible by both DEALER and SELLER
+  const dealerAndSellerPaths = ["/dashboard/dealers"];
 
   const currentPath = request.nextUrl.pathname;
 
@@ -43,7 +38,7 @@ export async function proxy(request: NextRequest) {
       // Redirect based on role
       if (userRole === Role.DEALER) {
         return NextResponse.redirect(
-          new URL("/dashboard/dealers", request.url)
+          new URL("/dashboard/dealers", request.url),
         );
       }
 
@@ -57,7 +52,7 @@ export async function proxy(request: NextRequest) {
 
   // ==================== PROTECTED PATHS LOGIC ====================
   const isProtectedPath = protectedPaths.some((path) =>
-    currentPath.startsWith(path)
+    currentPath.startsWith(path),
   );
 
   if (isProtectedPath) {
@@ -94,25 +89,22 @@ export async function proxy(request: NextRequest) {
 
     // DEALER can only access /dashboard/dealers
     if (userRole === Role.DEALER) {
-      const isDealerPath = dealerOnlyPaths.some((path) =>
-        currentPath.startsWith(path)
+      const isDealerPath = dealerAndSellerPaths.some((path) =>
+        currentPath.startsWith(path),
       );
       if (!isDealerPath) {
         console.log("Access denied: DEALER can only access /dashboard/dealers");
         return NextResponse.redirect(
-          new URL("/dashboard/dealers", request.url)
+          new URL("/dashboard/dealers", request.url),
         );
       }
       return NextResponse.next();
     }
 
-    // SELLER can access tasks, clients, equipment
+    // SELLER can access tasks, clients, equipment, and dealers (for assigned visits)
     if (userRole === Role.SELLER) {
       const isAdminOnlyPath = adminOnlyPaths.some((path) =>
-        currentPath.startsWith(path)
-      );
-      const isDealerOnlyPath = dealerOnlyPaths.some((path) =>
-        currentPath.startsWith(path)
+        currentPath.startsWith(path),
       );
 
       if (isAdminOnlyPath) {
@@ -120,11 +112,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard/tasks", request.url));
       }
 
-      if (isDealerOnlyPath) {
-        console.log("Access denied: DEALER role required for this path");
-        return NextResponse.redirect(new URL("/dashboard/tasks", request.url));
-      }
-
+      // SELLER can access dealers path (for viewing assigned visits)
       return NextResponse.next();
     }
 

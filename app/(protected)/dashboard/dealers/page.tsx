@@ -3,19 +3,20 @@
 import axios from "axios";
 import { toast } from "sonner";
 import { Role } from "@prisma/client";
-import { useEffect, useState, useCallback } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Visit } from "@/interfaces/visits";
+import { useSession } from "next-auth/react";
+import { useI18n } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
+import { useEffect, useState, useCallback } from "react";
 import { H1, Paragraph } from "@/components/fonts/fonts";
-import { createColumns } from "@/components/visits/columns";
-import { VisitsDataTable } from "@/components/visits/data-table";
 import { VisitCard } from "@/components/visits/visit-card";
+import { createColumns } from "@/components/visits/columns";
+import { Plus, RefreshCw, ClipboardList } from "lucide-react";
+import { VisitsDataTable } from "@/components/visits/data-table";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
-import { useI18n } from "@/lib/i18n/context";
 import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
 
 import {
@@ -29,13 +30,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { Plus, RefreshCw, ClipboardList } from "lucide-react";
-
 const DealersPage = () => {
   const { t, locale } = useI18n();
   const router = useRouter();
   const isMobile = useIsMobile();
-  const { data: session, status: sessionStatus } = useSession();
+  const { status: sessionStatus } = useSession();
 
   // State
   const [visits, setVisits] = useState<Visit[]>([]);
@@ -44,15 +43,19 @@ const DealersPage = () => {
   const [isVisitDialogOpen, setIsVisitDialogOpen] = useState(false);
   const [visitToDelete, setVisitToDelete] = useState<Visit | null>(null);
   const [visitToEdit, setVisitToEdit] = useState<Visit | null>(null);
+  const [isFormReadOnly, setIsFormReadOnly] = useState(false);
   const [userRole, setUserRole] = useState<Role | null>(null);
+  const [isCloning, setIsCloning] = useState(false);
 
-  // Check if user is ADMIN
+  // Check user roles
   const isAdmin = userRole === Role.ADMIN;
   const isDealer = userRole === Role.DEALER;
+  const isSeller = userRole === Role.SELLER;
 
   // Fetch visits based on role
-  // ADMIN: sees all visits created by DEALER users
+  // ADMIN: sees all visits created by DEALER users + all clones
   // DEALER: sees only their own visits
+  // SELLER: sees visits assigned to them by DEALERs + their own clones
   const fetchVisits = useCallback(async () => {
     try {
       const response = await axios.get("/api/visits?dealerVisits=true");
@@ -91,13 +94,60 @@ const DealersPage = () => {
 
   // Edit visit
   const handleEditVisit = (visit: Visit) => {
+    // SELLER: can only edit their own clones
+    if (isSeller && !visit.clonedFromId) {
+      toast.error(t("dealerPage.seller.cannotEditOriginal"));
+      return;
+    }
+    setIsFormReadOnly(false);
     setVisitToEdit(visit);
     setIsVisitDialogOpen(true);
+  };
+
+  // View form (read-only) - for SELLER viewing original visits
+  const handleViewForm = (visit: Visit) => {
+    setIsFormReadOnly(true);
+    setVisitToEdit(visit);
+    setIsVisitDialogOpen(true);
+  };
+
+  // Clone visit (SELLER only)
+  const handleCloneVisit = async (visit: Visit) => {
+    if (!isSeller) return;
+
+    // Cannot clone a clone
+    if (visit.clonedFromId) {
+      toast.error(t("dealerPage.seller.cannotCloneClone"));
+      return;
+    }
+
+    setIsCloning(true);
+    try {
+      const response = await axios.post(`/api/visits/${visit.id}/clone`);
+      if (response.status === 201) {
+        toast.success(t("dealerPage.seller.cloneSuccess"), {
+          description: t("dealerPage.seller.cloneSuccessDescription"),
+        });
+        await fetchVisits();
+      }
+    } catch (error) {
+      console.error("Error cloning visit:", error);
+      toast.error(t("dealerPage.errors.cloneVisit"));
+    } finally {
+      setIsCloning(false);
+    }
   };
 
   // Delete visit
   const handleDeleteVisit = async () => {
     if (!visitToDelete) return;
+
+    // SELLER: can only delete their own clones
+    if (isSeller && !visitToDelete.clonedFromId) {
+      toast.error(t("dealerPage.seller.cannotDeleteOriginal"));
+      setVisitToDelete(null);
+      return;
+    }
 
     try {
       const response = await axios.delete(`/api/visits/${visitToDelete.id}`);
@@ -116,6 +166,7 @@ const DealersPage = () => {
   const handleVisitSuccess = () => {
     setIsVisitDialogOpen(false);
     setVisitToEdit(null);
+    setIsFormReadOnly(false);
     fetchVisits();
   };
 
@@ -124,8 +175,11 @@ const DealersPage = () => {
     onView: handleViewVisit,
     onEdit: handleEditVisit,
     onDelete: (visit) => setVisitToDelete(visit),
+    onClone: handleCloneVisit,
+    onViewForm: handleViewForm,
     t,
     locale,
+    userRole,
   });
 
   if (sessionStatus === "loading" || isLoading) {
@@ -138,13 +192,19 @@ const DealersPage = () => {
       <div className="flex flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-0">
         <div>
           <H1>
-            {isAdmin ? t("dealerPage.titleAdmin") : t("dealerPage.title")}
+            {isAdmin
+              ? t("dealerPage.titleAdmin")
+              : isSeller
+                ? t("dealerPage.seller.title")
+                : t("dealerPage.title")}
           </H1>
           <div className="flex flex-col justify-start">
             <Paragraph>
               {isAdmin
                 ? t("dealerPage.descriptionAdmin")
-                : t("dealerPage.description")}
+                : isSeller
+                  ? t("dealerPage.seller.description")
+                  : t("dealerPage.description")}
             </Paragraph>
           </div>
         </div>
@@ -164,8 +224,8 @@ const DealersPage = () => {
               {isLoading
                 ? t("common.loading")
                 : isRefreshing
-                ? t("common.refreshing")
-                : t("common.refresh")}
+                  ? t("common.refreshing")
+                  : t("common.refresh")}
             </span>
           </Button>
 
@@ -184,21 +244,25 @@ const DealersPage = () => {
       {/* Content */}
       {visits.length === 0 ? (
         <EmptyCard
-          icon={<ClipboardList className="size-12 text-muted-foreground" />}
+          icon={<ClipboardList />}
           title={
             isAdmin
               ? t("dealerPage.empty.titleAdmin")
-              : t("dealerPage.empty.title")
+              : isSeller
+                ? t("dealerPage.seller.empty.title")
+                : t("dealerPage.empty.title")
           }
           description={
             isAdmin
               ? t("dealerPage.empty.descriptionAdmin")
-              : t("dealerPage.empty.description")
+              : isSeller
+                ? t("dealerPage.seller.empty.description")
+                : t("dealerPage.empty.description")
           }
           actions={
             isDealer ? (
               <Button onClick={() => setIsVisitDialogOpen(true)}>
-                <Plus className="size-4 mr-2" />
+                <Plus className="size-4" />
                 {t("dealerPage.createVisit")}
               </Button>
             ) : undefined
@@ -216,6 +280,9 @@ const DealersPage = () => {
               onView={handleViewVisit}
               onEdit={handleEditVisit}
               onDelete={(v) => setVisitToDelete(v)}
+              onClone={isSeller ? handleCloneVisit : undefined}
+              onViewForm={isSeller ? handleViewForm : undefined}
+              userRole={userRole}
             />
           ))}
         </div>
@@ -236,10 +303,15 @@ const DealersPage = () => {
         open={isVisitDialogOpen}
         onOpenChange={(open) => {
           setIsVisitDialogOpen(open);
-          if (!open) setVisitToEdit(null);
+          if (!open) {
+            setVisitToEdit(null);
+            setIsFormReadOnly(false);
+          }
         }}
         onSuccess={handleVisitSuccess}
         existingVisit={visitToEdit || undefined}
+        isSellerEditing={isSeller && !!visitToEdit?.clonedFromId}
+        readOnly={isFormReadOnly}
       />
 
       {/* Delete Confirmation Dialog */}

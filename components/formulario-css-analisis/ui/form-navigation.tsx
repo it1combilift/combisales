@@ -34,6 +34,7 @@ export function FormNavigation({
   onSaveDraft,
   onSaveChanges,
   visitIsCompleted,
+  readOnly = false,
 }: FormNavigationProps) {
   const { t } = useI18n();
   const isDisabled =
@@ -72,9 +73,24 @@ export function FormNavigation({
           </span>
         </div>
 
-        {/* Action buttons */}
+        {/* Action buttons - hidden in readOnly mode except for navigation */}
         <div className="flex items-center gap-2">
-          {isLastStep ? (
+          {/* In readOnly mode, only show Next button for navigation */}
+          {readOnly ? (
+            !isLastStep && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={onNext}
+                disabled={isDisabled}
+              >
+                <span className="text-xs font-medium">
+                  {t("visits.formNavigation.nextStep")}
+                </span>
+                <ArrowRight className="size-3.5" />
+              </Button>
+            )
+          ) : isLastStep ? (
             <>
               {isEditing && !visitIsCompleted ? (
                 <>
@@ -88,8 +104,8 @@ export function FormNavigation({
                       !onSaveChanges
                         ? t("forms.languageValidation.title")
                         : !allStepsComplete
-                        ? t("visits.formNavigation.completeAllSteps")
-                        : t("visits.formNavigation.saveChanges")
+                          ? t("visits.formNavigation.completeAllSteps")
+                          : t("visits.formNavigation.saveChanges")
                     }
                   >
                     {isSavingChanges ? (
@@ -139,8 +155,8 @@ export function FormNavigation({
                       !onSaveDraft
                         ? t("forms.languageValidation.title")
                         : !allStepsComplete
-                        ? t("visits.formNavigation.completeAllSteps")
-                        : t("visits.formNavigation.saveDraft")
+                          ? t("visits.formNavigation.completeAllSteps")
+                          : t("visits.formNavigation.saveDraft")
                     }
                   >
                     {isSavingDraft ? (

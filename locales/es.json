@@ -35,7 +35,33 @@
       "errors": {
         "fetchVisits": "Error al cargar las visitas",
         "fetchSellers": "Error al cargar los P. Managers asignados",
-        "deleteVisit": "Error al eliminar la visita"
+        "deleteVisit": "Error al eliminar la visita",
+        "cloneVisit": "Error al clonar la visita"
+      },
+      "seller": {
+        "title": "Visitas Asignadas",
+        "description": "Visitas asignadas por dealers para tu revisión",
+        "empty": {
+          "title": "Sin visitas asignadas",
+          "description": "No tienes visitas asignadas por dealers aún"
+        },
+        "cloneAction": "Clonar",
+        "cloneTooltip": "Crear una copia editable de esta visita",
+        "cloneSuccess": "Visita clonada correctamente",
+        "cloneSuccessDescription": "Se ha creado una copia editable de la visita",
+        "clonedBadge": "Clonada",
+        "originalBadge": "Original",
+        "clonedFrom": "Clonada de",
+        "clonedAt": "Fecha de clonación",
+        "cannotEditOriginal": "No puedes editar visitas originales de dealers",
+        "cannotDeleteOriginal": "No puedes eliminar visitas originales de dealers",
+        "editCloneOnly": "Solo puedes editar tus propios clones",
+        "cannotCloneClone": "No puedes clonar una visita que ya es un clon",
+        "cloneNoFiles": "Nota: Los archivos adjuntos no se copian al clonar. Puedes agregar nuevos archivos."
+      },
+      "columns": {
+        "dealer": "Dealer",
+        "assignedSeller": "P. Manager"
       }
     },
     "dashboard": {
@@ -353,10 +379,12 @@
       "registerVisit": "Registrar visita",
       "selectFormTypeDescription": "Selecciona el tipo de formulario para documentar esta visita.",
       "editVisit": "Editar visita",
+      "viewForm": "Ver formulario",
       "viewDetails": "Ver detalles",
       "deleteVisit": "Eliminar visita",
       "visitDate": "Fecha de visita",
       "visitType": "Tipo de visita",
+      "type": "Tipo",
       "status": "Estado",
       "seller": "Vendedor",
       "customer": "Cliente",
@@ -1160,6 +1188,8 @@
         "noFiles": "Aún no has subido ningún archivo",
         "viewFile": "Ver archivo",
         "deleteFile": "Eliminar",
+        "originalFiles": "Archivos del Dealer",
+        "original": "Original",
         "limits": {
           "images": "Imágenes 10MB",
           "videos": "Videos 100MB",

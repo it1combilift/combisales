@@ -26,6 +26,7 @@ import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
+
 import { useI18n } from "@/lib/i18n/context";
 import { useMemo } from "react";
 
@@ -36,6 +37,8 @@ export default function FormularioIndustrialAnalisis({
   onSuccess,
   existingVisit,
   assignedSellerId,
+  originalArchivos = [],
+  readOnly = false,
 }: FormularioIndustrialAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioIndustrialAnalisis;
@@ -135,6 +138,8 @@ export default function FormularioIndustrialAnalisis({
             fileInputRef={fileInputRef}
             cameraPhotoRef={cameraPhotoRef}
             cameraVideoRef={cameraVideoRef}
+            originalArchivos={originalArchivos}
+            readOnly={readOnly}
           />
         );
       default:
@@ -189,6 +194,7 @@ export default function FormularioIndustrialAnalisis({
             visitIsCompleted={
               VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }
+            readOnly={readOnly}
           />
         </form>
       </Form>

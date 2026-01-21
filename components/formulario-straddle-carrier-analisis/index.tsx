@@ -38,6 +38,8 @@ export default function FormularioStraddleCarrierAnalisis({
   onSuccess,
   existingVisit,
   assignedSellerId,
+  originalArchivos = [],
+  readOnly = false,
 }: FormularioStraddleCarrierAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioStraddleCarrierAnalisis;
@@ -143,6 +145,8 @@ export default function FormularioStraddleCarrierAnalisis({
             fileInputRef={fileInputRef}
             cameraPhotoRef={cameraPhotoRef}
             cameraVideoRef={cameraVideoRef}
+            originalArchivos={originalArchivos}
+            readOnly={readOnly}
           />
         );
       default:
@@ -198,6 +202,7 @@ export default function FormularioStraddleCarrierAnalisis({
             visitIsCompleted={
               visitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }
+            readOnly={readOnly}
           />
         </form>
       </Form>

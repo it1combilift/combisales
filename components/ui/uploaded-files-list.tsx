@@ -4,9 +4,10 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/lib/i18n/context";
 import { TipoArchivo } from "@prisma/client";
-import { Check, EyeIcon, Trash2 } from "lucide-react";
+import { Check, EyeIcon, Trash2, Lock } from "lucide-react";
 import { MAX_FILES } from "@/constants/constants";
 import { FILE_TYPE_CONFIG } from "@/components/attachments-gallery";
 
@@ -23,6 +24,8 @@ export interface UploadedFileItem {
   alto?: number | null;
   duracion?: number | null;
   formato: string;
+  // Flag para indicar si es un archivo del original (read-only)
+  isFromOriginal?: boolean;
 }
 
 export interface UploadedFilesListProps {
@@ -34,6 +37,10 @@ export interface UploadedFilesListProps {
   maxFiles?: number;
   showHeader?: boolean;
   className?: string;
+  // Archivos de la visita original (para clones - solo lectura)
+  originalArchivos?: UploadedFileItem[];
+  // Si es true, todos los archivos son solo lectura
+  readOnly?: boolean;
 }
 
 // ==================== HELPER FUNCTIONS ====================
@@ -71,12 +78,22 @@ export function UploadedFilesList({
   maxFiles = MAX_FILES,
   showHeader = true,
   className,
+  originalArchivos = [],
+  readOnly = false,
 }: UploadedFilesListProps) {
   const { t } = useI18n();
 
-  if (archivos.length === 0) {
+  // Combine original files (read-only) with clone's own files
+  const allArchivos = [
+    ...originalArchivos.map((a) => ({ ...a, isFromOriginal: true })),
+    ...archivos.filter((a) => !a.isFromOriginal), // Only clone's own files
+  ];
+
+  if (allArchivos.length === 0) {
     return null;
   }
+
+  const hasOriginalFiles = originalArchivos.length > 0;
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -88,19 +105,34 @@ export function UploadedFilesList({
             {t("forms.files.uploadedFiles")}
           </p>
           <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-            {archivos.length}/{maxFiles}
+            {allArchivos.length}/{maxFiles}
+          </span>
+        </div>
+      )}
+
+      {/* Original files section header (if there are original files) */}
+      {hasOriginalFiles && (
+        <div className="flex items-center gap-2 pt-1">
+          <Badge variant="secondary" className="text-[10px] gap-1">
+            <Lock className="size-3" />
+            {t("forms.files.originalFiles")}
+          </Badge>
+          <span className="text-[10px] text-muted-foreground">
+            ({originalArchivos.length})
           </span>
         </div>
       )}
 
       {/* Scrollable Files Container */}
       <div className="max-h-[200px] overflow-y-auto space-y-1.5 pr-1 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-        {archivos.map((archivo) => {
+        {allArchivos.map((archivo) => {
           const config = getFileConfig(archivo);
           const IconComponent = config.icon;
           const isDeleting = deletingFileId === archivo.cloudinaryId;
           const isImage = archivo.tipoArchivo === TipoArchivo.IMAGEN;
           const isVideo = archivo.tipoArchivo === TipoArchivo.VIDEO;
+          const isOriginal = archivo.isFromOriginal === true;
+          const canDelete = !readOnly && !isOriginal;
 
           return (
             <div
@@ -110,8 +142,16 @@ export function UploadedFilesList({
                 "transition-all duration-200 group",
                 "hover:border-primary/20 hover:bg-accent/30",
                 isDeleting && "opacity-50 pointer-events-none",
+                isOriginal && "border-dashed bg-muted/30",
               )}
             >
+              {/* Original file indicator */}
+              {isOriginal && (
+                <div className="absolute -top-1 -right-1">
+                  <Lock className="size-3 text-muted-foreground" />
+                </div>
+              )}
+
               {/* Thumbnail - Uses attachments-gallery styling */}
               {isImage ? (
                 <div
@@ -143,12 +183,22 @@ export function UploadedFilesList({
 
               {/* File info */}
               <div className="flex-1 min-w-0">
-                <p
-                  className="text-xs font-medium truncate"
-                  title={archivo.nombre}
-                >
-                  {archivo.nombre}
-                </p>
+                <div className="flex items-center gap-1.5">
+                  <p
+                    className="text-xs font-medium truncate"
+                    title={archivo.nombre}
+                  >
+                    {archivo.nombre}
+                  </p>
+                  {isOriginal && (
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] px-1 py-0 h-4"
+                    >
+                      {t("forms.files.original")}
+                    </Badge>
+                  )}
+                </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                   <span className={cn("font-medium uppercase", config.color)}>
                     {archivo.formato}
@@ -181,21 +231,23 @@ export function UploadedFilesList({
                 >
                   <EyeIcon className="size-3.5" />
                 </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 rounded-md opacity-70 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-                  title={t("forms.files.deleteFile")}
-                  onClick={() => onRemoveFile(archivo)}
-                  disabled={isUploading || deletingFileId !== null}
-                >
-                  {isDeleting ? (
-                    <Spinner variant="ellipsis" size={12} />
-                  ) : (
-                    <Trash2 className="size-3.5" />
-                  )}
-                </Button>
+                {canDelete && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 rounded-md opacity-70 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                    title={t("forms.files.deleteFile")}
+                    onClick={() => onRemoveFile(archivo)}
+                    disabled={isUploading || deletingFileId !== null}
+                  >
+                    {isDeleting ? (
+                      <Spinner variant="ellipsis" size={12} />
+                    ) : (
+                      <Trash2 className="size-3.5" />
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
           );

@@ -30,6 +30,8 @@ export default function FormularioCSSAnalisis({
   onSuccess,
   existingVisit,
   assignedSellerId,
+  originalArchivos = [],
+  readOnly = false,
 }: FormularioCSSAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioCSSAnalisis;
@@ -125,6 +127,8 @@ export default function FormularioCSSAnalisis({
             fileInputRef={fileInputRef}
             cameraPhotoRef={cameraPhotoRef}
             cameraVideoRef={cameraVideoRef}
+            originalArchivos={originalArchivos}
+            readOnly={readOnly}
           />
         );
       default:
@@ -178,6 +182,7 @@ export default function FormularioCSSAnalisis({
             visitIsCompleted={
               VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }
+            readOnly={readOnly}
           />
         </form>
       </Form>

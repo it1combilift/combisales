@@ -120,6 +120,9 @@ export interface Visit {
   updatedAt: Date;
   // Para visitas creadas por DEALER: vendedor asignado
   assignedSellerId?: string | null;
+  // Campos de clonación (cuando SELLER clona una visita de DEALER)
+  clonedFromId?: string | null;
+  clonedAt?: Date | null;
   customer?: Customer;
   user?: {
     id: string;
@@ -132,6 +135,22 @@ export interface Visit {
     id: string;
     name: string | null;
     email: string;
+  } | null;
+  // Visita original (si esta es un clon)
+  // Incluye los formularios con archivos para mostrar los adjuntos del original
+  clonedFrom?: {
+    id: string;
+    visitDate: Date;
+    user?: {
+      id: string;
+      name: string | null;
+      email: string;
+    };
+    // Formularios del original con sus archivos
+    formularioCSSAnalisis?: FormularioCSSAnalisis;
+    formularioIndustrialAnalisis?: FormularioIndustrialAnalisis;
+    formularioLogisticaAnalisis?: FormularioLogisticaAnalisis;
+    formularioStraddleCarrierAnalisis?: FormularioStraddleCarrierAnalisis;
   } | null;
   formularioCSSAnalisis?: FormularioCSSAnalisis;
   formularioIndustrialAnalisis?: FormularioIndustrialAnalisis;
@@ -781,4 +800,6 @@ export interface ColumnsConfig {
   onView?: (visit: Visit) => void;
   onEdit?: (visit: Visit) => void;
   onDelete?: (visit: Visit) => void;
+  onClone?: (visit: Visit) => void;
+  onViewForm?: (visit: Visit) => void;
 }

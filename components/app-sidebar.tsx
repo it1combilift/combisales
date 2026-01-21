@@ -9,7 +9,6 @@ import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { Forklift, ListTodo } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/context";
-import { NavDocuments } from "@/components/nav-documents";
 import { NavSecondary } from "@/components/nav-secondary";
 
 import {
@@ -166,7 +165,7 @@ export function AppSidebar({
 
   // Filter navigation items based on user role
   // ADMIN: All routes
-  // SELLER: Tasks, Clients, Equipment
+  // SELLER: Tasks, Clients, Equipment, Dealers (for assigned visits)
   // DEALER: Only Dealers
   const filteredNavMain = data.navMain.filter((item) => {
     // ADMIN can access everything
@@ -179,12 +178,13 @@ export function AppSidebar({
       return item.url === "/dashboard/dealers";
     }
 
-    // SELLER can access Tasks, Clients, Equipment (not Users, not Dealers)
+    // SELLER can access Tasks, Clients, Equipment, and Dealers (for assigned visits)
     if (userRole === Role.SELLER) {
       return (
         item.url === "/dashboard/tasks" ||
         item.url === "/dashboard/clients" ||
-        item.url === "/dashboard/equipment"
+        item.url === "/dashboard/equipment" ||
+        item.url === "/dashboard/dealers"
       );
     }
 

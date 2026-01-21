@@ -28,6 +28,10 @@ export interface DealerVisitFormDialogProps {
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
   existingVisit?: Visit;
+  /** If true, the user is a SELLER editing their own clone - skip seller selection */
+  isSellerEditing?: boolean;
+  /** If true, the form opens in read-only mode (SELLER viewing original visit) */
+  readOnly?: boolean;
 }
 
 interface SellerInfo {
@@ -41,6 +45,8 @@ export default function DealerVisitFormDialog({
   onOpenChange,
   onSuccess,
   existingVisit,
+  isSellerEditing = false,
+  readOnly = false,
 }: DealerVisitFormDialogProps) {
   const { t } = useI18n();
 
@@ -55,7 +61,14 @@ export default function DealerVisitFormDialog({
   const [isLoadingSellers, setIsLoadingSellers] = useState(true);
 
   // Fetch assigned sellers for the current DEALER
+  // Only fetch if NOT editing and NOT a SELLER editing their clone
   const fetchAssignedSellers = useCallback(async () => {
+    // Skip fetching if SELLER is editing - they don't need seller selection
+    if (isSellerEditing) {
+      setIsLoadingSellers(false);
+      return;
+    }
+
     setIsLoadingSellers(true);
     try {
       const response = await axios.get("/api/users/assigned-sellers");
@@ -67,25 +80,25 @@ export default function DealerVisitFormDialog({
     } finally {
       setIsLoadingSellers(false);
     }
-  }, []);
+  }, [isSellerEditing]);
 
   useEffect(() => {
-    if (open) {
+    if (open && !existingVisit && !isSellerEditing) {
+      // Only fetch sellers when creating a new visit (DEALER flow)
       fetchAssignedSellers();
     }
-  }, [open, fetchAssignedSellers]);
+  }, [open, existingVisit, isSellerEditing, fetchAssignedSellers]);
 
   // Reset state when dialog closes or when editing
   useEffect(() => {
     if (existingVisit && open) {
-      // If editing, skip to form
+      // If editing, skip directly to form
       setSelectedFormType(existingVisit.formType as VisitFormType);
       if (existingVisit.assignedSeller) {
         setSelectedSeller(existingVisit.assignedSeller);
-        setCurrentStep("form");
-      } else {
-        setCurrentStep("seller");
       }
+      // Always go directly to form when editing
+      setCurrentStep("form");
     } else if (!open) {
       setSelectedFormType(null);
       setSelectedSeller(null);
@@ -254,13 +267,13 @@ export default function DealerVisitFormDialog({
                               option.type === VisitFormType.ANALISIS_CSS
                                 ? "css"
                                 : option.type ===
-                                  VisitFormType.ANALISIS_INDUSTRIAL
-                                ? "industrial"
-                                : option.type ===
-                                  VisitFormType.ANALISIS_LOGISTICA
-                                ? "logistica"
-                                : "straddleCarrier"
-                            }` as any
+                                    VisitFormType.ANALISIS_INDUSTRIAL
+                                  ? "industrial"
+                                  : option.type ===
+                                      VisitFormType.ANALISIS_LOGISTICA
+                                    ? "logistica"
+                                    : "straddleCarrier"
+                            }` as any,
                           )}
                         </h3>
                         <p className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate">
@@ -269,13 +282,13 @@ export default function DealerVisitFormDialog({
                               option.type === VisitFormType.ANALISIS_CSS
                                 ? "css"
                                 : option.type ===
-                                  VisitFormType.ANALISIS_INDUSTRIAL
-                                ? "industrial"
-                                : option.type ===
-                                  VisitFormType.ANALISIS_LOGISTICA
-                                ? "logistica"
-                                : "straddleCarrier"
-                            }` as any
+                                    VisitFormType.ANALISIS_INDUSTRIAL
+                                  ? "industrial"
+                                  : option.type ===
+                                      VisitFormType.ANALISIS_LOGISTICA
+                                    ? "logistica"
+                                    : "straddleCarrier"
+                            }` as any,
                           )}
                         </p>
                       </div>
@@ -297,46 +310,95 @@ export default function DealerVisitFormDialog({
         {/* Step 3: Form filling */}
         {currentStep === "form" && selectedFormType && (
           <>
-            {selectedFormType === VisitFormType.ANALISIS_CSS && (
-              <FormularioCSSAnalisis
-                zohoTaskId={undefined}
-                customer={undefined}
-                onBack={handleBack}
-                onSuccess={handleSuccess}
-                existingVisit={existingVisit}
-                assignedSellerId={selectedSeller?.id}
-              />
-            )}
-            {selectedFormType === VisitFormType.ANALISIS_INDUSTRIAL && (
-              <FormularioIndustrialAnalisis
-                zohoTaskId={undefined}
-                customer={undefined}
-                onBack={handleBack}
-                onSuccess={handleSuccess}
-                existingVisit={existingVisit}
-                assignedSellerId={selectedSeller?.id}
-              />
-            )}
-            {selectedFormType === VisitFormType.ANALISIS_LOGISTICA && (
-              <FormularioLogisticaAnalisis
-                zohoTaskId={undefined}
-                customer={undefined}
-                onBack={handleBack}
-                onSuccess={handleSuccess}
-                existingVisit={existingVisit}
-                assignedSellerId={selectedSeller?.id}
-              />
-            )}
-            {selectedFormType === VisitFormType.ANALISIS_STRADDLE_CARRIER && (
-              <FormularioStraddleCarrierAnalisis
-                zohoTaskId={undefined}
-                customer={undefined}
-                onBack={handleBack}
-                onSuccess={handleSuccess}
-                existingVisit={existingVisit}
-                assignedSellerId={selectedSeller?.id}
-              />
-            )}
+            {(() => {
+              // For cloned visits, get original files to show as read-only
+              const isClonedVisit =
+                !!existingVisit?.clonedFromId && !!existingVisit?.clonedFrom;
+
+              const getOriginalArchivos = () => {
+                if (!isClonedVisit || !existingVisit?.clonedFrom) return [];
+                switch (selectedFormType) {
+                  case VisitFormType.ANALISIS_CSS:
+                    return (
+                      existingVisit.clonedFrom.formularioCSSAnalisis
+                        ?.archivos || []
+                    );
+                  case VisitFormType.ANALISIS_INDUSTRIAL:
+                    return (
+                      existingVisit.clonedFrom.formularioIndustrialAnalisis
+                        ?.archivos || []
+                    );
+                  case VisitFormType.ANALISIS_LOGISTICA:
+                    return (
+                      existingVisit.clonedFrom.formularioLogisticaAnalisis
+                        ?.archivos || []
+                    );
+                  case VisitFormType.ANALISIS_STRADDLE_CARRIER:
+                    return (
+                      existingVisit.clonedFrom.formularioStraddleCarrierAnalisis
+                        ?.archivos || []
+                    );
+                  default:
+                    return [];
+                }
+              };
+
+              const originalArchivos = getOriginalArchivos();
+
+              return (
+                <>
+                  {selectedFormType === VisitFormType.ANALISIS_CSS && (
+                    <FormularioCSSAnalisis
+                      zohoTaskId={undefined}
+                      customer={undefined}
+                      onBack={handleBack}
+                      onSuccess={handleSuccess}
+                      existingVisit={existingVisit}
+                      assignedSellerId={selectedSeller?.id}
+                      originalArchivos={originalArchivos}
+                      readOnly={readOnly}
+                    />
+                  )}
+                  {selectedFormType === VisitFormType.ANALISIS_INDUSTRIAL && (
+                    <FormularioIndustrialAnalisis
+                      zohoTaskId={undefined}
+                      customer={undefined}
+                      onBack={handleBack}
+                      onSuccess={handleSuccess}
+                      existingVisit={existingVisit}
+                      assignedSellerId={selectedSeller?.id}
+                      originalArchivos={originalArchivos}
+                      readOnly={readOnly}
+                    />
+                  )}
+                  {selectedFormType === VisitFormType.ANALISIS_LOGISTICA && (
+                    <FormularioLogisticaAnalisis
+                      zohoTaskId={undefined}
+                      customer={undefined}
+                      onBack={handleBack}
+                      onSuccess={handleSuccess}
+                      existingVisit={existingVisit}
+                      assignedSellerId={selectedSeller?.id}
+                      originalArchivos={originalArchivos}
+                      readOnly={readOnly}
+                    />
+                  )}
+                  {selectedFormType ===
+                    VisitFormType.ANALISIS_STRADDLE_CARRIER && (
+                    <FormularioStraddleCarrierAnalisis
+                      zohoTaskId={undefined}
+                      customer={undefined}
+                      onBack={handleBack}
+                      onSuccess={handleSuccess}
+                      existingVisit={existingVisit}
+                      assignedSellerId={selectedSeller?.id}
+                      originalArchivos={originalArchivos}
+                      readOnly={readOnly}
+                    />
+                  )}
+                </>
+              );
+            })()}
           </>
         )}
       </DialogContent>

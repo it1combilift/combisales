@@ -13,6 +13,8 @@ import {
 // ==================== PRISMA INCLUDES ====================
 /**
  * Common include pattern for visit queries
+ * Includes clonedFrom with formularios and archivos for cloned visits
+ * to display original dealer's files in the cloned visit
  */
 export const VISIT_INCLUDE = {
   user: {
@@ -29,6 +31,42 @@ export const VISIT_INCLUDE = {
       id: true,
       name: true,
       email: true,
+    },
+  },
+  // Visita original (si esta es un clon)
+  // Incluye los formularios con archivos para mostrar los adjuntos del original
+  clonedFrom: {
+    select: {
+      id: true,
+      visitDate: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      // Include original visit's forms with files for cloned visits
+      formularioCSSAnalisis: {
+        include: {
+          archivos: true,
+        },
+      },
+      formularioIndustrialAnalisis: {
+        include: {
+          archivos: true,
+        },
+      },
+      formularioLogisticaAnalisis: {
+        include: {
+          archivos: true,
+        },
+      },
+      formularioStraddleCarrierAnalisis: {
+        include: {
+          archivos: true,
+        },
+      },
     },
   },
   customer: true,

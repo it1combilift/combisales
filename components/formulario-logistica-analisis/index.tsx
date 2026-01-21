@@ -37,6 +37,8 @@ export default function FormularioLogisticaAnalisis({
   onSuccess,
   existingVisit,
   assignedSellerId,
+  originalArchivos = [],
+  readOnly = false,
 }: FormularioLogisticaAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioLogisticaAnalisis;
@@ -137,6 +139,8 @@ export default function FormularioLogisticaAnalisis({
             fileInputRef={fileInputRef}
             cameraPhotoRef={cameraPhotoRef}
             cameraVideoRef={cameraVideoRef}
+            originalArchivos={originalArchivos}
+            readOnly={readOnly}
           />
         );
       default:
@@ -191,6 +195,7 @@ export default function FormularioLogisticaAnalisis({
             visitIsCompleted={
               VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }
+            readOnly={readOnly}
           />
         </form>
       </Form>

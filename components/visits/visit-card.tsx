@@ -5,7 +5,7 @@ import { formatDate } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { VisitStatus, VisitFormType } from "@prisma/client";
+import { VisitStatus, VisitFormType, Role } from "@prisma/client";
 import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
 import { useI18n } from "@/lib/i18n/context";
 
@@ -34,6 +34,7 @@ import {
   Copy,
   PencilLine,
   ClipboardList,
+  Eye,
 } from "lucide-react";
 
 const STATUS_VARIANTS: Record<
@@ -56,7 +57,10 @@ interface VisitCardProps {
   onView?: (visit: Visit) => void;
   onEdit?: (visit: Visit) => void;
   onDelete?: (visit: Visit) => void;
+  onClone?: (visit: Visit) => void;
+  onViewForm?: (visit: Visit) => void;
   onCreateVisit?: () => void;
+  userRole?: Role | null;
 }
 
 export const VisitCard = ({
@@ -64,11 +68,24 @@ export const VisitCard = ({
   onView,
   onEdit,
   onDelete,
+  onClone,
+  onViewForm,
   onCreateVisit,
+  userRole,
 }: VisitCardProps) => {
   const { t, locale } = useI18n();
   const status = visit.status as VisitStatus;
   const formType = visit.formType as VisitFormType;
+
+  const isSeller = userRole === Role.SELLER;
+  const isDealer = userRole === Role.DEALER;
+  const isAdmin = userRole === Role.ADMIN;
+  const isClone = !!visit.clonedFromId;
+  // SELLER can only edit/delete their own clones
+  const canEdit = !isSeller || isClone;
+  const canDelete = !isSeller || isClone;
+  // SELLER can only clone original visits (not clones)
+  const canClone = isSeller && !isClone && onClone;
 
   const formTypeKeys: Record<VisitFormType, string> = {
     ANALISIS_CSS: "css",
@@ -90,7 +107,7 @@ export const VisitCard = ({
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className="flex justify-start w-full items-start">
+            <div className="flex justify-start w-full items-start flex-wrap gap-1">
               <Badge variant="info" className="text-xs">
                 {FORM_TYPE_ICONS[formType] && (
                   <span className="inline-flex size-3 items-center justify-center">
@@ -100,7 +117,7 @@ export const VisitCard = ({
                 {t(`visits.formTypes.${formTypeKeys[formType]}` as any)}
               </Badge>
 
-              <Badge variant={STATUS_VARIANTS[status]} className="ml-2 text-xs">
+              <Badge variant={STATUS_VARIANTS[status]} className="text-xs">
                 {VISIT_STATUS_ICONS[status] && (
                   <span>
                     {React.createElement(VISIT_STATUS_ICONS[status], {
@@ -110,6 +127,18 @@ export const VisitCard = ({
                 )}
                 {t(`visits.statuses.${statusKeys[status]}` as any)}
               </Badge>
+
+              {/* Show clone status badge for SELLER */}
+              {isSeller && (
+                <Badge
+                  variant={isClone ? "secondary" : "outline"}
+                  className="text-xs"
+                >
+                  {isClone
+                    ? t("dealerPage.seller.clonedBadge")
+                    : t("dealerPage.seller.originalBadge")}
+                </Badge>
+              )}
             </div>
           </div>
 
@@ -125,18 +154,53 @@ export const VisitCard = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-52">
               <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
+
+              {/* Clone action for SELLER (only for original visits) */}
+              {canClone && (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClone(visit);
+                  }}
+                >
+                  <Copy className="size-4" />
+                  {t("dealerPage.seller.cloneAction")}
+                </DropdownMenuItem>
+              )}
+
+              {/* View form (read-only) for SELLER on original visits */}
+              {isSeller && !isClone && onViewForm && (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewForm(visit);
+                  }}
+                >
+                  <Eye className="size-4" />
+                  {t("visits.viewForm")}
+                </DropdownMenuItem>
+              )}
+
               <DropdownMenuItem
                 className="cursor-pointer"
-                onClick={() => navigator.clipboard.writeText(visit.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(visit.id);
+                }}
               >
                 <Copy className="size-4" />
                 {t("visits.copy")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {onEdit && (
+              {onEdit && canEdit && (
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => onEdit(visit)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(visit);
+                  }}
                 >
                   <PencilLine className="size-4" />
                   {t("common.edit")}
@@ -145,18 +209,24 @@ export const VisitCard = ({
               {onView && (
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => onView(visit)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onView(visit);
+                  }}
                 >
                   <ArrowUpRight className="size-4" />
                   {t("visits.viewDetails")}
                 </DropdownMenuItem>
               )}
-              {onDelete && (
+              {onDelete && canDelete && (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => onDelete(visit)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(visit);
+                    }}
                   >
                     <Trash2 className="size-4 text-destructive" />
                     {t("common.delete")}
@@ -200,19 +270,45 @@ export const VisitCard = ({
           </div>
         </div>
 
-        {/* Seller Info */}
+        {/* User Info - Role-based display */}
         <div className="pt-3 border-t border-border space-y-2.5">
-          {visit.user && (
+          {/* SELLER sees: Dealer who assigned the visit */}
+          {/* For cloned visits, show the original dealer from clonedFrom.user */}
+          {(isSeller || isAdmin) && (
             <div className="flex items-center gap-2.5 text-sm min-h-11">
               <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
                 <User className="size-4" />
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-foreground font-semibold truncate text-sm">
-                  {visit.user.name || t("users.card.noName")}
+                  {/* For clones: show original dealer, for originals: show visit.user */}
+                  {isClone && visit.clonedFrom?.user
+                    ? visit.clonedFrom.user.name || t("users.card.noName")
+                    : visit.user?.name || t("users.card.noName")}
                 </span>
                 <span className="text-muted-foreground text-xs truncate">
-                  {visit.user.email}
+                  {isSeller
+                    ? t("dealerPage.columns.dealer")
+                    : isClone && visit.clonedFrom?.user
+                      ? visit.clonedFrom.user.email
+                      : visit.user?.email}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* DEALER and ADMIN see: Assigned Seller (P. Manager) */}
+          {(isDealer || isAdmin) && visit.assignedSeller && (
+            <div className="flex items-center gap-2.5 text-sm min-h-11">
+              <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-primary/10">
+                <User className="size-4 text-primary" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-foreground font-semibold truncate text-sm">
+                  {visit.assignedSeller.name || t("users.card.noName")}
+                </span>
+                <span className="text-muted-foreground text-xs truncate">
+                  {t("dealerPage.columns.assignedSeller")}
                 </span>
               </div>
             </div>

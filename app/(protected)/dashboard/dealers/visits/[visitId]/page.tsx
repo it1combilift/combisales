@@ -13,8 +13,16 @@ import { use, useEffect, useState } from "react";
 import { EmptyCard } from "@/components/empty-card";
 import { H1, Paragraph } from "@/components/fonts/fonts";
 import { Card, CardContent } from "@/components/ui/card";
-import { VisitStatus, VisitFormType } from "@prisma/client";
+import { VisitStatus, VisitFormType, Role } from "@prisma/client";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
+import { useSession } from "next-auth/react";
+
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
+import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
+import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
+import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
+import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
 
 import {
   CSSDetail,
@@ -23,13 +31,6 @@ import {
   StraddleCarrierDetail,
   StatCard,
 } from "@/components/visit-detail";
-
-import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
-import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
-import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
-import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
-
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import {
   Visit,
@@ -48,6 +49,8 @@ import {
   FileX,
   UserCheck,
   PencilLine,
+  GitBranch,
+  Split,
 } from "lucide-react";
 
 interface DealerVisitDetailPageProps {
@@ -63,9 +66,18 @@ export default function DealerVisitDetailPage({
   const [visit, setVisit] = useState<Visit | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [isCloning, setIsCloning] = useState(false);
+  const [userRole, setUserRole] = useState<Role | null>(null);
 
   const router = useRouter();
   const { t } = useI18n();
+  const { data: session } = useSession();
+
+  // User role helpers
+  const isSeller = userRole === Role.SELLER;
+  const isClone = !!visit?.clonedFromId;
+  // SELLER can only edit their own clones (drafts)
+  const canEdit = !isSeller || isClone;
 
   // Fetch visit data
   useEffect(() => {
@@ -86,6 +98,35 @@ export default function DealerVisitDetailPage({
       fetchVisit();
     }
   }, [visitId, t]);
+
+  // Get user role from session
+  useEffect(() => {
+    if (session?.user?.role) {
+      setUserRole(session.user.role as Role);
+    }
+  }, [session]);
+
+  // Clone visit (SELLER only)
+  const handleCloneVisit = async () => {
+    if (!visit || !isSeller || isClone) return;
+
+    setIsCloning(true);
+    try {
+      const response = await axios.post(`/api/visits/${visit.id}/clone`);
+      if (response.status === 201) {
+        toast.success(t("dealerPage.seller.cloneSuccess"), {
+          description: t("dealerPage.seller.cloneSuccessDescription"),
+        });
+        // Navigate to the cloned visit for editing
+        router.push(`/dashboard/dealers/visits/${response.data.visit.id}`);
+      }
+    } catch (error) {
+      console.error("Error cloning visit:", error);
+      toast.error(t("dealerPage.errors.cloneVisit"));
+    } finally {
+      setIsCloning(false);
+    }
+  };
 
   const handleSuccess = async () => {
     setIsEditing(false);
@@ -112,29 +153,85 @@ export default function DealerVisitDetailPage({
     }
   };
 
+  /**
+   * Helper to get combined archivos for cloned visits
+   * Combines original visit's files with any files added to the clone
+   * Original files are marked as readOnly to prevent deletion by SELLER
+   */
+  const getCombinedArchivos = (
+    cloneArchivos: any[] | undefined,
+    originalArchivos: any[] | undefined,
+  ) => {
+    const original = (originalArchivos || []).map((archivo: any) => ({
+      ...archivo,
+      isFromOriginal: true, // Mark as from original (read-only)
+    }));
+    const clone = cloneArchivos || [];
+    // Original files first, then clone's own files
+    return [...original, ...clone];
+  };
+
   // Render the appropriate detail component
+  // For cloned visits, combine archivos from original and clone
   const renderFormularioDetail = () => {
     if (!visit) return null;
 
+    // Check if this is a cloned visit
+    const isClonedVisit = !!visit.clonedFromId && !!visit.clonedFrom;
+
     switch (visit.formType) {
       case VisitFormType.ANALISIS_CSS:
-        return visit.formularioCSSAnalisis ? (
-          <CSSDetail formulario={visit.formularioCSSAnalisis} />
-        ) : null;
+        if (!visit.formularioCSSAnalisis) return null;
+        const cssFormulario = isClonedVisit
+          ? {
+              ...visit.formularioCSSAnalisis,
+              archivos: getCombinedArchivos(
+                visit.formularioCSSAnalisis.archivos,
+                visit.clonedFrom?.formularioCSSAnalisis?.archivos,
+              ),
+            }
+          : visit.formularioCSSAnalisis;
+        return <CSSDetail formulario={cssFormulario} />;
+
       case VisitFormType.ANALISIS_INDUSTRIAL:
-        return visit.formularioIndustrialAnalisis ? (
-          <IndustrialDetail formulario={visit.formularioIndustrialAnalisis} />
-        ) : null;
+        if (!visit.formularioIndustrialAnalisis) return null;
+        const industrialFormulario = isClonedVisit
+          ? {
+              ...visit.formularioIndustrialAnalisis,
+              archivos: getCombinedArchivos(
+                visit.formularioIndustrialAnalisis.archivos,
+                visit.clonedFrom?.formularioIndustrialAnalisis?.archivos,
+              ),
+            }
+          : visit.formularioIndustrialAnalisis;
+        return <IndustrialDetail formulario={industrialFormulario} />;
+
       case VisitFormType.ANALISIS_LOGISTICA:
-        return visit.formularioLogisticaAnalisis ? (
-          <LogisticaDetail formulario={visit.formularioLogisticaAnalisis} />
-        ) : null;
+        if (!visit.formularioLogisticaAnalisis) return null;
+        const logisticaFormulario = isClonedVisit
+          ? {
+              ...visit.formularioLogisticaAnalisis,
+              archivos: getCombinedArchivos(
+                visit.formularioLogisticaAnalisis.archivos,
+                visit.clonedFrom?.formularioLogisticaAnalisis?.archivos,
+              ),
+            }
+          : visit.formularioLogisticaAnalisis;
+        return <LogisticaDetail formulario={logisticaFormulario} />;
+
       case VisitFormType.ANALISIS_STRADDLE_CARRIER:
-        return visit.formularioStraddleCarrierAnalisis ? (
-          <StraddleCarrierDetail
-            formulario={visit.formularioStraddleCarrierAnalisis}
-          />
-        ) : null;
+        if (!visit.formularioStraddleCarrierAnalisis) return null;
+        const straddleFormulario = isClonedVisit
+          ? {
+              ...visit.formularioStraddleCarrierAnalisis,
+              archivos: getCombinedArchivos(
+                visit.formularioStraddleCarrierAnalisis.archivos,
+                visit.clonedFrom?.formularioStraddleCarrierAnalisis?.archivos,
+              ),
+            }
+          : visit.formularioStraddleCarrierAnalisis;
+        return <StraddleCarrierDetail formulario={straddleFormulario} />;
+
       default:
         return (
           <AlertMessage
@@ -156,11 +253,33 @@ export default function DealerVisitDetailPage({
     // This ensures form re-initializes with fresh data after save
     const formKey = `${visit.id}-${visit.updatedAt}`;
 
+    // For cloned visits, get original files to show as read-only
+    const isClonedVisit = !!visit.clonedFromId && !!visit.clonedFrom;
+
+    const getOriginalArchivos = () => {
+      if (!isClonedVisit) return [];
+      switch (visit.formType) {
+        case VisitFormType.ANALISIS_CSS:
+          return visit.clonedFrom?.formularioCSSAnalisis?.archivos || [];
+        case VisitFormType.ANALISIS_INDUSTRIAL:
+          return visit.clonedFrom?.formularioIndustrialAnalisis?.archivos || [];
+        case VisitFormType.ANALISIS_LOGISTICA:
+          return visit.clonedFrom?.formularioLogisticaAnalisis?.archivos || [];
+        case VisitFormType.ANALISIS_STRADDLE_CARRIER:
+          return (
+            visit.clonedFrom?.formularioStraddleCarrierAnalisis?.archivos || []
+          );
+        default:
+          return [];
+      }
+    };
+
     const formProps = {
       onBack: () => setIsEditing(false),
       onSuccess: handleSuccess,
       existingVisit: visit,
       assignedSellerId: visit.assignedSellerId || undefined,
+      originalArchivos: getOriginalArchivos(),
     };
 
     switch (visit.formType) {
@@ -204,33 +323,43 @@ export default function DealerVisitDetailPage({
           <header className="space-y-4">
             <div>
               <div className="flex flex-row justify-between items-center gap-2 sm:gap-3">
-                <div className="flex items-center gap-3 w-fit">
-                  <H1>
-                    {FORM_TYPE_LABELS[visit.formType]?.replace(
-                      "Análisis ",
-                      "",
-                    ) || t("visits.detailTitle")}
-                  </H1>
-                  <Badge
-                    variant={statusConfig?.variant}
-                    className="text-xs font-medium w-fit"
-                  >
-                    <span className="inline-flex">
-                      {React.createElement(
-                        VISIT_STATUS_ICONS[visit.status as VisitStatus],
-                        {
-                          className: "size-3.5",
-                        },
+                <div className="flex items-center gap-3 w-fit flex-wrap">
+                  <H1>{t("visits.detailTitle")}</H1>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge
+                      variant={statusConfig?.variant}
+                      className="text-xs font-medium w-fit"
+                    >
+                      <span className="inline-flex">
+                        {React.createElement(
+                          VISIT_STATUS_ICONS[visit.status as VisitStatus],
+                          {
+                            className: "size-3.5",
+                          },
+                        )}
+                      </span>
+                      {t(
+                        `visits.statuses.${
+                          visit.status === VisitStatus.BORRADOR
+                            ? "draft"
+                            : "completed"
+                        }`,
                       )}
-                    </span>
-                    {t(
-                      `visits.statuses.${
-                        visit.status === VisitStatus.BORRADOR
-                          ? "draft"
-                          : "completed"
-                      }`,
+                    </Badge>
+
+                    {/* Show clone status badge for SELLER */}
+                    {isSeller && (
+                      <Badge
+                        variant={isClone ? "secondary" : "outline"}
+                        className="text-xs font-medium w-fit"
+                      >
+                        <GitBranch className="size-3" />
+                        {isClone
+                          ? t("dealerPage.seller.clonedBadge")
+                          : t("dealerPage.seller.originalBadge")}
+                      </Badge>
                     )}
-                  </Badge>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-center gap-3 w-fit">
@@ -245,7 +374,27 @@ export default function DealerVisitDetailPage({
                   </Button>
 
                   <div className="flex items-center gap-2 w-fit">
-                    {visit.status === VisitStatus.BORRADOR && (
+                    {/* Clone button for SELLER (only for original visits) */}
+                    {isSeller && !isClone && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCloneVisit}
+                        disabled={isCloning}
+                        className="gap-1.5"
+                        title={t("dealerPage.seller.cloneTooltip")}
+                      >
+                        <Split
+                          className={`size-4 ${isCloning ? "animate-pulse" : ""}`}
+                        />
+                        <span className="hidden md:inline">
+                          {t("dealerPage.seller.cloneAction")}
+                        </span>
+                      </Button>
+                    )}
+
+                    {/* Edit button - only for drafts and if user can edit */}
+                    {visit.status === VisitStatus.BORRADOR && canEdit && (
                       <Button
                         variant="default"
                         size="sm"
@@ -271,6 +420,42 @@ export default function DealerVisitDetailPage({
                 title={t("visits.visitWithDraftStateTitle")}
                 description={t("visits.visitWithDraftStateDescription")}
               />
+            )}
+
+            {/* Alert for SELLER viewing original visit (cannot edit) */}
+            {isSeller && !isClone && (
+              <AlertMessage
+                variant="info"
+                title={t("dealerPage.seller.cannotEditOriginal")}
+                description={t("dealerPage.seller.editCloneOnly")}
+              />
+            )}
+
+            {/* Show clone source info */}
+            {isClone && visit.clonedFrom && (
+              <Card className="overflow-hidden border-dashed">
+                <CardContent className="py-3">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <GitBranch className="size-4" />
+                    <span>{t("dealerPage.seller.clonedFrom")}:</span>
+                    <span className="font-medium text-foreground">
+                      {visit.clonedFrom.user?.name ||
+                        visit.clonedFrom.user?.email}
+                    </span>
+                    <span>•</span>
+                    <span>{formatDate(visit.clonedFrom.visitDate)}</span>
+                    {visit.clonedAt && (
+                      <>
+                        <span>•</span>
+                        <span>
+                          {t("dealerPage.seller.clonedAt")}:{" "}
+                          {formatDate(visit.clonedAt)}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </header>
 

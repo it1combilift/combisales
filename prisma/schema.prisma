@@ -291,6 +291,10 @@ model Visit {
   // El DEALER selecciona a qué vendedor se asocia la documentación
   assignedSellerId String?
 
+  // Para visitas clonadas por SELLER desde una visita de DEALER
+  clonedFromId String? // ID de la visita original (si es clon)
+  clonedAt     DateTime? // Fecha de clonación
+
   // Relaciones
   customer                          Customer?                          @relation(fields: [customerId], references: [id], onDelete: Cascade)
   user                              User                               @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -300,6 +304,10 @@ model Visit {
   formularioLogisticaAnalisis       FormularioLogisticaAnalisis?
   formularioStraddleCarrierAnalisis FormularioStraddleCarrierAnalisis?
 
+  // Relación de clonación (self-referential)
+  clonedFrom Visit?  @relation("VisitClones", fields: [clonedFromId], references: [id], onDelete: SetNull)
+  clones     Visit[] @relation("VisitClones")
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -308,6 +316,7 @@ model Visit {
   @@index([zohoTaskId])
   @@index([userId])
   @@index([assignedSellerId])
+  @@index([clonedFromId])
   @@index([visitDate])
   @@index([status])
   @@index([formType])

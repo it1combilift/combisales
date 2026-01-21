@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { VisitFormType, VisitStatus } from "@prisma/client";
+import { VisitFormType, Role } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import {
@@ -31,6 +31,7 @@ import {
   API_SUCCESS,
   unauthorizedResponse,
   notFoundResponse,
+  badRequestResponse,
   serverErrorResponse,
   createSuccessResponse,
 } from "@/lib/api-response";
@@ -69,6 +70,11 @@ export async function GET(
 /**
  * PUT /api/visits/[id]
  * Update an existing visit
+ *
+ * Permission rules:
+ * - ADMIN: can edit any visit
+ * - DEALER: can only edit their own visits
+ * - SELLER: can only edit their OWN CLONES (clonedFromId !== null && userId === session.user.id)
  */
 export async function PUT(
   req: NextRequest,
@@ -104,6 +110,37 @@ export async function PUT(
     if (!existingVisit) {
       return notFoundResponse("VISIT");
     }
+
+    // ==================== PERMISSION VALIDATION ====================
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true },
+    });
+
+    if (!currentUser) {
+      return unauthorizedResponse();
+    }
+
+    // SELLER: solo puede editar sus propios clones
+    if (currentUser.role === Role.SELLER) {
+      // Debe ser un clon (clonedFromId no es null)
+      if (!existingVisit.clonedFromId) {
+        return badRequestResponse(
+          "Los SELLER solo pueden editar clones, no visitas originales",
+        );
+      }
+      // Debe ser el propietario del clon
+      if (existingVisit.userId !== session.user.id) {
+        return badRequestResponse("Solo puedes editar tus propios clones");
+      }
+    }
+    // DEALER: solo puede editar sus propias visitas
+    else if (currentUser.role === Role.DEALER) {
+      if (existingVisit.userId !== session.user.id) {
+        return badRequestResponse("Solo puedes editar tus propias visitas");
+      }
+    }
+    // ADMIN: puede editar cualquier visita (no requiere validación adicional)
 
     // ==================== SYNC FILES BEFORE UPDATE ====================
     // This ensures files deleted in the form are also deleted from DB and Cloudinary
@@ -270,6 +307,11 @@ export async function PUT(
 /**
  * DELETE /api/visits/[id]
  * Delete a visit
+ *
+ * Permission rules:
+ * - ADMIN: can delete any visit
+ * - DEALER: can only delete their own visits
+ * - SELLER: can only delete their OWN CLONES
  */
 export async function DELETE(
   req: NextRequest,
@@ -290,6 +332,35 @@ export async function DELETE(
     if (!visit) {
       return notFoundResponse("VISIT");
     }
+
+    // ==================== PERMISSION VALIDATION ====================
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true },
+    });
+
+    if (!currentUser) {
+      return unauthorizedResponse();
+    }
+
+    // SELLER: solo puede eliminar sus propios clones
+    if (currentUser.role === Role.SELLER) {
+      if (!visit.clonedFromId) {
+        return badRequestResponse(
+          "Los SELLER solo pueden eliminar clones, no visitas originales",
+        );
+      }
+      if (visit.userId !== session.user.id) {
+        return badRequestResponse("Solo puedes eliminar tus propios clones");
+      }
+    }
+    // DEALER: solo puede eliminar sus propias visitas
+    else if (currentUser.role === Role.DEALER) {
+      if (visit.userId !== session.user.id) {
+        return badRequestResponse("Solo puedes eliminar tus propias visitas");
+      }
+    }
+    // ADMIN: puede eliminar cualquier visita
 
     await prisma.visit.delete({
       where: { id },

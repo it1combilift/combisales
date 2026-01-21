@@ -42,8 +42,9 @@ import {
  * - customerId: Get visits for a specific customer
  * - zohoTaskId: Get visits for a specific Zoho task
  * - dealerVisits: Get dealer visits (for DealersPage)
- *   - ADMIN: Returns ALL visits created by DEALER users
+ *   - ADMIN: Returns ALL visits created by DEALER users + clones by SELLERs
  *   - DEALER: Returns only visits created by the current user
+ *   - SELLER: Returns visits assigned to them by DEALERs + their own clones
  */
 export async function GET(req: NextRequest) {
   try {
@@ -71,13 +72,16 @@ export async function GET(req: NextRequest) {
         return unauthorizedResponse();
       }
 
-      // ADMIN: puede ver TODAS las visitas creadas por usuarios DEALER
+      // ADMIN: puede ver TODAS las visitas creadas por usuarios DEALER + clones de SELLERs
       if (currentUser.role === Role.ADMIN) {
         const visits = await prisma.visit.findMany({
           where: {
-            user: {
-              role: Role.DEALER,
-            },
+            OR: [
+              // Visitas originales creadas por DEALERs
+              { user: { role: Role.DEALER } },
+              // Clones creados por SELLERs (tienen clonedFromId)
+              { clonedFromId: { not: null } },
+            ],
           },
           include: VISIT_INCLUDE,
           orderBy: { visitDate: "desc" },
@@ -90,6 +94,30 @@ export async function GET(req: NextRequest) {
         const visits = await prisma.visit.findMany({
           where: {
             userId: session.user.id,
+          },
+          include: VISIT_INCLUDE,
+          orderBy: { visitDate: "desc" },
+        });
+        return createSuccessResponse({ visits, userRole: currentUser.role });
+      }
+
+      // SELLER: puede ver visitas asignadas por DEALERs + sus propios clones
+      if (currentUser.role === Role.SELLER) {
+        const visits = await prisma.visit.findMany({
+          where: {
+            OR: [
+              // Visitas asignadas a este SELLER por DEALERs (originales, no clones)
+              {
+                assignedSellerId: session.user.id,
+                user: { role: Role.DEALER },
+                clonedFromId: null, // Solo originales
+              },
+              // Clones creados por este SELLER
+              {
+                userId: session.user.id,
+                clonedFromId: { not: null },
+              },
+            ],
           },
           include: VISIT_INCLUDE,
           orderBy: { visitDate: "desc" },
@@ -215,7 +243,7 @@ export async function POST(req: NextRequest) {
       formDataCreate = {
         formularioCSSAnalisis: {
           create: buildFormularioCreate(
-            formularioData as CreateFormularioCSSData
+            formularioData as CreateFormularioCSSData,
           ),
         },
       };
@@ -226,7 +254,7 @@ export async function POST(req: NextRequest) {
       formDataCreate = {
         formularioIndustrialAnalisis: {
           create: buildFormularioIndustrialCreate(
-            formularioData as CreateFormularioIndustrialData
+            formularioData as CreateFormularioIndustrialData,
           ),
         },
       };
@@ -237,7 +265,7 @@ export async function POST(req: NextRequest) {
       formDataCreate = {
         formularioLogisticaAnalisis: {
           create: buildFormularioLogisticaCreate(
-            formularioData as CreateFormularioLogisticaData
+            formularioData as CreateFormularioLogisticaData,
           ),
         },
       };
@@ -248,7 +276,7 @@ export async function POST(req: NextRequest) {
       formDataCreate = {
         formularioStraddleCarrierAnalisis: {
           create: buildFormularioStraddleCarrierCreate(
-            formularioData as CreateFormularioStraddleCarrierData
+            formularioData as CreateFormularioStraddleCarrierData,
           ),
         },
       };
@@ -290,7 +318,7 @@ export async function POST(req: NextRequest) {
             }
           : undefined,
         contextName,
-        visitData.locale || "es"
+        visitData.locale || "es",
       );
 
       // Enviar notificacion de forma asincrona (no bloquea la respuesta)
@@ -300,26 +328,26 @@ export async function POST(req: NextRequest) {
             console.log(
               `[Email] Notificacion enviada para visita ${visit.id} (${finalStatus}):`,
               result.data?.id,
-              `Destinatarios: ${result.sentTo.join(", ")}`
+              `Destinatarios: ${result.sentTo.join(", ")}`,
             );
           } else {
             console.error(
               `[Email] Error enviando notificacion para visita ${visit.id}:`,
-              result.error
+              result.error,
             );
           }
         })
         .catch((error) => {
           console.error(
             `[Email] Error inesperado enviando notificacion para visita ${visit.id}:`,
-            error
+            error,
           );
         });
     }
 
     return createSuccessResponse(
       { message: API_SUCCESS.VISIT_CREATED, visit },
-      HTTP_STATUS.CREATED
+      HTTP_STATUS.CREATED,
     );
   } catch (error) {
     return serverErrorResponse("CREATE_VISIT", error);

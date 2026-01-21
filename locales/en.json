@@ -35,7 +35,33 @@
     "errors": {
       "fetchVisits": "Error loading visits",
       "fetchSellers": "Error loading assigned P. Managers",
-      "deleteVisit": "Error deleting visit"
+      "deleteVisit": "Error deleting visit",
+      "cloneVisit": "Error cloning visit"
+    },
+    "seller": {
+      "title": "Assigned Visits",
+      "description": "Visits assigned by dealers for your review",
+      "empty": {
+        "title": "No assigned visits",
+        "description": "You don't have any visits assigned by dealers yet"
+      },
+      "cloneAction": "Clone",
+      "cloneTooltip": "Create an editable copy of this visit",
+      "cloneSuccess": "Visit cloned successfully",
+      "cloneSuccessDescription": "An editable copy of the visit has been created",
+      "clonedBadge": "Cloned",
+      "originalBadge": "Original",
+      "clonedFrom": "Cloned from",
+      "clonedAt": "Clone date",
+      "cannotEditOriginal": "You cannot edit original dealer visits",
+      "cannotDeleteOriginal": "You cannot delete original dealer visits",
+      "editCloneOnly": "You can only edit your own clones",
+      "cannotCloneClone": "You cannot clone a visit that is already a clone",
+      "cloneNoFiles": "Note: Attachments are not copied when cloning. You can add new files."
+    },
+    "columns": {
+      "dealer": "Dealer",
+      "assignedSeller": "P. Manager"
     }
   },
   "dashboard": {
@@ -353,10 +379,12 @@
     "registerVisit": "Register visit",
     "selectFormTypeDescription": "Select the form type to document this visit.",
     "editVisit": "Edit visit",
+    "viewForm": "View form",
     "viewDetails": "View details",
     "deleteVisit": "Delete visit",
     "visitDate": "Visit date",
     "visitType": "Visit type",
+    "type": "Type",
     "status": "Status",
     "seller": "P. Manager",
     "customer": "Customer",
@@ -1162,6 +1190,8 @@
       "noFiles": "No files uploaded yet",
       "viewFile": "View file",
       "deleteFile": "Delete",
+      "originalFiles": "Dealer files",
+      "original": "Original",
       "limits": {
         "images": "Images 10MB",
         "videos": "Videos 100MB",
