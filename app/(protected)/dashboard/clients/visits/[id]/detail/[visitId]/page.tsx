@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { toast } from "sonner";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateShort, getFormTypeName } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +57,7 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
   const [accountId, setAccountId] = useState<string>("");
   const [visitId, setVisitId] = useState<string>("");
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   useEffect(() => {
     const fetchVisitDetail = async () => {
@@ -259,14 +259,21 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
               icon={ClipboardList}
               label={t("tasks.type")}
               value={
-                FORM_TYPE_LABELS[visit.formType]?.replace("Formulario ", "") ||
-                visit.formType
+                visit.formType === "ANALISIS_CSS"
+                  ? t("forms.formTypes.css")
+                  : visit.formType === "ANALISIS_INDUSTRIAL"
+                    ? t("forms.formTypes.industrial")
+                    : visit.formType === "ANALISIS_LOGISTICA"
+                      ? t("forms.formTypes.logistica")
+                      : visit.formType === "ANALISIS_STRADDLE_CARRIER"
+                        ? t("forms.formTypes.straddleCarrier")
+                        : visit.formType
               }
             />
             <StatCard
               icon={Calendar}
               label={t("visits.visitDate")}
-              value={formatDate(visit.visitDate)}
+              value={formatDateShort(visit.visitDate, locale)}
             />
             <StatCard
               icon={User}
@@ -278,7 +285,11 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
             <StatCard
               icon={Clock}
               label={t("tasks.createdDate")}
-              value={visit.createdAt ? formatDate(visit.createdAt) : "N/A"}
+              value={
+                visit.createdAt
+                  ? formatDateShort(visit.createdAt, locale)
+                  : "N/A"
+              }
             />
           </div>
 

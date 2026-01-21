@@ -17,6 +17,7 @@ export const API_ERRORS = {
     VISIT: "Visita no encontrada",
     CUSTOMER: "Cliente no encontrado",
     FILE: "Archivo no encontrado",
+    ASSIGNED_SELLER: "Vendedor asignado no encontrado",
   },
   REQUIRED: {
     CUSTOMER_ID: "customerId es requerido",
@@ -53,7 +54,7 @@ type ApiErrorKey = keyof typeof API_ERRORS.OPERATION;
  */
 export function createErrorResponse(
   error: string,
-  status: number = HTTP_STATUS.INTERNAL_SERVER_ERROR
+  status: number = HTTP_STATUS.INTERNAL_SERVER_ERROR,
 ) {
   return NextResponse.json({ error }, { status });
 }
@@ -63,7 +64,7 @@ export function createErrorResponse(
  */
 export function createSuccessResponse<T>(
   data: T,
-  status: number = HTTP_STATUS.OK
+  status: number = HTTP_STATUS.OK,
 ) {
   return NextResponse.json(data, { status });
 }
@@ -81,7 +82,7 @@ export function unauthorizedResponse() {
 export function notFoundResponse(resource: keyof typeof API_ERRORS.NOT_FOUND) {
   return createErrorResponse(
     API_ERRORS.NOT_FOUND[resource],
-    HTTP_STATUS.NOT_FOUND
+    HTTP_STATUS.NOT_FOUND,
   );
 }
 
@@ -89,7 +90,7 @@ export function notFoundResponse(resource: keyof typeof API_ERRORS.NOT_FOUND) {
  * Handle bad requests
  */
 export function badRequestResponse(
-  message: string | keyof typeof API_ERRORS.REQUIRED
+  message: string | keyof typeof API_ERRORS.REQUIRED,
 ) {
   const errorMessage =
     typeof message === "string" && message in API_ERRORS.REQUIRED
@@ -103,11 +104,11 @@ export function badRequestResponse(
  */
 export function serverErrorResponse(
   operationType: ApiErrorKey,
-  error: unknown
+  error: unknown,
 ) {
   console.error(`${API_ERRORS.OPERATION[operationType]}:`, error);
   return createErrorResponse(
     API_ERRORS.OPERATION[operationType],
-    HTTP_STATUS.INTERNAL_SERVER_ERROR
+    HTTP_STATUS.INTERNAL_SERVER_ERROR,
   );
 }

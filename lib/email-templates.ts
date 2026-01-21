@@ -34,88 +34,119 @@ function t(key: string, locale: string = "es"): string {
   return typeof value === "string" ? value : key;
 }
 
-// ==================== COLOR PALETTE ====================
-const COLORS = {
-  // Brand
-  brand: "#5FA82E",
-  brandLight: "#7BC043",
-  brandDark: "#38b000",
+// ==================== DESIGN SYSTEM ====================
+const DESIGN = {
+  // Brand Colors
+  colors: {
+    primary: "#679436",
+    primaryLight: "#A5D6A7",
+    primaryDark: "#4e7c14",
+    accent: "#4CAF50",
 
-  // Neutral
-  white: "#ffffff",
-  lightGray: "#f8fafc",
-  mediumGray: "#e2e8f0",
-  darkGray: "#64748b",
-  darkerGray: "#475569",
-  black: "#1e293b",
+    // Neutrals
+    white: "#FFFFFF",
+    gray50: "#FAFAFA",
+    gray100: "#F5F5F5",
+    gray200: "#EEEEEE",
+    gray300: "#E0E0E0",
+    gray400: "#BDBDBD",
+    gray500: "#9E9E9E",
+    gray600: "#757575",
+    gray700: "#616161",
+    gray800: "#424242",
+    gray900: "#212121",
+    black: "#121212",
 
-  // Status
-  success: "#16a34a",
-  successBg: "#dcfce7",
-  successText: "#166534",
-  warning: "#d97706",
-  warningBg: "#fef3c7",
-  warningText: "#92400e",
-  info: "#2563eb",
-  infoBg: "#dbeafe",
-  infoText: "#1e40af",
+    // Status
+    successBg: "#E8F5E9",
+    successText: "#1B5E20",
+    successBorder: "#4CAF50",
+    warningBg: "#FFF8E1",
+    warningText: "#E65100",
+    warningBorder: "#FF9800",
 
-  // Section colors
-  sectionBg: "#f1f5f9",
-  sectionBorder: "#cbd5e1",
+    // File Types
+    image: "#1976D2",
+    pdf: "#C62828",
+    video: "#6A1B9A",
+    document: "#1565C0",
+    excel: "#2E7D32",
+    file: "#757575",
+  },
 
-  // File badges
-  imageBadge: "#3b82f6",
-  pdfBadge: "#dc2626",
-  videoBadge: "#9333ea",
-  docBadge: "#2563eb",
-  excelBadge: "#16a34a",
-  defaultBadge: "#64748b",
+  // Typography
+  fonts: {
+    family:
+      "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif",
+    sizes: {
+      xs: "11px",
+      sm: "12px",
+      base: "14px",
+      md: "15px",
+      lg: "16px",
+      xl: "18px",
+      xxl: "24px",
+    },
+    weights: {
+      normal: "400",
+      medium: "500",
+      semibold: "600",
+      bold: "700",
+    },
+  },
+
+  // Spacing
+  spacing: {
+    xs: "4px",
+    sm: "8px",
+    md: "12px",
+    lg: "16px",
+    xl: "20px",
+    xxl: "24px",
+    xxxl: "32px",
+  },
+
+  // Border Radius
+  radius: {
+    sm: "4px",
+    md: "6px",
+    lg: "8px",
+    xl: "12px",
+  },
 } as const;
 
 // ==================== HELPER FUNCTIONS ====================
 
-function getStatusConfig(
-  status: string,
-  locale: string = "es",
-): {
-  label: string;
-  bgColor: string;
-  textColor: string;
-  borderColor: string;
-} {
+function getStatusConfig(status: string, locale: string = "es") {
   switch (status) {
     case VisitStatus.COMPLETADA:
       return {
         label: t("email.status.completed", locale),
-        bgColor: COLORS.successBg,
-        textColor: COLORS.successText,
-        borderColor: COLORS.success,
+        bgColor: DESIGN.colors.successBg,
+        textColor: DESIGN.colors.successText,
+        borderColor: DESIGN.colors.successBorder,
+        icon: "✓",
       };
     case VisitStatus.BORRADOR:
       return {
         label: t("email.status.draft", locale),
-        bgColor: COLORS.warningBg,
-        textColor: COLORS.warningText,
-        borderColor: COLORS.warning,
+        bgColor: DESIGN.colors.warningBg,
+        textColor: DESIGN.colors.warningText,
+        borderColor: DESIGN.colors.warningBorder,
+        icon: "○",
       };
     default:
       return {
         label: t("email.status.draft", locale),
-        bgColor: COLORS.warningBg,
-        textColor: COLORS.warningText,
-        borderColor: COLORS.warning,
+        bgColor: DESIGN.colors.warningBg,
+        textColor: DESIGN.colors.warningText,
+        borderColor: DESIGN.colors.warningBorder,
+        icon: "○",
       };
   }
 }
 
-function getFileTypeLabel(
-  tipoArchivo: string,
-  locale: string = "es",
-): {
-  label: string;
-  color: string;
-} {
+function getFileTypeLabel(tipoArchivo: string, locale: string = "es") {
   const type = tipoArchivo.toLowerCase();
   if (
     type.includes("image") ||
@@ -128,13 +159,13 @@ function getFileTypeLabel(
   ) {
     return {
       label: t("email.files.fileTypes.image", locale),
-      color: COLORS.imageBadge,
+      color: DESIGN.colors.image,
     };
   }
   if (type.includes("pdf")) {
     return {
       label: t("email.files.fileTypes.pdf", locale),
-      color: COLORS.pdfBadge,
+      color: DESIGN.colors.pdf,
     };
   }
   if (
@@ -145,7 +176,7 @@ function getFileTypeLabel(
   ) {
     return {
       label: t("email.files.fileTypes.video", locale),
-      color: COLORS.videoBadge,
+      color: DESIGN.colors.video,
     };
   }
   if (
@@ -155,7 +186,7 @@ function getFileTypeLabel(
   ) {
     return {
       label: t("email.files.fileTypes.document", locale),
-      color: COLORS.docBadge,
+      color: DESIGN.colors.document,
     };
   }
   if (
@@ -165,12 +196,12 @@ function getFileTypeLabel(
   ) {
     return {
       label: t("email.files.fileTypes.excel", locale),
-      color: COLORS.excelBadge,
+      color: DESIGN.colors.excel,
     };
   }
   return {
     label: t("email.files.fileTypes.file", locale),
-    color: COLORS.defaultBadge,
+    color: DESIGN.colors.file,
   };
 }
 
@@ -191,9 +222,6 @@ function formatBoolean(
   return value ? t("email.common.yes", locale) : t("email.common.no", locale);
 }
 
-/**
- * Get translated form type name
- */
 function getFormTypeName(formType: string, locale: string = "es"): string {
   const formTypeKeys: Record<string, string> = {
     ANALISIS_CSS: "visits.formTypes.css",
@@ -204,41 +232,24 @@ function getFormTypeName(formType: string, locale: string = "es"): string {
   return t(formTypeKeys[formType] || "email.subject.visit", locale);
 }
 
-// ==================== SECTION BUILDING BLOCKS ====================
+// ==================== BUILDING BLOCKS ====================
 
-/**
- * Build a section header with title (no emoji)
- */
 function buildSectionHeader(title: string): string {
-  return `
-    <tr>
-      <td colspan="2" style="padding: 12px 16px; background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); border-radius: 6px 6px 0 0;">
-        <span style="font-size: 14px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
-          ${title}
-        </span>
-      </td>
-    </tr>
-  `;
+  return `<tr>
+    <td colspan="2" style="padding: 14px 20px; background-color: ${DESIGN.colors.primary}; border-radius: 8px 8px 0 0;">
+      <span style="font-family: ${DESIGN.fonts.family}; font-size: 13px; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.white}; text-transform: uppercase; letter-spacing: 1.2px;">${title}</span>
+    </td>
+  </tr>`;
 }
 
-/**
- * Build a subsection header (within a section)
- */
 function buildSubsectionHeader(title: string): string {
-  return `
-    <tr>
-      <td colspan="2" style="padding: 10px 16px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
-        <span style="font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 0.3px;">
-          ${title}
-        </span>
-      </td>
-    </tr>
-  `;
+  return `<tr>
+    <td colspan="2" style="padding: 12px 20px; background-color: ${DESIGN.colors.gray100}; border-bottom: 1px solid ${DESIGN.colors.gray300};">
+      <span style="font-family: ${DESIGN.fonts.family}; font-size: 11px; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.primary}; text-transform: uppercase; letter-spacing: 0.8px;">${title}</span>
+    </td>
+  </tr>`;
 }
 
-/**
- * Build a data row (key-value pair)
- */
 function buildRow(
   label: string,
   value: string | null | undefined,
@@ -246,77 +257,54 @@ function buildRow(
 ): string {
   if (!value || value === "-" || value.trim() === "") return "";
 
-  const labelColor = "#6c757d";
-  const valueColor = options?.highlight ? "#5FA82E" : "#1e293b";
-  const bgColor = "#ffffff";
-  const borderColor = "#e2e8f0";
+  const valueColor = options?.highlight
+    ? DESIGN.colors.primary
+    : DESIGN.colors.gray900;
+  const valueWeight = options?.highlight
+    ? DESIGN.fonts.weights.normal
+    : DESIGN.fonts.weights.normal;
 
   if (options?.fullWidth) {
-    return `
-      <tr>
-        <td colspan="2" style="padding: 8px 16px; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
-          <div style="font-size: 11px; color: ${labelColor}; text-transform: uppercase; margin-bottom: 4px;">${label}</div>
-          <div style="font-size: 14px; color: ${valueColor}; line-height: 1.5;">${value}</div>
-        </td>
-      </tr>
-    `;
+    return `<tr>
+      <td colspan="2" style="padding: 12px 20px; border-bottom: 1px solid ${DESIGN.colors.gray200}; background-color: ${DESIGN.colors.white};">
+        <div style="font-family: ${DESIGN.fonts.family}; font-size: 11px; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.gray600}; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">${label}</div>
+        <div style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.base}; color: ${valueColor}; font-weight: ${valueWeight}; line-height: 1.6;">${value}</div>
+      </td>
+    </tr>`;
   }
 
-  return `
-    <tr>
-      <td style="padding: 8px 16px; font-size: 12px; color: ${labelColor}; width: 40%; vertical-align: top; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
-        ${label}
-      </td>
-      <td style="padding: 8px 16px; font-size: 14px; color: ${valueColor}; border-bottom: 1px solid ${borderColor}; background-color: ${bgColor};">
-        ${value}
-      </td>
-    </tr>
-  `;
+  return `<tr>
+    <td style="padding: 12px 20px; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.gray600}; width: 38%; vertical-align: top; border-bottom: 1px solid ${DESIGN.colors.gray200}; background-color: ${DESIGN.colors.gray50};">${label}</td>
+    <td style="padding: 12px 20px; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.base}; color: ${valueColor}; font-weight: ${valueWeight}; border-bottom: 1px solid ${DESIGN.colors.gray200}; background-color: ${DESIGN.colors.white};">${value}</td>
+  </tr>`;
 }
 
-/**
- * Build a notes/description block
- */
 function buildNotesBlock(label: string, content: string): string {
   if (!content) return "";
-  return `
-    <tr>
-      <td colspan="2" style="padding: 12px 16px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
-        <div style="font-size: 11px; color: #0a0908; text-transform: uppercase; margin-bottom: 6px;">${label}</div>
-        <div style="font-size: 14px; color: #1e293b; line-height: 1.6; white-space: pre-wrap; background-color: #ffffff; padding: 12px; border-radius: 4px; border-left: 3px solid #5FA82E;">${content}</div>
-      </td>
-    </tr>
-  `;
+  return `<tr>
+    <td colspan="2" style="padding: 16px 20px; background-color: ${DESIGN.colors.gray50}; border-bottom: 1px solid ${DESIGN.colors.gray200};">
+      <div style="font-family: ${DESIGN.fonts.family}; font-size: 11px; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.gray700}; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">${label}</div>
+      <div style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.base}; color: ${DESIGN.colors.gray900}; line-height: 1.7; white-space: pre-wrap; background-color: ${DESIGN.colors.white}; padding: 14px 16px; border-radius: 6px; border-left: 4px solid ${DESIGN.colors.primary};">${content}</div>
+    </td>
+  </tr>`;
 }
 
-/**
- * Start a section container
- */
 function startSection(): string {
-  return `
-    <table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%; margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; border-collapse: collapse;">
-  `;
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%; margin-bottom: 20px; border: 1px solid ${DESIGN.colors.gray300}; border-radius: 8px; border-collapse: separate;">`;
 }
 
-/**
- * End a section container
- */
 function endSection(): string {
   return `</table>`;
 }
 
 // ==================== CUSTOMER INFO SECTION ====================
 
-/**
- * Build customer information section for email
- */
 function buildCustomerInfoSection(
   data: VisitEmailData,
   locale: string = "es",
 ): string {
   let html = "";
 
-  // Only build section if there's meaningful customer data
   const hasCustomerData =
     data.razonSocial ||
     data.personaContacto ||
@@ -330,34 +318,29 @@ function buildCustomerInfoSection(
   html += startSection();
   html += buildSectionHeader(t("email.sections.customerInfo", locale));
 
-  // Company name
   html += buildRow(
     t("email.customer.company", locale),
     data.razonSocial || null,
+    { highlight: true },
   );
-
-  // Contact person
   html += buildRow(
     t("email.customer.contact", locale),
     data.personaContacto || null,
   );
 
-  // Email
   if (data.email) {
     html += buildRow(
       t("email.customer.email", locale),
-      `<a href="mailto:${data.email}" style="color: #60A82E; text-decoration: none;">${data.email}</a>`,
+      `<a href="mailto:${data.email}" style="color: ${DESIGN.colors.primary}; text-decoration: none; font-weight: ${DESIGN.fonts.weights.normal};">${data.email}</a>`,
     );
   }
 
-  // Build full address
   const addressParts = [data.direccion].filter(Boolean);
   const address = addressParts.join("");
   if (address) {
     html += buildRow(t("email.customer.address", locale), address);
   }
 
-  // Location (city, state, postal code)
   const locationParts = [
     data.localidad,
     data.provinciaEstado,
@@ -368,24 +351,20 @@ function buildCustomerInfoSection(
     html += buildRow(t("email.customer.city", locale), location);
   }
 
-  // Country
   html += buildRow(t("email.customer.country", locale), data.pais || null);
 
-  // Website
   if (data.website) {
     html += buildRow(
       t("email.customer.website", locale),
-      `<a href="${data.website.startsWith("http") ? data.website : `https://${data.website}`}" target="_blank" style="text-decoration: none; color: #1e293b;">${data.website}</a>`,
+      `<a href="${data.website.startsWith("http") ? data.website : `https://${data.website}`}" target="_blank" style="color: ${DESIGN.colors.primary}; text-decoration: none;">${data.website}</a>`,
     );
   }
 
-  // Tax ID
   html += buildRow(
     t("email.customer.taxId", locale),
     data.numeroIdentificacionFiscal || null,
   );
 
-  // Distributor info
   if (data.distribuidor) {
     html += buildSubsectionHeader(t("email.customer.distributor", locale));
     html += buildRow(
@@ -399,7 +378,6 @@ function buildCustomerInfoSection(
   }
 
   html += endSection();
-
   return html;
 }
 
@@ -470,73 +448,17 @@ function buildDimensionsTable(
 ): string {
   if (!cargas || cargas.length === 0) return "";
 
-  const headerStyle = `padding: 10px 8px; font-size: 11px; color: #64748b; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;`;
-  const cellStyle = `padding: 8px; font-size: 13px; text-align: center; border-bottom: 1px solid #e2e8f0;`;
+  const headerStyle = `padding: 12px 10px; font-family: ${DESIGN.fonts.family}; font-size: 11px; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.gray600}; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; border-bottom: 2px solid ${DESIGN.colors.gray300}; background-color: ${DESIGN.colors.gray100};`;
+  const cellStyle = `padding: 10px 8px; font-family: ${DESIGN.fonts.family}; font-size: 13px; text-align: center; border-bottom: 1px solid ${DESIGN.colors.gray200};`;
 
   const rows = cargas
-    .map(
-      (c, i) => `
-    <tr>
-      <td style="${cellStyle} text-align: left; color: #1e293b; background-color: ${
-        i % 2 === 0 ? "#ffffff" : "#f8fafc"
-      };">${c.producto || "-"}</td>
-      <td style="${cellStyle} color: #475569; background-color: ${
-        i % 2 === 0 ? "#ffffff" : "#f8fafc"
-      };">${formatNumber(c.largo, undefined, locale)}</td>
-      <td style="${cellStyle} color: #475569; background-color: ${
-        i % 2 === 0 ? "#ffffff" : "#f8fafc"
-      };">${formatNumber(c.fondo, undefined, locale)}</td>
-      <td style="${cellStyle} color: #475569; background-color: ${
-        i % 2 === 0 ? "#ffffff" : "#f8fafc"
-      };">${formatNumber(c.alto, undefined, locale)}</td>
-      <td style="${cellStyle} color: #475569; background-color: ${
-        i % 2 === 0 ? "#ffffff" : "#f8fafc"
-      };">${formatNumber(c.peso, undefined, locale)}</td>
-      <td style="${cellStyle} color: #60A82E; background-color: ${
-        i % 2 === 0 ? "#ffffff" : "#f8fafc"
-      };">${formatNumber(c.porcentaje, undefined, locale)}%</td>
-    </tr>
-  `,
-    )
+    .map((c, i) => {
+      const bgColor = i % 2 === 0 ? DESIGN.colors.white : DESIGN.colors.gray50;
+      return `<tr><td style="${cellStyle} text-align: left; color: ${DESIGN.colors.gray700}; font-weight: ${DESIGN.fonts.weights.normal}; background-color: ${bgColor};">${c.producto || "-"}</td><td style="${cellStyle} color: ${DESIGN.colors.gray700}; background-color: ${bgColor};">${formatNumber(c.largo, undefined, locale)}</td><td style="${cellStyle} color: ${DESIGN.colors.gray700}; background-color: ${bgColor};">${formatNumber(c.fondo, undefined, locale)}</td><td style="${cellStyle} color: ${DESIGN.colors.gray700}; background-color: ${bgColor};">${formatNumber(c.alto, undefined, locale)}</td><td style="${cellStyle} color: ${DESIGN.colors.gray700}; background-color: ${bgColor};">${formatNumber(c.peso, undefined, locale)}</td><td style="${cellStyle} color: ${DESIGN.colors.primary}; font-weight: ${DESIGN.fonts.weights.normal}; background-color: ${bgColor};">${formatNumber(c.porcentaje, undefined, locale)}%</td></tr>`;
+    })
     .join("");
 
-  return `
-    <tr>
-      <td colspan="2" style="padding: 0;">
-        <table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr>
-              <th style="${headerStyle} text-align: left;">${t(
-                "email.industrial.loadTable.product",
-                locale,
-              )}</th>
-              <th style="${headerStyle}">${t(
-                "email.industrial.loadTable.length",
-                locale,
-              )}</th>
-              <th style="${headerStyle}">${t(
-                "email.industrial.loadTable.depth",
-                locale,
-              )}</th>
-              <th style="${headerStyle}">${t(
-                "email.industrial.loadTable.height",
-                locale,
-              )}</th>
-              <th style="${headerStyle}">${t(
-                "email.industrial.loadTable.weight",
-                locale,
-              )}</th>
-              <th style="${headerStyle}">${t(
-                "email.industrial.loadTable.percentage",
-                locale,
-              )}</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </td>
-    </tr>
-  `;
+  return `<tr><td colspan="2" style="padding: 0;"><table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;"><thead><tr><th style="${headerStyle} text-align: left;">${t("email.industrial.loadTable.product", locale)}</th><th style="${headerStyle}">${t("email.industrial.loadTable.length", locale)}</th><th style="${headerStyle}">${t("email.industrial.loadTable.depth", locale)}</th><th style="${headerStyle}">${t("email.industrial.loadTable.height", locale)}</th><th style="${headerStyle}">${t("email.industrial.loadTable.weight", locale)}</th><th style="${headerStyle}">${t("email.industrial.loadTable.percentage", locale)}</th></tr></thead><tbody>${rows}</tbody></table></td></tr>`;
 }
 
 function buildElectricalEquipmentRows(
@@ -548,7 +470,9 @@ function buildElectricalEquipmentRows(
   let rows = "";
   rows += buildRow(
     t("email.industrial.currentType", locale),
-    equipos.tipoCorriente || null,
+    equipos.tipoCorriente
+      ? t(`visits.currentTypes.${equipos.tipoCorriente}`, locale)
+      : null,
   );
   rows += buildRow(
     t("email.industrial.voltage", locale),
@@ -788,7 +712,22 @@ function buildLogisticaFormContent(
   );
   html += buildRow(
     t("email.logistica.operationType", locale),
-    data.tipoOperacion || null,
+    data.tipoOperacion === "almacenamiento"
+      ? t("forms.logistica.options.operationType.storage", locale)
+      : data.tipoOperacion === "cross-docking"
+        ? t("forms.logistica.options.operationType.crossDocking", locale)
+        : data.tipoOperacion === "picking"
+          ? t("forms.logistica.options.operationType.picking", locale)
+          : data.tipoOperacion === "carga-descarga"
+            ? t(
+                "forms.logistica.options.operationType.loadingUnloading",
+                locale,
+              )
+            : data.tipoOperacion === "preparacion-pedidos"
+              ? t("forms.logistica.options.operationType.orderPrep", locale)
+              : data.tipoOperacion === "mixto"
+                ? t("forms.logistica.options.operationType.mixed", locale)
+                : null,
   );
   html += endSection();
 
@@ -887,7 +826,9 @@ function buildLogisticaFormContent(
       );
       html += buildRow(
         t("email.logistica.rackType", locale),
-        p.tipoEstanterias || null,
+        p.tipoEstanterias
+          ? t(`visits.shelfTypes.${p.tipoEstanterias}`, locale)
+          : null,
       );
       html += buildRow(
         t("email.logistica.rackLevels", locale),
@@ -1141,65 +1082,45 @@ function buildFilesSection(
   const rows = archivos
     .map((archivo, index) => {
       const fileType = getFileTypeLabel(archivo.tipoArchivo, locale);
-      const bgColor = index % 2 === 0 ? "#ffffff" : "#f8fafc";
-      return `
-        <tr>
-          <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; background-color: ${bgColor};">
-            <a href="${
-              archivo.cloudinaryUrl
-            }" target="_blank" rel="noopener" style="color: #60A82E; text-decoration: none; font-size: 13px;">
-              ${archivo.nombre}
-            </a>
-          </td>
-          <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: center; background-color: ${bgColor};">
-            <span style="display: inline-block; padding: 2px 8px; background-color: ${
-              fileType.color
-            }; border-radius: 10px; font-size: 10px; color: #ffffff;">${
-              fileType.label
-            }</span>
-          </td>
-          <td style="padding: 10px 16px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 12px; color: #64748b; background-color: ${bgColor};">
-            ${formatFileSize(archivo.tamanio)}
-          </td>
-        </tr>
-      `;
+      const bgColor =
+        index % 2 === 0 ? DESIGN.colors.white : DESIGN.colors.gray50;
+      return `<tr>
+        <td style="padding: 12px 16px; font-family: ${DESIGN.fonts.family}; border-bottom: 1px solid ${DESIGN.colors.gray200}; background-color: ${bgColor};">
+          <a href="${archivo.cloudinaryUrl}" target="_blank" rel="noopener" style="color: ${DESIGN.colors.primary}; text-decoration: none; font-size: ${DESIGN.fonts.sizes.sm}; font-weight: ${DESIGN.fonts.weights.normal};">${archivo.nombre}</a>
+        </td>
+        <td style="padding: 12px; font-family: ${DESIGN.fonts.family}; border-bottom: 1px solid ${DESIGN.colors.gray200}; text-align: center; background-color: ${bgColor};">
+          <span style="display: inline-block; padding: 3px 10px; background-color: ${fileType.color}; border-radius: 12px; font-size: ${DESIGN.fonts.sizes.xs}; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.white};">${fileType.label}</span>
+        </td>
+        <td style="padding: 12px 16px; font-family: ${DESIGN.fonts.family}; border-bottom: 1px solid ${DESIGN.colors.gray200}; text-align: right; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500}; background-color: ${bgColor};">
+          ${formatFileSize(archivo.tamanio)}
+        </td>
+      </tr>`;
     })
     .join("");
 
-  return `
-    ${startSection()}
+  const headerCellStyle = `padding: 10px 16px; font-family: ${DESIGN.fonts.family}; font-size: 11px; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.gray600}; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid ${DESIGN.colors.gray300}; background-color: ${DESIGN.colors.gray100};`;
+
+  return `${startSection()}
     <tr>
-      <td colspan="2" style="padding: 12px 16px; background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); border-radius: 6px 6px 0 0;">
-        <span style="font-size: 14px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
-          ${t("email.files.header", locale)} (${archivos.length})
-        </span>
+      <td colspan="3" style="padding: 14px 20px; background-color: ${DESIGN.colors.primary}; border-radius: 8px 8px 0 0;">
+        <span style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.white}; text-transform: uppercase; letter-spacing: 0.5px;">${t("email.files.header", locale)} (${archivos.length})</span>
       </td>
     </tr>
     <tr>
-      <td colspan="2" style="padding: 0;">
-        <table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+      <td colspan="3" style="padding: 0;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%; border-collapse: collapse;">
           <thead>
             <tr>
-              <th style="padding: 8px 16px; font-size: 11px; color: #64748b; text-transform: uppercase; text-align: left; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
-                "email.files.file",
-                locale,
-              )}</th>
-              <th style="padding: 8px 12px; font-size: 11px; color: #64748b; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
-                "email.files.type",
-                locale,
-              )}</th>
-              <th style="padding: 8px 16px; font-size: 11px; color: #64748b; text-transform: uppercase; text-align: right; border-bottom: 2px solid #e2e8f0; background-color: #f1f5f9;">${t(
-                "email.files.size",
-                locale,
-              )}</th>
+              <th style="${headerCellStyle} text-align: left;">${t("email.files.file", locale)}</th>
+              <th style="${headerCellStyle} text-align: center;">${t("email.files.type", locale)}</th>
+              <th style="${headerCellStyle} text-align: right;">${t("email.files.size", locale)}</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
         </table>
       </td>
     </tr>
-    ${endSection()}
-  `;
+  ${endSection()}`;
 }
 
 // ==================== MAIN HTML TEMPLATE ====================
@@ -1218,26 +1139,20 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
     ? `${data.vendedor.name}`
     : t("email.common.notAssigned", locale);
 
-  // Description section
+  // Description section with new DESIGN system
   const descriptionSection = data.descripcionProducto
-    ? `
-      ${startSection()}
+    ? `${startSection()}
       <tr>
-        <td colspan="2" style="padding: 12px 16px; background-color: #60A82E; background: linear-gradient(135deg, #60A82E 0%, #4A8524 100%); border-radius: 6px 6px 0 0;">
-          <span style="font-size: 14px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
-            ${t("email.sections.productDescription", locale)}
-          </span>
+        <td colspan="2" style="padding: 14px 20px; background-color: ${DESIGN.colors.primary}; border-radius: 8px 8px 0 0;">
+          <span style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; font-weight: ${DESIGN.fonts.weights.normal}; color: ${DESIGN.colors.white}; text-transform: uppercase; letter-spacing: 0.5px;">${t("email.sections.productDescription", locale)}</span>
         </td>
       </tr>
       <tr>
-        <td colspan="2" style="padding: 16px; border-bottom: 1px solid #e2e8f0; background-color: #ffffff;">
-          <div style="font-size: 14px; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">${
-            data.descripcionProducto
-          }</div>
+        <td colspan="2" style="padding: 16px; border-bottom: 1px solid ${DESIGN.colors.gray200}; background-color: ${DESIGN.colors.white};">
+          <div style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.base}; color: ${DESIGN.colors.gray800}; line-height: 1.65; white-space: pre-wrap;">${data.descripcionProducto}</div>
         </td>
       </tr>
-      ${endSection()}
-    `
+    ${endSection()}`
     : "";
 
   // Get the title based on status
@@ -1258,17 +1173,13 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
       ? `[${t("email.status.draft", locale)}] `
       : "";
 
-  return `
-<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="${locale}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>${draftPrefix}${t(
-    "email.subject.visit",
-    locale,
-  )}: ${companyName} - ${formTypeName}</title>
+  <title>${draftPrefix}${t("email.subject.visit", locale)}: ${companyName} - ${formTypeName}</title>
   <!--[if mso]>
   <noscript>
     <xml>
@@ -1282,112 +1193,68 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
     td { font-family: Arial, sans-serif; }
   </style>
   <![endif]-->
-  <style>
-    /* Force #08090a color even in dark mode */
-    @media (prefers-color-scheme: dark) {
-      h1, p, .force-dark-color {
-        color: #08090a !important;
-      }
-    }
-  </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
-
+<body style="margin: 0; padding: 0; background-color: ${DESIGN.colors.gray100}; font-family: ${DESIGN.fonts.family}; -webkit-font-smoothing: antialiased;">
   <!-- Preheader -->
   <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">
     ${preheader}: ${companyName} - ${formTypeName}
   </div>
 
-  <table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #f8fafc;">
+  <!-- Main wrapper table -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%; background-color: ${DESIGN.colors.gray100};">
     <tr>
-      <td style="padding: 20px 12px;">
+      <td align="center" style="padding: 24px 16px;">
         
-        <!-- Main Container -->
-        <table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 640px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+        <!-- Main container -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="680" style="width: 680px; max-width: 100%; margin: 0 auto; background-color: ${DESIGN.colors.white}; border-radius: 12px;">
           
-          <!-- Header -->
+          <!-- Header with green background -->
           <tr>
-            <td style="background-color: #5FA82E; background: linear-gradient(135deg, #5FA82E 0%, #38b000 100%); padding: 24px 20px 20px 20px; text-align: center;">
-              <!-- Logo Container - Subtle white background that blends well -->
-              <div style="display: inline-block">
-                <img src="${
-                  EMAIL_CONFIG.companyLogo
-                }" alt="Combilift" style="max-width: 150px; height: auto; display: block;" />
-              </div>
-              <!-- Title -->
-              <h1 class="force-dark-color" style="margin: 0 0 6px 0; font-size: 18px; letter-spacing: -0.3px; color: #08090a; font-weight: normal;">
-                ${emailTitle.toUpperCase()}
-              </h1>
-              <p class="force-dark-color" style="margin: 0; font-size: 15px; color: #08090a; font-weight: normal;">${formTypeName}</p>
+            <td align="center" style="background-color: ${DESIGN.colors.primary}; padding: 28px 24px; border-radius: 12px 12px 0 0;">
+              <img src="${EMAIL_CONFIG.companyLogo}" alt="Combilift" width="160" style="max-width: 160px; height: auto; display: block; margin-bottom: 12px;">
+              <h1 style="margin: 0 0 6px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xl}; font-weight: ${DESIGN.fonts.weights.normal}; letter-spacing: 0.5px; color: ${DESIGN.colors.gray800};">${emailTitle.toUpperCase()}</h1>
+              <p style="margin: 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.md}; color: ${DESIGN.colors.gray800}; font-weight: ${DESIGN.fonts.weights.normal};">${formTypeName}</p>
             </td>
           </tr>
 
-          <!-- Status + Info Bar -->
+          <!-- Status bar -->
           <tr>
-            <td style="padding: 14px 20px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
-              <table role="presentation" cellpadding="0" cellspacing="0" style="width: 100%;">
+            <td style="padding: 16px 24px; background-color: ${DESIGN.colors.gray50}; border-bottom: 1px solid ${DESIGN.colors.gray200};">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%;">
                 <tr>
-                  <!-- Status Badge -->
                   <td style="vertical-align: middle;">
-                    <span style="display: inline-block; padding: 5px 12px; background-color: ${
-                      statusConfig.bgColor
-                    }; border-radius: 4px; border-left: 3px solid ${
-                      statusConfig.borderColor
-                    }; font-size: 11px; color: ${
-                      statusConfig.textColor
-                    }; text-transform: uppercase; font-weight: normal;">
-                      ${statusConfig.label}
-                    </span>
+                    <span style="display: inline-block; padding: 6px 14px; background-color: ${statusConfig.bgColor}; border-radius: 6px; border-left: 4px solid ${statusConfig.borderColor}; font-family: ${DESIGN.fonts.family}; font-size: 11px; font-weight: ${DESIGN.fonts.weights.normal}; color: ${statusConfig.textColor}; text-transform: uppercase; letter-spacing: 0.5px;">${statusConfig.label}</span>
                   </td>
-                  <!-- Company + Seller + Date -->
-                  <td style="text-align: right; vertical-align: middle;">
-                    <span style="font-size: 14px; color: #1e293b; font-weight: normal;">${companyName}</span>
-                    <span style="color: #1e293b; margin: 0 6px;">|</span>
-                    <span style="font-size: 13px; color: #1e293b; font-weight: normal;">${sellerInfo}</span>
-                    <span style="color: #1e293b; margin: 0 6px;">|</span>
-                    <span style="font-size: 12px; color: #1e293b; font-weight: normal;">${formatDateShort(
-                      data.visitDate,
-                      locale,
-                    )}</span>
+                  <td align="right" style="vertical-align: middle;">
+                    <span style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800}; font-weight: ${DESIGN.fonts.weights.normal};">${companyName}</span>
+                    <span style="color: ${DESIGN.colors.gray400}; margin: 0 8px;">•</span>
+                    <span style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray600};">${sellerInfo}</span>
+                    <span style="color: ${DESIGN.colors.gray400}; margin: 0 8px;">•</span>
+                    <span style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${formatDateShort(data.visitDate, locale)}</span>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
 
-          <!-- Content -->
+          <!-- Content area -->
           <tr>
-            <td style="padding: 20px; background-color: #ffffff;">
-              
-              <!-- Customer Information -->
+            <td style="padding: 24px; background-color: ${DESIGN.colors.white};">
               ${customerInfoSection}
-
-              <!-- Description -->
               ${descriptionSection}
-
-              <!-- Form-specific content -->
               ${formSpecificContent}
-
-              <!-- Files -->
               ${filesSection}
-
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f1f5f9; padding: 14px 20px; text-align: center; border-top: 1px solid #e2e8f0;">
-              <p style="margin: 0 0 2px 0; font-size: 11px; color: #64748b;">
-                ${t(
-                  "email.common.automaticMessage",
-                  locale,
-                )} <strong style="color: #1e293b;">Combilift Sales</strong>
+            <td align="center" style="background-color: ${DESIGN.colors.gray100}; padding: 20px 24px; border-top: 1px solid ${DESIGN.colors.gray200}; border-radius: 0 0 12px 12px;">
+              <p style="margin: 0 0 4px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">
+                ${t("email.common.automaticMessage", locale)} <strong style="color: ${DESIGN.colors.gray700};">Combilift Sales</strong>
               </p>
-              <p style="margin: 0; font-size: 10px; color: #64748b;">
-                ${new Date().getFullYear()} Combilift. ${t(
-                  "email.common.allRightsReserved",
-                  locale,
-                )}
+              <p style="margin: 0; font-family: ${DESIGN.fonts.family}; font-size: 10px; color: ${DESIGN.colors.gray400};">
+                © ${new Date().getFullYear()} Combilift. ${t("email.common.allRightsReserved", locale)}
               </p>
             </td>
           </tr>
@@ -1397,10 +1264,8 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
       </td>
     </tr>
   </table>
-
 </body>
-</html>
-  `;
+</html>`;
 }
 
 // ==================== PLAIN TEXT TEMPLATE ====================
@@ -1470,7 +1335,9 @@ ${t("email.plainText.container", locale).toUpperCase()}
 ${"─".repeat(55)}
 
 ${t("email.plainText.types", locale)}:              ${
-      css.contenedorTipos?.join(", ") || "-"
+      css.contenedorTipos
+        ?.map((tipo) => t(`visits.containerTypes.${tipo}`, locale))
+        .join(", ") || "-"
     }
 ${t("email.plainText.containersPerWeek", locale)}:   ${
       css.contenedoresPorSemana || "-"
@@ -1482,7 +1349,9 @@ ${t("email.plainText.containerMeasurements", locale).toUpperCase()}
 ${"─".repeat(55)}
 
 ${t("email.plainText.measurements", locale)}:            ${
-      css.contenedorMedidas?.join(", ") || "-"
+      css.contenedorMedidas
+        ?.map((medida) => t(`visits.containerMeasures.${medida}`, locale))
+        .join(", ") || "-"
     }
 ${
   css.contenedorMedidaOtro
@@ -1569,7 +1438,23 @@ ${t("email.plainText.floorConditions", locale)}:       ${
       log.condicionesSuelo || "-"
     }
 ${t("email.plainText.operationType", locale)}:          ${
-      log.tipoOperacion || "-"
+      (t("email.logistica.operationType", locale),
+      log.tipoOperacion === "almacenamiento"
+        ? t("forms.logistica.options.operationType.storage", locale)
+        : log.tipoOperacion === "cross-docking"
+          ? t("forms.logistica.options.operationType.crossDocking", locale)
+          : log.tipoOperacion === "picking"
+            ? t("forms.logistica.options.operationType.picking", locale)
+            : log.tipoOperacion === "carga-descarga"
+              ? t(
+                  "forms.logistica.options.operationType.loadingUnloading",
+                  locale,
+                )
+              : log.tipoOperacion === "preparacion-pedidos"
+                ? t("forms.logistica.options.operationType.orderPrep", locale)
+                : log.tipoOperacion === "mixto"
+                  ? t("forms.logistica.options.operationType.mixed", locale)
+                  : null)
     }
 
 ${"─".repeat(55)}
@@ -1587,7 +1472,13 @@ ${t("email.plainText.maxLiftHeight", locale)}:   ${formatNumber(
       locale,
     )}
 ${t("email.plainText.power", locale)}:            ${
-      log.alimentacionDeseada || "-"
+      log.alimentacionDeseada === "ELECTRICO"
+        ? t("visits.powerTypes.ELECTRICO", locale)
+        : log.alimentacionDeseada === "DIESEL"
+          ? t("visits.powerTypes.DIESEL", locale)
+          : log.alimentacionDeseada === "GLP"
+            ? t("visits.powerTypes.GLP", locale)
+            : "-"
     }
 `;
     if (log.notasOperacion) {

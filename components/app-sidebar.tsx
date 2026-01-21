@@ -45,8 +45,8 @@ export function AppSidebar({
 
   const data = {
     user: {
-      name: "shadcn",
-      email: "m@example.com",
+      name: session?.user?.name || "Unknown User",
+      email: session?.user?.email || "unknown@example.com",
       avatar: "/avatars/shadcn.jpg",
     },
     navMain: [
@@ -192,7 +192,7 @@ export function AppSidebar({
   });
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="offcanvas" {...props} variant="sidebar">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
