@@ -375,7 +375,7 @@ function buildCustomerInfoSection(
   if (data.website) {
     html += buildRow(
       t("email.customer.website", locale),
-      `<a href="${data.website.startsWith("http") ? data.website : `https://${data.website}`}" target="_blank" style="text-decoration: none;">${data.website}</a>`,
+      `<a href="${data.website.startsWith("http") ? data.website : `https://${data.website}`}" target="_blank" style="text-decoration: none; color: #1e293b;">${data.website}</a>`,
     );
   }
 
@@ -1282,6 +1282,14 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
     td { font-family: Arial, sans-serif; }
   </style>
   <![endif]-->
+  <style>
+    /* Force #08090a color even in dark mode */
+    @media (prefers-color-scheme: dark) {
+      h1, p, .force-dark-color {
+        color: #08090a !important;
+      }
+    }
+  </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
 
@@ -1307,10 +1315,10 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
                 }" alt="Combilift" style="max-width: 150px; height: auto; display: block;" />
               </div>
               <!-- Title -->
-              <h1 style="margin: 0 0 6px 0; font-size: 18px; letter-spacing: -0.3px; color: #ced4da; font-weight: normal;">
+              <h1 class="force-dark-color" style="margin: 0 0 6px 0; font-size: 18px; letter-spacing: -0.3px; color: #08090a; font-weight: normal;">
                 ${emailTitle.toUpperCase()}
               </h1>
-              <p style="margin: 0; font-size: 16px; color: #ced4da; font-weight: normal;">${formTypeName}</p>
+              <p class="force-dark-color" style="margin: 0; font-size: 15px; color: #08090a; font-weight: normal;">${formTypeName}</p>
             </td>
           </tr>
 
@@ -1334,10 +1342,10 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
                   <!-- Company + Seller + Date -->
                   <td style="text-align: right; vertical-align: middle;">
                     <span style="font-size: 14px; color: #1e293b; font-weight: normal;">${companyName}</span>
-                    <span style="color: #64748b; margin: 0 6px;">|</span>
-                    <span style="font-size: 13px; color: #475569; font-weight: normal;">${sellerInfo}</span>
-                    <span style="color: #64748b; margin: 0 6px;">|</span>
-                    <span style="font-size: 12px; color: #64748b; font-weight: normal;">${formatDateShort(
+                    <span style="color: #1e293b; margin: 0 6px;">|</span>
+                    <span style="font-size: 13px; color: #1e293b; font-weight: normal;">${sellerInfo}</span>
+                    <span style="color: #1e293b; margin: 0 6px;">|</span>
+                    <span style="font-size: 12px; color: #1e293b; font-weight: normal;">${formatDateShort(
                       data.visitDate,
                       locale,
                     )}</span>
