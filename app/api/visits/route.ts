@@ -33,7 +33,7 @@ import {
 import {
   sendVisitCompletedNotification,
   shouldSendVisitNotification,
-  buildVisitEmailData,
+  buildVisitEmailDataExtended,
 } from "@/lib/visit-notifications";
 
 /**
@@ -299,27 +299,62 @@ export async function POST(req: NextRequest) {
 
     const finalStatus = visitData.status || VisitStatus.COMPLETADA;
     if (shouldSendVisitNotification(finalStatus) && formularioData) {
-      let contextName = "Sin especificar";
+      // Get user role for email metadata
+      const userRole = visit.user?.role as
+        | "ADMIN"
+        | "DEALER"
+        | "SELLER"
+        | undefined;
+
+      // Determine context name (customer or task)
+      let contextName = "";
       if (visitData.customerId && visit.customer) {
-        contextName = visit.customer.accountName;
+        contextName = visit.customer.accountName || "";
       } else if (visitData.zohoTaskId) {
         contextName = `#${visitData.zohoTaskId}`;
       }
 
-      const emailData = buildVisitEmailData(
-        visitData.formType,
+      // Build email data with extended parameters
+      const emailData = buildVisitEmailDataExtended({
+        formType: visitData.formType,
         formularioData,
-        visitData.visitDate || new Date(),
-        finalStatus,
-        visit.user
+        visitDate: visitData.visitDate || new Date(),
+        status: finalStatus,
+        locale: visitData.locale || "es",
+        visitId: visit.id,
+        // Owner is the user who created the visit
+        owner: visit.user
           ? {
-              name: visit.user.name || "Sin nombre",
-              email: visit.user.email || "",
+              name: visit.user.name,
+              email: visit.user.email,
+              role: visit.user.role,
             }
           : undefined,
-        contextName,
-        visitData.locale || "es",
-      );
+        // For DEALER: the dealer is the owner
+        dealer:
+          userRole === "DEALER" && visit.user
+            ? {
+                name: visit.user.name,
+                email: visit.user.email,
+              }
+            : undefined,
+        // Seller is either the owner (if SELLER) or the assigned seller (if DEALER created)
+        vendedor:
+          userRole === "SELLER" && visit.user
+            ? {
+                name: visit.user.name,
+                email: visit.user.email,
+              }
+            : visit.assignedSeller
+              ? {
+                  name: visit.assignedSeller.name,
+                  email: visit.assignedSeller.email,
+                }
+              : undefined,
+        customerName: contextName,
+        submitterRole: userRole,
+        isClone: false,
+      });
 
       // Enviar notificacion de forma asincrona (no bloquea la respuesta)
       sendVisitCompletedNotification({ visitData: emailData })

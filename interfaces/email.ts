@@ -151,6 +151,9 @@ export interface FormularioStraddleCarrierEmailData {
 // ==================== MAIN EMAIL DATA INTERFACE ====================
 
 export interface VisitEmailData {
+  // Identificador de la visita
+  visitId?: string;
+
   // Datos basicos del cliente
   razonSocial: string;
   personaContacto: string;
@@ -173,14 +176,35 @@ export interface VisitEmailData {
   visitDate: Date;
   status: "BORRADOR" | "COMPLETADA" | "EN_PROGRESO";
 
-  // Archivos
+  // Archivos (consolidados de original + clon si aplica)
   archivos?: ArchivoSubido[];
 
-  // Vendedor
+  // Propietario de la visita (quien creó la visita original)
+  owner?: {
+    name: string;
+    email: string;
+    role?: string;
+  };
+
+  // Vendedor / P. Manager (quien llena o está asignado)
   vendedor?: {
     name: string;
     email: string;
   };
+
+  // Dealer propietario (cuando el creador es DEALER)
+  dealer?: {
+    name: string;
+    email: string;
+  };
+
+  // Información de clonación
+  isClone?: boolean;
+  originalVisitId?: string;
+  originalDealerName?: string;
+
+  // Rol del usuario que envía el formulario
+  submitterRole?: "ADMIN" | "DEALER" | "SELLER";
 
   locale?: string;
 

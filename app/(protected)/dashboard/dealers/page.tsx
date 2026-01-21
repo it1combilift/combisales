@@ -29,6 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Spinner } from "@/components/ui/spinner";
 
 const DealersPage = () => {
   const { t, locale } = useI18n();
@@ -206,6 +207,13 @@ const DealersPage = () => {
                   ? t("dealerPage.seller.description")
                   : t("dealerPage.description")}
             </Paragraph>
+
+            {isCloning && (
+              <div className="mt-1 text-sm text-muted-foreground italic">
+                <Spinner variant="bars" className="size-10" />
+                {t("dealerPage.cloning")}
+              </div>
+            )}
           </div>
         </div>
 

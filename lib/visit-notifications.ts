@@ -50,7 +50,7 @@ function t(key: string, locale: string = "es"): string {
  * Extract CSS form-specific data for email
  */
 function extractCSSFormData(
-  data: CreateFormularioCSSData
+  data: CreateFormularioCSSData,
 ): FormularioCSSEmailData {
   return {
     contenedorTipos: data.contenedorTipos,
@@ -66,7 +66,7 @@ function extractCSSFormData(
  * Extract Industrial form-specific data for email
  */
 function extractIndustrialFormData(
-  data: CreateFormularioIndustrialData
+  data: CreateFormularioIndustrialData,
 ): FormularioIndustrialEmailData {
   return {
     notasOperacion: data.notasOperacion,
@@ -117,7 +117,7 @@ function extractIndustrialFormData(
  * Extract Logistica form-specific data for email
  */
 function extractLogisticaFormData(
-  data: CreateFormularioLogisticaData
+  data: CreateFormularioLogisticaData,
 ): FormularioLogisticaEmailData {
   return {
     notasOperacion: data.notasOperacion,
@@ -178,7 +178,7 @@ function extractLogisticaFormData(
  * Extract Straddle Carrier form-specific data for email
  */
 function extractStraddleCarrierFormData(
-  data: CreateFormularioStraddleCarrierData
+  data: CreateFormularioStraddleCarrierData,
 ): FormularioStraddleCarrierEmailData {
   return {
     manejaContenedores: data.manejaContenedores,
@@ -207,8 +207,56 @@ function extractStraddleCarrierFormData(
   };
 }
 
+// ==================== SAFE STRING HELPER ====================
+/**
+ * Returns a safe string value, avoiding null/undefined display
+ */
+function safeString(
+  value: string | null | undefined,
+  fallback: string = "",
+): string {
+  if (value === null || value === undefined || value.trim() === "") {
+    return fallback;
+  }
+  return value;
+}
+
+// ==================== EXTENDED BUILD PARAMS ====================
+export interface BuildVisitEmailDataParams {
+  formType: VisitFormType | string;
+  formularioData:
+    | CreateFormularioCSSData
+    | CreateFormularioIndustrialData
+    | CreateFormularioLogisticaData
+    | CreateFormularioStraddleCarrierData;
+  visitDate: Date;
+  status: VisitStatus | string;
+  locale?: string;
+  // Visit identification
+  visitId?: string;
+  // User who owns the visit (creator)
+  owner?: { name: string | null; email: string; role?: string };
+  // Seller/P.Manager info
+  vendedor?: { name: string | null; email: string };
+  // Dealer info (when creator is DEALER)
+  dealer?: { name: string | null; email: string };
+  // Assigned seller (for visits created by DEALER)
+  assignedSeller?: { name: string | null; email: string } | null;
+  // Customer name fallback
+  customerName?: string;
+  // Clone information
+  isClone?: boolean;
+  originalVisitId?: string;
+  originalDealerName?: string;
+  // Original visit's files (for cloned visits)
+  originalArchivos?: any[];
+  // Role of user submitting the form
+  submitterRole?: "ADMIN" | "DEALER" | "SELLER";
+}
+
 /**
  * Build complete email data with form-specific fields
+ * Enhanced version supporting dealer/seller roles and cloned visits
  */
 export function buildVisitEmailData(
   formType: VisitFormType | string,
@@ -221,30 +269,134 @@ export function buildVisitEmailData(
   status: VisitStatus | string,
   vendedor?: { name: string; email: string },
   customerName?: string,
-  locale: string = "es"
+  locale: string = "es",
 ): VisitEmailData {
+  // Use the extended builder internally
+  return buildVisitEmailDataExtended({
+    formType,
+    formularioData,
+    visitDate,
+    status,
+    vendedor: vendedor
+      ? { name: vendedor.name, email: vendedor.email }
+      : undefined,
+    customerName,
+    locale,
+  });
+}
+
+/**
+ * Extended version of buildVisitEmailData with full support for:
+ * - Dealer/Seller role-based information
+ * - Cloned visit handling
+ * - File consolidation from original + clone
+ * - Safe null handling
+ */
+export function buildVisitEmailDataExtended(
+  params: BuildVisitEmailDataParams,
+): VisitEmailData {
+  const {
+    formType,
+    formularioData,
+    visitDate,
+    status,
+    locale = "es",
+    visitId,
+    owner,
+    vendedor,
+    dealer,
+    assignedSeller,
+    customerName,
+    isClone = false,
+    originalVisitId,
+    originalDealerName,
+    originalArchivos = [],
+    submitterRole,
+  } = params;
+
   const baseData = formularioData as CreateFormularioCSSData;
 
+  // ==================== CONSOLIDATE FILES ====================
+  // For cloned visits: combine original files + clone's new files
+  const currentArchivos = baseData.archivos || [];
+  let allArchivos = [...currentArchivos];
+
+  if (isClone && originalArchivos.length > 0) {
+    // Add original files that aren't already in the clone
+    const currentIds = new Set(currentArchivos.map((a: any) => a.cloudinaryId));
+    const originalFilesToAdd = originalArchivos.filter(
+      (a: any) => !currentIds.has(a.cloudinaryId),
+    );
+    allArchivos = [...originalFilesToAdd, ...currentArchivos];
+  }
+
+  // ==================== SAFE VALUE EXTRACTION ====================
+  const razonSocialRaw = baseData.razonSocial || customerName;
+  const razonSocial = safeString(
+    razonSocialRaw,
+    t("email.common.notSpecified", locale),
+  );
+
+  // ==================== BUILD EMAIL DATA ====================
   const emailData: VisitEmailData = {
-    razonSocial: baseData.razonSocial || customerName || "",
-    personaContacto: baseData.personaContacto || "",
-    email: baseData.email || "",
-    direccion: baseData.direccion || "",
-    localidad: baseData.localidad || "",
-    provinciaEstado: baseData.provinciaEstado || "",
-    pais: baseData.pais || "",
-    codigoPostal: baseData.codigoPostal,
-    website: baseData.website,
-    numeroIdentificacionFiscal: baseData.numeroIdentificacionFiscal,
-    distribuidor: baseData.distribuidor,
-    contactoDistribuidor: baseData.contactoDistribuidor,
-    descripcionProducto: baseData.descripcionProducto || "",
+    visitId: visitId,
+    razonSocial: razonSocial,
+    personaContacto: safeString(baseData.personaContacto),
+    email: safeString(baseData.email),
+    direccion: safeString(baseData.direccion),
+    localidad: safeString(baseData.localidad),
+    provinciaEstado: safeString(baseData.provinciaEstado),
+    pais: safeString(baseData.pais),
+    codigoPostal: baseData.codigoPostal || undefined,
+    website: baseData.website || undefined,
+    numeroIdentificacionFiscal:
+      baseData.numeroIdentificacionFiscal || undefined,
+    distribuidor: baseData.distribuidor || undefined,
+    contactoDistribuidor: baseData.contactoDistribuidor || undefined,
+    descripcionProducto: safeString(baseData.descripcionProducto),
     formType: formType,
     visitDate: visitDate,
     status: status as "BORRADOR" | "COMPLETADA" | "EN_PROGRESO",
-    archivos: baseData.archivos || [],
-    vendedor,
+    archivos: allArchivos,
     locale,
+    // Role-based info
+    owner: owner
+      ? {
+          name: safeString(owner.name, t("email.common.notSpecified", locale)),
+          email: owner.email,
+          role: owner.role,
+        }
+      : undefined,
+    vendedor: vendedor
+      ? {
+          name: safeString(
+            vendedor.name,
+            t("email.common.notSpecified", locale),
+          ),
+          email: vendedor.email,
+        }
+      : assignedSeller
+        ? {
+            name: safeString(
+              assignedSeller.name,
+              t("email.common.notSpecified", locale),
+            ),
+            email: assignedSeller.email,
+          }
+        : undefined,
+    dealer: dealer
+      ? {
+          name: safeString(dealer.name, t("email.common.notSpecified", locale)),
+          email: dealer.email,
+        }
+      : undefined,
+    // Clone info
+    isClone: isClone,
+    originalVisitId: originalVisitId,
+    originalDealerName: originalDealerName
+      ? safeString(originalDealerName)
+      : undefined,
+    submitterRole: submitterRole,
   };
 
   // Add form-specific data based on form type
@@ -252,25 +404,25 @@ export function buildVisitEmailData(
     case VisitFormType.ANALISIS_CSS:
     case "ANALISIS_CSS":
       emailData.formularioCSS = extractCSSFormData(
-        formularioData as CreateFormularioCSSData
+        formularioData as CreateFormularioCSSData,
       );
       break;
     case VisitFormType.ANALISIS_INDUSTRIAL:
     case "ANALISIS_INDUSTRIAL":
       emailData.formularioIndustrial = extractIndustrialFormData(
-        formularioData as CreateFormularioIndustrialData
+        formularioData as CreateFormularioIndustrialData,
       );
       break;
     case VisitFormType.ANALISIS_LOGISTICA:
     case "ANALISIS_LOGISTICA":
       emailData.formularioLogistica = extractLogisticaFormData(
-        formularioData as CreateFormularioLogisticaData
+        formularioData as CreateFormularioLogisticaData,
       );
       break;
     case VisitFormType.ANALISIS_STRADDLE_CARRIER:
     case "ANALISIS_STRADDLE_CARRIER":
       emailData.formularioStraddleCarrier = extractStraddleCarrierFormData(
-        formularioData as CreateFormularioStraddleCarrierData
+        formularioData as CreateFormularioStraddleCarrierData,
       );
       break;
   }
@@ -292,18 +444,24 @@ export function getEmailRecipients(status: string): string[] {
 
 /**
  * Generate email subject based on visit data and status
+ * Now with safe null handling and clone awareness
  */
 function generateEmailSubject(
-  razonSocial: string,
-  formType: string,
-  status: string,
-  archivosCount: number,
-  locale: string = "es"
+  data: VisitEmailData,
+  locale: string = "es",
 ): string {
+  const status = data.status as string;
+  const formType = data.formType;
+  const archivosCount = data.archivos?.length || 0;
+
+  // Status prefix
   const statusPrefix =
-    status === VisitStatus.BORRADOR
+    status === VisitStatus.BORRADOR || status === "BORRADOR"
       ? `[${t("email.status.draft", locale)}] `
       : "";
+
+  // Clone indicator
+  const clonePrefix = data.isClone ? `[${t("email.clone", locale)}] ` : "";
 
   // Map form type to translated name
   const formTypeKeys: Record<string, string> = {
@@ -314,9 +472,26 @@ function generateEmailSubject(
   };
   const formTypeName = t(
     formTypeKeys[formType] || "email.subject.visit",
-    locale
+    locale,
   );
 
+  // Build identifier: razonSocial > dealer > visitId > fallback
+  let identifier = "";
+  if (
+    data.razonSocial &&
+    data.razonSocial.trim() !== "" &&
+    data.razonSocial !== t("email.common.notSpecified", locale)
+  ) {
+    identifier = data.razonSocial;
+  } else if (data.dealer?.name && data.dealer.name.trim() !== "") {
+    identifier = `${t("email.byDealer", locale)}: ${data.dealer.name}`;
+  } else if (data.visitId) {
+    identifier = `#${data.visitId.substring(0, 8)}`;
+  } else {
+    identifier = t("email.subject.newVisit", locale);
+  }
+
+  // Files count
   const archivosText =
     archivosCount > 0
       ? ` (${archivosCount} ${
@@ -326,10 +501,10 @@ function generateEmailSubject(
         })`
       : "";
 
-  return `${statusPrefix}${t(
+  return `${statusPrefix}${clonePrefix}${t(
     "email.subject.visit",
-    locale
-  )}: ${razonSocial} - ${formTypeName}${archivosText}`;
+    locale,
+  )}: ${identifier} - ${formTypeName}${archivosText}`;
 }
 
 /**
@@ -347,16 +522,9 @@ export async function sendVisitNotification({
       : [to]
     : getEmailRecipients(visitData.status);
 
-  const archivosCount = visitData.archivos?.length || 0;
   const locale = visitData.locale || "es";
 
-  const subject = generateEmailSubject(
-    visitData.razonSocial,
-    visitData.formType,
-    visitData.status,
-    archivosCount,
-    locale
-  );
+  const subject = generateEmailSubject(visitData, locale);
 
   try {
     const result = await sendEmail({
@@ -369,7 +537,7 @@ export async function sendVisitNotification({
 
     if (result.success) {
       console.log(
-        `[Email] Notificacion enviada exitosamente a ${recipients.join(", ")}`
+        `[Email] Notificacion enviada exitosamente a ${recipients.join(", ")}`,
       );
     }
 

@@ -45,6 +45,7 @@
         "title": "No assigned visits",
         "description": "You don't have any visits assigned by dealers yet"
       },
+      "cloning": "Cloning visit...",
       "cloneAction": "Clone",
       "cloneTooltip": "Create an editable copy of this visit",
       "cloneSuccess": "Visit cloned successfully",
@@ -2092,7 +2093,8 @@
       "visitDraft": "[Draft] Visit",
       "visit": "Visit",
       "file": "file",
-      "files": "files"
+      "files": "files",
+      "newVisit": "New visit"
     },
     "header": {
       "visitCompleted": "Visit completed",
@@ -2107,10 +2109,21 @@
       "draft": "DRAFT",
       "unknown": "UNKNOWN STATUS"
     },
+    "clone": "Clone",
+    "byDealer": "By Dealer",
+    "metadata": {
+      "owner": "Owner",
+      "assignedTo": "Assigned to",
+      "submittedBy": "Submitted by",
+      "originalDealer": "Original dealer",
+      "visitType": "Visit type",
+      "clonedVisit": "Cloned visit"
+    },
     "common": {
       "yes": "Yes",
       "no": "No",
       "notAssigned": "Not assigned",
+      "notSpecified": "Not specified",
       "noDescription": "No description provided",
       "automaticMessage": "Automatic message from",
       "allRightsReserved": "All rights reserved"

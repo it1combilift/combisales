@@ -1123,6 +1123,120 @@ function buildFilesSection(
   ${endSection()}`;
 }
 
+// ==================== METADATA SECTION ====================
+
+function buildMetadataSection(
+  data: VisitEmailData,
+  locale: string = "es",
+): string {
+  const notAssigned = t("email.common.notAssigned", locale);
+
+  // Determine display values with safe fallbacks
+  const companyName =
+    data.razonSocial && data.razonSocial.trim() !== ""
+      ? data.razonSocial
+      : notAssigned;
+
+  // Owner info (whoever created the visit)
+  const ownerName =
+    data.owner?.name && data.owner.name.trim() !== ""
+      ? data.owner.name
+      : notAssigned;
+  const ownerRole = data.owner?.role || data.submitterRole;
+
+  // Dealer info
+  const dealerName =
+    data.dealer?.name && data.dealer.name.trim() !== ""
+      ? data.dealer.name
+      : null;
+
+  // Seller/P.Manager info
+  const sellerName =
+    data.vendedor?.name && data.vendedor.name.trim() !== ""
+      ? data.vendedor.name
+      : notAssigned;
+
+  // Build metadata rows
+  let metadataRows = "";
+
+  // Row 1: Visit Owner / Creator
+  if (ownerRole === "DEALER" || data.dealer) {
+    // Dealer created the visit
+    metadataRows += `
+      <tr>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500}; width: 140px;">${t("email.metadata.owner", locale)}:</td>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800};">
+          <span style="display: inline-block; padding: 2px 8px; background-color: #EDE7F6; color: #5E35B1; border-radius: 4px; font-size: 10px; font-weight: 500; margin-right: 6px;">DEALER</span>
+          ${dealerName || ownerName}
+        </td>
+      </tr>
+    `;
+    // Assigned Seller
+    metadataRows += `
+      <tr>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${t("email.metadata.assignedTo", locale)}:</td>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800};">
+          <span style="display: inline-block; padding: 2px 8px; background-color: #E3F2FD; color: #1565C0; border-radius: 4px; font-size: 10px; font-weight: 500; margin-right: 6px;">P. MANAGER</span>
+          ${sellerName}
+        </td>
+      </tr>
+    `;
+  } else if (ownerRole === "SELLER") {
+    // Seller created/edited the visit
+    metadataRows += `
+      <tr>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${t("email.metadata.submittedBy", locale)}:</td>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800};">
+          <span style="display: inline-block; padding: 2px 8px; background-color: #E3F2FD; color: #1565C0; border-radius: 4px; font-size: 10px; font-weight: 500; margin-right: 6px;">P. MANAGER</span>
+          ${sellerName}
+        </td>
+      </tr>
+    `;
+    // If it's a clone, show original dealer
+    if (data.isClone && data.originalDealerName) {
+      metadataRows += `
+        <tr>
+          <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${t("email.metadata.originalDealer", locale)}:</td>
+          <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800};">
+            <span style="display: inline-block; padding: 2px 8px; background-color: #EDE7F6; color: #5E35B1; border-radius: 4px; font-size: 10px; font-weight: 500; margin-right: 6px;">DEALER</span>
+            ${data.originalDealerName}
+          </td>
+        </tr>
+      `;
+    }
+  } else {
+    // Admin or default case
+    metadataRows += `
+      <tr>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${t("email.metadata.submittedBy", locale)}:</td>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800};">
+          ${ownerRole ? `<span style="display: inline-block; padding: 2px 8px; background-color: #FFF3E0; color: #E65100; border-radius: 4px; font-size: 10px; font-weight: 500; margin-right: 6px;">${ownerRole}</span>` : ""}
+          ${ownerName}
+        </td>
+      </tr>
+    `;
+  }
+
+  // Clone indicator
+  if (data.isClone) {
+    metadataRows += `
+      <tr>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${t("email.metadata.visitType", locale)}:</td>
+        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800};">
+          <span style="display: inline-block; padding: 2px 8px; background-color: #FCE4EC; color: #C2185B; border-radius: 4px; font-size: 10px; font-weight: 500;">${t("email.metadata.clonedVisit", locale)}</span>
+          ${data.originalVisitId ? `<span style="margin-left: 8px; color: ${DESIGN.colors.gray500}; font-size: ${DESIGN.fonts.sizes.xs};">ID: ${data.originalVisitId.substring(0, 8)}...</span>` : ""}
+        </td>
+      </tr>
+    `;
+  }
+
+  return `
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%; margin-top: 12px;">
+      ${metadataRows}
+    </table>
+  `;
+}
+
 // ==================== MAIN HTML TEMPLATE ====================
 
 export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
@@ -1132,12 +1246,14 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
   const customerInfoSection = buildCustomerInfoSection(data, locale);
   const formSpecificContent = buildFormSpecificContent(data, locale);
   const filesSection = buildFilesSection(data.archivos, locale);
+  const metadataSection = buildMetadataSection(data, locale);
 
-  // Minimal client info
-  const companyName = data.razonSocial || t("email.common.notAssigned", locale);
-  const sellerInfo = data.vendedor
-    ? `${data.vendedor.name}`
-    : t("email.common.notAssigned", locale);
+  // Safe company name
+  const notAssigned = t("email.common.notAssigned", locale);
+  const companyName =
+    data.razonSocial && data.razonSocial.trim() !== ""
+      ? data.razonSocial
+      : notAssigned;
 
   // Description section with new DESIGN system
   const descriptionSection = data.descripcionProducto
@@ -1155,11 +1271,15 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
     ${endSection()}`
     : "";
 
-  // Get the title based on status
-  const emailTitle =
+  // Get the title based on status and clone
+  let emailTitle =
     data.status === VisitStatus.COMPLETADA
       ? t("email.header.visitCompleted", locale)
       : t("email.header.visitDraft", locale);
+
+  if (data.isClone) {
+    emailTitle = `${emailTitle} (${t("email.clone", locale)})`;
+  }
 
   // Get preheader based on status
   const preheader =
@@ -1173,13 +1293,16 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
       ? `[${t("email.status.draft", locale)}] `
       : "";
 
+  // Clone prefix
+  const clonePrefix = data.isClone ? `[${t("email.clone", locale)}] ` : "";
+
   return `<!DOCTYPE html>
 <html lang="${locale}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>${draftPrefix}${t("email.subject.visit", locale)}: ${companyName} - ${formTypeName}</title>
+  <title>${draftPrefix}${clonePrefix}${t("email.subject.visit", locale)}: ${companyName} - ${formTypeName}</title>
   <!--[if mso]>
   <noscript>
     <xml>
@@ -1217,23 +1340,19 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
             </td>
           </tr>
 
-          <!-- Status bar -->
+          <!-- Status bar with enhanced metadata -->
           <tr>
             <td style="padding: 16px 24px; background-color: ${DESIGN.colors.gray50}; border-bottom: 1px solid ${DESIGN.colors.gray200};">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%;">
                 <tr>
-                  <td style="vertical-align: middle;">
+                  <td style="vertical-align: top;">
                     <span style="display: inline-block; padding: 6px 14px; background-color: ${statusConfig.bgColor}; border-radius: 6px; border-left: 4px solid ${statusConfig.borderColor}; font-family: ${DESIGN.fonts.family}; font-size: 11px; font-weight: ${DESIGN.fonts.weights.normal}; color: ${statusConfig.textColor}; text-transform: uppercase; letter-spacing: 0.5px;">${statusConfig.label}</span>
-                  </td>
-                  <td align="right" style="vertical-align: middle;">
-                    <span style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800}; font-weight: ${DESIGN.fonts.weights.normal};">${companyName}</span>
-                    <span style="color: ${DESIGN.colors.gray400}; margin: 0 8px;">•</span>
-                    <span style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray600};">${sellerInfo}</span>
-                    <span style="color: ${DESIGN.colors.gray400}; margin: 0 8px;">•</span>
-                    <span style="font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${formatDateShort(data.visitDate, locale)}</span>
+                    <span style="display: inline-block; margin-left: 12px; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800}; font-weight: ${DESIGN.fonts.weights.normal};">${companyName}</span>
+                    <span style="display: inline-block; margin-left: 8px; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${formatDateShort(data.visitDate, locale)}</span>
                   </td>
                 </tr>
               </table>
+              ${metadataSection}
             </td>
           </tr>
 
@@ -1274,12 +1393,20 @@ export function generateVisitCompletedEmailText(data: VisitEmailData): string {
   const locale = data.locale || "es";
   const formTypeName = getFormTypeName(data.formType, locale);
   const archivos = data.archivos || [];
+  const notAssigned = t("email.common.notAssigned", locale);
+
   const statusLabel =
     data.status === VisitStatus.COMPLETADA
       ? t("email.plainText.visitCompleted", locale).toUpperCase()
       : data.status === VisitStatus.BORRADOR
         ? t("email.plainText.visitDraft", locale).toUpperCase()
         : t("email.plainText.unknownStatus", locale).toUpperCase();
+
+  // Safe company name
+  const companyName =
+    data.razonSocial && data.razonSocial.trim() !== ""
+      ? data.razonSocial
+      : notAssigned;
 
   // Build location string
   const locationParts = [
@@ -1290,20 +1417,48 @@ export function generateVisitCompletedEmailText(data: VisitEmailData): string {
   ].filter(Boolean);
   const location = locationParts.join(", ");
 
+  // Build role-based metadata section
+  let metadataSection = "";
+  const ownerRole = data.owner?.role || data.submitterRole;
+
+  if (ownerRole === "DEALER" || data.dealer) {
+    const dealerName = data.dealer?.name || data.owner?.name || notAssigned;
+    const sellerName = data.vendedor?.name || notAssigned;
+    metadataSection = `
+${t("email.metadata.owner", locale)}:      [DEALER] ${dealerName}
+${t("email.metadata.assignedTo", locale)}:  [P. MANAGER] ${sellerName}`;
+  } else if (ownerRole === "SELLER") {
+    const sellerName = data.vendedor?.name || data.owner?.name || notAssigned;
+    metadataSection = `
+${t("email.metadata.submittedBy", locale)}: [P. MANAGER] ${sellerName}`;
+    if (data.isClone && data.originalDealerName) {
+      metadataSection += `
+${t("email.metadata.originalDealer", locale)}: [DEALER] ${data.originalDealerName}`;
+    }
+  } else {
+    const ownerName = data.owner?.name || data.vendedor?.name || notAssigned;
+    metadataSection = `
+${t("email.metadata.submittedBy", locale)}: ${ownerRole ? `[${ownerRole}] ` : ""}${ownerName}`;
+  }
+
+  // Clone indicator
+  if (data.isClone) {
+    metadataSection += `
+${t("email.metadata.visitType", locale)}:   ${t("email.metadata.clonedVisit", locale)}${data.originalVisitId ? ` (ID: ${data.originalVisitId.substring(0, 8)}...)` : ""}`;
+  }
+
   let text = `
 ${"═".repeat(55)}
-COMBISALES - ${statusLabel}
+COMBISALES - ${statusLabel}${data.isClone ? ` (${t("email.clone", locale)})` : ""}
 ${"═".repeat(55)}
 
 ${t("email.plainText.type", locale)}:     ${formTypeName}
-${t("email.plainText.company", locale)}:  ${data.razonSocial || "-"}
-${t("email.plainText.seller", locale)}: ${
-    data.vendedor ? data.vendedor.name : t("email.common.notAssigned", locale)
-  }
+${t("email.plainText.company", locale)}:  ${companyName}
 ${t("email.plainText.date", locale)}:    ${formatDateShort(
     data.visitDate,
     locale,
   )}
+${metadataSection}
 
 ${"─".repeat(55)}
 ${t("email.plainText.customerInfo", locale).toUpperCase()}

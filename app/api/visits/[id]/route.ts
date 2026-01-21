@@ -7,7 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
   sendVisitCompletedNotification,
   shouldSendVisitNotification,
-  buildVisitEmailData,
+  buildVisitEmailDataExtended,
 } from "@/lib/visit-notifications";
 
 import {
@@ -251,25 +251,82 @@ export async function PUT(
       // visit includes customer from VISIT_INCLUDE
       const visitWithCustomer = visit as typeof visit & {
         customer?: { accountName?: string };
+        clonedFrom?: {
+          id: string;
+          user?: { name: string | null; email: string };
+          formularioCSSAnalisis?: { archivos?: any[] };
+          formularioIndustrialAnalisis?: { archivos?: any[] };
+          formularioLogisticaAnalisis?: { archivos?: any[] };
+          formularioStraddleCarrierAnalisis?: { archivos?: any[] };
+        };
       };
-      const customerName =
-        visitWithCustomer.customer?.accountName ||
-        `#${existingVisit.zohoTaskId}`;
 
-      const emailData = buildVisitEmailData(
-        existingVisit.formType,
+      const customerName = visitWithCustomer.customer?.accountName || "";
+      const userRole = visit.user?.role as
+        | "ADMIN"
+        | "DEALER"
+        | "SELLER"
+        | undefined;
+
+      // Check if this is a cloned visit
+      const isClone = !!visit.clonedFromId;
+      const clonedFrom = visitWithCustomer.clonedFrom;
+
+      // Get original visit's files if this is a clone
+      let originalArchivos: any[] = [];
+      if (isClone && clonedFrom) {
+        const originalFormulario =
+          clonedFrom.formularioCSSAnalisis ||
+          clonedFrom.formularioIndustrialAnalisis ||
+          clonedFrom.formularioLogisticaAnalisis ||
+          clonedFrom.formularioStraddleCarrierAnalisis;
+        originalArchivos = (originalFormulario as any)?.archivos || [];
+      }
+
+      const emailData = buildVisitEmailDataExtended({
+        formType: existingVisit.formType,
         formularioData,
-        visit.visitDate,
-        currentStatus,
-        visit.user
+        visitDate: visit.visitDate,
+        status: currentStatus,
+        locale: visitData?.locale || "es",
+        visitId: visit.id,
+        // Owner is the user who created the visit
+        owner: visit.user
           ? {
-              name: visit.user.name || "Sin nombre",
-              email: visit.user.email || "",
+              name: visit.user.name,
+              email: visit.user.email,
+              role: visit.user.role,
             }
           : undefined,
+        // For DEALER: the dealer is the owner (only if not a clone)
+        dealer:
+          !isClone && userRole === "DEALER" && visit.user
+            ? {
+                name: visit.user.name,
+                email: visit.user.email,
+              }
+            : undefined,
+        // Seller info
+        vendedor:
+          userRole === "SELLER" && visit.user
+            ? {
+                name: visit.user.name,
+                email: visit.user.email,
+              }
+            : visit.assignedSeller
+              ? {
+                  name: visit.assignedSeller.name,
+                  email: visit.assignedSeller.email,
+                }
+              : undefined,
         customerName,
-        visitData?.locale || "es",
-      );
+        submitterRole: userRole,
+        // Clone information
+        isClone,
+        originalVisitId: visit.clonedFromId || undefined,
+        originalDealerName: clonedFrom?.user?.name || undefined,
+        originalArchivos,
+      });
 
       // Enviar notificacion de forma asincrona (no bloquea la respuesta)
       sendVisitCompletedNotification({ visitData: emailData })

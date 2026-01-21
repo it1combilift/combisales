@@ -45,6 +45,7 @@
           "title": "Sin visitas asignadas",
           "description": "No tienes visitas asignadas por dealers aún"
         },
+        "cloning": "Clonando visita...",
         "cloneAction": "Clonar",
         "cloneTooltip": "Crear una copia editable de esta visita",
         "cloneSuccess": "Visita clonada correctamente",
@@ -2085,13 +2086,6 @@
       }
     },
     "email": {
-      "subject": {
-        "visitCompleted": "Visita completada",
-        "visitDraft": "[Borrador] Visita",
-        "visit": "Visita",
-        "file": "archivo",
-        "files": "archivos"
-      },
       "header": {
         "visitCompleted": "Visita completada",
         "visitDraft": "Borrador de visita"
@@ -2105,13 +2099,32 @@
         "draft": "BORRADOR",
         "unknown": "ESTADO DESCONOCIDO"
       },
+      "clone": "Clon",
+      "byDealer": "Por Dealer",
+      "metadata": {
+        "owner": "Propietario",
+        "assignedTo": "Asignado a",
+        "submittedBy": "Enviado por",
+        "originalDealer": "Dealer original",
+        "visitType": "Tipo de visita",
+        "clonedVisit": "Visita clonada"
+      },
       "common": {
         "yes": "Sí",
         "no": "No",
         "notAssigned": "No asignado",
+        "notSpecified": "Sin especificar",
         "noDescription": "Sin descripción proporcionada",
         "automaticMessage": "Mensaje automático de",
         "allRightsReserved": "Todos los derechos reservados"
+      },
+      "subject": {
+        "visitCompleted": "Visita completada",
+        "visitDraft": "[Borrador] Visita",
+        "visit": "Visita",
+        "file": "archivo",
+        "files": "archivos",
+        "newVisit": "Nueva visita"
       },
       "sections": {
         "productDescription": "Descripción del Producto",
