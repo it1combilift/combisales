@@ -8,6 +8,7 @@ import { Visit } from "@/interfaces/visits";
 import { useSession } from "next-auth/react";
 import { useI18n } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
 import { useEffect, useState, useCallback } from "react";
@@ -29,7 +30,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Spinner } from "@/components/ui/spinner";
 
 const DealersPage = () => {
   const { t, locale } = useI18n();
@@ -116,9 +116,9 @@ const DealersPage = () => {
   const handleCloneVisit = async (visit: Visit) => {
     if (!isSeller) return;
 
-    // Cannot clone a clone
-    if (visit.clonedFromId) {
-      toast.error(t("dealerPage.seller.cannotCloneClone"));
+    // Cannot clone if already has a clone (Phase 4: one clone per original)
+    if (visit.clones && visit.clones.length > 0) {
+      toast.error(t("dealerPage.seller.visitAlreadyCloned"));
       return;
     }
 
@@ -131,11 +131,52 @@ const DealersPage = () => {
         });
         await fetchVisits();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error cloning visit:", error);
-      toast.error(t("dealerPage.errors.cloneVisit"));
+      if (error.response?.data?.error === "VISIT_ALREADY_CLONED") {
+        toast.error(t("dealerPage.seller.visitAlreadyCloned"));
+      } else {
+        toast.error(t("dealerPage.errors.cloneVisit"));
+      }
     } finally {
       setIsCloning(false);
+    }
+  };
+
+  // Phase 4: View clone detail (navigate to clone's detail page)
+  const handleViewClone = (visit: Visit) => {
+    if (visit.clones && visit.clones.length > 0) {
+      router.push(`/dashboard/dealers/visits/${visit.clones[0].id}`);
+    }
+  };
+
+  // Phase 4: Edit clone (open dialog with clone data)
+  const handleEditClone = async (visit: Visit) => {
+    if (!visit.clones || visit.clones.length === 0) return;
+
+    // Fetch the full clone data
+    try {
+      const response = await axios.get(`/api/visits/${visit.clones[0].id}`);
+      if (response.status === 200) {
+        setIsFormReadOnly(false);
+        setVisitToEdit(response.data.visit);
+        setIsVisitDialogOpen(true);
+      }
+    } catch (error) {
+      console.error("Error fetching clone:", error);
+      toast.error(t("messages.error"));
+    }
+  };
+
+  // Phase 4: Delete clone
+  const handleDeleteClone = (visit: Visit) => {
+    if (visit.clones && visit.clones.length > 0) {
+      // Create a "fake" visit object with the clone's ID for the delete dialog
+      setVisitToDelete({
+        ...visit,
+        id: visit.clones[0].id,
+        clonedFromId: visit.id, // Mark it as a clone so delete validation passes
+      } as Visit);
     }
   };
 
@@ -143,7 +184,7 @@ const DealersPage = () => {
   const handleDeleteVisit = async () => {
     if (!visitToDelete) return;
 
-    // SELLER: can only delete their own clones
+    // SELLER: can only delete clones (either their own clone or from the unified row)
     if (isSeller && !visitToDelete.clonedFromId) {
       toast.error(t("dealerPage.seller.cannotDeleteOriginal"));
       setVisitToDelete(null);
@@ -154,7 +195,8 @@ const DealersPage = () => {
       const response = await axios.delete(`/api/visits/${visitToDelete.id}`);
       if (response.status === 200) {
         toast.success(t("messages.deleted"));
-        setVisits((prev) => prev.filter((v) => v.id !== visitToDelete.id));
+        // Refresh visits to update the clones array
+        await fetchVisits();
         setVisitToDelete(null);
       }
     } catch (error) {
@@ -178,6 +220,10 @@ const DealersPage = () => {
     onDelete: (visit) => setVisitToDelete(visit),
     onClone: handleCloneVisit,
     onViewForm: handleViewForm,
+    // Phase 4: Clone-specific handlers for SELLER unified row logic
+    onViewClone: handleViewClone,
+    onEditClone: handleEditClone,
+    onDeleteClone: handleDeleteClone,
     t,
     locale,
     userRole,
@@ -209,9 +255,11 @@ const DealersPage = () => {
             </Paragraph>
 
             {isCloning && (
-              <div className="mt-1 text-sm text-muted-foreground italic">
-                <Spinner variant="bars" className="size-10" />
-                {t("dealerPage.cloning")}
+              <div className="mt-1 text-sm flex items-center gap-2">
+                <Spinner variant="bars" className="size-4" />
+                <span className={isCloning ? "animate-pulse" : ""}>
+                  {t("dealerPage.seller.cloning")}
+                </span>
               </div>
             )}
           </div>
@@ -290,6 +338,10 @@ const DealersPage = () => {
               onDelete={(v) => setVisitToDelete(v)}
               onClone={isSeller ? handleCloneVisit : undefined}
               onViewForm={isSeller ? handleViewForm : undefined}
+              // Phase 4: Clone-specific handlers for unified row logic
+              onViewClone={isSeller ? handleViewClone : undefined}
+              onEditClone={isSeller ? handleEditClone : undefined}
+              onDeleteClone={isSeller ? handleDeleteClone : undefined}
               userRole={userRole}
             />
           ))}

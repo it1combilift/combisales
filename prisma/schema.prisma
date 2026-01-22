@@ -275,6 +275,7 @@ enum VisitFormType {
 
 enum VisitStatus {
   BORRADOR
+  EN_PROGRESO
   COMPLETADA
 }
 

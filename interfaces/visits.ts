@@ -4,6 +4,7 @@ import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 import {
   CheckCircle,
   ClipboardList,
+  Clock,
   Factory,
   Forklift,
   Ship,
@@ -136,6 +137,19 @@ export interface Visit {
     name: string | null;
     email: string;
   } | null;
+  // Clones of this visit (for unified row logic in SELLER view)
+  // Phase 4: Each original visit can have at most one clone
+  clones?: Array<{
+    id: string;
+    status: VisitStatus;
+    visitDate: Date;
+    createdAt: Date;
+    user?: {
+      id: string;
+      name: string | null;
+      email: string;
+    };
+  }>;
   // Visita original (si esta es un clon)
   // Incluye los formularios con archivos para mostrar los adjuntos del original
   clonedFrom?: {
@@ -667,6 +681,7 @@ export const FORM_TYPE_LABELS: Record<VisitFormType, string> = {
 
 export const VISIT_STATUS_LABELS: Record<VisitStatus, string> = {
   BORRADOR: "Borrador",
+  EN_PROGRESO: "En Progreso",
   COMPLETADA: "Completada",
 };
 
@@ -675,7 +690,13 @@ export const STATUS_CONFIG: Record<
   {
     label: string;
     icon: React.ElementType;
-    variant: "default" | "secondary" | "success" | "warning" | "destructive";
+    variant:
+      | "default"
+      | "secondary"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "info";
     bgColor: string;
     textColor: string;
   }
@@ -686,6 +707,13 @@ export const STATUS_CONFIG: Record<
     variant: "warning",
     bgColor: "bg-amber-500/10",
     textColor: "text-amber-600 dark:text-amber-400",
+  },
+  EN_PROGRESO: {
+    label: "En Progreso",
+    icon: Clock,
+    variant: "info",
+    bgColor: "bg-blue-500/10",
+    textColor: "text-blue-600 dark:text-blue-400",
   },
   COMPLETADA: {
     label: "Completada",
@@ -698,6 +726,7 @@ export const STATUS_CONFIG: Record<
 
 export const VISIT_STATUS_ICONS: Record<VisitStatus, React.ElementType> = {
   BORRADOR: Timer,
+  EN_PROGRESO: Clock,
   COMPLETADA: CheckCircle,
 };
 
@@ -802,4 +831,8 @@ export interface ColumnsConfig {
   onDelete?: (visit: Visit) => void;
   onClone?: (visit: Visit) => void;
   onViewForm?: (visit: Visit) => void;
+  // Phase 4: Handlers for unified clone UX
+  onViewClone?: (visit: Visit) => void; // View the clone of this original visit
+  onEditClone?: (visit: Visit) => void; // Edit the clone of this original visit
+  onDeleteClone?: (visit: Visit) => void; // Delete the clone of this original visit
 }

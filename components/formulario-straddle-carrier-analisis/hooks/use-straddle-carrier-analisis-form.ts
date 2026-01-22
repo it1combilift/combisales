@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
-import { FORM_STEPS } from "../constants";
+import { getFormSteps, REGULAR_STEPS } from "../constants";
 import { SaveVisitParams } from "../types";
 import { UseFormReturn } from "react-hook-form";
 import { VisitStatus } from "@prisma/client";
@@ -18,6 +18,8 @@ interface UseStraddleCarrierAnalisisFormProps {
   locale: string;
   // Para visitas creadas por DEALER: vendedor asignado
   assignedSellerId?: string;
+  // Si es true, habilita el paso de datos del cliente (para flujo DEALER)
+  enableCustomerEntry?: boolean;
 }
 
 export function useStraddleCarrierAnalisisForm({
@@ -30,13 +32,26 @@ export function useStraddleCarrierAnalisisForm({
   t,
   locale,
   assignedSellerId,
+  enableCustomerEntry = false,
 }: UseStraddleCarrierAnalisisFormProps) {
+  // Get form steps based on enableCustomerEntry
+  const formSteps = useMemo(
+    () => getFormSteps(enableCustomerEntry),
+    [enableCustomerEntry],
+  );
+
+  // Calculate the step numbers where containers and special load are shown
+  // Without customer entry: step 2 (containers), step 3 (special load)
+  // With customer entry: step 3 (containers), step 4 (special load)
+  const containersStepNumber = enableCustomerEntry ? 3 : 2;
+  const specialLoadStepNumber = enableCustomerEntry ? 4 : 3;
+
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5]) : new Set(),
+    isEditing ? new Set(formSteps.map((_, i) => i + 1)) : new Set(),
   );
 
   const visitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
@@ -45,17 +60,19 @@ export function useStraddleCarrierAnalisisForm({
 
   const validateStepFields = useCallback(
     (step: number, values: FormularioStraddleCarrierSchema): boolean => {
-      const stepConfig = FORM_STEPS[step - 1];
+      const stepConfig = formSteps[step - 1];
       if (!stepConfig || !stepConfig.fields) return true;
 
       const manejaContenedores = values.manejaContenedores;
       const manejaCargaEspecial = values.manejaCargaEspecial;
 
-      if (step === 2 && !manejaContenedores) {
+      // Skip containers step if manejaContenedores is false
+      if (step === containersStepNumber && !manejaContenedores) {
         return true;
       }
 
-      if (step === 3 && !manejaCargaEspecial) {
+      // Skip special load step if manejaCargaEspecial is false
+      if (step === specialLoadStepNumber && !manejaCargaEspecial) {
         return true;
       }
 
@@ -68,7 +85,9 @@ export function useStraddleCarrierAnalisisForm({
 
           case "manejaContenedores":
           case "manejaCargaEspecial":
-            if (step === 1) {
+            // In instructions step: at least one must be selected
+            const instructionsStep = enableCustomerEntry ? 2 : 1;
+            if (step === instructionsStep) {
               if (!manejaContenedores && !manejaCargaEspecial) {
                 return false;
               }
@@ -84,6 +103,16 @@ export function useStraddleCarrierAnalisisForm({
                 return false;
               }
             }
+            continue;
+
+          // Customer data fields (optional for now - DEALER will fill them)
+          case "customerName":
+          case "customerEmail":
+          case "customerPhone":
+          case "customerAddress":
+          case "customerCity":
+          case "customerCountry":
+          case "customerNotes":
             continue;
 
           case "fechaCierre":
@@ -105,7 +134,12 @@ export function useStraddleCarrierAnalisisForm({
 
       return true;
     },
-    [],
+    [
+      formSteps,
+      containersStepNumber,
+      specialLoadStepNumber,
+      enableCustomerEntry,
+    ],
   );
 
   // Function to recalculate all completed steps
@@ -113,7 +147,7 @@ export function useStraddleCarrierAnalisisForm({
     (values: FormularioStraddleCarrierSchema) => {
       const newCompleted = new Set<number>();
 
-      for (let step = 1; step <= FORM_STEPS.length; step++) {
+      for (let step = 1; step <= formSteps.length; step++) {
         if (validateStepFields(step, values)) {
           newCompleted.add(step);
         }
@@ -127,7 +161,7 @@ export function useStraddleCarrierAnalisisForm({
         return prev;
       });
     },
-    [validateStepFields],
+    [validateStepFields, formSteps],
   );
 
   useEffect(() => {
@@ -151,58 +185,68 @@ export function useStraddleCarrierAnalisisForm({
     };
   }, [form, recalculateCompletedSteps]);
 
-  const shouldSkipStep2 = useCallback(() => {
+  const shouldSkipContainersStep = useCallback(() => {
     return !form.getValues("manejaContenedores");
   }, [form]);
 
-  const shouldSkipStep3 = useCallback(() => {
+  const shouldSkipSpecialLoadStep = useCallback(() => {
     return !form.getValues("manejaCargaEspecial");
   }, [form]);
 
   const progress = useMemo(() => {
-    const skipStep2 = shouldSkipStep2();
-    const skipStep3 = shouldSkipStep3();
+    const skipContainers = shouldSkipContainersStep();
+    const skipSpecialLoad = shouldSkipSpecialLoadStep();
 
     let effectiveCompleted = 0;
     completedSteps.forEach((step) => {
-      if (step === 2 && skipStep2) return;
-      if (step === 3 && skipStep3) return;
+      if (step === containersStepNumber && skipContainers) return;
+      if (step === specialLoadStepNumber && skipSpecialLoad) return;
       effectiveCompleted++;
     });
 
-    let totalSteps = FORM_STEPS.length;
-    if (skipStep2) totalSteps--;
-    if (skipStep3) totalSteps--;
+    let totalSteps = formSteps.length;
+    if (skipContainers) totalSteps--;
+    if (skipSpecialLoad) totalSteps--;
 
     return Math.round((effectiveCompleted / totalSteps) * 100);
-  }, [completedSteps, shouldSkipStep2, shouldSkipStep3]);
+  }, [
+    completedSteps,
+    shouldSkipContainersStep,
+    shouldSkipSpecialLoadStep,
+    formSteps,
+    containersStepNumber,
+    specialLoadStepNumber,
+  ]);
 
   const allStepsComplete = useMemo((): boolean => {
     const values = form.getValues();
-    const skipStep2 = shouldSkipStep2();
-    const skipStep3 = shouldSkipStep3();
+    const skipContainers = shouldSkipContainersStep();
+    const skipSpecialLoad = shouldSkipSpecialLoadStep();
 
-    for (let step = 1; step <= FORM_STEPS.length; step++) {
-      if (step === 2 && skipStep2) continue;
-      if (step === 3 && skipStep3) continue;
+    for (let step = 1; step <= formSteps.length; step++) {
+      if (step === containersStepNumber && skipContainers) continue;
+      if (step === specialLoadStepNumber && skipSpecialLoad) continue;
       if (!validateStepFields(step, values)) return false;
     }
     return true;
   }, [
     completedSteps,
-    shouldSkipStep2,
-    shouldSkipStep3,
+    shouldSkipContainersStep,
+    shouldSkipSpecialLoadStep,
     form,
     validateStepFields,
+    formSteps,
+    containersStepNumber,
+    specialLoadStepNumber,
   ]);
 
-  const currentStepConfig = FORM_STEPS[currentStep - 1];
+  const currentStepConfig = formSteps[currentStep - 1];
   const isFirstStep = currentStep === 1;
-  const isLastStep = currentStep === FORM_STEPS.length;
+  const isLastStep = currentStep === formSteps.length;
 
   const validateStep = useCallback(
     async (step: number): Promise<boolean> => {
-      const stepConfig = FORM_STEPS[step - 1];
+      const stepConfig = formSteps[step - 1];
       if (!stepConfig || !stepConfig.fields) return true;
 
       const isValid = await form.trigger(stepConfig.fields as any);
@@ -213,35 +257,45 @@ export function useStraddleCarrierAnalisisForm({
 
       return isValid;
     },
-    [form],
+    [form, formSteps],
   );
 
   const getNextStep = useCallback(
     (fromStep: number): number => {
       let nextStep = fromStep + 1;
-      if (nextStep === 2 && shouldSkipStep2()) {
-        nextStep = 3;
+      if (nextStep === containersStepNumber && shouldSkipContainersStep()) {
+        nextStep = containersStepNumber + 1;
       }
-      if (nextStep === 3 && shouldSkipStep3()) {
-        nextStep = 4;
+      if (nextStep === specialLoadStepNumber && shouldSkipSpecialLoadStep()) {
+        nextStep = specialLoadStepNumber + 1;
       }
       return nextStep;
     },
-    [shouldSkipStep2, shouldSkipStep3],
+    [
+      shouldSkipContainersStep,
+      shouldSkipSpecialLoadStep,
+      containersStepNumber,
+      specialLoadStepNumber,
+    ],
   );
 
   const getPrevStep = useCallback(
     (fromStep: number): number => {
       let prevStep = fromStep - 1;
-      if (prevStep === 3 && shouldSkipStep3()) {
-        prevStep = 2;
+      if (prevStep === specialLoadStepNumber && shouldSkipSpecialLoadStep()) {
+        prevStep = specialLoadStepNumber - 1;
       }
-      if (prevStep === 2 && shouldSkipStep2()) {
-        prevStep = 1;
+      if (prevStep === containersStepNumber && shouldSkipContainersStep()) {
+        prevStep = containersStepNumber - 1;
       }
       return prevStep;
     },
-    [shouldSkipStep2, shouldSkipStep3],
+    [
+      shouldSkipContainersStep,
+      shouldSkipSpecialLoadStep,
+      containersStepNumber,
+      specialLoadStepNumber,
+    ],
   );
 
   const handleNextStep = useCallback(async () => {
@@ -252,11 +306,11 @@ export function useStraddleCarrierAnalisisForm({
       return;
     }
 
-    if (currentStep < FORM_STEPS.length) {
+    if (currentStep < formSteps.length) {
       const nextStep = getNextStep(currentStep);
       setCurrentStep(nextStep);
     }
-  }, [currentStep, validateStep, getNextStep]);
+  }, [currentStep, validateStep, getNextStep, formSteps, t]);
 
   const handlePrevStep = useCallback(() => {
     if (currentStep > 1) {
@@ -265,10 +319,13 @@ export function useStraddleCarrierAnalisisForm({
     }
   }, [currentStep, getPrevStep]);
 
-  const goToStep = useCallback(async (step: number) => {
-    if (step < 1 || step > FORM_STEPS.length) return;
-    setCurrentStep(step);
-  }, []);
+  const goToStep = useCallback(
+    async (step: number) => {
+      if (step < 1 || step > formSteps.length) return;
+      setCurrentStep(step);
+    },
+    [formSteps],
+  );
 
   const saveVisit = useCallback(
     async ({ saveType }: SaveVisitParams) => {
@@ -381,8 +438,8 @@ export function useStraddleCarrierAnalisisForm({
     currentStepConfig,
     isFirstStep,
     isLastStep,
-    shouldSkipStep2,
-    shouldSkipStep3,
+    shouldSkipContainersStep,
+    shouldSkipSpecialLoadStep,
 
     // Actions
     handleNextStep,

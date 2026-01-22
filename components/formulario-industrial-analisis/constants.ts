@@ -1,6 +1,38 @@
-import { FileText, Package, Zap, Ruler, Layout, Paperclip } from "lucide-react";
+import {
+  FileText,
+  Package,
+  Zap,
+  Ruler,
+  Layout,
+  Paperclip,
+  Building2,
+} from "lucide-react";
 
-export const FORM_STEPS = [
+// Customer data step (only for DEALER flow with enableCustomerEntry=true)
+const CUSTOMER_DATA_STEP = {
+  number: 1,
+  title: "forms.industrial.steps.customerData.title",
+  shortTitle: "forms.industrial.steps.customerData.shortTitle",
+  description: "forms.industrial.steps.customerData.description",
+  icon: Building2,
+  color: "primary" as const,
+  fields: [
+    "razonSocial",
+    "personaContacto",
+    "email",
+    "direccion",
+    "localidad",
+    "provinciaEstado",
+    "pais",
+    "codigoPostal",
+    "numeroIdentificacionFiscal",
+    "distribuidor",
+    "contactoDistribuidor",
+  ],
+};
+
+// Regular steps (used in normal ADMIN/SELLER flow)
+const REGULAR_STEPS = [
   {
     number: 1,
     title: "forms.industrial.steps.operation.title",
@@ -67,3 +99,26 @@ export const FORM_STEPS = [
     fields: ["archivos"],
   },
 ];
+
+// Default export for backward compatibility
+export const FORM_STEPS = REGULAR_STEPS;
+
+/**
+ * Get form steps based on enableCustomerEntry flag
+ * When enableCustomerEntry is true (DEALER flow), customer data step is prepended
+ * When false (normal ADMIN/SELLER flow), only regular steps are returned
+ */
+export function getFormSteps(enableCustomerEntry: boolean = false) {
+  if (!enableCustomerEntry) {
+    return REGULAR_STEPS;
+  }
+
+  // For DEALER flow: prepend customer data step and renumber all steps
+  return [
+    CUSTOMER_DATA_STEP,
+    ...REGULAR_STEPS.map((step, index) => ({
+      ...step,
+      number: index + 2, // Shift numbers by 1
+    })),
+  ];
+}

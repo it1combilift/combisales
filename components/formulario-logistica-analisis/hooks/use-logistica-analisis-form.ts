@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
-import { FORM_STEPS } from "../constants";
+import { getFormSteps, REGULAR_STEPS } from "../constants";
 import { SaveVisitParams } from "../types";
 import { UseFormReturn } from "react-hook-form";
 import { FormularioLogisticaSchema } from "../schemas";
@@ -18,6 +18,8 @@ interface UseLogisticaAnalisisFormProps {
   locale: string;
   // Para visitas creadas por DEALER: vendedor asignado
   assignedSellerId?: string;
+  // Si es true, habilita el paso de datos del cliente (para flujo DEALER)
+  enableCustomerEntry?: boolean;
 }
 
 export function useLogisticaAnalisisForm({
@@ -30,14 +32,25 @@ export function useLogisticaAnalisisForm({
   t,
   locale,
   assignedSellerId,
+  enableCustomerEntry = false,
 }: UseLogisticaAnalisisFormProps) {
+  // Get form steps based on enableCustomerEntry
+  const formSteps = useMemo(
+    () => getFormSteps(enableCustomerEntry),
+    [enableCustomerEntry],
+  );
+
+  // Calculate the step number where electric equipment is shown
+  // Without customer entry: step 3, With customer entry: step 4
+  const electricStepNumber = enableCustomerEntry ? 4 : 3;
+
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set(),
+    isEditing ? new Set(formSteps.map((_, i) => i + 1)) : new Set(),
   );
 
   const VisitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
@@ -47,13 +60,16 @@ export function useLogisticaAnalisisForm({
   // ==================== STEP VALIDATION LOGIC ====================
   const validateStepFields = useCallback(
     (step: number, values: FormularioLogisticaSchema): boolean => {
-      const stepConfig = FORM_STEPS[step - 1];
+      const stepConfig = formSteps[step - 1];
       if (!stepConfig || !stepConfig.fields) return true;
 
       const alimentacion = values.alimentacionDeseada;
 
-      // Step 3 es Equipos eléctricos (condicional)
-      if (step === 3 && alimentacion !== TipoAlimentacion.ELECTRICO) {
+      // Electric equipment step is conditional (skip if not ELECTRICO)
+      if (
+        step === electricStepNumber &&
+        alimentacion !== TipoAlimentacion.ELECTRICO
+      ) {
         return true;
       }
 
@@ -94,6 +110,16 @@ export function useLogisticaAnalisisForm({
                 return false;
               }
             }
+            continue;
+
+          // Customer data fields (optional for now - DEALER will fill them)
+          case "customerName":
+          case "customerEmail":
+          case "customerPhone":
+          case "customerAddress":
+          case "customerCity":
+          case "customerCountry":
+          case "customerNotes":
             continue;
 
           // Optional fields - always valid
@@ -148,7 +174,7 @@ export function useLogisticaAnalisisForm({
     (values: FormularioLogisticaSchema) => {
       const newCompleted = new Set<number>();
 
-      for (let step = 1; step <= FORM_STEPS.length; step++) {
+      for (let step = 1; step <= formSteps.length; step++) {
         if (validateStepFields(step, values)) {
           newCompleted.add(step);
         }
@@ -162,7 +188,7 @@ export function useLogisticaAnalisisForm({
         return prev;
       });
     },
-    [validateStepFields],
+    [validateStepFields, formSteps],
   );
 
   // ==================== REACTIVE STEP VALIDATION ====================
@@ -191,43 +217,45 @@ export function useLogisticaAnalisisForm({
   const requiredStepsCount = useMemo(() => {
     const alimentacion = form.watch("alimentacionDeseada");
     return alimentacion !== TipoAlimentacion.ELECTRICO
-      ? FORM_STEPS.length - 1
-      : FORM_STEPS.length;
-  }, [form]);
+      ? formSteps.length - 1
+      : formSteps.length;
+  }, [form, formSteps]);
 
   const progress = useMemo(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
-    const skipStep3 = alimentacion !== TipoAlimentacion.ELECTRICO;
+    const skipElectricStep = alimentacion !== TipoAlimentacion.ELECTRICO;
 
     let effectiveCompleted = completedSteps.size;
-    if (skipStep3 && completedSteps.has(3)) {
+    if (skipElectricStep && completedSteps.has(electricStepNumber)) {
       effectiveCompleted--;
     }
 
-    const totalSteps = skipStep3 ? FORM_STEPS.length - 1 : FORM_STEPS.length;
+    const totalSteps = skipElectricStep
+      ? formSteps.length - 1
+      : formSteps.length;
     return Math.round((effectiveCompleted / totalSteps) * 100);
-  }, [completedSteps, form]);
+  }, [completedSteps, form, formSteps, electricStepNumber]);
 
   const allStepsComplete = useMemo((): boolean => {
     const values = form.getValues();
     const alimentacion = values.alimentacionDeseada;
-    const skipStep3 = alimentacion !== TipoAlimentacion.ELECTRICO;
+    const skipElectricStep = alimentacion !== TipoAlimentacion.ELECTRICO;
 
-    for (let step = 1; step <= FORM_STEPS.length; step++) {
-      if (step === 3 && skipStep3) continue;
+    for (let step = 1; step <= formSteps.length; step++) {
+      if (step === electricStepNumber && skipElectricStep) continue;
       if (!validateStepFields(step, values)) return false;
     }
     return true;
-  }, [completedSteps, form, validateStepFields]);
+  }, [completedSteps, form, validateStepFields, formSteps, electricStepNumber]);
 
-  const currentStepConfig = FORM_STEPS[currentStep - 1];
+  const currentStepConfig = formSteps[currentStep - 1];
   const isFirstStep = currentStep === 1;
-  const isLastStep = currentStep === FORM_STEPS.length;
+  const isLastStep = currentStep === formSteps.length;
 
   // ==================== STEP VALIDATION ====================
   const validateStep = useCallback(
     async (step: number): Promise<boolean> => {
-      const stepConfig = FORM_STEPS[step - 1];
+      const stepConfig = formSteps[step - 1];
       if (!stepConfig || !stepConfig.fields) return true;
 
       const isValid = await form.trigger(stepConfig.fields as any);
@@ -238,11 +266,11 @@ export function useLogisticaAnalisisForm({
 
       return isValid;
     },
-    [form],
+    [form, formSteps],
   );
 
   // ==================== NAVIGATION HELPERS ====================
-  const shouldSkipStep3 = useCallback(() => {
+  const shouldSkipElectricStep = useCallback(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
     return alimentacion !== TipoAlimentacion.ELECTRICO;
   }, [form]);
@@ -250,23 +278,23 @@ export function useLogisticaAnalisisForm({
   const getNextStep = useCallback(
     (fromStep: number): number => {
       const nextStep = fromStep + 1;
-      if (nextStep === 3 && shouldSkipStep3()) {
-        return 4;
+      if (nextStep === electricStepNumber && shouldSkipElectricStep()) {
+        return electricStepNumber + 1;
       }
       return nextStep;
     },
-    [shouldSkipStep3],
+    [shouldSkipElectricStep, electricStepNumber],
   );
 
   const getPrevStep = useCallback(
     (fromStep: number): number => {
       const prevStep = fromStep - 1;
-      if (prevStep === 3 && shouldSkipStep3()) {
-        return 2;
+      if (prevStep === electricStepNumber && shouldSkipElectricStep()) {
+        return electricStepNumber - 1;
       }
       return prevStep;
     },
-    [shouldSkipStep3],
+    [shouldSkipElectricStep, electricStepNumber],
   );
 
   // ==================== NAVIGATION ====================
@@ -278,11 +306,11 @@ export function useLogisticaAnalisisForm({
       return;
     }
 
-    if (currentStep < FORM_STEPS.length) {
+    if (currentStep < formSteps.length) {
       const nextStep = getNextStep(currentStep);
       setCurrentStep(nextStep);
     }
-  }, [currentStep, validateStep, getNextStep]);
+  }, [currentStep, validateStep, getNextStep, formSteps, t]);
 
   const handlePrevStep = useCallback(() => {
     if (currentStep > 1) {
@@ -291,10 +319,13 @@ export function useLogisticaAnalisisForm({
     }
   }, [currentStep, getPrevStep]);
 
-  const goToStep = useCallback(async (step: number) => {
-    if (step < 1 || step > FORM_STEPS.length) return;
-    setCurrentStep(step);
-  }, []);
+  const goToStep = useCallback(
+    async (step: number) => {
+      if (step < 1 || step > formSteps.length) return;
+      setCurrentStep(step);
+    },
+    [formSteps],
+  );
 
   // ==================== SAVE VISIT ====================
   const saveVisit = useCallback(
@@ -418,7 +449,7 @@ export function useLogisticaAnalisisForm({
     currentStepConfig,
     isFirstStep,
     isLastStep,
-    shouldSkipStep3,
+    shouldSkipElectricStep,
 
     // Actions
     handleNextStep,

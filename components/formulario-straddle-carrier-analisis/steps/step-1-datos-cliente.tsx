@@ -96,7 +96,7 @@ function TextInput({
                 placeholder={placeholder}
                 className={cn(
                   "text-xs sm:text-sm h-8 sm:h-9",
-                  Icon && "pl-7 sm:pl-8"
+                  Icon && "pl-7 sm:pl-8",
                 )}
                 {...field}
               />
@@ -112,19 +112,22 @@ function TextInput({
 /**
  * Step 1: Datos del Cliente
  * Company information, contact details, and commercial data
+ * Optimized responsive grid layout - minimal vertical scrolling on large screens
  */
 export function Step1Content({ form }: StepContentProps) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
 
   return (
-    <div className="space-y-4">
-      {/* ==================== EMPRESA ==================== */}
+    <div className="space-y-5 lg:space-y-6">
+      {/* ==================== EMPRESA Y CONTACTO ==================== */}
       <section>
         <SectionHeader
           icon={Building2}
           title={t("forms.clientData.sections.company")}
         />
-        <div className="grid grid-cols-2 gap-2">
+        {/* Grid: 1 col mobile, 2 cols md, 3 cols xl - Optimized for large screens */}
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 lg:gap-4">
+          {/* Razón Social - Spans 2 cols on XL */}
           <TextInput
             control={form.control}
             name="razonSocial"
@@ -132,7 +135,10 @@ export function Step1Content({ form }: StepContentProps) {
             placeholder={t("forms.clientData.fields.companyName.placeholder")}
             icon={Building2}
             required
+            className="xl:col-span-2"
           />
+
+          {/* NIF */}
           <TextInput
             control={form.control}
             name="numeroIdentificacionFiscal"
@@ -141,25 +147,8 @@ export function Step1Content({ form }: StepContentProps) {
             icon={Hash}
             required
           />
-          <TextInput
-            control={form.control}
-            name="website"
-            label={t("forms.clientData.fields.website.label")}
-            placeholder={t("forms.clientData.fields.website.placeholder")}
-            icon={Globe}
-            type="url"
-            className="col-span-2"
-          />
-        </div>
-      </section>
 
-      {/* ==================== CONTACTO ==================== */}
-      <section>
-        <SectionHeader
-          icon={User}
-          title={t("forms.clientData.sections.contact")}
-        />
-        <div className="grid grid-cols-2 gap-2">
+          {/* Persona Contacto */}
           <TextInput
             control={form.control}
             name="personaContacto"
@@ -168,6 +157,8 @@ export function Step1Content({ form }: StepContentProps) {
             icon={User}
             required
           />
+
+          {/* Email */}
           <TextInput
             control={form.control}
             name="email"
@@ -176,6 +167,16 @@ export function Step1Content({ form }: StepContentProps) {
             icon={Mail}
             required
             type="email"
+          />
+
+          {/* Website */}
+          <TextInput
+            control={form.control}
+            name="website"
+            label={t("forms.clientData.fields.website.label")}
+            placeholder={t("forms.clientData.fields.website.placeholder")}
+            icon={Globe}
+            type="url"
           />
         </div>
       </section>
@@ -186,7 +187,8 @@ export function Step1Content({ form }: StepContentProps) {
           icon={MapPin}
           title={t("forms.clientData.sections.location")}
         />
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 xl:grid-cols-6 gap-3 lg:gap-4">
+          {/* Dirección - Spans 3 cols on XL */}
           <TextInput
             control={form.control}
             name="direccion"
@@ -194,37 +196,47 @@ export function Step1Content({ form }: StepContentProps) {
             placeholder={t("forms.clientData.fields.address.placeholder")}
             icon={MapPin}
             required
-            className="col-span-3"
+            className="xl:col-span-2"
           />
+
+          {/* Localidad - Spans 2 cols on XL */}
           <TextInput
             control={form.control}
             name="localidad"
             label={t("forms.clientData.fields.city.label")}
             placeholder={t("forms.clientData.fields.city.placeholder")}
             required
-            className="col-span-2"
+            className="xl:col-span-2"
           />
-          <TextInput
-            control={form.control}
-            name="provinciaEstado"
-            label={t("forms.clientData.fields.province.label")}
-            placeholder={t("forms.clientData.fields.province.placeholder")}
-            required
-          />
+
+          {/* Código Postal */}
           <TextInput
             control={form.control}
             name="codigoPostal"
             label={t("forms.clientData.fields.postalCode.label")}
             placeholder={t("forms.clientData.fields.postalCode.placeholder")}
             required
+            className="xl:col-span-2"
           />
+
+          {/* Provincia - Spans 3 cols on XL */}
+          <TextInput
+            control={form.control}
+            name="provinciaEstado"
+            label={t("forms.clientData.fields.province.label")}
+            placeholder={t("forms.clientData.fields.province.placeholder")}
+            required
+            className="xl:col-span-3"
+          />
+
+          {/* País - Spans 3 cols on XL */}
           <TextInput
             control={form.control}
             name="pais"
             label={t("forms.clientData.fields.country.label")}
             placeholder={t("forms.clientData.fields.country.placeholder")}
             required
-            className="col-span-2 sm:col-span-1"
+            className="xl:col-span-3"
           />
         </div>
       </section>
@@ -235,65 +247,22 @@ export function Step1Content({ form }: StepContentProps) {
           icon={Users}
           title={t("forms.clientData.sections.commercial")}
         />
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-3 lg:gap-4">
+          {/* Distribuidor */}
           <TextInput
             control={form.control}
             name="distribuidor"
             label={t("forms.clientData.fields.distributor.label")}
             placeholder={t("forms.clientData.fields.distributor.placeholder")}
           />
+
+          {/* Contacto Distribuidor */}
           <TextInput
             control={form.control}
             name="contactoDistribuidor"
             label={t("forms.clientData.fields.distributorContact.label")}
             placeholder={t(
-              "forms.clientData.fields.distributorContact.placeholder"
-            )}
-          />
-
-          {/* Fecha de cierre - Special field */}
-          <FormField
-            control={form.control}
-            name="fechaCierre"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-[10px] sm:text-[11px] font-medium">
-                  {t("forms.clientData.fields.closingDate.label")}
-                </FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full h-8 sm:h-9 text-xs sm:text-sm font-normal justify-start text-left",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-1.5 size-3 sm:size-3.5" />
-                        {field.value
-                          ? format(field.value, "dd/MM/yyyy", {
-                              locale: locale === "en" ? undefined : es,
-                            })
-                          : t(
-                              "forms.clientData.fields.closingDate.placeholder"
-                            )}
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value || undefined}
-                      onSelect={field.onChange}
-                      locale={locale === "en" ? undefined : es}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage className="text-[10px]" />
-              </FormItem>
+              "forms.clientData.fields.distributorContact.placeholder",
             )}
           />
         </div>

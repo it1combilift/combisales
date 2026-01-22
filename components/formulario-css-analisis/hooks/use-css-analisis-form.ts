@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "sonner";
 import { SaveType } from "../types";
-import { FORM_STEPS } from "../constants";
+import { FORM_STEPS, getFormSteps } from "../constants";
 import { UseFormReturn } from "react-hook-form";
 import { FormularioCSSSchema } from "../schemas";
 import { VisitStatus, VisitFormType } from "@prisma/client";
@@ -18,6 +18,8 @@ interface UseCSSAnalisisFormProps {
   locale: string;
   // Para visitas creadas por DEALER: vendedor asignado
   assignedSellerId?: string;
+  // Para flujo DEALER: habilita los pasos de datos del cliente
+  enableCustomerEntry?: boolean;
 }
 
 export function useCSSAnalisisForm({
@@ -30,83 +32,134 @@ export function useCSSAnalisisForm({
   t,
   locale,
   assignedSellerId,
+  enableCustomerEntry = false,
 }: UseCSSAnalisisFormProps) {
+  // Get the appropriate steps based on enableCustomerEntry
+  const formSteps = useMemo(
+    () => getFormSteps(enableCustomerEntry),
+    [enableCustomerEntry],
+  );
+
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4]) : new Set(),
+    isEditing ? new Set(formSteps.map((s) => s.number)) : new Set(),
   );
 
   const VisitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
 
   // ==================== COMPUTED VALUES ====================
   const progress = useMemo(
-    () => Math.round((currentStep / FORM_STEPS.length) * 100),
-    [currentStep],
+    () => Math.round((currentStep / formSteps.length) * 100),
+    [currentStep, formSteps.length],
   );
 
   // Watch required fields for real-time validation
   const descripcionProducto = form.watch("descripcionProducto");
   const contenedorTipos = form.watch("contenedorTipos");
   const contenedorMedidas = form.watch("contenedorMedidas");
+  // Customer fields (for DEALER flow)
+  const razonSocial = form.watch("razonSocial");
+  const email = form.watch("email");
+  const direccion = form.watch("direccion");
 
   // Real-time validation: check if all required fields are filled
   const allStepsComplete = useMemo((): boolean => {
-    // Step 1: descripcionProducto is required (min 10 chars)
-    const step1Valid = Boolean(
+    // Base validation for product/technical steps
+    const productStepValid = Boolean(
       descripcionProducto && descripcionProducto.trim().length >= 10,
     );
-
-    // Step 2: contenedorTipos is required (min 1 item)
-    const step2Valid = Boolean(contenedorTipos && contenedorTipos.length >= 1);
-
-    // Step 3: contenedorMedidas is required (min 1 item)
-    const step3Valid = Boolean(
+    const containerStepValid = Boolean(
+      contenedorTipos && contenedorTipos.length >= 1,
+    );
+    const measurementsStepValid = Boolean(
       contenedorMedidas && contenedorMedidas.length >= 1,
     );
+    const filesStepValid = true;
 
-    // Step 4: archivos is optional, no validation needed
-    const step4Valid = true;
+    if (!enableCustomerEntry) {
+      return (
+        productStepValid &&
+        containerStepValid &&
+        measurementsStepValid &&
+        filesStepValid
+      );
+    }
 
-    return step1Valid && step2Valid && step3Valid && step4Valid;
-  }, [descripcionProducto, contenedorTipos, contenedorMedidas]);
+    // Additional validation for customer steps in DEALER flow
+    const companyStepValid = Boolean(
+      razonSocial && razonSocial.trim().length > 0,
+    );
+    const locationStepValid = Boolean(direccion && direccion.trim().length > 0);
+    const commercialStepValid = true; // Optional fields
+
+    return (
+      companyStepValid &&
+      locationStepValid &&
+      commercialStepValid &&
+      productStepValid &&
+      containerStepValid &&
+      measurementsStepValid &&
+      filesStepValid
+    );
+  }, [
+    descripcionProducto,
+    contenedorTipos,
+    contenedorMedidas,
+    razonSocial,
+    direccion,
+    enableCustomerEntry,
+  ]);
 
   // Update completedSteps based on real-time validation for visual feedback
   useEffect(() => {
     const newCompletedSteps = new Set<number>();
 
-    // Step 1
-    if (descripcionProducto && descripcionProducto.trim().length >= 10) {
-      newCompletedSteps.add(1);
+    if (enableCustomerEntry) {
+      // DEALER flow: 7 steps (3 customer + 4 product)
+      if (razonSocial && razonSocial.trim().length > 0)
+        newCompletedSteps.add(1);
+      if (direccion && direccion.trim().length > 0) newCompletedSteps.add(2);
+      newCompletedSteps.add(3); // Commercial is optional
+      if (descripcionProducto && descripcionProducto.trim().length >= 10)
+        newCompletedSteps.add(4);
+      if (contenedorTipos && contenedorTipos.length >= 1)
+        newCompletedSteps.add(5);
+      if (contenedorMedidas && contenedorMedidas.length >= 1)
+        newCompletedSteps.add(6);
+      newCompletedSteps.add(7); // Files are optional
+    } else {
+      // Normal flow: 4 steps
+      if (descripcionProducto && descripcionProducto.trim().length >= 10)
+        newCompletedSteps.add(1);
+      if (contenedorTipos && contenedorTipos.length >= 1)
+        newCompletedSteps.add(2);
+      if (contenedorMedidas && contenedorMedidas.length >= 1)
+        newCompletedSteps.add(3);
+      newCompletedSteps.add(4); // Files are optional
     }
-
-    // Step 2
-    if (contenedorTipos && contenedorTipos.length >= 1) {
-      newCompletedSteps.add(2);
-    }
-
-    // Step 3
-    if (contenedorMedidas && contenedorMedidas.length >= 1) {
-      newCompletedSteps.add(3);
-    }
-
-    // Step 4 is always considered complete (archivos is optional)
-    newCompletedSteps.add(4);
 
     setCompletedSteps(newCompletedSteps);
-  }, [descripcionProducto, contenedorTipos, contenedorMedidas]);
+  }, [
+    descripcionProducto,
+    contenedorTipos,
+    contenedorMedidas,
+    razonSocial,
+    direccion,
+    enableCustomerEntry,
+  ]);
 
-  const currentStepConfig = FORM_STEPS[currentStep - 1];
+  const currentStepConfig = formSteps[currentStep - 1];
   const isFirstStep = currentStep === 1;
-  const isLastStep = currentStep === FORM_STEPS.length;
+  const isLastStep = currentStep === formSteps.length;
 
   // ==================== VALIDATION ====================
   const validateStep = useCallback(
     async (stepNumber: number) => {
-      const stepConfig = FORM_STEPS[stepNumber - 1];
+      const stepConfig = formSteps[stepNumber - 1];
       const isValid = await form.trigger(stepConfig.fields as any);
       if (isValid) {
         setCompletedSteps((prev) => new Set([...prev, stepNumber]));
@@ -119,16 +172,16 @@ export function useCSSAnalisisForm({
       }
       return isValid;
     },
-    [form],
+    [form, formSteps],
   );
 
   // ==================== NAVIGATION ====================
   const handleNextStep = useCallback(async () => {
     await validateStep(currentStep);
-    if (currentStep < FORM_STEPS.length) {
+    if (currentStep < formSteps.length) {
       setCurrentStep((prev) => prev + 1);
     }
-  }, [currentStep, validateStep]);
+  }, [currentStep, validateStep, formSteps.length]);
 
   const handlePrevStep = useCallback(() => {
     if (currentStep > 1) {

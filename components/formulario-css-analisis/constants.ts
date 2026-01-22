@@ -1,4 +1,12 @@
-import { FileText, Package, Ruler, Paperclip } from "lucide-react";
+import {
+  FileText,
+  Package,
+  Ruler,
+  Paperclip,
+  Building2,
+  MapPin,
+  Users,
+} from "lucide-react";
 
 export type StepColor =
   | "primary"
@@ -63,7 +71,56 @@ export interface StepConfig {
   fields: string[];
 }
 
-export const FORM_STEPS: StepConfig[] = [
+// Customer data steps (only for DEALER flow with enableCustomerEntry=true)
+const CUSTOMER_STEPS: StepConfig[] = [
+  {
+    number: 1,
+    title: "forms.css.steps.company.title",
+    shortTitle: "forms.css.steps.company.shortTitle",
+    description: "forms.css.steps.company.description",
+    icon: Building2,
+    color: "primary",
+    fields: [
+      "razonSocial",
+      "personaContacto",
+      "email",
+      "numeroIdentificacionFiscal",
+      "website",
+    ],
+  },
+  {
+    number: 2,
+    title: "forms.css.steps.location.title",
+    shortTitle: "forms.css.steps.location.shortTitle",
+    description: "forms.css.steps.location.description",
+    icon: MapPin,
+    color: "blue",
+    fields: [
+      "direccion",
+      "localidad",
+      "codigoPostal",
+      "provinciaEstado",
+      "pais",
+    ],
+  },
+  {
+    number: 3,
+    title: "forms.css.steps.commercial.title",
+    shortTitle: "forms.css.steps.commercial.shortTitle",
+    description: "forms.css.steps.commercial.description",
+    icon: Users,
+    color: "amber",
+    fields: [
+      "distribuidor",
+      "contactoDistribuidor",
+      "fechaCierre",
+      "datosClienteUsuarioFinal",
+    ],
+  },
+];
+
+// Regular steps (product/technical steps)
+const REGULAR_STEPS: StepConfig[] = [
   {
     number: 1,
     title: "forms.css.steps.product.title",
@@ -101,6 +158,38 @@ export const FORM_STEPS: StepConfig[] = [
     fields: ["archivos"],
   },
 ];
+
+// Default export for backward compatibility
+export const FORM_STEPS: StepConfig[] = REGULAR_STEPS;
+
+/**
+ * Get form steps based on enableCustomerEntry flag
+ * When enableCustomerEntry is true (DEALER flow), customer data steps are prepended
+ * When false (normal ADMIN/SELLER flow), only regular steps are returned
+ */
+export function getFormSteps(
+  enableCustomerEntry: boolean = false,
+): StepConfig[] {
+  if (!enableCustomerEntry) {
+    return REGULAR_STEPS;
+  }
+
+  // For DEALER flow: prepend customer data steps and renumber all steps
+  const customerStepsWithCorrectNumbers = CUSTOMER_STEPS.map((step, index) => ({
+    ...step,
+    number: index + 1,
+  }));
+
+  const regularStepsWithShiftedNumbers = REGULAR_STEPS.map((step, index) => ({
+    ...step,
+    number: CUSTOMER_STEPS.length + index + 1,
+  }));
+
+  return [
+    ...customerStepsWithCorrectNumbers,
+    ...regularStepsWithShiftedNumbers,
+  ];
+}
 
 export function getStepColorClasses(color: string): StepColorClasses {
   return STEP_COLOR_MAP[color as StepColor] || STEP_COLOR_MAP.primary;

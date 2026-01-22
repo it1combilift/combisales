@@ -454,11 +454,13 @@ function generateEmailSubject(
   const formType = data.formType;
   const archivosCount = data.archivos?.length || 0;
 
-  // Status prefix
-  const statusPrefix =
-    status === VisitStatus.BORRADOR || status === "BORRADOR"
-      ? `[${t("email.status.draft", locale)}] `
-      : "";
+  // Status prefix - only show for draft/in-progress (completed doesn't need prefix)
+  let statusPrefix = "";
+  if (status === VisitStatus.BORRADOR || status === "BORRADOR") {
+    statusPrefix = `[${t("email.status.draft", locale)}] `;
+  } else if (status === VisitStatus.EN_PROGRESO || status === "EN_PROGRESO") {
+    statusPrefix = `[${t("email.status.inProgress", locale)}] `;
+  }
 
   // Clone indicator
   const clonePrefix = data.isClone ? `[${t("email.clone", locale)}] ` : "";
@@ -563,12 +565,14 @@ export const sendVisitCompletedNotification = sendVisitNotification;
 
 /**
  * Determinar si se debe enviar notificacion de visita
- * Ahora siempre envia si las notificaciones estan habilitadas
+ * Solo envía notificaciones cuando la visita está COMPLETADA
+ * Los borradores (BORRADOR) y en progreso (EN_PROGRESO) no envían emails
  */
 export function shouldSendVisitNotification(status: string): boolean {
-  const validStatuses = [VisitStatus.BORRADOR, VisitStatus.COMPLETADA];
+  // Only send email notifications when visit is submitted (COMPLETADA)
+  // Draft saves and in-progress status do not trigger emails
   return (
-    validStatuses.includes(status as VisitStatus) &&
+    status === VisitStatus.COMPLETADA &&
     NOTIFICATION_CONFIG.visitCompleted.enabled
   );
 }

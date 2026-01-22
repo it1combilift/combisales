@@ -357,6 +357,7 @@ export default function DealerVisitFormDialog({
                       assignedSellerId={selectedSeller?.id}
                       originalArchivos={originalArchivos}
                       readOnly={readOnly}
+                      enableCustomerEntry={true}
                     />
                   )}
                   {selectedFormType === VisitFormType.ANALISIS_INDUSTRIAL && (
@@ -369,6 +370,7 @@ export default function DealerVisitFormDialog({
                       assignedSellerId={selectedSeller?.id}
                       originalArchivos={originalArchivos}
                       readOnly={readOnly}
+                      enableCustomerEntry={true}
                     />
                   )}
                   {selectedFormType === VisitFormType.ANALISIS_LOGISTICA && (
@@ -381,6 +383,7 @@ export default function DealerVisitFormDialog({
                       assignedSellerId={selectedSeller?.id}
                       originalArchivos={originalArchivos}
                       readOnly={readOnly}
+                      enableCustomerEntry={true}
                     />
                   )}
                   {selectedFormType ===
@@ -394,6 +397,7 @@ export default function DealerVisitFormDialog({
                       assignedSellerId={selectedSeller?.id}
                       originalArchivos={originalArchivos}
                       readOnly={readOnly}
+                      enableCustomerEntry={true}
                     />
                   )}
                 </>

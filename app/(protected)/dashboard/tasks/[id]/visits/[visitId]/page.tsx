@@ -9,10 +9,19 @@ import { useI18n } from "@/lib/i18n/context";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AlertMessage } from "@/components/alert";
 import { EmptyCard } from "@/components/empty-card";
 import { Separator } from "@/components/ui/separator";
 import { CopyButton } from "@/components/copy-button";
 import { H1, Paragraph } from "@/components/fonts/fonts";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
+import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
+import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
+import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
 
 import {
   ArrowLeft,
@@ -22,14 +31,6 @@ import {
   Tag,
   PencilLine,
 } from "lucide-react";
-import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-
-import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
-import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
-import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
-import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
 
 import {
   Visit,
@@ -46,7 +47,6 @@ import {
   FormularioLogisticaDetail,
   FormularioStraddleCarrierDetail,
 } from "@/components/visit-detail";
-import { AlertMessage } from "@/components/alert";
 
 interface VisitDetailPageProps {
   params: Promise<{ id: string; visitId: string }>;
@@ -215,9 +215,11 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
                     <statusConfig.icon className="size-3" />
                     {visit.status === VisitStatus.BORRADOR
                       ? t("visits.statuses.draft")
-                      : visit.status === VisitStatus.COMPLETADA
-                        ? t("visits.statuses.completed")
-                        : ""}
+                      : visit.status === VisitStatus.EN_PROGRESO
+                        ? t("visits.statuses.inProgress")
+                        : visit.status === VisitStatus.COMPLETADA
+                          ? t("visits.statuses.completed")
+                          : ""}
                   </Badge>
                 )}
               </div>

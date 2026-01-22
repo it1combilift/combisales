@@ -46,7 +46,7 @@
         "description": "You don't have any visits assigned by dealers yet"
       },
       "cloning": "Cloning visit...",
-      "cloneAction": "Clone",
+      "cloneAction": "Clone visit",
       "cloneTooltip": "Create an editable copy of this visit",
       "cloneSuccess": "Visit cloned successfully",
       "cloneSuccessDescription": "An editable copy of the visit has been created",
@@ -58,11 +58,18 @@
       "cannotDeleteOriginal": "You cannot delete original dealer visits",
       "editCloneOnly": "You can only edit your own clones",
       "cannotCloneClone": "You cannot clone a visit that is already a clone",
-      "cloneNoFiles": "Note: Attachments are not copied when cloning. You can add new files."
+      "cloneNoFiles": "Note: Attachments are not copied when cloning. You can add new files.",
+      "viewOriginalForm": "View original form",
+      "viewClonedForm": "View cloned form",
+      "editClonedForm": "Edit cloned form",
+      "deleteClonedVisit": "Delete cloned visit",
+      "inProgress": "In Progress",
+      "visitAlreadyCloned": "This visit has already been cloned"
     },
     "columns": {
       "dealer": "Dealer",
-      "assignedSeller": "P. Manager"
+      "assignedSeller": "P. Manager",
+      "company": "Company"
     }
   },
   "dashboard": {
@@ -407,6 +414,7 @@
     },
     "statuses": {
       "draft": "Draft",
+      "inProgress": "In Progress",
       "completed": "Completed"
     },
     "visitHistory": "Visit history",
@@ -1415,6 +1423,21 @@
     },
     "css": {
       "steps": {
+        "company": {
+          "title": "Company",
+          "shortTitle": "Company",
+          "description": "Company information"
+        },
+        "location": {
+          "title": "Location",
+          "shortTitle": "Location",
+          "description": "Company address"
+        },
+        "commercial": {
+          "title": "Commercial",
+          "shortTitle": "Commercial",
+          "description": "Commercial information"
+        },
         "product": {
           "title": "Product",
           "shortTitle": "Product",
@@ -1489,6 +1512,11 @@
     },
     "industrial": {
       "steps": {
+        "customerData": {
+          "title": "Customer Data",
+          "shortTitle": "Customer",
+          "description": "Company and contact information"
+        },
         "operation": {
           "title": "Operation Description",
           "shortTitle": "Operation",
@@ -1656,6 +1684,11 @@
     },
     "logistica": {
       "steps": {
+        "customerData": {
+          "title": "Customer Data",
+          "shortTitle": "Customer",
+          "description": "Customer and company information"
+        },
         "operation": {
           "title": "Operation Description",
           "shortTitle": "Operation",
@@ -1926,6 +1959,11 @@
     },
     "straddleCarrier": {
       "steps": {
+        "customerData": {
+          "title": "Customer Data",
+          "shortTitle": "Customer",
+          "description": "Customer and company information"
+        },
         "instructions": {
           "title": "Instructions",
           "shortTitle": "Instructions",
@@ -2106,6 +2144,7 @@
     },
     "status": {
       "completed": "COMPLETED",
+      "inProgress": "IN PROGRESS",
       "draft": "DRAFT",
       "unknown": "UNKNOWN STATUS"
     },

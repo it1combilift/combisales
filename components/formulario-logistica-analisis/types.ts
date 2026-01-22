@@ -17,6 +17,8 @@ export interface FormularioLogisticaAnalisisProps {
   originalArchivos?: ArchivoSubido[];
   // Si es true, el formulario es solo lectura (SELLER viendo original)
   readOnly?: boolean;
+  // Si es true, habilita el paso de datos del cliente (para flujo DEALER)
+  enableCustomerEntry?: boolean;
 }
 
 // ==================== ARCHIVO TYPES ====================
@@ -114,7 +116,7 @@ export type SaveType = "submit" | "draft" | "changes";
 
 export interface SaveVisitParams {
   saveType: SaveType;
-  visitStatus: "BORRADOR" | "COMPLETADA" | "ENVIADA";
+  visitStatus: "BORRADOR" | "EN_PROGRESO" | "COMPLETADA" | "ENVIADA";
 }
 
 // ==================== ALIMENTACION TYPES ====================

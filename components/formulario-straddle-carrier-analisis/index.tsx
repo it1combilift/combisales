@@ -11,9 +11,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { FormularioStraddleCarrierAnalisisProps } from "./types";
 import { useStraddleCarrierAnalisisForm } from "./hooks/use-straddle-carrier-analisis-form";
-import { FORM_STEPS } from "./constants";
+import { getFormSteps } from "./constants";
 
-// Steps renumerados: Step 1 = Instrucciones, Step 2 = Contenedores, etc.
+// Customer data step (shown only when enableCustomerEntry is true)
+import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
+
+// Regular steps (renumbered when customer entry is enabled)
 import { Step1Content } from "./steps/step-2-instrucciones";
 import { Step2Content } from "./steps/step-3-contenedores";
 import { Step3Content } from "./steps/step-4-carga-especial";
@@ -40,11 +43,18 @@ export default function FormularioStraddleCarrierAnalisis({
   assignedSellerId,
   originalArchivos = [],
   readOnly = false,
+  enableCustomerEntry = false,
 }: FormularioStraddleCarrierAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioStraddleCarrierAnalisis;
   const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioStraddleCarrierSchema(t), [t]);
+
+  // Get form steps based on enableCustomerEntry prop
+  const formSteps = useMemo(
+    () => getFormSteps(enableCustomerEntry),
+    [enableCustomerEntry],
+  );
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioStraddleCarrierSchema>({
@@ -70,8 +80,8 @@ export default function FormularioStraddleCarrierAnalisis({
     currentStepConfig,
     isFirstStep,
     isLastStep,
-    shouldSkipStep2,
-    shouldSkipStep3,
+    shouldSkipContainersStep,
+    shouldSkipSpecialLoadStep,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -90,6 +100,7 @@ export default function FormularioStraddleCarrierAnalisis({
     t,
     locale,
     assignedSellerId,
+    enableCustomerEntry,
   });
 
   const {
@@ -109,18 +120,49 @@ export default function FormularioStraddleCarrierAnalisis({
     t,
   });
 
-  // Calculate visible steps count for navigation
-  const visibleStepsCount = FORM_STEPS.filter((step) => {
-    if (step.number === 2 && shouldSkipStep2()) return false;
-    if (step.number === 3 && shouldSkipStep3()) return false;
-    return true;
-  }).length;
-
   // ==================== RENDER STEP CONTENT ====================
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
 
-    // Render only the current step to avoid HTML validation issues with hidden required fields
+    // When enableCustomerEntry is true, we have 6 steps total
+    // Step 1 = Customer Data, Steps 2-6 = Regular steps
+    if (enableCustomerEntry) {
+      switch (currentStep) {
+        case 1:
+          return <CustomerDataStep {...stepProps} />;
+        case 2:
+          return <Step1Content {...stepProps} />;
+        case 3:
+          return <Step2Content {...stepProps} />;
+        case 4:
+          return <Step3Content {...stepProps} />;
+        case 5:
+          return <Step4Content {...stepProps} />;
+        case 6:
+          return (
+            <Step5Content
+              form={form}
+              customerId={customer?.id || ""}
+              isUploading={isUploading}
+              uploadProgress={uploadProgress}
+              uploadingFiles={uploadingFiles}
+              deletingFileId={deletingFileId}
+              onFileSelect={handleFileSelect}
+              onRemoveFile={handleRemoveFile}
+              onDrop={handleDrop}
+              fileInputRef={fileInputRef}
+              cameraPhotoRef={cameraPhotoRef}
+              cameraVideoRef={cameraVideoRef}
+              originalArchivos={originalArchivos}
+              readOnly={readOnly}
+            />
+          );
+        default:
+          return null;
+      }
+    }
+
+    // Original 5-step flow (without customer entry)
     switch (currentStep) {
       case 1:
         return <Step1Content {...stepProps} />;
@@ -164,8 +206,9 @@ export default function FormularioStraddleCarrierAnalisis({
         progress={progress}
         completedSteps={completedSteps}
         onGoToStep={goToStep}
-        shouldSkipStep2={shouldSkipStep2}
-        shouldSkipStep3={shouldSkipStep3}
+        shouldSkipStep2={shouldSkipContainersStep}
+        shouldSkipStep3={shouldSkipSpecialLoadStep}
+        formSteps={formSteps}
       />
 
       {/* Form content */}

@@ -64,6 +64,9 @@ const DESIGN = {
     warningBg: "#FFF8E1",
     warningText: "#E65100",
     warningBorder: "#FF9800",
+    infoBg: "#DBEAFE",
+    infoText: "#1E40AF",
+    infoBorder: "#93C5FD",
 
     // File Types
     image: "#1976D2",
@@ -126,6 +129,14 @@ function getStatusConfig(status: string, locale: string = "es") {
         textColor: DESIGN.colors.successText,
         borderColor: DESIGN.colors.successBorder,
         icon: "✓",
+      };
+    case VisitStatus.EN_PROGRESO:
+      return {
+        label: t("email.status.inProgress", locale),
+        bgColor: DESIGN.colors.infoBg,
+        textColor: DESIGN.colors.infoText,
+        borderColor: DESIGN.colors.infoBorder,
+        icon: "◐",
       };
     case VisitStatus.BORRADOR:
       return {
@@ -1217,19 +1228,6 @@ function buildMetadataSection(
     `;
   }
 
-  // Clone indicator
-  if (data.isClone) {
-    metadataRows += `
-      <tr>
-        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${t("email.metadata.visitType", locale)}:</td>
-        <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800};">
-          <span style="display: inline-block; padding: 2px 8px; background-color: #FCE4EC; color: #C2185B; border-radius: 4px; font-size: 10px; font-weight: 500;">${t("email.metadata.clonedVisit", locale)}</span>
-          ${data.originalVisitId ? `<span style="margin-left: 8px; color: ${DESIGN.colors.gray500}; font-size: ${DESIGN.fonts.sizes.xs};">ID: ${data.originalVisitId.substring(0, 8)}...</span>` : ""}
-        </td>
-      </tr>
-    `;
-  }
-
   return `
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%; margin-top: 12px;">
       ${metadataRows}
@@ -1277,9 +1275,9 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
       ? t("email.header.visitCompleted", locale)
       : t("email.header.visitDraft", locale);
 
-  if (data.isClone) {
-    emailTitle = `${emailTitle} (${t("email.clone", locale)})`;
-  }
+  // if (data.isClone) {
+  //   emailTitle = `${emailTitle} (${t("email.clone", locale)})`;
+  // }
 
   // Get preheader based on status
   const preheader =

@@ -205,7 +205,9 @@ const VisitDetailPage = ({ params }: VisitDetailPageProps) => {
                       `visits.statuses.${
                         visit.status === VisitStatus.BORRADOR
                           ? "draft"
-                          : "completed"
+                          : visit.status === VisitStatus.EN_PROGRESO
+                            ? "inProgress"
+                            : "completed"
                       }`,
                     )}
                   </Badge>

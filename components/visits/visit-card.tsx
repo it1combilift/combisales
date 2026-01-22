@@ -3,11 +3,10 @@
 import React from "react";
 import { formatDate } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
+import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { VisitStatus, VisitFormType, Role } from "@prisma/client";
-import { FORM_TYPE_LABELS, VISIT_STATUS_LABELS } from "@/interfaces/visits";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   FORM_TYPE_ICONS,
@@ -39,14 +38,16 @@ import {
 
 const STATUS_VARIANTS: Record<
   VisitStatus,
-  "default" | "secondary" | "success" | "warning" | "destructive"
+  "default" | "secondary" | "success" | "warning" | "destructive" | "info"
 > = {
   BORRADOR: "warning",
+  EN_PROGRESO: "info",
   COMPLETADA: "success",
 };
 
 const STATUS_COLORS: Record<VisitStatus, string> = {
   BORRADOR: "border-l-amber-500",
+  EN_PROGRESO: "border-l-blue-500",
   COMPLETADA: "border-l-green-500",
 };
 
@@ -61,6 +62,10 @@ interface VisitCardProps {
   onViewForm?: (visit: Visit) => void;
   onCreateVisit?: () => void;
   userRole?: Role | null;
+  // Phase 4: Clone-specific handlers for unified row logic
+  onViewClone?: (visit: Visit) => void;
+  onEditClone?: (visit: Visit) => void;
+  onDeleteClone?: (visit: Visit) => void;
 }
 
 export const VisitCard = ({
@@ -72,20 +77,34 @@ export const VisitCard = ({
   onViewForm,
   onCreateVisit,
   userRole,
+  onViewClone,
+  onEditClone,
+  onDeleteClone,
 }: VisitCardProps) => {
   const { t, locale } = useI18n();
-  const status = visit.status as VisitStatus;
+  const rawStatus = visit.status as VisitStatus;
   const formType = visit.formType as VisitFormType;
 
   const isSeller = userRole === Role.SELLER;
   const isDealer = userRole === Role.DEALER;
   const isAdmin = userRole === Role.ADMIN;
-  const isClone = !!visit.clonedFromId;
-  // SELLER can only edit/delete their own clones
-  const canEdit = !isSeller || isClone;
-  const canDelete = !isSeller || isClone;
-  // SELLER can only clone original visits (not clones)
-  const canClone = isSeller && !isClone && onClone;
+
+  // For DEALER: EN_PROGRESO should appear as COMPLETADA
+  // EN_PROGRESO is only meaningful in the SELLER flow
+  const status =
+    isDealer && rawStatus === VisitStatus.EN_PROGRESO
+      ? VisitStatus.COMPLETADA
+      : rawStatus;
+
+  // Phase 4: Unified row logic - check if original has a clone
+  const hasClone = visit.clones && visit.clones.length > 0;
+  const clone = hasClone ? visit.clones![0] : null;
+
+  // SELLER: can only clone if no clone exists
+  const canClone = isSeller && !hasClone && onClone;
+  // Non-SELLER permissions
+  const canEdit = !isSeller;
+  const canDelete = !isSeller;
 
   const formTypeKeys: Record<VisitFormType, string> = {
     ANALISIS_CSS: "css",
@@ -96,6 +115,7 @@ export const VisitCard = ({
 
   const statusKeys: Record<VisitStatus, string> = {
     BORRADOR: "draft",
+    EN_PROGRESO: "inProgress",
     COMPLETADA: "completed",
   };
 
@@ -131,10 +151,10 @@ export const VisitCard = ({
               {/* Show clone status badge for SELLER */}
               {isSeller && (
                 <Badge
-                  variant={isClone ? "secondary" : "outline"}
+                  variant={hasClone ? "secondary" : "outline"}
                   className="text-xs"
                 >
-                  {isClone
+                  {hasClone
                     ? t("dealerPage.seller.clonedBadge")
                     : t("dealerPage.seller.originalBadge")}
                 </Badge>
@@ -155,82 +175,149 @@ export const VisitCard = ({
             <DropdownMenuContent align="end" className="w-52">
               <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
 
-              {/* Clone action for SELLER (only for original visits) */}
-              {canClone && (
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onClone(visit);
-                  }}
-                >
-                  <Copy className="size-4" />
-                  {t("dealerPage.seller.cloneAction")}
-                </DropdownMenuItem>
-              )}
-
-              {/* View form (read-only) for SELLER on original visits */}
-              {isSeller && !isClone && onViewForm && (
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onViewForm(visit);
-                  }}
-                >
-                  <Eye className="size-4" />
-                  {t("visits.viewForm")}
-                </DropdownMenuItem>
-              )}
-
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigator.clipboard.writeText(visit.id);
-                }}
-              >
-                <Copy className="size-4" />
-                {t("visits.copy")}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {onEdit && canEdit && (
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(visit);
-                  }}
-                >
-                  <PencilLine className="size-4" />
-                  {t("common.edit")}
-                </DropdownMenuItem>
-              )}
-              {onView && (
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onView(visit);
-                  }}
-                >
-                  <ArrowUpRight className="size-4" />
-                  {t("visits.viewDetails")}
-                </DropdownMenuItem>
-              )}
-              {onDelete && canDelete && (
+              {/* SELLER: Unified dropdown based on clone status */}
+              {isSeller && (
                 <>
-                  <DropdownMenuSeparator />
+                  {!hasClone ? (
+                    // NOT CLONED: Show "View form" and "Clone visit"
+                    <>
+                      {onViewForm && (
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onViewForm(visit);
+                          }}
+                        >
+                          <Eye className="size-4" />
+                          {t("visits.viewForm")}
+                        </DropdownMenuItem>
+                      )}
+                      {canClone && (
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onClone!(visit);
+                          }}
+                        >
+                          <Copy className="size-4" />
+                          {t("dealerPage.seller.cloneAction")}
+                        </DropdownMenuItem>
+                      )}
+                    </>
+                  ) : (
+                    // CLONED: Show "View original form", "View/Edit cloned form", "Delete cloned visit"
+                    <>
+                      {onViewForm && (
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onViewForm(visit);
+                          }}
+                        >
+                          <Eye className="size-4" />
+                          {t("dealerPage.seller.viewOriginalForm")}
+                        </DropdownMenuItem>
+                      )}
+                      {onViewClone && clone && (
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onViewClone(visit);
+                          }}
+                        >
+                          <ArrowUpRight className="size-4" />
+                          {t("dealerPage.seller.viewClonedForm")}
+                        </DropdownMenuItem>
+                      )}
+                      {onEditClone && clone && (
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEditClone(visit);
+                          }}
+                        >
+                          <PencilLine className="size-4" />
+                          {t("dealerPage.seller.editClonedForm")}
+                        </DropdownMenuItem>
+                      )}
+                      {onDeleteClone && clone && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteClone(visit);
+                            }}
+                          >
+                            <Trash2 className="size-4 text-destructive" />
+                            {t("dealerPage.seller.deleteClonedVisit")}
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* Non-SELLER: Standard dropdown */}
+              {!isSeller && (
+                <>
                   <DropdownMenuItem
-                    className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive"
+                    className="cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDelete(visit);
+                      navigator.clipboard.writeText(visit.id);
                     }}
                   >
-                    <Trash2 className="size-4 text-destructive" />
-                    {t("common.delete")}
+                    <Copy className="size-4" />
+                    {t("visits.copy")}
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {onEdit && canEdit && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(visit);
+                      }}
+                    >
+                      <PencilLine className="size-4" />
+                      {t("common.edit")}
+                    </DropdownMenuItem>
+                  )}
+                  {onView && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onView(visit);
+                      }}
+                    >
+                      <ArrowUpRight className="size-4" />
+                      {t("visits.viewDetails")}
+                    </DropdownMenuItem>
+                  )}
+                  {onDelete && canDelete && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(visit);
+                        }}
+                      >
+                        <Trash2 className="size-4 text-destructive" />
+                        {t("common.delete")}
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </>
               )}
             </DropdownMenuContent>
@@ -271,34 +358,28 @@ export const VisitCard = ({
         </div>
 
         {/* User Info - Role-based display */}
+        {/* Phase 6: Column Order - SELLER sees Dealer first, Company second */}
+        {/* DEALER sees P.Manager first, Company second */}
         <div className="pt-3 border-t border-border space-y-2.5">
-          {/* SELLER sees: Dealer who assigned the visit */}
-          {/* For cloned visits, show the original dealer from clonedFrom.user */}
-          {(isSeller || isAdmin) && (
+          {/* SELLER sees: Dealer who assigned the visit (first) */}
+          {isSeller && (
             <div className="flex items-center gap-2.5 text-sm min-h-11">
               <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
                 <User className="size-4" />
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-foreground font-semibold truncate text-sm">
-                  {/* For clones: show original dealer, for originals: show visit.user */}
-                  {isClone && visit.clonedFrom?.user
-                    ? visit.clonedFrom.user.name || t("users.card.noName")
-                    : visit.user?.name || t("users.card.noName")}
+                  {visit.user?.name || t("users.card.noName")}
                 </span>
                 <span className="text-muted-foreground text-xs truncate">
-                  {isSeller
-                    ? t("dealerPage.columns.dealer")
-                    : isClone && visit.clonedFrom?.user
-                      ? visit.clonedFrom.user.email
-                      : visit.user?.email}
+                  {t("dealerPage.columns.dealer")}
                 </span>
               </div>
             </div>
           )}
 
-          {/* DEALER and ADMIN see: Assigned Seller (P. Manager) */}
-          {(isDealer || isAdmin) && visit.assignedSeller && (
+          {/* DEALER sees: Assigned Seller / P. Manager (first) */}
+          {isDealer && visit.assignedSeller && (
             <div className="flex items-center gap-2.5 text-sm min-h-11">
               <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-primary/10">
                 <User className="size-4 text-primary" />
@@ -312,6 +393,72 @@ export const VisitCard = ({
                 </span>
               </div>
             </div>
+          )}
+
+          {/* Company / Customer (second for both SELLER and DEALER) */}
+          {(isSeller || isDealer) && visit.customer && (
+            <div className="flex items-center gap-2.5 text-sm min-h-11">
+              <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
+                <ClipboardList className="size-4" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-foreground font-semibold truncate text-sm">
+                  {visit.customer.accountName || "-"}
+                </span>
+                <span className="text-muted-foreground text-xs truncate">
+                  {t("dealerPage.columns.company")}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* ADMIN sees: Both Dealer and P.Manager */}
+          {isAdmin && (
+            <>
+              <div className="flex items-center gap-2.5 text-sm min-h-11">
+                <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
+                  <User className="size-4" />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-foreground font-semibold truncate text-sm">
+                    {visit.user?.name || t("users.card.noName")}
+                  </span>
+                  <span className="text-muted-foreground text-xs truncate">
+                    {t("dealerPage.columns.dealer")}
+                  </span>
+                </div>
+              </div>
+              {visit.assignedSeller && (
+                <div className="flex items-center gap-2.5 text-sm min-h-11">
+                  <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-primary/10">
+                    <User className="size-4 text-primary" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-foreground font-semibold truncate text-sm">
+                      {visit.assignedSeller.name || t("users.card.noName")}
+                    </span>
+                    <span className="text-muted-foreground text-xs truncate">
+                      {t("dealerPage.columns.assignedSeller")}
+                    </span>
+                  </div>
+                </div>
+              )}
+              {visit.customer && (
+                <div className="flex items-center gap-2.5 text-sm min-h-11">
+                  <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
+                    <ClipboardList className="size-4" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-foreground font-semibold truncate text-sm">
+                      {visit.customer.accountName || "-"}
+                    </span>
+                    <span className="text-muted-foreground text-xs truncate">
+                      {t("dealerPage.columns.company")}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           <div className="space-y-2 w-full">

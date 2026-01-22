@@ -33,6 +33,23 @@ export const VISIT_INCLUDE = {
       email: true,
     },
   },
+  // Clones of this visit (for checking if original has been cloned)
+  // Used in Phase 4: Unified row logic for SELLER view
+  clones: {
+    select: {
+      id: true,
+      status: true,
+      visitDate: true,
+      createdAt: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  },
   // Visita original (si esta es un clon)
   // Incluye los formularios con archivos para mostrar los adjuntos del original
   clonedFrom: {

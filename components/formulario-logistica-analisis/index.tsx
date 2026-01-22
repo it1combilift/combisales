@@ -11,8 +11,12 @@ import { useFileUploader } from "./hooks/use-file-uploader";
 import { useLogisticaAnalisisForm } from "./hooks/use-logistica-analisis-form";
 import { useI18n } from "@/lib/i18n/context";
 import { useMemo } from "react";
+import { getFormSteps } from "./constants";
 
-// Steps renumerados: Step 1 = Descripción operación, Step 2 = Datos aplicación, etc.
+// Customer data step (shown only when enableCustomerEntry is true)
+import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
+
+// Regular steps (renumbered when customer entry is enabled)
 import { Step1Content } from "./steps/step-2-descripcion-operacion";
 import { Step2Content } from "./steps/step-3-datos-aplicacion";
 import { Step3Content } from "./steps/step-4-equipos-electricos";
@@ -39,12 +43,19 @@ export default function FormularioLogisticaAnalisis({
   assignedSellerId,
   originalArchivos = [],
   readOnly = false,
+  enableCustomerEntry = false,
 }: FormularioLogisticaAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioLogisticaAnalisis;
 
   const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioLogisticaSchema(t), [t]);
+
+  // Get form steps based on enableCustomerEntry prop
+  const formSteps = useMemo(
+    () => getFormSteps(enableCustomerEntry),
+    [enableCustomerEntry],
+  );
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioLogisticaSchema>({
@@ -70,7 +81,7 @@ export default function FormularioLogisticaAnalisis({
     currentStepConfig,
     isFirstStep,
     isLastStep,
-    shouldSkipStep3,
+    shouldSkipElectricStep,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -89,6 +100,7 @@ export default function FormularioLogisticaAnalisis({
     t,
     locale,
     assignedSellerId,
+    enableCustomerEntry,
   });
 
   const {
@@ -112,7 +124,47 @@ export default function FormularioLogisticaAnalisis({
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
 
-    // Render only the current step to avoid HTML validation issues with hidden required fields
+    // When enableCustomerEntry is true, we have 7 steps total
+    // Step 1 = Customer Data, Steps 2-7 = Regular steps
+    if (enableCustomerEntry) {
+      switch (currentStep) {
+        case 1:
+          return <CustomerDataStep {...stepProps} />;
+        case 2:
+          return <Step1Content {...stepProps} />;
+        case 3:
+          return <Step2Content {...stepProps} />;
+        case 4:
+          return <Step3Content {...stepProps} />;
+        case 5:
+          return <Step4Content {...stepProps} />;
+        case 6:
+          return <Step5Content {...stepProps} />;
+        case 7:
+          return (
+            <Step6Content
+              form={form}
+              customerId={customer?.id || ""}
+              isUploading={isUploading}
+              uploadProgress={uploadProgress}
+              uploadingFiles={uploadingFiles}
+              deletingFileId={deletingFileId}
+              onFileSelect={handleFileSelect}
+              onRemoveFile={handleRemoveFile}
+              onDrop={handleDrop}
+              fileInputRef={fileInputRef}
+              cameraPhotoRef={cameraPhotoRef}
+              cameraVideoRef={cameraVideoRef}
+              originalArchivos={originalArchivos}
+              readOnly={readOnly}
+            />
+          );
+        default:
+          return null;
+      }
+    }
+
+    // Original 6-step flow (without customer entry)
     switch (currentStep) {
       case 1:
         return <Step1Content {...stepProps} />;
@@ -158,7 +210,8 @@ export default function FormularioLogisticaAnalisis({
         progress={progress}
         completedSteps={completedSteps}
         onGoToStep={goToStep}
-        shouldSkipStep3={shouldSkipStep3}
+        shouldSkipStep3={shouldSkipElectricStep}
+        formSteps={formSteps}
       />
 
       {/* Form content */}

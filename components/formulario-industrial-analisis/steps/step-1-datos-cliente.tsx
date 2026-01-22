@@ -1,10 +1,6 @@
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { useI18n } from "@/lib/i18n/context";
 
 import {
@@ -16,13 +12,6 @@ import {
 } from "@/components/ui/form";
 
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-import {
-  CalendarIcon,
   Building2,
   User,
   Mail,
@@ -56,22 +45,23 @@ function SectionHeader({
 /**
  * Step 1: Datos del Cliente
  * Company information, contact details, and commercial data
- * Optimized layout with clear sections - Professional & Responsive
+ * Optimized responsive grid layout - minimal vertical scrolling on large screens
  */
 export function Step1Content({ form }: StepContentProps) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
 
   return (
-    <div className="space-y-5">
-      {/* ==================== EMPRESA ==================== */}
+    <div className="space-y-6">
+      {/* ==================== EMPRESA Y CONTACTO ==================== */}
       <section>
         <SectionHeader
           icon={Building2}
           title={t("forms.clientData.sections.company")}
         />
-        <div className="grid grid-cols-12 gap-x-2 gap-y-3">
-          {/* Razón Social - Ocupa más espacio */}
-          <div className="col-span-12 sm:col-span-6 lg:col-span-5">
+        {/* Grid: 1 col mobile, 2 cols md, 3 cols xl - Reduce vertical scrolling */}
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 lg:gap-4">
+          {/* Razón Social - Spans 2 on XL */}
+          <div className="xl:col-span-2">
             <FormField
               control={form.control}
               name="razonSocial"
@@ -86,7 +76,7 @@ export function Step1Content({ form }: StepContentProps) {
                       <Building2 className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                       <Input
                         placeholder={t(
-                          "forms.clientData.fields.companyName.placeholder"
+                          "forms.clientData.fields.companyName.placeholder",
                         )}
                         className="text-sm h-9 pl-8"
                         {...field}
@@ -100,7 +90,7 @@ export function Step1Content({ form }: StepContentProps) {
           </div>
 
           {/* NIF */}
-          <div className="col-span-6 sm:col-span-3 lg:col-span-3">
+          <div>
             <FormField
               control={form.control}
               name="numeroIdentificacionFiscal"
@@ -115,7 +105,7 @@ export function Step1Content({ form }: StepContentProps) {
                       <Hash className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                       <Input
                         placeholder={t(
-                          "forms.clientData.fields.fiscalId.placeholder"
+                          "forms.clientData.fields.fiscalId.placeholder",
                         )}
                         className="text-sm h-9 pl-8"
                         {...field}
@@ -128,46 +118,8 @@ export function Step1Content({ form }: StepContentProps) {
             />
           </div>
 
-          {/* Website */}
-          <div className="col-span-6 sm:col-span-3 lg:col-span-4">
-            <FormField
-              control={form.control}
-              name="website"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[11px] font-medium">
-                    {t("forms.clientData.fields.website.label")}
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Globe className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                      <Input
-                        type="url"
-                        placeholder={t(
-                          "forms.clientData.fields.website.placeholder"
-                        )}
-                        className="text-sm h-9 pl-8"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-[10px]" />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ==================== CONTACTO ==================== */}
-      <section>
-        <SectionHeader
-          icon={User}
-          title={t("forms.clientData.sections.contact")}
-        />
-        <div className="grid grid-cols-12 gap-x-2 gap-y-3">
-          {/* Nombre */}
-          <div className="col-span-12 sm:col-span-5">
+          {/* Persona Contacto */}
+          <div>
             <FormField
               control={form.control}
               name="personaContacto"
@@ -182,7 +134,7 @@ export function Step1Content({ form }: StepContentProps) {
                       <User className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                       <Input
                         placeholder={t(
-                          "forms.clientData.fields.contactName.placeholder"
+                          "forms.clientData.fields.contactName.placeholder",
                         )}
                         className="text-sm h-9 pl-8"
                         {...field}
@@ -196,7 +148,7 @@ export function Step1Content({ form }: StepContentProps) {
           </div>
 
           {/* Email */}
-          <div className="col-span-12 sm:col-span-7">
+          <div>
             <FormField
               control={form.control}
               name="email"
@@ -212,7 +164,36 @@ export function Step1Content({ form }: StepContentProps) {
                       <Input
                         type="email"
                         placeholder={t(
-                          "forms.clientData.fields.email.placeholder"
+                          "forms.clientData.fields.email.placeholder",
+                        )}
+                        className="text-sm h-9 pl-8"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-[10px]" />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Website */}
+          <div>
+            <FormField
+              control={form.control}
+              name="website"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[11px] font-medium">
+                    {t("forms.clientData.fields.website.label")}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Globe className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                      <Input
+                        type="url"
+                        placeholder={t(
+                          "forms.clientData.fields.website.placeholder",
                         )}
                         className="text-sm h-9 pl-8"
                         {...field}
@@ -233,9 +214,9 @@ export function Step1Content({ form }: StepContentProps) {
           icon={MapPin}
           title={t("forms.clientData.sections.location")}
         />
-        <div className="grid grid-cols-12 gap-x-2 gap-y-3">
-          {/* Dirección - Campo largo */}
-          <div className="col-span-12 sm:col-span-8 lg:col-span-6">
+        <div className="grid grid-cols-2 xl:grid-cols-6 gap-3 lg:gap-4">
+          {/* Dirección - Full width on mobile/md, 3 cols on xl */}
+          <div className="xl:col-span-2">
             <FormField
               control={form.control}
               name="direccion"
@@ -250,7 +231,7 @@ export function Step1Content({ form }: StepContentProps) {
                       <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                       <Input
                         placeholder={t(
-                          "forms.clientData.fields.address.placeholder"
+                          "forms.clientData.fields.address.placeholder",
                         )}
                         className="text-sm h-9 pl-8"
                         {...field}
@@ -264,7 +245,7 @@ export function Step1Content({ form }: StepContentProps) {
           </div>
 
           {/* Localidad */}
-          <div className="col-span-6 sm:col-span-4 lg:col-span-3">
+          <div className="xl:col-span-2">
             <FormField
               control={form.control}
               name="localidad"
@@ -277,7 +258,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormControl>
                     <Input
                       placeholder={t(
-                        "forms.clientData.fields.city.placeholder"
+                        "forms.clientData.fields.city.placeholder",
                       )}
                       className="text-sm h-9"
                       {...field}
@@ -290,7 +271,7 @@ export function Step1Content({ form }: StepContentProps) {
           </div>
 
           {/* Código Postal */}
-          <div className="col-span-6 sm:col-span-3 lg:col-span-3">
+          <div className="xl:col-span-2">
             <FormField
               control={form.control}
               name="codigoPostal"
@@ -303,7 +284,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormControl>
                     <Input
                       placeholder={t(
-                        "forms.clientData.fields.postalCode.placeholder"
+                        "forms.clientData.fields.postalCode.placeholder",
                       )}
                       className="text-sm h-9"
                       {...field}
@@ -316,7 +297,7 @@ export function Step1Content({ form }: StepContentProps) {
           </div>
 
           {/* Provincia */}
-          <div className="col-span-6 sm:col-span-4 lg:col-span-4">
+          <div className="xl:col-span-3">
             <FormField
               control={form.control}
               name="provinciaEstado"
@@ -329,7 +310,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormControl>
                     <Input
                       placeholder={t(
-                        "forms.clientData.fields.province.placeholder"
+                        "forms.clientData.fields.province.placeholder",
                       )}
                       className="text-sm h-9"
                       {...field}
@@ -342,7 +323,7 @@ export function Step1Content({ form }: StepContentProps) {
           </div>
 
           {/* País */}
-          <div className="col-span-6 sm:col-span-5 lg:col-span-4">
+          <div className="xl:col-span-3">
             <FormField
               control={form.control}
               name="pais"
@@ -357,7 +338,7 @@ export function Step1Content({ form }: StepContentProps) {
                       <Globe className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                       <Input
                         placeholder={t(
-                          "forms.clientData.fields.country.placeholder"
+                          "forms.clientData.fields.country.placeholder",
                         )}
                         className="text-sm h-9 pl-8"
                         {...field}
@@ -378,9 +359,9 @@ export function Step1Content({ form }: StepContentProps) {
           icon={Users}
           title={t("forms.clientData.sections.commercial")}
         />
-        <div className="grid grid-cols-12 gap-x-2 gap-y-3">
+        <div className="grid grid-cols-2 gap-3 lg:gap-4">
           {/* Distribuidor */}
-          <div className="col-span-6 sm:col-span-4">
+          <div>
             <FormField
               control={form.control}
               name="distribuidor"
@@ -394,7 +375,7 @@ export function Step1Content({ form }: StepContentProps) {
                       <Building2 className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                       <Input
                         placeholder={t(
-                          "forms.clientData.fields.distributor.placeholder"
+                          "forms.clientData.fields.distributor.placeholder",
                         )}
                         className="text-sm h-9 pl-8"
                         {...field}
@@ -408,7 +389,7 @@ export function Step1Content({ form }: StepContentProps) {
           </div>
 
           {/* Contacto Distribuidor */}
-          <div className="col-span-6 sm:col-span-4">
+          <div>
             <FormField
               control={form.control}
               name="contactoDistribuidor"
@@ -422,67 +403,13 @@ export function Step1Content({ form }: StepContentProps) {
                       <Phone className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                       <Input
                         placeholder={t(
-                          "forms.clientData.fields.distributorContact.placeholder"
+                          "forms.clientData.fields.distributorContact.placeholder",
                         )}
                         className="text-sm h-9 pl-8"
                         {...field}
                       />
                     </div>
                   </FormControl>
-                  <FormMessage className="text-[10px]" />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Fecha Cierre */}
-          <div className="col-span-12 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="fechaCierre"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[11px] font-medium">
-                    {t("forms.clientData.fields.closingDate.label")}
-                  </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full h-9 text-left text-sm font-normal justify-start gap-2",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="size-3.5" />
-                          {field.value ? (
-                            format(field.value, "dd MMM yyyy", {
-                              locale: locale === "en" ? undefined : es,
-                            })
-                          ) : (
-                            <span className="text-xs">
-                              {t(
-                                "forms.clientData.fields.closingDate.placeholder"
-                              )}
-                            </span>
-                          )}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value || undefined}
-                        onSelect={field.onChange}
-                        locale={locale === "en" ? undefined : es}
-                        disabled={(date) =>
-                          date < new Date(new Date().setHours(0, 0, 0, 0))
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
                   <FormMessage className="text-[10px]" />
                 </FormItem>
               )}

@@ -157,28 +157,47 @@ export async function POST(
       };
     }
 
-    // 7. Crear la visita clonada
-    const clonedVisit = await prisma.visit.create({
-      data: {
-        // Mantener referencia al cliente si existe
-        customerId: originalVisit.customerId,
-        zohoTaskId: originalVisit.zohoTaskId,
-        // El SELLER es ahora el propietario
-        userId: session.user.id,
-        formType: originalVisit.formType,
-        // Siempre empieza como borrador
-        status: VisitStatus.BORRADOR,
-        visitDate: new Date(),
-        // No tiene vendedor asignado (es del SELLER)
-        assignedSellerId: null,
-        // Campos de clonación
+    // 7. Check if a clone already exists for this original visit
+    const existingClone = await prisma.visit.findFirst({
+      where: {
         clonedFromId: originalVisit.id,
-        clonedAt: new Date(),
-        // Datos del formulario
-        ...formDataCreate,
       },
-      include: VISIT_INCLUDE,
     });
+
+    if (existingClone) {
+      return badRequestResponse("VISIT_ALREADY_CLONED");
+    }
+
+    // 8. Create cloned visit and update original status in a transaction
+    const [clonedVisit, _updatedOriginal] = await prisma.$transaction([
+      // Create the clone
+      prisma.visit.create({
+        data: {
+          // Mantener referencia al cliente si existe
+          customerId: originalVisit.customerId,
+          zohoTaskId: originalVisit.zohoTaskId,
+          // El SELLER es ahora el propietario
+          userId: session.user.id,
+          formType: originalVisit.formType,
+          // Siempre empieza como borrador
+          status: VisitStatus.BORRADOR,
+          visitDate: new Date(),
+          // No tiene vendedor asignado (es del SELLER)
+          assignedSellerId: null,
+          // Campos de clonación
+          clonedFromId: originalVisit.id,
+          clonedAt: new Date(),
+          // Datos del formulario
+          ...formDataCreate,
+        },
+        include: VISIT_INCLUDE,
+      }),
+      // Update original visit to EN_PROGRESO (Phase 3: IN_PROGRESS status)
+      prisma.visit.update({
+        where: { id: originalVisit.id },
+        data: { status: VisitStatus.EN_PROGRESO },
+      }),
+    ]);
 
     return createSuccessResponse(
       {

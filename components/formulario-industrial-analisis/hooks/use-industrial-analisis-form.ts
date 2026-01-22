@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
-import { FORM_STEPS } from "../constants";
+import { FORM_STEPS, getFormSteps } from "../constants";
 import { SaveVisitParams } from "../types";
 import { UseFormReturn } from "react-hook-form";
 import { FormularioIndustrialSchema } from "../schemas";
@@ -18,6 +18,8 @@ interface UseIndustrialAnalisisFormProps {
   locale: string;
   // Para visitas creadas por DEALER: vendedor asignado
   assignedSellerId?: string;
+  // Para flujo DEALER: habilita el paso de datos del cliente
+  enableCustomerEntry?: boolean;
 }
 
 export function useIndustrialAnalisisForm({
@@ -30,14 +32,21 @@ export function useIndustrialAnalisisForm({
   t,
   locale,
   assignedSellerId,
+  enableCustomerEntry = false,
 }: UseIndustrialAnalisisFormProps) {
+  // Get the appropriate steps based on enableCustomerEntry
+  const formSteps = useMemo(
+    () => getFormSteps(enableCustomerEntry),
+    [enableCustomerEntry],
+  );
+
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    isEditing ? new Set([1, 2, 3, 4, 5, 6]) : new Set(),
+    isEditing ? new Set(formSteps.map((s) => s.number)) : new Set(),
   );
 
   const VisitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
@@ -47,7 +56,7 @@ export function useIndustrialAnalisisForm({
   // ==================== STEP VALIDATION LOGIC ====================
   const validateStepFields = useCallback(
     (step: number, values: FormularioIndustrialSchema): boolean => {
-      const stepConfig = FORM_STEPS[step - 1];
+      const stepConfig = formSteps[step - 1];
       if (!stepConfig || !stepConfig.fields) return true;
 
       const alimentacion = values.alimentacionDeseada;
@@ -136,7 +145,7 @@ export function useIndustrialAnalisisForm({
     (values: FormularioIndustrialSchema) => {
       const newCompleted = new Set<number>();
 
-      for (let step = 1; step <= FORM_STEPS.length; step++) {
+      for (let step = 1; step <= formSteps.length; step++) {
         if (validateStepFields(step, values)) {
           newCompleted.add(step);
         }
@@ -182,48 +191,62 @@ export function useIndustrialAnalisisForm({
    */
   const requiredStepsCount = useMemo(() => {
     const alimentacion = form.watch("alimentacionDeseada");
-    // Si no es eléctrico, son 5 pasos (excluye Step 3)
+    // Calcular el índice del paso de equipos eléctricos dinámicamente
+    const electricStep = enableCustomerEntry ? 4 : 3;
+    // Si no es eléctrico, excluir el paso de equipos eléctricos
     return alimentacion !== TipoAlimentacion.ELECTRICO
-      ? FORM_STEPS.length - 1
-      : FORM_STEPS.length;
-  }, [form]);
+      ? formSteps.length - 1
+      : formSteps.length;
+  }, [form, formSteps.length, enableCustomerEntry]);
 
   const progress = useMemo(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
-    const skipStep3 = alimentacion !== TipoAlimentacion.ELECTRICO;
+    const skipElectricStep = alimentacion !== TipoAlimentacion.ELECTRICO;
+    // Electric step is 4 when customer entry enabled, 3 otherwise
+    const electricStep = enableCustomerEntry ? 4 : 3;
 
-    // Si debemos saltar Step 3, no contarlo en completados
+    // Si debemos saltar el paso de equipos eléctricos, no contarlo en completados
     let effectiveCompleted = completedSteps.size;
-    if (skipStep3 && completedSteps.has(3)) {
+    if (skipElectricStep && completedSteps.has(electricStep)) {
       effectiveCompleted--;
     }
 
-    const totalSteps = skipStep3 ? FORM_STEPS.length - 1 : FORM_STEPS.length;
+    const totalSteps = skipElectricStep
+      ? formSteps.length - 1
+      : formSteps.length;
     return Math.round((effectiveCompleted / totalSteps) * 100);
-  }, [completedSteps, form]);
+  }, [completedSteps, form, formSteps.length, enableCustomerEntry]);
 
   const allStepsComplete = useMemo((): boolean => {
     const values = form.getValues();
     const alimentacion = values.alimentacionDeseada;
-    const skipStep3 = alimentacion !== TipoAlimentacion.ELECTRICO;
+    const skipElectricStep = alimentacion !== TipoAlimentacion.ELECTRICO;
+    // Electric step is 4 when customer entry enabled, 3 otherwise
+    const electricStep = enableCustomerEntry ? 4 : 3;
 
     // Verificar que todos los pasos requeridos estén completos usando validación en tiempo real
-    for (let step = 1; step <= FORM_STEPS.length; step++) {
-      // Si debemos saltar Step 3, ignorarlo
-      if (step === 3 && skipStep3) continue;
+    for (let step = 1; step <= formSteps.length; step++) {
+      // Si debemos saltar el paso de equipos eléctricos, ignorarlo
+      if (step === electricStep && skipElectricStep) continue;
       if (!validateStepFields(step, values)) return false;
     }
     return true;
-  }, [completedSteps, form, validateStepFields]);
+  }, [
+    completedSteps,
+    form,
+    validateStepFields,
+    formSteps.length,
+    enableCustomerEntry,
+  ]);
 
-  const currentStepConfig = FORM_STEPS[currentStep - 1];
+  const currentStepConfig = formSteps[currentStep - 1];
   const isFirstStep = currentStep === 1;
-  const isLastStep = currentStep === FORM_STEPS.length;
+  const isLastStep = currentStep === formSteps.length;
 
   // ==================== STEP VALIDATION ====================
   const validateStep = useCallback(
     async (step: number): Promise<boolean> => {
-      const stepConfig = FORM_STEPS[step - 1];
+      const stepConfig = formSteps[step - 1];
       if (!stepConfig || !stepConfig.fields) return true;
 
       const isValid = await form.trigger(stepConfig.fields as any);
@@ -239,9 +262,12 @@ export function useIndustrialAnalisisForm({
 
   // ==================== NAVIGATION HELPERS ====================
   /**
-   * Determina si el Step 3 debe ser saltado
-   * El Step 3 (Equipos Eléctricos) solo aplica cuando alimentación es ELECTRICO
+   * Determina si el paso de equipos eléctricos debe ser saltado
+   * El paso de Equipos Eléctricos solo aplica cuando alimentación es ELECTRICO
+   * Note: Electric step is 4 when enableCustomerEntry=true, 3 otherwise
    */
+  const electricStepNumber = enableCustomerEntry ? 4 : 3;
+
   const shouldSkipStep3 = useCallback(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
     return alimentacion !== TipoAlimentacion.ELECTRICO;
@@ -253,12 +279,12 @@ export function useIndustrialAnalisisForm({
   const getNextStep = useCallback(
     (fromStep: number): number => {
       const nextStep = fromStep + 1;
-      if (nextStep === 3 && shouldSkipStep3()) {
-        return 4;
+      if (nextStep === electricStepNumber && shouldSkipStep3()) {
+        return electricStepNumber + 1;
       }
       return nextStep;
     },
-    [shouldSkipStep3],
+    [shouldSkipStep3, electricStepNumber],
   );
 
   /**
@@ -267,12 +293,12 @@ export function useIndustrialAnalisisForm({
   const getPrevStep = useCallback(
     (fromStep: number): number => {
       const prevStep = fromStep - 1;
-      if (prevStep === 3 && shouldSkipStep3()) {
-        return 2;
+      if (prevStep === electricStepNumber && shouldSkipStep3()) {
+        return electricStepNumber - 1;
       }
       return prevStep;
     },
-    [shouldSkipStep3],
+    [shouldSkipStep3, electricStepNumber],
   );
 
   // ==================== NAVIGATION ====================
@@ -284,11 +310,11 @@ export function useIndustrialAnalisisForm({
       return;
     }
 
-    if (currentStep < FORM_STEPS.length) {
+    if (currentStep < formSteps.length) {
       const nextStep = getNextStep(currentStep);
       setCurrentStep(nextStep);
     }
-  }, [currentStep, validateStep, getNextStep]);
+  }, [currentStep, validateStep, getNextStep, formSteps.length]);
 
   const handlePrevStep = useCallback(() => {
     if (currentStep > 1) {
@@ -299,7 +325,7 @@ export function useIndustrialAnalisisForm({
 
   const goToStep = useCallback(
     async (step: number) => {
-      if (step < 1 || step > FORM_STEPS.length) return;
+      if (step < 1 || step > formSteps.length) return;
 
       // Optional: Validate current step before allowing navigation
       // if (step !== currentStep) {

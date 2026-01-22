@@ -121,18 +121,20 @@ export async function PUT(
       return unauthorizedResponse();
     }
 
-    // SELLER: solo puede editar sus propios clones
+    // SELLER: puede editar sus propias visitas (creadas por él) O sus propios clones
     if (currentUser.role === Role.SELLER) {
-      // Debe ser un clon (clonedFromId no es null)
-      if (!existingVisit.clonedFromId) {
-        return badRequestResponse(
-          "Los SELLER solo pueden editar clones, no visitas originales",
-        );
-      }
-      // Debe ser el propietario del clon
+      // El SELLER debe ser el propietario de la visita (ya sea original o clon)
       if (existingVisit.userId !== session.user.id) {
-        return badRequestResponse("Solo puedes editar tus propios clones");
+        // Si no es el propietario, verificar si es una visita asignada a él por un DEALER
+        // En este caso, NO puede editarla directamente (debe clonarla primero)
+        if (existingVisit.assignedSellerId === session.user.id) {
+          return badRequestResponse(
+            "Para editar una visita asignada por un DEALER, primero debes clonarla",
+          );
+        }
+        return badRequestResponse("Solo puedes editar tus propias visitas");
       }
+      // Si llegamos aquí, el SELLER es el propietario de la visita - puede editarla
     }
     // DEALER: solo puede editar sus propias visitas
     else if (currentUser.role === Role.DEALER) {

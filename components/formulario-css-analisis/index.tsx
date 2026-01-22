@@ -15,6 +15,11 @@ import {
 
 import { FormHeader } from "./ui/form-header";
 import { FormNavigation } from "./ui/form-navigation";
+// Customer data steps (for DEALER flow)
+import { Step1Content as CompanyStep } from "./steps/step-1-empresa";
+import { Step2Content as LocationStep } from "./steps/step-2-ubicacion";
+import { Step3Content as CommercialStep } from "./steps/step-3-comercial";
+// Regular steps
 import { Step1Content } from "./steps/step-4-producto";
 import { Step2Content } from "./steps/step-5-contenedor";
 import { Step3Content } from "./steps/step-6-medidas";
@@ -32,6 +37,7 @@ export default function FormularioCSSAnalisis({
   assignedSellerId,
   originalArchivos = [],
   readOnly = false,
+  enableCustomerEntry = false,
 }: FormularioCSSAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioCSSAnalisis;
@@ -81,6 +87,7 @@ export default function FormularioCSSAnalisis({
     t,
     locale,
     assignedSellerId,
+    enableCustomerEntry,
   });
 
   const {
@@ -104,7 +111,48 @@ export default function FormularioCSSAnalisis({
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
 
-    // Render only the current step to avoid HTML validation issues with hidden required fields
+    // When enableCustomerEntry is true, first 3 steps are customer data
+    // Otherwise, the numbering starts from the regular steps
+    if (enableCustomerEntry) {
+      // DEALER flow: 7 steps total (3 Customer + 4 regular)
+      switch (currentStep) {
+        case 1:
+          return <CompanyStep {...stepProps} />;
+        case 2:
+          return <LocationStep {...stepProps} />;
+        case 3:
+          return <CommercialStep {...stepProps} />;
+        case 4:
+          return <Step1Content {...stepProps} />;
+        case 5:
+          return <Step2Content {...stepProps} />;
+        case 6:
+          return <Step3Content {...stepProps} />;
+        case 7:
+          return (
+            <Step4Content
+              form={form}
+              customerId={customer?.id || ""}
+              isUploading={isUploading}
+              uploadProgress={uploadProgress}
+              uploadingFiles={uploadingFiles}
+              deletingFileId={deletingFileId}
+              onFileSelect={handleFileSelect}
+              onRemoveFile={handleRemoveFile}
+              onDrop={handleDrop}
+              fileInputRef={fileInputRef}
+              cameraPhotoRef={cameraPhotoRef}
+              cameraVideoRef={cameraVideoRef}
+              originalArchivos={originalArchivos}
+              readOnly={readOnly}
+            />
+          );
+        default:
+          return null;
+      }
+    }
+
+    // Normal flow (ADMIN/SELLER from clients/tasks): 4 steps
     switch (currentStep) {
       case 1:
         return <Step1Content {...stepProps} />;

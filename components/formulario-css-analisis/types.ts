@@ -16,6 +16,8 @@ export interface FormularioCSSAnalisisProps {
   originalArchivos?: ArchivoSubido[];
   // Si es true, el formulario es solo lectura (SELLER viendo original)
   readOnly?: boolean;
+  // Si es true, habilita el paso de datos del cliente (para flujo DEALER)
+  enableCustomerEntry?: boolean;
 }
 
 // ==================== ARCHIVO TYPES ====================

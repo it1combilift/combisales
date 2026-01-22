@@ -101,23 +101,16 @@ export async function GET(req: NextRequest) {
         return createSuccessResponse({ visits, userRole: currentUser.role });
       }
 
-      // SELLER: puede ver visitas asignadas por DEALERs + sus propios clones
+      // SELLER: sees ONLY original visits assigned to them by DEALERs
+      // Phase 4: Unified row logic - clones are accessed via the `clones` relation
+      // The UI will show ONE row per dealer visit with dropdown options based on clone status
       if (currentUser.role === Role.SELLER) {
         const visits = await prisma.visit.findMany({
           where: {
-            OR: [
-              // Visitas asignadas a este SELLER por DEALERs (originales, no clones)
-              {
-                assignedSellerId: session.user.id,
-                user: { role: Role.DEALER },
-                clonedFromId: null, // Solo originales
-              },
-              // Clones creados por este SELLER
-              {
-                userId: session.user.id,
-                clonedFromId: { not: null },
-              },
-            ],
+            // Only original visits assigned to this SELLER by DEALERs
+            assignedSellerId: session.user.id,
+            user: { role: Role.DEALER },
+            clonedFromId: null, // Only originals - clones are NOT shown as separate rows
           },
           include: VISIT_INCLUDE,
           orderBy: { visitDate: "desc" },

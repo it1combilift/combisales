@@ -1,6 +1,34 @@
-import { FileText, Package, Zap, Ruler, Route, Paperclip } from "lucide-react";
+import {
+  FileText,
+  Package,
+  Zap,
+  Ruler,
+  Route,
+  Paperclip,
+  Building2,
+} from "lucide-react";
 
-export const FORM_STEPS = [
+// Customer data step shown only when enableCustomerEntry is true
+export const CUSTOMER_DATA_STEP = {
+  number: 1,
+  title: "forms.logistica.steps.customerData.title",
+  shortTitle: "forms.logistica.steps.customerData.shortTitle",
+  description: "forms.logistica.steps.customerData.description",
+  icon: Building2,
+  color: "indigo" as const,
+  fields: [
+    "customerName",
+    "customerEmail",
+    "customerPhone",
+    "customerAddress",
+    "customerCity",
+    "customerCountry",
+    "customerNotes",
+  ],
+};
+
+// Regular form steps (without customer data)
+export const REGULAR_STEPS = [
   {
     number: 1,
     title: "forms.logistica.steps.operation.title",
@@ -81,3 +109,22 @@ export const FORM_STEPS = [
     fields: ["archivos"],
   },
 ];
+
+// Legacy export for backward compatibility
+export const FORM_STEPS = REGULAR_STEPS;
+
+// Get form steps based on whether customer entry is enabled
+export function getFormSteps(enableCustomerEntry: boolean = false) {
+  if (!enableCustomerEntry) {
+    return REGULAR_STEPS;
+  }
+
+  // Return customer step + regular steps with renumbered steps
+  return [
+    CUSTOMER_DATA_STEP,
+    ...REGULAR_STEPS.map((step, index) => ({
+      ...step,
+      number: index + 2, // Start from 2 since customer data is step 1
+    })),
+  ];
+}

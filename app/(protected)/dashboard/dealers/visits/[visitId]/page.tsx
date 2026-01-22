@@ -342,7 +342,9 @@ export default function DealerVisitDetailPage({
                         `visits.statuses.${
                           visit.status === VisitStatus.BORRADOR
                             ? "draft"
-                            : "completed"
+                            : visit.status === VisitStatus.EN_PROGRESO
+                              ? "inProgress"
+                              : "completed"
                         }`,
                       )}
                     </Badge>
