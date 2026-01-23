@@ -109,6 +109,7 @@ export default function FormularioIndustrialAnalisis({
   } = useFileUploader({
     form,
     customerId: customer?.id || undefined,
+    formularioId: formulario?.id, // Pass formularioId for file isolation
     t,
   });
 

@@ -151,9 +151,12 @@ export function createColumns(
   };
 
   // Status Column
-  // IMPORTANT: EN_PROGRESO status is ONLY meaningful in SELLER flow
-  // For DEALER: EN_PROGRESO should be displayed as COMPLETADA (they submitted the visit)
-  // This is because EN_PROGRESO indicates "pending work for seller", not a dealer state
+  // STATUS DISPLAY LOGIC:
+  // - DEALER: EN_PROGRESO → displays as COMPLETADA (from dealer's perspective, they finished)
+  // - SELLER/ADMIN viewing DEALER's original visit (COMPLETADA + no clone OR COMPLETADA + clone not completed):
+  //   → displays as EN_PROGRESO (work is pending for seller)
+  // - SELLER/ADMIN viewing a visit where the clone is COMPLETADA:
+  //   → displays as COMPLETADA (work is done)
   const statusColumn: ColumnDef<Visit> = {
     accessorKey: "status",
     header: ({ column }) => {
@@ -175,12 +178,33 @@ export function createColumns(
       );
     },
     cell: ({ row }) => {
+      const visit = row.original;
       let status = row.getValue("status") as VisitStatus;
+      const hasClone = visit.clones && visit.clones.length > 0;
+      const clone = hasClone ? visit.clones![0] : null;
 
       // For DEALER: EN_PROGRESO should appear as COMPLETADA
       // EN_PROGRESO is only meaningful in the SELLER flow
       if (isDealer && status === VisitStatus.EN_PROGRESO) {
         status = VisitStatus.COMPLETADA;
+      }
+
+      // For SELLER/ADMIN: Determine effective status based on clone status
+      // Original COMPLETADA visits show as EN_PROGRESO unless clone is COMPLETADA
+      if ((isSeller || isAdmin) && !visit.clonedFromId) {
+        // This is an original visit from a DEALER
+        if (
+          status === VisitStatus.COMPLETADA ||
+          status === VisitStatus.EN_PROGRESO
+        ) {
+          // Check if clone exists and is completed
+          if (clone && clone.status === VisitStatus.COMPLETADA) {
+            status = VisitStatus.COMPLETADA;
+          } else {
+            // No clone, or clone is not completed → show as EN_PROGRESO
+            status = VisitStatus.EN_PROGRESO;
+          }
+        }
       }
 
       const variants: Record<
@@ -206,7 +230,8 @@ export function createColumns(
     },
   };
 
-  // Clone Status Column (SELLER only) - Shows whether this original visit has been cloned
+  // Clone Status Column (SELLER/ADMIN) - Shows both original and cloned badges when clone exists
+  // UI/UX: When a clone exists, display BOTH badges [Original] [Cloned] to clearly show relationship
   const cloneStatusColumn: ColumnDef<Visit> = {
     id: "cloneStatus",
     header: t("visits.type"),
@@ -214,15 +239,30 @@ export function createColumns(
       const visit = row.original;
       // Check if this original visit has any clones
       const hasClone = visit.clones && visit.clones.length > 0;
+      const clone = hasClone ? visit.clones![0] : null;
+
+      if (hasClone && clone) {
+        // Show BOTH badges when clone exists for full visibility
+        return (
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Badge variant="outline-info" className="flex items-center gap-1">
+              {t("dealerPage.seller.originalBadge")}
+            </Badge>
+            <Badge
+              variant="outline-success"
+              className="flex items-center gap-1"
+            >
+              <Split className="size-3" />
+              {t("dealerPage.seller.clonedBadge")}
+            </Badge>
+          </div>
+        );
+      }
+
+      // No clone - show only Original badge
       return (
-        <Badge
-          variant={hasClone ? "outline-success" : "outline-info"}
-          className="flex items-center gap-1"
-        >
-          {hasClone && <Split className="size-3.5" />}
-          {hasClone
-            ? t("dealerPage.seller.clonedBadge")
-            : t("dealerPage.seller.originalBadge")}
+        <Badge variant="outline-info" className="flex items-center gap-1">
+          {t("dealerPage.seller.originalBadge")}
         </Badge>
       );
     },
@@ -279,6 +319,7 @@ export function createColumns(
   };
 
   // Company/Customer Column (visible to SELLER and DEALER)
+  // Shows customer.accountName OR razonSocial from formulario (for dealer visits without customer relation)
   const companyColumn: ColumnDef<Visit> = {
     id: "company",
     accessorKey: "customer",
@@ -301,17 +342,32 @@ export function createColumns(
       );
     },
     cell: ({ row }) => {
-      const customer = row.original.customer;
+      const visit = row.original;
+      // Priority: customer.accountName > formulario.razonSocial
+      const companyName =
+        visit.customer?.accountName ||
+        visit.formularioCSSAnalisis?.razonSocial ||
+        visit.formularioIndustrialAnalisis?.razonSocial ||
+        visit.formularioLogisticaAnalisis?.razonSocial ||
+        visit.formularioStraddleCarrierAnalisis?.razonSocial ||
+        "-";
       return (
         <span className="text-xs sm:text-sm leading-relaxed text-primary">
-          {customer?.accountName || "-"}
+          {companyName}
         </span>
       );
     },
     sortingFn: (rowA, rowB) => {
-      const nameA = rowA.original.customer?.accountName || "";
-      const nameB = rowB.original.customer?.accountName || "";
-      return nameA.localeCompare(nameB);
+      const getCompanyName = (visit: Visit) =>
+        visit.customer?.accountName ||
+        visit.formularioCSSAnalisis?.razonSocial ||
+        visit.formularioIndustrialAnalisis?.razonSocial ||
+        visit.formularioLogisticaAnalisis?.razonSocial ||
+        visit.formularioStraddleCarrierAnalisis?.razonSocial ||
+        "";
+      return getCompanyName(rowA.original).localeCompare(
+        getCompanyName(rowB.original),
+      );
     },
   };
 
@@ -540,7 +596,7 @@ export function createColumns(
   }
 
   if (isAdmin) {
-    // ADMIN: Show all columns
+    // ADMIN: Show all columns including clone status
     return [
       dealerColumn,
       assignedSellerColumn,
@@ -548,6 +604,7 @@ export function createColumns(
       formTypeColumn,
       visitDateColumn,
       statusColumn,
+      cloneStatusColumn,
       actionsColumn,
     ];
   }

@@ -18,12 +18,14 @@ import {
  * POST /api/visits/[id]/clone
  * Clone an existing visit (SELLER only)
  *
- * Creates a copy of a visit assigned to the SELLER by a DEALER.
+ * Creates a complete copy of a visit assigned to the SELLER by a DEALER.
  * The cloned visit:
  * - Belongs to the SELLER (userId = SELLER)
  * - Has clonedFromId pointing to the original
  * - Status is BORRADOR (draft)
  * - Copies all form data
+ * - Copies all file attachments (metadata references to Cloudinary)
+ * - SELLER has full edit control over the cloned visit and its files
  */
 export async function POST(
   req: NextRequest,
@@ -82,9 +84,9 @@ export async function POST(
     }
 
     // 6. Preparar datos del formulario para la copia
-    // IMPORTANTE: No copiamos los archivos (archivos) porque tienen cloudinaryId único
-    // Los archivos del formulario original permanecen con el original.
-    // El usuario puede agregar nuevos archivos al clon si lo necesita.
+    // IMPORTANTE: Copiamos todos los archivos del original al clon
+    // Los archivos de Cloudinary pueden ser compartidos (mismo cloudinaryId)
+    // ya que el contenido no se duplica, solo los metadatos en la BD
     let formDataCreate = {};
 
     if (originalVisit.formularioCSSAnalisis) {
@@ -93,14 +95,32 @@ export async function POST(
         visitId: _visitId,
         createdAt: _createdAt,
         updatedAt: _updatedAt,
-        archivos: _archivos, // Excluir archivos - tienen cloudinaryId único
+        archivos,
         ...formData
       } = originalVisit.formularioCSSAnalisis;
+
+      // Copiar archivos al clon (solo metadatos, cloudinaryId puede repetirse)
+      const archivosCopy = archivos.map((archivo) => ({
+        nombre: archivo.nombre,
+        tipoArchivo: archivo.tipoArchivo,
+        mimeType: archivo.mimeType,
+        tamanio: archivo.tamanio,
+        cloudinaryId: archivo.cloudinaryId,
+        cloudinaryUrl: archivo.cloudinaryUrl,
+        cloudinaryType: archivo.cloudinaryType,
+        ancho: archivo.ancho,
+        alto: archivo.alto,
+        duracion: archivo.duracion,
+        formato: archivo.formato,
+      }));
+
       formDataCreate = {
         formularioCSSAnalisis: {
           create: {
             ...formData,
-            // No crear archivos - el clon empieza sin adjuntos
+            archivos: {
+              create: archivosCopy,
+            },
           },
         },
       };
@@ -110,14 +130,31 @@ export async function POST(
         visitId: _visitId,
         createdAt: _createdAt,
         updatedAt: _updatedAt,
-        archivos: _archivos, // Excluir archivos - tienen cloudinaryId único
+        archivos,
         ...formData
       } = originalVisit.formularioIndustrialAnalisis;
+
+      const archivosCopy = archivos.map((archivo) => ({
+        nombre: archivo.nombre,
+        tipoArchivo: archivo.tipoArchivo,
+        mimeType: archivo.mimeType,
+        tamanio: archivo.tamanio,
+        cloudinaryId: archivo.cloudinaryId,
+        cloudinaryUrl: archivo.cloudinaryUrl,
+        cloudinaryType: archivo.cloudinaryType,
+        ancho: archivo.ancho,
+        alto: archivo.alto,
+        duracion: archivo.duracion,
+        formato: archivo.formato,
+      }));
+
       formDataCreate = {
         formularioIndustrialAnalisis: {
           create: {
             ...formData,
-            // No crear archivos - el clon empieza sin adjuntos
+            archivos: {
+              create: archivosCopy,
+            },
           },
         },
       };
@@ -127,14 +164,31 @@ export async function POST(
         visitId: _visitId,
         createdAt: _createdAt,
         updatedAt: _updatedAt,
-        archivos: _archivos, // Excluir archivos - tienen cloudinaryId único
+        archivos,
         ...formData
       } = originalVisit.formularioLogisticaAnalisis;
+
+      const archivosCopy = archivos.map((archivo) => ({
+        nombre: archivo.nombre,
+        tipoArchivo: archivo.tipoArchivo,
+        mimeType: archivo.mimeType,
+        tamanio: archivo.tamanio,
+        cloudinaryId: archivo.cloudinaryId,
+        cloudinaryUrl: archivo.cloudinaryUrl,
+        cloudinaryType: archivo.cloudinaryType,
+        ancho: archivo.ancho,
+        alto: archivo.alto,
+        duracion: archivo.duracion,
+        formato: archivo.formato,
+      }));
+
       formDataCreate = {
         formularioLogisticaAnalisis: {
           create: {
             ...formData,
-            // No crear archivos - el clon empieza sin adjuntos
+            archivos: {
+              create: archivosCopy,
+            },
           },
         },
       };
@@ -144,14 +198,31 @@ export async function POST(
         visitId: _visitId,
         createdAt: _createdAt,
         updatedAt: _updatedAt,
-        archivos: _archivos, // Excluir archivos - tienen cloudinaryId único
+        archivos,
         ...formData
       } = originalVisit.formularioStraddleCarrierAnalisis;
+
+      const archivosCopy = archivos.map((archivo) => ({
+        nombre: archivo.nombre,
+        tipoArchivo: archivo.tipoArchivo,
+        mimeType: archivo.mimeType,
+        tamanio: archivo.tamanio,
+        cloudinaryId: archivo.cloudinaryId,
+        cloudinaryUrl: archivo.cloudinaryUrl,
+        cloudinaryType: archivo.cloudinaryType,
+        ancho: archivo.ancho,
+        alto: archivo.alto,
+        duracion: archivo.duracion,
+        formato: archivo.formato,
+      }));
+
       formDataCreate = {
         formularioStraddleCarrierAnalisis: {
           create: {
             ...formData,
-            // No crear archivos - el clon empieza sin adjuntos
+            archivos: {
+              create: archivosCopy,
+            },
           },
         },
       };

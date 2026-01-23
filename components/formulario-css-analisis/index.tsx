@@ -104,6 +104,7 @@ export default function FormularioCSSAnalisis({
   } = useFileUploader({
     form,
     customerId: customer?.id || "",
+    formularioId: formulario?.id, // Pass formularioId for file isolation
     t,
   });
 

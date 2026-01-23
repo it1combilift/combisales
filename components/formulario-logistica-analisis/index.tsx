@@ -117,6 +117,7 @@ export default function FormularioLogisticaAnalisis({
   } = useFileUploader({
     form,
     customerId: customer?.id || undefined,
+    formularioId: formulario?.id, // Pass formularioId for file isolation
     t,
   });
 

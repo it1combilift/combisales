@@ -89,16 +89,37 @@ export const VisitCard = ({
   const isDealer = userRole === Role.DEALER;
   const isAdmin = userRole === Role.ADMIN;
 
-  // For DEALER: EN_PROGRESO should appear as COMPLETADA
-  // EN_PROGRESO is only meaningful in the SELLER flow
-  const status =
-    isDealer && rawStatus === VisitStatus.EN_PROGRESO
-      ? VisitStatus.COMPLETADA
-      : rawStatus;
-
   // Phase 4: Unified row logic - check if original has a clone
   const hasClone = visit.clones && visit.clones.length > 0;
   const clone = hasClone ? visit.clones![0] : null;
+
+  // STATUS DISPLAY LOGIC:
+  // - DEALER: EN_PROGRESO → displays as COMPLETADA (from dealer's perspective, they finished)
+  // - SELLER/ADMIN viewing DEALER's original visit (COMPLETADA + no clone OR COMPLETADA + clone not completed):
+  //   → displays as EN_PROGRESO (work is pending for seller)
+  // - SELLER/ADMIN viewing a visit where the clone is COMPLETADA:
+  //   → displays as COMPLETADA (work is done)
+  let status = rawStatus;
+
+  if (isDealer && rawStatus === VisitStatus.EN_PROGRESO) {
+    // For DEALER: EN_PROGRESO should appear as COMPLETADA
+    status = VisitStatus.COMPLETADA;
+  } else if ((isSeller || isAdmin) && !visit.clonedFromId) {
+    // For SELLER/ADMIN: Determine effective status based on clone status
+    // Original COMPLETADA visits show as EN_PROGRESO unless clone is COMPLETADA
+    if (
+      rawStatus === VisitStatus.COMPLETADA ||
+      rawStatus === VisitStatus.EN_PROGRESO
+    ) {
+      // Check if clone exists and is completed
+      if (clone && clone.status === VisitStatus.COMPLETADA) {
+        status = VisitStatus.COMPLETADA;
+      } else {
+        // No clone, or clone is not completed → show as EN_PROGRESO
+        status = VisitStatus.EN_PROGRESO;
+      }
+    }
+  }
 
   // SELLER: can only clone if no clone exists
   const canClone = isSeller && !hasClone && onClone;
@@ -148,16 +169,23 @@ export const VisitCard = ({
                 {t(`visits.statuses.${statusKeys[status]}` as any)}
               </Badge>
 
-              {/* Show clone status badge for SELLER */}
-              {isSeller && (
-                <Badge
-                  variant={hasClone ? "secondary" : "outline"}
-                  className="text-xs"
-                >
-                  {hasClone
-                    ? t("dealerPage.seller.clonedBadge")
-                    : t("dealerPage.seller.originalBadge")}
-                </Badge>
+              {/* Show clone status badges for SELLER/ADMIN */}
+              {/* UI/UX: When clone exists, show BOTH badges [Original] [Cloned] for full visibility */}
+              {(isSeller || isAdmin) && (
+                <>
+                  <Badge variant="outline" className="text-xs">
+                    {t("dealerPage.seller.originalBadge")}
+                  </Badge>
+                  {hasClone && (
+                    <Badge
+                      variant="secondary"
+                      className="text-xs flex items-center gap-0.5"
+                    >
+                      <Copy className="size-2.5" />
+                      {t("dealerPage.seller.clonedBadge")}
+                    </Badge>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -396,14 +424,20 @@ export const VisitCard = ({
           )}
 
           {/* Company / Customer (second for both SELLER and DEALER) */}
-          {(isSeller || isDealer) && visit.customer && (
+          {/* Shows customer.accountName OR razonSocial from formulario */}
+          {(isSeller || isDealer) && (
             <div className="flex items-center gap-2.5 text-sm min-h-11">
               <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
                 <ClipboardList className="size-4" />
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-foreground font-semibold truncate text-sm">
-                  {visit.customer.accountName || "-"}
+                  {visit.customer?.accountName ||
+                    visit.formularioCSSAnalisis?.razonSocial ||
+                    visit.formularioIndustrialAnalisis?.razonSocial ||
+                    visit.formularioLogisticaAnalisis?.razonSocial ||
+                    visit.formularioStraddleCarrierAnalisis?.razonSocial ||
+                    "-"}
                 </span>
                 <span className="text-muted-foreground text-xs truncate">
                   {t("dealerPage.columns.company")}
@@ -443,21 +477,25 @@ export const VisitCard = ({
                   </div>
                 </div>
               )}
-              {visit.customer && (
-                <div className="flex items-center gap-2.5 text-sm min-h-11">
-                  <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
-                    <ClipboardList className="size-4" />
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-foreground font-semibold truncate text-sm">
-                      {visit.customer.accountName || "-"}
-                    </span>
-                    <span className="text-muted-foreground text-xs truncate">
-                      {t("dealerPage.columns.company")}
-                    </span>
-                  </div>
+              {/* Company for ADMIN - shows customer.accountName OR razonSocial from formulario */}
+              <div className="flex items-center gap-2.5 text-sm min-h-11">
+                <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
+                  <ClipboardList className="size-4" />
                 </div>
-              )}
+                <div className="flex flex-col min-w-0">
+                  <span className="text-foreground font-semibold truncate text-sm">
+                    {visit.customer?.accountName ||
+                      visit.formularioCSSAnalisis?.razonSocial ||
+                      visit.formularioIndustrialAnalisis?.razonSocial ||
+                      visit.formularioLogisticaAnalisis?.razonSocial ||
+                      visit.formularioStraddleCarrierAnalisis?.razonSocial ||
+                      "-"}
+                  </span>
+                  <span className="text-muted-foreground text-xs truncate">
+                    {t("dealerPage.columns.company")}
+                  </span>
+                </div>
+              </div>
             </>
           )}
 

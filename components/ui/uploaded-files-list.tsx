@@ -24,7 +24,9 @@ export interface UploadedFileItem {
   alto?: number | null;
   duracion?: number | null;
   formato: string;
-  // Flag para indicar si es un archivo del original (read-only)
+  // Flag to indicate if file is from original visit (only for VIEW mode)
+  // NOTE: When editing a CLONED visit, this flag should NOT be used
+  // All files in a clone are fully editable by the SELLER
   isFromOriginal?: boolean;
 }
 
@@ -37,9 +39,11 @@ export interface UploadedFilesListProps {
   maxFiles?: number;
   showHeader?: boolean;
   className?: string;
-  // Archivos de la visita original (para clones - solo lectura)
+  // Files from the original visit (for VIEW mode only - not for editing clones)
+  // When editing a cloned visit, pass an empty array here
+  // All files should be in 'archivos' and fully editable
   originalArchivos?: UploadedFileItem[];
-  // Si es true, todos los archivos son solo lectura
+  // If true, ALL files are read-only (for viewing original visits)
   readOnly?: boolean;
 }
 

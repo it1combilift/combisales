@@ -316,19 +316,17 @@ export function buildVisitEmailDataExtended(
 
   const baseData = formularioData as CreateFormularioCSSData;
 
-  // ==================== CONSOLIDATE FILES ====================
-  // For cloned visits: combine original files + clone's new files
+  // ==================== CLONE FILE HANDLING ====================
+  // For cloned visits: ONLY use the current clone's files
+  // This ensures that when SELLER removes files, they don't appear in the email
+  // The clone's files already contain what the SELLER wants to keep/add
   const currentArchivos = baseData.archivos || [];
-  let allArchivos = [...currentArchivos];
 
-  if (isClone && originalArchivos.length > 0) {
-    // Add original files that aren't already in the clone
-    const currentIds = new Set(currentArchivos.map((a: any) => a.cloudinaryId));
-    const originalFilesToAdd = originalArchivos.filter(
-      (a: any) => !currentIds.has(a.cloudinaryId),
-    );
-    allArchivos = [...originalFilesToAdd, ...currentArchivos];
-  }
+  // NOTE: We do NOT merge with originalArchivos anymore
+  // The clone owns its own complete set of files after being created
+  // Any file the SELLER wants to keep is already in currentArchivos
+  // Any file the SELLER removed should NOT be added back
+  const allArchivos = [...currentArchivos];
 
   // ==================== SAFE VALUE EXTRACTION ====================
   const razonSocialRaw = baseData.razonSocial || customerName;
@@ -565,14 +563,37 @@ export const sendVisitCompletedNotification = sendVisitNotification;
 
 /**
  * Determinar si se debe enviar notificacion de visita
- * Solo envía notificaciones cuando la visita está COMPLETADA
- * Los borradores (BORRADOR) y en progreso (EN_PROGRESO) no envían emails
+ *
+ * Email notification rules by role:
+ * - DEALER: Only sends email when status is COMPLETADA (Submit)
+ *           Draft saves do NOT trigger emails
+ * - SELLER/ADMIN: Sends email for BOTH BORRADOR (draft) and COMPLETADA (submit)
+ *                 This ensures visibility of clone progress
+ *
+ * @param status - Current visit status (BORRADOR, EN_PROGRESO, COMPLETADA)
+ * @param userRole - Role of the user making the save (DEALER, SELLER, ADMIN)
+ * @returns boolean - Whether to send email notification
  */
-export function shouldSendVisitNotification(status: string): boolean {
-  // Only send email notifications when visit is submitted (COMPLETADA)
-  // Draft saves and in-progress status do not trigger emails
-  return (
-    status === VisitStatus.COMPLETADA &&
-    NOTIFICATION_CONFIG.visitCompleted.enabled
-  );
+export function shouldSendVisitNotification(
+  status: string,
+  userRole?: "DEALER" | "SELLER" | "ADMIN" | null,
+): boolean {
+  // Check if notifications are enabled
+  if (!NOTIFICATION_CONFIG.visitCompleted.enabled) {
+    return false;
+  }
+
+  // DEALER flow: Only send email on COMPLETADA (Submit)
+  if (userRole === "DEALER") {
+    return status === VisitStatus.COMPLETADA;
+  }
+
+  // SELLER/ADMIN flow: Send email on both BORRADOR and COMPLETADA
+  // This provides visibility into clone progress and final submissions
+  if (userRole === "SELLER" || userRole === "ADMIN") {
+    return status === VisitStatus.COMPLETADA || status === VisitStatus.BORRADOR;
+  }
+
+  // Default behavior (no role specified): Only COMPLETADA
+  return status === VisitStatus.COMPLETADA;
 }

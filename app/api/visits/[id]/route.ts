@@ -247,9 +247,15 @@ export async function PUT(
       include: VISIT_INCLUDE,
     });
 
-    // Enviar notificacion de email para cualquier guardado (BORRADOR o COMPLETADA)
+    // Enviar notificacion de email según el rol del usuario
+    // DEALER: solo en COMPLETADA | SELLER/ADMIN: en BORRADOR y COMPLETADA
     const currentStatus = visitData?.status || existingVisit.status;
-    if (shouldSendVisitNotification(currentStatus) && formularioData) {
+    const userRole = currentUser.role as "DEALER" | "SELLER" | "ADMIN";
+
+    if (
+      shouldSendVisitNotification(currentStatus, userRole) &&
+      formularioData
+    ) {
       // visit includes customer from VISIT_INCLUDE
       const visitWithCustomer = visit as typeof visit & {
         customer?: { accountName?: string };

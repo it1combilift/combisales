@@ -311,39 +311,14 @@ export default function DealerVisitFormDialog({
         {currentStep === "form" && selectedFormType && (
           <>
             {(() => {
-              // For cloned visits, get original files to show as read-only
+              // For cloned visits being edited by SELLER, ALL files should be editable
+              // We merge original files into the main archivos array instead of keeping them separate
               const isClonedVisit =
                 !!existingVisit?.clonedFromId && !!existingVisit?.clonedFrom;
 
-              const getOriginalArchivos = () => {
-                if (!isClonedVisit || !existingVisit?.clonedFrom) return [];
-                switch (selectedFormType) {
-                  case VisitFormType.ANALISIS_CSS:
-                    return (
-                      existingVisit.clonedFrom.formularioCSSAnalisis
-                        ?.archivos || []
-                    );
-                  case VisitFormType.ANALISIS_INDUSTRIAL:
-                    return (
-                      existingVisit.clonedFrom.formularioIndustrialAnalisis
-                        ?.archivos || []
-                    );
-                  case VisitFormType.ANALISIS_LOGISTICA:
-                    return (
-                      existingVisit.clonedFrom.formularioLogisticaAnalisis
-                        ?.archivos || []
-                    );
-                  case VisitFormType.ANALISIS_STRADDLE_CARRIER:
-                    return (
-                      existingVisit.clonedFrom.formularioStraddleCarrierAnalisis
-                        ?.archivos || []
-                    );
-                  default:
-                    return [];
-                }
-              };
-
-              const originalArchivos = getOriginalArchivos();
+              // When editing a clone as SELLER, we should NOT pass originalArchivos
+              // All files (including those from original) are now fully editable
+              const originalArchivos: any[] = [];
 
               return (
                 <>

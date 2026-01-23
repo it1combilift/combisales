@@ -9,10 +9,16 @@ import { ALL_ALLOWED_TYPES, MAX_FILES } from "@/constants/constants";
 interface UseFileUploaderProps {
   form: UseFormReturn<FormularioCSSSchema>;
   customerId: string;
+  formularioId?: string; // ID of the specific formulario (for file deletion isolation)
   t: (key: string, values?: Record<string, string | number>) => string;
 }
 
-export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
+export function useFileUploader({
+  form,
+  customerId,
+  formularioId,
+  t,
+}: UseFileUploaderProps) {
   // ==================== STATE ====================
   const [uploadingFiles, setUploadingFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
@@ -114,6 +120,13 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
           publicId: archivo.cloudinaryId,
           type: archivo.cloudinaryType,
         });
+
+        // CRITICAL: Pass formularioId to ensure file deletion only affects THIS visit
+        // This prevents deleting files from original visit when deleting from clone
+        if (formularioId) {
+          params.set("formularioId", formularioId);
+        }
+
         await axios.delete(`/api/upload/delete?${params.toString()}`);
 
         const currentArchivos = form.getValues("archivos") || [];
@@ -129,7 +142,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
         setDeletingFileId(null);
       }
     },
-    [form, t],
+    [form, t, formularioId],
   );
 
   // ==================== DRAG & DROP ====================

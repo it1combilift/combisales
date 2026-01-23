@@ -472,7 +472,7 @@ model FormularioArchivoIndustrial {
   tamanio     Int // Tamaño en bytes
 
   // Datos de Cloudinary
-  cloudinaryId   String @unique // public_id de Cloudinary
+  cloudinaryId   String // public_id de Cloudinary (can be shared across records)
   cloudinaryUrl  String // URL segura del archivo
   cloudinaryType String // image, video, raw (para documentos)
 
@@ -572,7 +572,7 @@ model FormularioArchivoLogistica {
   tamanio     Int // Tamaño en bytes
 
   // Datos de Cloudinary
-  cloudinaryId   String @unique // public_id de Cloudinary
+  cloudinaryId   String // public_id de Cloudinary (can be shared across records)
   cloudinaryUrl  String // URL segura del archivo
   cloudinaryType String // image, video, raw (para documentos)
 
@@ -603,7 +603,7 @@ model FormularioArchivo {
   tamanio     Int // Tamaño en bytes
 
   // Datos de Cloudinary
-  cloudinaryId   String @unique // public_id de Cloudinary
+  cloudinaryId   String // public_id de Cloudinary (can be shared across records)
   cloudinaryUrl  String // URL segura del archivo
   cloudinaryType String // image, video, raw (para documentos)
 
@@ -695,7 +695,7 @@ model FormularioArchivoStraddleCarrier {
   tamanio     Int
 
   // Datos de Cloudinary
-  cloudinaryId   String @unique
+  cloudinaryId   String // public_id de Cloudinary (can be shared across records)
   cloudinaryUrl  String
   cloudinaryType String
 

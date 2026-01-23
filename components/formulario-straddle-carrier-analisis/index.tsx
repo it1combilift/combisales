@@ -117,6 +117,7 @@ export default function FormularioStraddleCarrierAnalisis({
   } = useFileUploader({
     form,
     customerId: customer?.id || undefined,
+    formularioId: formulario?.id, // Pass formularioId for file isolation
     t,
   });
 

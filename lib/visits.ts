@@ -223,45 +223,147 @@ export async function syncFormularioArchivos(
   if (toDelete.length > 0) {
     const deleteIds = toDelete.map((a) => a.cloudinaryId);
 
-    // Delete from database
+    // CRITICAL: Delete ONLY from this specific formulario to maintain isolation
+    // This prevents deleting files from original visit when syncing clone
     switch (tableName) {
       case "FormularioArchivo":
         await prisma.formularioArchivo.deleteMany({
-          where: { cloudinaryId: { in: deleteIds } },
+          where: {
+            cloudinaryId: { in: deleteIds },
+            formularioId: formularioId, // Only delete from THIS formulario
+          },
         });
         break;
       case "FormularioArchivoIndustrial":
         await prisma.formularioArchivoIndustrial.deleteMany({
-          where: { cloudinaryId: { in: deleteIds } },
+          where: {
+            cloudinaryId: { in: deleteIds },
+            formularioId: formularioId,
+          },
         });
         break;
       case "FormularioArchivoLogistica":
         await prisma.formularioArchivoLogistica.deleteMany({
-          where: { cloudinaryId: { in: deleteIds } },
+          where: {
+            cloudinaryId: { in: deleteIds },
+            formularioId: formularioId,
+          },
         });
         break;
       case "FormularioArchivoStraddleCarrier":
         await prisma.formularioArchivoStraddleCarrier.deleteMany({
-          where: { cloudinaryId: { in: deleteIds } },
+          where: {
+            cloudinaryId: { in: deleteIds },
+            formularioId: formularioId,
+          },
         });
         break;
     }
 
-    // Delete from Cloudinary (async, don't block)
+    // Check if files are shared with other visits before deleting from Cloudinary
+    // Only delete from Cloudinary if NO other formularios reference these files
     for (const archivo of toDelete) {
-      deleteFromCloudinary(
-        archivo.cloudinaryId,
-        archivo.cloudinaryType as "image" | "video" | "raw",
-      ).catch((err) => {
-        console.error(
-          `[syncArchivos] Failed to delete from Cloudinary: ${archivo.cloudinaryId}`,
-          err,
+      const [countCSS, countIndustrial, countLogistica, countStraddle] =
+        await Promise.all([
+          prisma.formularioArchivo.count({
+            where: {
+              cloudinaryId: archivo.cloudinaryId,
+              formularioId: { not: formularioId },
+            },
+          }),
+          prisma.formularioArchivoIndustrial.count({
+            where: {
+              cloudinaryId: archivo.cloudinaryId,
+              formularioId: { not: formularioId },
+            },
+          }),
+          prisma.formularioArchivoLogistica.count({
+            where: {
+              cloudinaryId: archivo.cloudinaryId,
+              formularioId: { not: formularioId },
+            },
+          }),
+          prisma.formularioArchivoStraddleCarrier.count({
+            where: {
+              cloudinaryId: archivo.cloudinaryId,
+              formularioId: { not: formularioId },
+            },
+          }),
+        ]);
+
+      const isSharedFile =
+        countCSS + countIndustrial + countLogistica + countStraddle > 0;
+
+      if (!isSharedFile) {
+        // Safe to delete from Cloudinary - no other visits using it
+        deleteFromCloudinary(
+          archivo.cloudinaryId,
+          archivo.cloudinaryType as "image" | "video" | "raw",
+        ).catch((err) => {
+          console.error(
+            `[syncArchivos] Failed to delete from Cloudinary: ${archivo.cloudinaryId}`,
+            err,
+          );
+        });
+      } else {
+        console.log(
+          `[syncArchivos] File ${archivo.cloudinaryId} shared with other visits, keeping in Cloudinary`,
         );
-      });
+      }
     }
 
     console.log(
-      `[syncArchivos] Deleted ${toDelete.length} files from ${tableName}`,
+      `[syncArchivos] Deleted ${toDelete.length} files from ${tableName} (formulario: ${formularioId})`,
+    );
+  }
+
+  // ==================== CREATE NEW FILES ====================
+  // Add files that exist in the new list but not in the database
+  if (toAdd.length > 0) {
+    const filesToCreate = toAdd.map((archivo) => ({
+      formularioId,
+      nombre: archivo.nombre,
+      tipoArchivo: archivo.tipoArchivo,
+      mimeType: archivo.mimeType,
+      tamanio: archivo.tamanio,
+      cloudinaryId: archivo.cloudinaryId,
+      cloudinaryUrl: archivo.cloudinaryUrl,
+      cloudinaryType: archivo.cloudinaryType,
+      ancho: archivo.ancho ?? null,
+      alto: archivo.alto ?? null,
+      duracion: archivo.duracion ?? null,
+      formato: archivo.formato,
+    }));
+
+    switch (tableName) {
+      case "FormularioArchivo":
+        await prisma.formularioArchivo.createMany({
+          data: filesToCreate,
+          skipDuplicates: true,
+        });
+        break;
+      case "FormularioArchivoIndustrial":
+        await prisma.formularioArchivoIndustrial.createMany({
+          data: filesToCreate,
+          skipDuplicates: true,
+        });
+        break;
+      case "FormularioArchivoLogistica":
+        await prisma.formularioArchivoLogistica.createMany({
+          data: filesToCreate,
+          skipDuplicates: true,
+        });
+        break;
+      case "FormularioArchivoStraddleCarrier":
+        await prisma.formularioArchivoStraddleCarrier.createMany({
+          data: filesToCreate,
+          skipDuplicates: true,
+        });
+        break;
+    }
+
+    console.log(
+      `[syncArchivos] Created ${toAdd.length} new files in ${tableName} (formulario: ${formularioId})`,
     );
   }
 
@@ -270,6 +372,8 @@ export async function syncFormularioArchivos(
 
 /**
  * Build Prisma upsert operation for FormularioCSSAnalisis
+ * IMPORTANT: archivos are NOT included in update operations
+ * File sync is handled separately via syncFormularioArchivos() before calling this
  */
 export function buildFormularioUpsert(data: CreateFormularioCSSData) {
   const transformedData = transformFormularioCSSData(data);
@@ -294,8 +398,10 @@ export function buildFormularioUpsert(data: CreateFormularioCSSData) {
       ...archivosCreate,
     },
     update: {
+      // NOTE: archivos are NOT updated here - they're synced separately
+      // This prevents duplicate file creation on every save
       ...transformedData,
-      ...archivosCreate,
+      // archivosCreate intentionally omitted
     },
   };
 }
@@ -385,6 +491,8 @@ function transformArchivosIndustrial(archivos: ArchivoSubido[]) {
 
 /**
  * Build Prisma upsert operation for FormularioIndustrialAnalisis
+ * IMPORTANT: archivos are NOT included in update operations
+ * File sync is handled separately via syncFormularioArchivos() before calling this
  */
 export function buildFormularioIndustrialUpsert(
   data: CreateFormularioIndustrialData,
@@ -412,8 +520,10 @@ export function buildFormularioIndustrialUpsert(
       ...archivosCreate,
     },
     update: {
+      // NOTE: archivos are NOT updated here - they're synced separately
+      // This prevents duplicate file creation on every save
       ...transformedData,
-      ...archivosCreate,
+      // archivosCreate intentionally omitted
     },
   };
 }
@@ -516,6 +626,8 @@ function transformArchivosLogistica(archivos: ArchivoSubido[]) {
 
 /**
  * Build Prisma upsert operation for FormularioLogisticaAnalisis
+ * IMPORTANT: archivos are NOT included in update operations
+ * File sync is handled separately via syncFormularioArchivos() before calling this
  */
 export function buildFormularioLogisticaUpsert(
   data: CreateFormularioLogisticaData,
@@ -543,8 +655,10 @@ export function buildFormularioLogisticaUpsert(
       ...archivosCreate,
     },
     update: {
+      // NOTE: archivos are NOT updated here - they're synced separately
+      // This prevents duplicate file creation on every save
       ...transformedData,
-      ...archivosCreate,
+      // archivosCreate intentionally omitted
     },
   };
 }
@@ -648,6 +762,8 @@ function transformArchivosStraddleCarrier(archivos: ArchivoSubido[]) {
 
 /**
  * Build Prisma upsert operation for FormularioStraddleCarrierAnalisis
+ * IMPORTANT: archivos are NOT included in update operations
+ * File sync is handled separately via syncFormularioArchivos() before calling this
  */
 export function buildFormularioStraddleCarrierUpsert(
   data: CreateFormularioStraddleCarrierData,
@@ -675,8 +791,10 @@ export function buildFormularioStraddleCarrierUpsert(
       ...archivosCreate,
     },
     update: {
+      // NOTE: archivos are NOT updated here - they're synced separately
+      // This prevents duplicate file creation on every save
       ...transformedData,
-      ...archivosCreate,
+      // archivosCreate intentionally omitted
     },
   };
 }

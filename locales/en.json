@@ -59,9 +59,9 @@
       "editCloneOnly": "You can only edit your own clones",
       "cannotCloneClone": "You cannot clone a visit that is already a clone",
       "cloneNoFiles": "Note: Attachments are not copied when cloning. You can add new files.",
-      "viewOriginalForm": "View original form",
-      "viewClonedForm": "View cloned form",
-      "editClonedForm": "Edit cloned form",
+      "viewOriginalForm": "View original",
+      "viewClonedForm": "View cloned",
+      "editClonedForm": "Edit cloned",
       "deleteClonedVisit": "Delete cloned visit",
       "inProgress": "In Progress",
       "visitAlreadyCloned": "This visit has already been cloned"

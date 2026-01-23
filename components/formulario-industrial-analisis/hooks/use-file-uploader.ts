@@ -11,10 +11,16 @@ import { UploadedFile } from "@/interfaces/claudinary";
 interface UseFileUploaderProps {
   form: UseFormReturn<FormularioIndustrialSchema>;
   customerId?: string;
+  formularioId?: string; // ID of the specific formulario (for file deletion isolation)
   t: (key: string, values?: Record<string, string | number>) => string;
 }
 
-export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
+export function useFileUploader({
+  form,
+  customerId,
+  formularioId,
+  t,
+}: UseFileUploaderProps) {
   // ==================== STATE ====================
   const [uploadingFiles, setUploadingFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
@@ -148,7 +154,7 @@ export function useFileUploader({ form, customerId, t }: UseFileUploaderProps) {
         setDeletingFileId(null);
       }
     },
-    [form, t],
+    [form, t, formularioId],
   );
 
   // ==================== DRAG & DROP ====================
