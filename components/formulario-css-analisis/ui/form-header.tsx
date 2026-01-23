@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { FormHeaderProps } from "../types";
 import { Progress } from "@/components/ui/progress";
 import { DialogTitle } from "@/components/ui/dialog";
-import { FORM_STEPS, getStepColorClasses } from "../constants";
+import { getStepColorClasses } from "../constants";
 
 /**
  * Form header with title, progress bar, and step navigation
@@ -16,20 +16,36 @@ export function FormHeader({
   progress,
   completedSteps,
   onGoToStep,
+  formSteps,
+  enableCustomerEntry = false,
 }: FormHeaderProps) {
   const { t } = useI18n();
   const currentColors = getStepColorClasses(currentStepConfig.color);
   const StepIcon = currentStepConfig.icon;
 
-  const stepKeyMap: Record<number, string> = {
-    1: "product",
-    2: "container",
-    3: "measurements",
-    4: "files",
+  // Build dynamic step key map based on enableCustomerEntry
+  // When enableCustomerEntry is true: steps 1-3 are customer, steps 4-7 are product
+  // When enableCustomerEntry is false: steps 1-4 are product only
+  const getStepTranslationKey = (stepNumber: number): string => {
+    if (enableCustomerEntry) {
+      // DEALER flow: 7 steps (3 customer + 4 product)
+      const customerKeys = ["company", "location", "commercial"];
+      const productKeys = ["product", "container", "measurements", "files"];
+      if (stepNumber <= 3) {
+        return customerKeys[stepNumber - 1];
+      }
+      return productKeys[stepNumber - 4];
+    }
+    // Normal flow: 4 product steps
+    const productKeys = ["product", "container", "measurements", "files"];
+    return productKeys[stepNumber - 1] || "product";
   };
-  
-  const currentTitle = t(`forms.css.steps.${stepKeyMap[currentStepConfig.number]}.title` as any);
-  const currentDescription = t(`forms.css.steps.${stepKeyMap[currentStepConfig.number]}.description` as any);
+
+  const currentStepKey = getStepTranslationKey(currentStepConfig.number);
+  const currentTitle = t(`forms.css.steps.${currentStepKey}.title` as any);
+  const currentDescription = t(
+    `forms.css.steps.${currentStepKey}.description` as any,
+  );
 
   return (
     <header className="shrink-0 px-2 sm:px-4 py-2 bg-muted/20 border-b">
@@ -39,7 +55,7 @@ export function FormHeader({
         <div
           className={cn(
             "size-7 sm:size-8 rounded-lg flex items-center justify-center shrink-0",
-            currentColors.bg
+            currentColors.bg,
           )}
         >
           <StepIcon className={cn("size-3.5 sm:size-4", currentColors.text)} />
@@ -66,10 +82,11 @@ export function FormHeader({
 
       {/* Compact stepper with connector lines */}
       <div className="flex items-center justify-center gap-0.5 mt-2 w-full">
-        {FORM_STEPS.map((step, idx) => {
+        {formSteps.map((step, idx) => {
           const isCompleted = completedSteps.has(step.number);
           const isCurrent = currentStep === step.number;
           const Icon = step.icon;
+          const stepKey = getStepTranslationKey(step.number);
 
           return (
             <div key={step.number} className="flex items-center">
@@ -78,7 +95,7 @@ export function FormHeader({
                 onClick={() => onGoToStep(step.number)}
                 className={cn(
                   "relative flex flex-col items-center justify-center transition-all duration-200 cursor-pointer",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5"
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5",
                 )}
                 title={t(step.title as any)}
               >
@@ -88,8 +105,8 @@ export function FormHeader({
                     isCurrent
                       ? "bg-primary text-primary-foreground shadow-sm"
                       : isCompleted
-                      ? "bg-primary/15 text-primary"
-                      : "bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "bg-primary/15 text-primary"
+                        : "bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
                   {isCompleted && !isCurrent ? (
@@ -104,22 +121,22 @@ export function FormHeader({
                     isCurrent
                       ? "text-primary"
                       : isCompleted
-                      ? "text-primary/70"
-                      : "text-muted-foreground"
+                        ? "text-primary/70"
+                        : "text-muted-foreground",
                   )}
                 >
-                  {t(`forms.css.steps.${stepKeyMap[step.number]}.title` as any)}
+                  {t(`forms.css.steps.${stepKey}.title` as any)}
                 </span>
               </button>
               {/* Connector line */}
-              {idx < FORM_STEPS.length - 1 && (
+              {idx < formSteps.length - 1 && (
                 <div
                   className={cn(
                     "w-2 sm:w-3 h-0.5 mx-0.5 self-start mt-3 sm:mt-3.5",
                     completedSteps.has(step.number) &&
-                      completedSteps.has(FORM_STEPS[idx + 1]?.number)
+                      completedSteps.has(formSteps[idx + 1]?.number)
                       ? "bg-primary/40"
-                      : "bg-border"
+                      : "bg-border",
                   )}
                 />
               )}

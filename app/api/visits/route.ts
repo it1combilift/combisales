@@ -72,13 +72,18 @@ export async function GET(req: NextRequest) {
         return unauthorizedResponse();
       }
 
-      // ADMIN: puede ver TODAS las visitas creadas por usuarios DEALER + clones de SELLERs
+      // ADMIN: puede ver visitas COMPLETADAS creadas por usuarios DEALER + clones de SELLERs
+      // IMPORTANTE: NO mostrar visitas en BORRADOR del DEALER (solo el DEALER ve sus borradores)
       if (currentUser.role === Role.ADMIN) {
         const visits = await prisma.visit.findMany({
           where: {
             OR: [
-              // Visitas originales creadas por DEALERs
-              { user: { role: Role.DEALER } },
+              // Visitas originales creadas por DEALERs que NO están en BORRADOR
+              // (COMPLETADA o EN_PROGRESO - este último se muestra cuando hay clon)
+              {
+                user: { role: Role.DEALER },
+                status: { not: VisitStatus.BORRADOR },
+              },
               // Clones creados por SELLERs (tienen clonedFromId)
               { clonedFromId: { not: null } },
             ],
@@ -101,7 +106,8 @@ export async function GET(req: NextRequest) {
         return createSuccessResponse({ visits, userRole: currentUser.role });
       }
 
-      // SELLER: sees ONLY original visits assigned to them by DEALERs
+      // SELLER: sees ONLY original visits assigned to them by DEALERs that are NOT in BORRADOR
+      // IMPORTANTE: NO mostrar visitas en BORRADOR del DEALER (solo el DEALER ve sus borradores)
       // Phase 4: Unified row logic - clones are accessed via the `clones` relation
       // The UI will show ONE row per dealer visit with dropdown options based on clone status
       if (currentUser.role === Role.SELLER) {
@@ -111,6 +117,9 @@ export async function GET(req: NextRequest) {
             assignedSellerId: session.user.id,
             user: { role: Role.DEALER },
             clonedFromId: null, // Only originals - clones are NOT shown as separate rows
+            // FILTRO CRÍTICO: Solo visitas que NO están en BORRADOR
+            // El DEALER debe haber enviado (COMPLETADA o EN_PROGRESO) para que el SELLER la vea
+            status: { not: VisitStatus.BORRADOR },
           },
           include: VISIT_INCLUDE,
           orderBy: { visitDate: "desc" },

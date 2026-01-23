@@ -309,6 +309,10 @@ export function useCSSAnalisisForm({
     isFirstStep,
     isLastStep,
 
+    // Form steps configuration (dynamic based on enableCustomerEntry)
+    formSteps,
+    enableCustomerEntry,
+
     // Actions
     handleNextStep,
     handlePrevStep,

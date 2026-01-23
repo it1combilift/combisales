@@ -21,7 +21,7 @@ export function Step2Content({ form }: StepContentProps) {
 
   return (
     <div className="space-y-4 sm:space-y-5">
-      <FieldWrapper icon={Home}>
+      <FieldWrapper>
         <FormField
           control={form.control}
           name="direccion"
@@ -46,7 +46,7 @@ export function Step2Content({ form }: StepContentProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
         <div className="sm:col-span-2">
-          <FieldWrapper icon={Navigation}>
+          <FieldWrapper>
             <FormField
               control={form.control}
               name="localidad"
@@ -72,7 +72,7 @@ export function Step2Content({ form }: StepContentProps) {
           </FieldWrapper>
         </div>
 
-        <FieldWrapper icon={Hash}>
+        <FieldWrapper>
           <FormField
             control={form.control}
             name="codigoPostal"
@@ -98,7 +98,7 @@ export function Step2Content({ form }: StepContentProps) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-        <FieldWrapper icon={MapPinned}>
+        <FieldWrapper>
           <FormField
             control={form.control}
             name="provinciaEstado"
@@ -123,7 +123,7 @@ export function Step2Content({ form }: StepContentProps) {
           />
         </FieldWrapper>
 
-        <FieldWrapper icon={Flag}>
+        <FieldWrapper>
           <FormField
             control={form.control}
             name="pais"

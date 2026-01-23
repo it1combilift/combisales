@@ -75,9 +75,52 @@ export default function DealerVisitDetailPage({
 
   // User role helpers
   const isSeller = userRole === Role.SELLER;
+  const isAdmin = userRole === Role.ADMIN;
+  const isDealer = userRole === Role.DEALER;
   const isClone = !!visit?.clonedFromId;
   // SELLER can only edit their own clones (drafts)
   const canEdit = !isSeller || isClone;
+
+  /**
+   * Calculate effective status for display based on user role
+   * - DEALER: Always sees BORRADOR or COMPLETADA (never EN_PROGRESO)
+   * - SELLER/ADMIN on original: EN_PROGRESO unless clone is COMPLETADA
+   * - SELLER/ADMIN on clone: Real status (BORRADOR or COMPLETADA)
+   */
+  const getEffectiveStatus = (): VisitStatus => {
+    if (!visit) return VisitStatus.BORRADOR;
+
+    const realStatus = visit.status;
+
+    // DEALER: Never sees EN_PROGRESO - it's only for SELLER/ADMIN flow
+    // If somehow status is EN_PROGRESO for dealer, show as COMPLETADA
+    if (isDealer && realStatus === VisitStatus.EN_PROGRESO) {
+      return VisitStatus.COMPLETADA;
+    }
+
+    // SELLER/ADMIN viewing original visit (not a clone)
+    if ((isSeller || isAdmin) && !isClone) {
+      // For completed visits, check clone status
+      if (
+        realStatus === VisitStatus.COMPLETADA ||
+        realStatus === VisitStatus.EN_PROGRESO
+      ) {
+        const hasClone = visit.clones && visit.clones.length > 0;
+        const clone = hasClone ? visit.clones![0] : null;
+
+        if (clone && clone.status === VisitStatus.COMPLETADA) {
+          return VisitStatus.COMPLETADA;
+        } else {
+          // No clone or clone not completed → EN_PROGRESO
+          return VisitStatus.EN_PROGRESO;
+        }
+      }
+    }
+
+    return realStatus;
+  };
+
+  const effectiveStatus = visit ? getEffectiveStatus() : VisitStatus.BORRADOR;
 
   // Fetch visit data
   useEffect(() => {
@@ -153,84 +196,36 @@ export default function DealerVisitDetailPage({
     }
   };
 
-  /**
-   * Helper to get combined archivos for cloned visits
-   * Combines original visit's files with any files added to the clone
-   * Original files are marked as readOnly to prevent deletion by SELLER
-   */
-  const getCombinedArchivos = (
-    cloneArchivos: any[] | undefined,
-    originalArchivos: any[] | undefined,
-  ) => {
-    const original = (originalArchivos || []).map((archivo: any) => ({
-      ...archivo,
-      isFromOriginal: true, // Mark as from original (read-only)
-    }));
-    const clone = cloneArchivos || [];
-    // Original files first, then clone's own files
-    return [...original, ...clone];
-  };
-
   // Render the appropriate detail component
-  // For cloned visits, combine archivos from original and clone
+  // NOTE: Cloned visits already have their own copy of files from the original
+  // We do NOT combine files to avoid duplication - the clone owns its files independently
   const renderFormularioDetail = () => {
     if (!visit) return null;
-
-    // Check if this is a cloned visit
-    const isClonedVisit = !!visit.clonedFromId && !!visit.clonedFrom;
 
     switch (visit.formType) {
       case VisitFormType.ANALISIS_CSS:
         if (!visit.formularioCSSAnalisis) return null;
-        const cssFormulario = isClonedVisit
-          ? {
-              ...visit.formularioCSSAnalisis,
-              archivos: getCombinedArchivos(
-                visit.formularioCSSAnalisis.archivos,
-                visit.clonedFrom?.formularioCSSAnalisis?.archivos,
-              ),
-            }
-          : visit.formularioCSSAnalisis;
-        return <CSSDetail formulario={cssFormulario} />;
+        return <CSSDetail formulario={visit.formularioCSSAnalisis} />;
 
       case VisitFormType.ANALISIS_INDUSTRIAL:
         if (!visit.formularioIndustrialAnalisis) return null;
-        const industrialFormulario = isClonedVisit
-          ? {
-              ...visit.formularioIndustrialAnalisis,
-              archivos: getCombinedArchivos(
-                visit.formularioIndustrialAnalisis.archivos,
-                visit.clonedFrom?.formularioIndustrialAnalisis?.archivos,
-              ),
-            }
-          : visit.formularioIndustrialAnalisis;
-        return <IndustrialDetail formulario={industrialFormulario} />;
+        return (
+          <IndustrialDetail formulario={visit.formularioIndustrialAnalisis} />
+        );
 
       case VisitFormType.ANALISIS_LOGISTICA:
         if (!visit.formularioLogisticaAnalisis) return null;
-        const logisticaFormulario = isClonedVisit
-          ? {
-              ...visit.formularioLogisticaAnalisis,
-              archivos: getCombinedArchivos(
-                visit.formularioLogisticaAnalisis.archivos,
-                visit.clonedFrom?.formularioLogisticaAnalisis?.archivos,
-              ),
-            }
-          : visit.formularioLogisticaAnalisis;
-        return <LogisticaDetail formulario={logisticaFormulario} />;
+        return (
+          <LogisticaDetail formulario={visit.formularioLogisticaAnalisis} />
+        );
 
       case VisitFormType.ANALISIS_STRADDLE_CARRIER:
         if (!visit.formularioStraddleCarrierAnalisis) return null;
-        const straddleFormulario = isClonedVisit
-          ? {
-              ...visit.formularioStraddleCarrierAnalisis,
-              archivos: getCombinedArchivos(
-                visit.formularioStraddleCarrierAnalisis.archivos,
-                visit.clonedFrom?.formularioStraddleCarrierAnalisis?.archivos,
-              ),
-            }
-          : visit.formularioStraddleCarrierAnalisis;
-        return <StraddleCarrierDetail formulario={straddleFormulario} />;
+        return (
+          <StraddleCarrierDetail
+            formulario={visit.formularioStraddleCarrierAnalisis}
+          />
+        );
 
       default:
         return (
@@ -253,33 +248,16 @@ export default function DealerVisitDetailPage({
     // This ensures form re-initializes with fresh data after save
     const formKey = `${visit.id}-${visit.updatedAt}`;
 
-    // For cloned visits, get original files to show as read-only
-    const isClonedVisit = !!visit.clonedFromId && !!visit.clonedFrom;
-
-    const getOriginalArchivos = () => {
-      if (!isClonedVisit) return [];
-      switch (visit.formType) {
-        case VisitFormType.ANALISIS_CSS:
-          return visit.clonedFrom?.formularioCSSAnalisis?.archivos || [];
-        case VisitFormType.ANALISIS_INDUSTRIAL:
-          return visit.clonedFrom?.formularioIndustrialAnalisis?.archivos || [];
-        case VisitFormType.ANALISIS_LOGISTICA:
-          return visit.clonedFrom?.formularioLogisticaAnalisis?.archivos || [];
-        case VisitFormType.ANALISIS_STRADDLE_CARRIER:
-          return (
-            visit.clonedFrom?.formularioStraddleCarrierAnalisis?.archivos || []
-          );
-        default:
-          return [];
-      }
-    };
-
+    // NOTE: We do NOT pass originalArchivos for cloned visits anymore
+    // The clone already has its own copy of files from the cloning process
+    // Passing originalArchivos would cause duplication
     const formProps = {
       onBack: () => setIsEditing(false),
       onSuccess: handleSuccess,
       existingVisit: visit,
       assignedSellerId: visit.assignedSellerId || undefined,
-      originalArchivos: getOriginalArchivos(),
+      originalArchivos: [], // Empty - clone owns its files independently
+      enableCustomerEntry: true, // Enable customer data steps for DEALER clone editing
     };
 
     switch (visit.formType) {
@@ -298,7 +276,7 @@ export default function DealerVisitDetailPage({
     }
   };
 
-  const statusConfig = visit ? STATUS_CONFIG[visit.status] : null;
+  const statusConfig = visit ? STATUS_CONFIG[effectiveStatus] : null;
 
   return (
     <section className="mx-auto w-full min-h-full">
@@ -332,7 +310,7 @@ export default function DealerVisitDetailPage({
                     >
                       <span className="inline-flex">
                         {React.createElement(
-                          VISIT_STATUS_ICONS[visit.status as VisitStatus],
+                          VISIT_STATUS_ICONS[effectiveStatus],
                           {
                             className: "size-3.5",
                           },
@@ -340,17 +318,17 @@ export default function DealerVisitDetailPage({
                       </span>
                       {t(
                         `visits.statuses.${
-                          visit.status === VisitStatus.BORRADOR
+                          effectiveStatus === VisitStatus.BORRADOR
                             ? "draft"
-                            : visit.status === VisitStatus.EN_PROGRESO
+                            : effectiveStatus === VisitStatus.EN_PROGRESO
                               ? "inProgress"
                               : "completed"
                         }`,
                       )}
                     </Badge>
 
-                    {/* Show clone status badge for SELLER */}
-                    {isSeller && (
+                    {/* Show clone status badge for SELLER/ADMIN */}
+                    {(isSeller || isAdmin) && (
                       <Badge
                         variant={isClone ? "secondary" : "outline"}
                         className="text-xs font-medium w-fit"

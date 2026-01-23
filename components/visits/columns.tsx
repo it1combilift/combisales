@@ -495,11 +495,8 @@ export function createColumns(
                     {onEditClone && clone && (
                       <DropdownMenuItem
                         onClick={() => onEditClone(visit)}
-                        className={`${clone.status === VisitStatus.COMPLETADA || visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-                        disabled={
-                          clone.status === VisitStatus.COMPLETADA ||
-                          visit.status === VisitStatus.COMPLETADA
-                        }
+                        className={`${clone.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+                        disabled={clone.status === VisitStatus.COMPLETADA}
                       >
                         <PencilLine className="size-4" />
                         {t("dealerPage.seller.editClonedForm")}
@@ -510,11 +507,8 @@ export function createColumns(
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => onDeleteClone(visit)}
-                          className={`${clone.status === VisitStatus.COMPLETADA || visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
-                          disabled={
-                            clone.status === VisitStatus.COMPLETADA ||
-                            visit.status === VisitStatus.COMPLETADA
-                          }
+                          className={`${clone.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
+                          disabled={clone.status === VisitStatus.COMPLETADA}
                         >
                           <Trash2 className="size-4 text-destructive" />
                           {t("dealerPage.seller.deleteClonedVisit")}
@@ -533,7 +527,8 @@ export function createColumns(
                 {onEdit && canEdit && (
                   <DropdownMenuItem
                     onClick={() => onEdit(visit)}
-                    className="cursor-pointer"
+                    className={`${visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+                    disabled={visit.status === VisitStatus.COMPLETADA}
                   >
                     <PencilLine className="size-4" />
                     {t("visits.editVisit")}

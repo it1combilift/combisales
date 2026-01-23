@@ -35,7 +35,7 @@ export function Step3Content({ form }: StepContentProps) {
   return (
     <div className="space-y-4 sm:space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-        <FieldWrapper icon={Briefcase}>
+        <FieldWrapper>
           <FormField
             control={form.control}
             name="distribuidor"
@@ -57,7 +57,7 @@ export function Step3Content({ form }: StepContentProps) {
           />
         </FieldWrapper>
 
-        <FieldWrapper icon={Phone}>
+        <FieldWrapper>
           <FormField
             control={form.control}
             name="contactoDistribuidor"

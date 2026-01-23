@@ -11,7 +11,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ContenedorTipo } from "@prisma/client";
-import { CONTENEDOR_TIPO_LABELS } from "@/interfaces/visits";
 import { CONTENEDOR_TIPO_ICONS } from "@/constants/visits";
 import { StepContentProps } from "../types";
 import { useI18n } from "@/lib/i18n/context";

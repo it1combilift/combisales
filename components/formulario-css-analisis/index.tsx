@@ -69,6 +69,8 @@ export default function FormularioCSSAnalisis({
     currentStepConfig,
     isFirstStep,
     isLastStep,
+    formSteps,
+    enableCustomerEntry: enableCustomerEntryFromHook,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -195,6 +197,8 @@ export default function FormularioCSSAnalisis({
         progress={progress}
         completedSteps={completedSteps}
         onGoToStep={goToStep}
+        formSteps={formSteps}
+        enableCustomerEntry={enableCustomerEntryFromHook}
       />
 
       {/* Form content */}

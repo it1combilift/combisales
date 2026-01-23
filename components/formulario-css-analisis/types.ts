@@ -75,6 +75,14 @@ export interface FormHeaderProps {
   progress: number;
   completedSteps: Set<number>;
   onGoToStep: (stepId: number) => void;
+  /** Form steps array - dynamic based on enableCustomerEntry */
+  formSteps: Array<{
+    number: number;
+    title: string;
+    icon: React.ElementType;
+  }>;
+  /** Whether customer entry mode is enabled (DEALER flow) */
+  enableCustomerEntry?: boolean;
 }
 
 // ==================== FORM NAVIGATION PROPS ====================
