@@ -381,12 +381,14 @@ const DealersPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("messages.confirmDelete")}</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-sm text-left text-balance">
+              {t("messages.confirmDelete")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-left text-muted-foreground">
               {t("messages.confirmDeleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="space-x-2 grid grid-cols-2">
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteVisit}>
               {t("common.delete")}

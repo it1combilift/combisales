@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { formatDate } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
+import { formatDateShort } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ import {
   ArrowUpRight,
   User,
   Plus,
+  Split,
   Copy,
   PencilLine,
   ClipboardList,
@@ -181,7 +182,7 @@ export const VisitCard = ({
                       variant="secondary"
                       className="text-xs flex items-center gap-0.5"
                     >
-                      <Copy className="size-2.5" />
+                      <Split className="size-2.5" />
                       {t("dealerPage.seller.clonedBadge")}
                     </Badge>
                   )}
@@ -277,7 +278,8 @@ export const VisitCard = ({
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive"
+                            disabled={visit.status === VisitStatus.COMPLETADA}
+                            className={`${visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
                             onClick={(e) => {
                               e.stopPropagation();
                               onDeleteClone(visit);
@@ -335,7 +337,8 @@ export const VisitCard = ({
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        className="text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive"
+                        disabled={visit.status === VisitStatus.COMPLETADA}
+                        className={`${visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           onDelete(visit);
@@ -361,7 +364,7 @@ export const VisitCard = ({
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-foreground font-semibold text-sm">
-                {formatDate(visit.visitDate, locale)}
+                {formatDateShort(visit.visitDate, locale)}
               </span>
               <span className="text-muted-foreground text-xs">
                 {t("visits.visitDate")}

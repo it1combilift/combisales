@@ -1,12 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { useI18n } from "@/lib/i18n/context";
 
 import {
@@ -18,13 +14,6 @@ import {
 } from "@/components/ui/form";
 
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-import {
-  CalendarIcon,
   Building2,
   User,
   Mail,
@@ -43,7 +32,7 @@ function SectionHeader({
   title: string;
 }) {
   return (
-    <div className="hidden md:flex items-center gap-1.5 pb-1.5 border-b border-border/40 mb-3">
+    <div className="hidden md:flex items-center gap-1.5 pb-1.5 border-b border-border/40">
       <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
         <Icon className="size-3 text-primary" />
       </div>
@@ -88,16 +77,10 @@ function TextInput({
           </FormLabel>
           <FormControl>
             <div className="relative">
-              {Icon && (
-                <Icon className="absolute left-2 top-1/2 -translate-y-1/2 size-3 sm:size-3.5 text-muted-foreground" />
-              )}
               <Input
                 type={type}
                 placeholder={placeholder}
-                className={cn(
-                  "text-xs sm:text-sm h-8 sm:h-9",
-                  Icon && "pl-7 sm:pl-8",
-                )}
+                className={cn("text-xs sm:text-sm h-8 sm:h-9")}
                 {...field}
               />
             </div>
@@ -118,7 +101,7 @@ export function Step1Content({ form }: StepContentProps) {
   const { t } = useI18n();
 
   return (
-    <div className="space-y-5 lg:space-y-6">
+    <div className="space-y-3 md:space-y-4">
       {/* ==================== EMPRESA Y CONTACTO ==================== */}
       <section>
         <SectionHeader

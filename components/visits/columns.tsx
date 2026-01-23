@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { formatDate } from "@/lib/utils";
+import { formatDateShort } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
@@ -144,7 +144,7 @@ export function createColumns(
     cell: ({ row }) => {
       return (
         <span className="text-xs sm:text-sm leading-relaxed text-primary">
-          {formatDate(row.getValue("visitDate"), locale)}
+          {formatDateShort(row.getValue("visitDate"), locale)}
         </span>
       );
     },
@@ -495,7 +495,11 @@ export function createColumns(
                     {onEditClone && clone && (
                       <DropdownMenuItem
                         onClick={() => onEditClone(visit)}
-                        className="cursor-pointer"
+                        className={`${clone.status === VisitStatus.COMPLETADA || visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+                        disabled={
+                          clone.status === VisitStatus.COMPLETADA ||
+                          visit.status === VisitStatus.COMPLETADA
+                        }
                       >
                         <PencilLine className="size-4" />
                         {t("dealerPage.seller.editClonedForm")}
@@ -506,7 +510,11 @@ export function createColumns(
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => onDeleteClone(visit)}
-                          className="text-destructive focus:text-destructive cursor-pointer"
+                          className={`${clone.status === VisitStatus.COMPLETADA || visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
+                          disabled={
+                            clone.status === VisitStatus.COMPLETADA ||
+                            visit.status === VisitStatus.COMPLETADA
+                          }
                         >
                           <Trash2 className="size-4 text-destructive" />
                           {t("dealerPage.seller.deleteClonedVisit")}
@@ -549,7 +557,8 @@ export function createColumns(
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => onDelete(visit)}
-                      className="text-destructive focus:text-destructive cursor-pointer"
+                      disabled={visit.status === VisitStatus.COMPLETADA}
+                      className={`${visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
                     >
                       <Trash2 className="size-4 text-destructive" />
                       {t("visits.deleteVisit")}
