@@ -17,7 +17,10 @@ import { VisitCard } from "@/components/visits/visit-card";
 import { createColumns } from "@/components/visits/columns";
 import { Plus, RefreshCw, ClipboardList } from "lucide-react";
 import { VisitsDataTable } from "@/components/visits/data-table";
-import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
+import {
+  DashboardPageSkeleton,
+  TasksCardsSkeleton,
+} from "@/components/dashboard-skeleton";
 import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
 
 import {
@@ -326,7 +329,13 @@ const DealersPage = () => {
         />
       ) : isMobile ? (
         // Mobile: Cards view
-        <div className="grid grid-cols-1 gap-3 pb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4">
+          {isLoading ||
+            (isRefreshing &&
+              Array.from({ length: visits.length }).map((_, index) => (
+                <TasksCardsSkeleton key={index} />
+              )))}
+
           {visits.map((visit) => (
             <VisitCard
               key={visit.id}

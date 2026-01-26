@@ -374,16 +374,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
       {/* Mobile View - Cards */}
       {isMobile ? (
         <div className="space-y-3">
-          {isLoading ? (
-            Array.from({ length: 5 }).map((_, index) => (
-              <div
-                key={index}
-                className="rounded-lg border bg-card p-4 space-y-3 animate-pulse"
-              >
-                <VisitCardSkeleton />
-              </div>
-            ))
-          ) : table.getRowModel().rows?.length ? (
+          { table.getRowModel().rows?.length ? (
             table
               .getRowModel()
               .rows.map((row) => (
