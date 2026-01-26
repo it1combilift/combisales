@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { VisitFormType, Role } from "@prisma/client";
+import { VisitFormType, VisitStatus, Role } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import {
@@ -246,6 +246,31 @@ export async function PUT(
       },
       include: VISIT_INCLUDE,
     });
+
+    // ==================== SYNC ORIGINAL VISIT STATUS (SELLER/ADMIN Flow) ====================
+    // When a SELLER/ADMIN submits a cloned visit as COMPLETADA,
+    // automatically mark the original visit as COMPLETADA as well
+    // This ensures both records show consistent status in the UI
+    const newStatus = visitData?.status;
+    const isClone = !!existingVisit.clonedFromId;
+    const isSellerOrAdmin =
+      currentUser.role === Role.SELLER || currentUser.role === Role.ADMIN;
+
+    if (
+      isClone &&
+      isSellerOrAdmin &&
+      newStatus === VisitStatus.COMPLETADA &&
+      existingVisit.clonedFromId
+    ) {
+      // Update the original visit to COMPLETADA
+      await prisma.visit.update({
+        where: { id: existingVisit.clonedFromId },
+        data: { status: VisitStatus.COMPLETADA },
+      });
+      console.log(
+        `[Status Sync] Original visit ${existingVisit.clonedFromId} marked as COMPLETADA (clone ${id} was submitted)`,
+      );
+    }
 
     // Enviar notificacion de email según el rol del usuario
     // DEALER: solo en COMPLETADA | SELLER/ADMIN: en BORRADOR y COMPLETADA

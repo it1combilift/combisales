@@ -218,7 +218,7 @@ export function createColumns(
 
       // SELLER/ADMIN: Show dual status when clone exists
       if ((isSeller || isAdmin) && hasClone && clone) {
-        const originalStatus = VisitStatus.EN_PROGRESO; // Original from DEALER always shows as EN_PROGRESO for SELLER
+        const originalStatus = status; // Use actual original status (syncs to COMPLETADA when clone is submitted)
         const cloneStatus = clone.status;
         return (
           <div className="flex flex-col gap-1">

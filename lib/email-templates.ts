@@ -1,6 +1,6 @@
 import { formatDateShort } from "@/lib/utils";
 import { EMAIL_CONFIG } from "@/constants/constants";
-import { TipoAlimentacion, VisitStatus } from "@prisma/client";
+import { Role, TipoAlimentacion, VisitStatus } from "@prisma/client";
 import { formatFileSize } from "@/components/formulario-css-analisis/utils/file-utils";
 
 import {
@@ -1167,11 +1167,27 @@ function buildMetadataSection(
       ? data.vendedor.name
       : notAssigned;
 
+  // ==================== SELLER/ADMIN FLOW - COMPLETADA ====================
+  // When SELLER/ADMIN submits clone as COMPLETADA: show minimal compact layout
+  // Only show: Submitted By (SELLER/ADMIN) - NO DEALER info
+  const isSellerOrAdmin =
+    ownerRole === Role.SELLER || ownerRole === Role.ADMIN || data.vendedor;
+  const isCompletada = data.status === VisitStatus.COMPLETADA;
+  const isClone = data.isClone;
+
+  if (isSellerOrAdmin && isCompletada && isClone) {
+    // Compact single-row layout for SELLER/ADMIN COMPLETADA
+    return `
+     <span style="font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800}; font-weight: ${DESIGN.fonts.weights.medium};">${sellerName}</span>
+    `;
+  }
+
+  // ==================== STANDARD METADATA LAYOUT ====================
   // Build metadata rows
   let metadataRows = "";
 
   // Row 1: Visit Owner / Creator
-  if (ownerRole === "DEALER" || data.dealer) {
+  if (ownerRole === Role.DEALER || data.dealer) {
     // Dealer created the visit
     metadataRows += `
       <tr>
@@ -1192,7 +1208,7 @@ function buildMetadataSection(
         </td>
       </tr>
     `;
-  } else if (ownerRole === "SELLER") {
+  } else if (ownerRole === Role.SELLER || data.vendedor) {
     // Seller created/edited the visit
     metadataRows += `
       <tr>
@@ -1203,8 +1219,13 @@ function buildMetadataSection(
         </td>
       </tr>
     `;
-    // If it's a clone, show original dealer
-    if (data.isClone && data.originalDealerName) {
+    // If it's a clone AND status is BORRADOR, show original dealer info
+    // (For COMPLETADA clones, dealer info is omitted - handled above)
+    if (
+      data.isClone &&
+      data.originalDealerName &&
+      data.status === VisitStatus.BORRADOR
+    ) {
       metadataRows += `
         <tr>
           <td style="padding: 8px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${t("email.metadata.originalDealer", locale)}:</td>
@@ -1291,8 +1312,12 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
       ? `[${t("email.status.draft", locale)}] `
       : "";
 
-  // Clone prefix
-  const clonePrefix = data.isClone ? `[${t("email.clone", locale)}] ` : "";
+  // Clone prefix - Only show [Clone] for BORRADOR status, NOT for COMPLETADA
+  // When SELLER/ADMIN sends COMPLETADA, email should look like a regular visit
+  const clonePrefix =
+    data.isClone && data.status === VisitStatus.BORRADOR
+      ? `[${t("email.clone", locale)}] `
+      : "";
 
   return `<!DOCTYPE html>
 <html lang="${locale}">
@@ -1419,17 +1444,33 @@ export function generateVisitCompletedEmailText(data: VisitEmailData): string {
   let metadataSection = "";
   const ownerRole = data.owner?.role || data.submitterRole;
 
-  if (ownerRole === "DEALER" || data.dealer) {
+  // Check if this is SELLER/ADMIN submitting COMPLETADA clone
+  const isSellerOrAdmin =
+    ownerRole === Role.SELLER || ownerRole === Role.ADMIN || data.vendedor;
+  const isCompletada = data.status === VisitStatus.COMPLETADA;
+  const isClone = data.isClone;
+
+  if (isSellerOrAdmin && isCompletada && isClone) {
+    // SELLER/ADMIN COMPLETADA clone: Minimal metadata - no DEALER info
+    const sellerName = data.vendedor?.name || data.owner?.name || notAssigned;
+    metadataSection = `
+${t("email.metadata.submittedBy", locale)}: [P. MANAGER] ${sellerName}`;
+  } else if (ownerRole === "DEALER" || data.dealer) {
     const dealerName = data.dealer?.name || data.owner?.name || notAssigned;
     const sellerName = data.vendedor?.name || notAssigned;
     metadataSection = `
 ${t("email.metadata.owner", locale)}:      [DEALER] ${dealerName}
 ${t("email.metadata.assignedTo", locale)}:  [P. MANAGER] ${sellerName}`;
-  } else if (ownerRole === "SELLER") {
+  } else if (ownerRole === Role.SELLER) {
     const sellerName = data.vendedor?.name || data.owner?.name || notAssigned;
     metadataSection = `
 ${t("email.metadata.submittedBy", locale)}: [P. MANAGER] ${sellerName}`;
-    if (data.isClone && data.originalDealerName) {
+    // Only show dealer info for BORRADOR status
+    if (
+      data.isClone &&
+      data.originalDealerName &&
+      data.status === VisitStatus.BORRADOR
+    ) {
       metadataSection += `
 ${t("email.metadata.originalDealer", locale)}: [DEALER] ${data.originalDealerName}`;
     }
@@ -1439,15 +1480,21 @@ ${t("email.metadata.originalDealer", locale)}: [DEALER] ${data.originalDealerNam
 ${t("email.metadata.submittedBy", locale)}: ${ownerRole ? `[${ownerRole}] ` : ""}${ownerName}`;
   }
 
-  // Clone indicator
-  if (data.isClone) {
+  // Clone indicator - only show for BORRADOR status
+  if (data.isClone && data.status === VisitStatus.BORRADOR) {
     metadataSection += `
 ${t("email.metadata.visitType", locale)}:   ${t("email.metadata.clonedVisit", locale)}${data.originalVisitId ? ` (ID: ${data.originalVisitId.substring(0, 8)}...)` : ""}`;
   }
 
+  // Clone indicator in header - only show for BORRADOR status
+  const cloneIndicator =
+    data.isClone && data.status === VisitStatus.BORRADOR
+      ? ` (${t("email.clone", locale)})`
+      : "";
+
   let text = `
 ${"═".repeat(55)}
-COMBISALES - ${statusLabel}${data.isClone ? ` (${t("email.clone", locale)})` : ""}
+COMBISALES - ${statusLabel}${cloneIndicator}
 ${"═".repeat(55)}
 
 ${t("email.plainText.type", locale)}:     ${formTypeName}

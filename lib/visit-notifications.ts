@@ -460,8 +460,12 @@ function generateEmailSubject(
     statusPrefix = `[${t("email.status.inProgress", locale)}] `;
   }
 
-  // Clone indicator
-  const clonePrefix = data.isClone ? `[${t("email.clone", locale)}] ` : "";
+  // Clone indicator - Only show for BORRADOR status, NOT for COMPLETADA
+  // When SELLER/ADMIN sends COMPLETADA, email subject should look like a regular visit
+  const clonePrefix =
+    data.isClone && (status === VisitStatus.BORRADOR || status === "BORRADOR")
+      ? `[${t("email.clone", locale)}] `
+      : "";
 
   // Map form type to translated name
   const formTypeKeys: Record<string, string> = {

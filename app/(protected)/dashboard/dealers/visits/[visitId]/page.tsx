@@ -403,34 +403,48 @@ export default function DealerVisitDetailPage({
             )}
 
             {/* Alert for SELLER viewing original visit (cannot edit) */}
-            {isSeller && !isClone && (
-              <AlertMessage
-                variant="info"
-                title={t("dealerPage.seller.cannotEditOriginal")}
-                description={t("dealerPage.seller.editCloneOnly")}
-              />
-            )}
+            {isSeller &&
+              !isClone &&
+              visit.status !== VisitStatus.COMPLETADA && (
+                <AlertMessage
+                  variant="info"
+                  title={t("dealerPage.seller.cannotEditOriginal")}
+                  description={t("dealerPage.seller.editCloneOnly")}
+                />
+              )}
 
             {/* Show clone source info */}
             {isClone && visit.clonedFrom && (
-              <Card className="overflow-hidden border-dashed">
-                <CardContent className="py-3">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <GitBranch className="size-4" />
-                    <span>{t("dealerPage.seller.clonedFrom")}:</span>
-                    <span className="font-medium text-foreground">
-                      {visit.clonedFrom.user?.name ||
-                        visit.clonedFrom.user?.email}
-                    </span>
-                    <span>•</span>
-                    <span>{formatDateShort(visit.clonedFrom.visitDate, locale)}</span>
+              <Card className="overflow-hidden border-dashed bg-background/80 shadow-none py-0">
+                <CardContent className="py-3 px-2 sm:px-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <GitBranch className="size-4 text-primary" />
+                      <span className="font-semibold">
+                        {t("dealerPage.seller.clonedFrom")}:
+                      </span>
+                      <span className="font-medium text-foreground truncate max-w-[120px] sm:max-w-[180px]">
+                        {visit.clonedFrom.user?.name ||
+                          visit.clonedFrom.user?.email}
+                      </span>
+                    </div>
+                    <span className="hidden sm:inline">•</span>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="size-3.5 text-muted-foreground" />
+                      <span className="truncate">
+                        {formatDateShort(visit.clonedFrom.visitDate, locale)}
+                      </span>
+                    </div>
                     {visit.clonedAt && (
                       <>
-                        <span>•</span>
-                        <span>
-                          {t("dealerPage.seller.clonedAt")}:{" "}
-                          {formatDateShort(visit.clonedAt, locale)}
-                        </span>
+                        <span className="hidden sm:inline">•</span>
+                        <div className="flex items-center gap-1">
+                          <Clock className="size-3.5 text-muted-foreground" />
+                          <span>
+                            {t("dealerPage.seller.clonedAt")}:{" "}
+                            {formatDateShort(visit.clonedAt, locale)}
+                          </span>
+                        </div>
                       </>
                     )}
                   </div>
@@ -471,7 +485,11 @@ export default function DealerVisitDetailPage({
             <StatCard
               icon={Clock}
               label={t("tasks.createdDate")}
-              value={visit.createdAt ? formatDateShort(visit.createdAt, locale) : "N/A"}
+              value={
+                visit.createdAt
+                  ? formatDateShort(visit.createdAt, locale)
+                  : "N/A"
+              }
             />
           </div>
 

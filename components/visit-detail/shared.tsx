@@ -51,7 +51,7 @@ export const InfoField = ({
             <ExternalLink className="size-3 shrink-0" />
           </a>
         ) : (
-          <span className="wrap-break-word">{displayValue}</span>
+          <span className="wrap-break-word text-sm text-wrap">{displayValue}</span>
         )}
       </dd>
     </div>
@@ -74,7 +74,7 @@ export const InfoSection = ({
   className?: string;
   headerAction?: React.ReactNode;
 }) => (
-  <Card className={cn("overflow-hidden", className)}>
+  <Card className={cn("overflow-hidden py-2", className)}>
     <CardHeader>
       <div className="flex items-start justify-between gap-3">
         <CardTitle className="flex items-center gap-2.5 text-sm sm:text-base font-semibold">

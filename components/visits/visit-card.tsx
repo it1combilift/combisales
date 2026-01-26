@@ -143,103 +143,26 @@ export const VisitCard = ({
 
   return (
     <Card
-      className={`p-4 hover:shadow-lg transition-all duration-200 active:scale-[0.98] border-l-4 ${STATUS_COLORS[status]}`}
+      className={`overflow-hidden hover:shadow-lg transition-all duration-200 border-l-4 ${STATUS_COLORS[status]}`}
       onClick={() => onView && onView(visit)}
     >
-      <div className="space-y-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className="flex justify-start w-full items-start flex-wrap gap-1">
-              <Badge variant="info" className="text-xs">
-                {FORM_TYPE_ICONS[formType] && (
-                  <span className="inline-flex size-3 items-center justify-center">
-                    {React.createElement(FORM_TYPE_ICONS[formType])}
-                  </span>
-                )}
+      <div className="p-4 pt-0 space-y-4">
+        {/* Header: Form Type and Actions */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              {FORM_TYPE_ICONS[formType] &&
+                React.createElement(FORM_TYPE_ICONS[formType], {
+                  className: "size-5 text-primary",
+                })}
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-semibold truncate">
                 {t(`visits.formTypes.${formTypeKeys[formType]}` as any)}
-              </Badge>
-
-              {/* Status display: Dual status for SELLER/ADMIN when clone exists */}
-              {(isSeller || isAdmin) && hasClone && clone ? (
-                // SELLER/ADMIN with clone: Show dual status badges
-                <div className="flex flex-col gap-0.5">
-                  <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-muted-foreground font-medium uppercase tracking-wide">
-                      {t("dealerPage.seller.originalBadge")}:
-                    </span>
-                    <Badge
-                      variant={STATUS_VARIANTS[VisitStatus.EN_PROGRESO]}
-                      className="text-xs"
-                    >
-                      {VISIT_STATUS_ICONS[VisitStatus.EN_PROGRESO] && (
-                        <span>
-                          {React.createElement(
-                            VISIT_STATUS_ICONS[VisitStatus.EN_PROGRESO],
-                            {
-                              className: "size-3",
-                            },
-                          )}
-                        </span>
-                      )}
-                      {t(
-                        `visits.statuses.${statusKeys[VisitStatus.EN_PROGRESO]}` as any,
-                      )}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-muted-foreground font-medium uppercase tracking-wide">
-                      {t("dealerPage.seller.clonedBadge")}:
-                    </span>
-                    <Badge
-                      variant={STATUS_VARIANTS[clone.status]}
-                      className="text-xs"
-                    >
-                      {VISIT_STATUS_ICONS[clone.status] && (
-                        <span>
-                          {React.createElement(
-                            VISIT_STATUS_ICONS[clone.status],
-                            {
-                              className: "size-3",
-                            },
-                          )}
-                        </span>
-                      )}
-                      {t(`visits.statuses.${statusKeys[clone.status]}` as any)}
-                    </Badge>
-                  </div>
-                </div>
-              ) : (
-                // Default: Single status badge
-                <Badge variant={STATUS_VARIANTS[status]} className="text-xs">
-                  {VISIT_STATUS_ICONS[status] && (
-                    <span>
-                      {React.createElement(VISIT_STATUS_ICONS[status], {
-                        className: "size-3",
-                      })}
-                    </span>
-                  )}
-                  {t(`visits.statuses.${statusKeys[status]}` as any)}
-                </Badge>
-              )}
-
-              {/* Show clone type badges for SELLER/ADMIN */}
-              {/* UI/UX: When clone exists, show BOTH badges [Original] [Cloned] for full visibility */}
-              {(isSeller || isAdmin) && (
-                <>
-                  <Badge variant="outline" className="text-xs">
-                    {t("dealerPage.seller.originalBadge")}
-                  </Badge>
-                  {hasClone && (
-                    <Badge
-                      variant="secondary"
-                      className="text-xs flex items-center gap-0.5"
-                    >
-                      <Split className="size-2.5" />
-                      {t("dealerPage.seller.clonedBadge")}
-                    </Badge>
-                  )}
-                </>
-              )}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {formatDateShort(visit.visitDate, locale)}
+              </span>
             </div>
           </div>
 
@@ -247,8 +170,10 @@ export const VisitCard = ({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-9 w-9 p-0 hover:bg-accent"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-accent shrink-0"
                 aria-label={t("common.actions")}
+                onClick={(e) => e.stopPropagation()}
               >
                 <MoreVertical className="size-4" />
               </Button>
@@ -282,7 +207,7 @@ export const VisitCard = ({
                             onClone!(visit);
                           }}
                         >
-                          <Copy className="size-4" />
+                          <Split className="size-4" />
                           {t("dealerPage.seller.cloneAction")}
                         </DropdownMenuItem>
                       )}
@@ -330,12 +255,9 @@ export const VisitCard = ({
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            disabled={visit.status === VisitStatus.COMPLETADA}
-                            className={`${visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDeleteClone(visit);
-                            }}
+                            onClick={() => onDeleteClone(visit)}
+                            className={`${clone.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
+                            disabled={clone.status === VisitStatus.COMPLETADA}
                           >
                             <Trash2 className="size-4 text-destructive" />
                             {t("dealerPage.seller.deleteClonedVisit")}
@@ -407,184 +329,192 @@ export const VisitCard = ({
           </DropdownMenu>
         </div>
 
-        {/* Visit Info Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Date */}
-          <div className="flex items-center gap-2.5 text-sm min-h-11">
-            <div className="size-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-              <Calendar className="size-4 text-primary" />
+        {/* Company/Client Info - Always visible and prominent */}
+        <div className="flex items-center gap-2.5 p-3 bg-muted/50 rounded-lg">
+          <div className="size-8 rounded-full bg-background flex items-center justify-center shrink-0">
+            <ClipboardList className="size-4 text-primary" />
+          </div>
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-xs text-muted-foreground uppercase tracking-wide">
+              {t("dealerPage.columns.company")}
+            </span>
+            <span className="text-sm font-semibold truncate">
+              {visit.customer?.accountName ||
+                visit.formularioCSSAnalisis?.razonSocial ||
+                visit.formularioIndustrialAnalisis?.razonSocial ||
+                visit.formularioLogisticaAnalisis?.razonSocial ||
+                visit.formularioStraddleCarrierAnalisis?.razonSocial ||
+                "-"}
+            </span>
+          </div>
+        </div>
+
+        {/* Status Section: Original and Clone (when applicable) */}
+        {(isSeller || isAdmin) && hasClone && clone ? (
+          // DUAL STATUS VIEW for SELLER/ADMIN with clone
+          <div className="space-y-2">
+            {/* Original Record Status */}
+            <div className="flex items-center justify-between p-2.5 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="size-7 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                  <User className="size-3.5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wide">
+                    {t("dealerPage.seller.originalBadge")}
+                  </span>
+                  <span className="text-xs text-blue-900 dark:text-blue-200 font-medium truncate">
+                    {visit.user?.name || t("users.card.noName")}
+                  </span>
+                </div>
+              </div>
+              <Badge
+                variant={STATUS_VARIANTS[status]}
+                className="shrink-0 text-xs"
+              >
+                {VISIT_STATUS_ICONS[status] &&
+                  React.createElement(VISIT_STATUS_ICONS[status], {
+                    className: "size-3",
+                  })}
+                {t(`visits.statuses.${statusKeys[status]}` as any)}
+              </Badge>
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-foreground font-semibold text-sm">
-                {formatDateShort(visit.visitDate, locale)}
-              </span>
-              <span className="text-muted-foreground text-xs">
-                {t("visits.visitDate")}
-              </span>
+
+            {/* Clone Record Status */}
+            <div className="flex items-center justify-between p-2.5 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg border border-emerald-200 dark:border-emerald-900">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="size-7 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
+                  <Split className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium uppercase tracking-wide">
+                    {t("dealerPage.seller.clonedBadge")}
+                  </span>
+                  <span className="text-xs text-emerald-900 dark:text-emerald-200 font-medium truncate">
+                    {clone.user?.name || t("users.card.noName")}
+                  </span>
+                </div>
+              </div>
+              <Badge
+                variant={STATUS_VARIANTS[clone.status]}
+                className="shrink-0 text-xs"
+              >
+                {VISIT_STATUS_ICONS[clone.status] &&
+                  React.createElement(VISIT_STATUS_ICONS[clone.status], {
+                    className: "size-3",
+                  })}
+                {t(`visits.statuses.${statusKeys[clone.status]}` as any)}
+              </Badge>
             </div>
           </div>
-
-          {/* Form Type Icon */}
-          <div className="flex items-center gap-2.5 text-sm min-h-11">
-            <div className="size-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-              <ClipboardList className="size-4" />
+        ) : (
+          // SINGLE STATUS VIEW (default for non-cloned or DEALER view)
+          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+              <div className="size-8 rounded-full bg-background flex items-center justify-center shrink-0">
+                {VISIT_STATUS_ICONS[status] &&
+                  React.createElement(VISIT_STATUS_ICONS[status], {
+                    className: "size-4 text-primary",
+                  })}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                  {t("visits.status")}
+                </span>
+                <span className="text-sm font-semibold">
+                  {t(`visits.statuses.${statusKeys[status]}` as any)}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-foreground font-medium truncate text-sm">
-                {t(`visits.formTypes.${formTypeKeys[formType]}` as any)}
+            <Badge variant={STATUS_VARIANTS[status]} className="shrink-0">
+              {t(`visits.statuses.${statusKeys[status]}` as any)}
+            </Badge>
+          </div>
+        )}
+
+        {/* Additional Info Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t">
+          {/* Dealer Info (for SELLER/ADMIN) */}
+          {(isSeller || isAdmin) && !hasClone && (
+            <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors">
+              <div className="size-7 rounded-full bg-muted flex items-center justify-center shrink-0">
+                <User className="size-3.5 text-muted-foreground" />
+              </div>
+              <div className="flex flex-col min-w-0 flex-1">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                  {t("dealerPage.columns.dealer")}
+                </span>
+                <span className="text-xs font-medium truncate">
+                  {visit.user?.name || t("users.card.noName")}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Assigned Seller Info (for DEALER or when exists) */}
+          {visit.assignedSeller && (
+            <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors">
+              <div className="size-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <User className="size-3.5 text-primary" />
+              </div>
+              <div className="flex flex-col min-w-0 flex-1">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                  {t("dealerPage.columns.assignedSeller")}
+                </span>
+                <span className="text-xs font-medium truncate">
+                  {visit.assignedSeller.name || t("users.card.noName")}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Visit Date */}
+          <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors sm:col-span-2">
+            <div className="size-7 rounded-full bg-muted flex items-center justify-center shrink-0">
+              <Calendar className="size-3.5 text-muted-foreground" />
+            </div>
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                {t("visits.visitDate")}
               </span>
-              <span className="text-muted-foreground text-xs">
-                {t("visits.formType")}
+              <span className="text-xs font-medium">
+                {formatDateShort(visit.visitDate, locale)}
               </span>
             </div>
           </div>
         </div>
 
-        {/* User Info - Role-based display */}
-        {/* Phase 6: Column Order - SELLER sees Dealer first, Company second */}
-        {/* DEALER sees P.Manager first, Company second */}
-        <div className="pt-3 border-t border-border space-y-2.5">
-          {/* SELLER sees: Dealer who assigned the visit (first) */}
-          {isSeller && (
-            <div className="flex items-center gap-2.5 text-sm min-h-11">
-              <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
-                <User className="size-4" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-foreground font-semibold truncate text-sm">
-                  {visit.user?.name || t("users.card.noName")}
-                </span>
-                <span className="text-muted-foreground text-xs truncate">
-                  {t("dealerPage.columns.dealer")}
-                </span>
-              </div>
-            </div>
+        {/* Quick Actions Footer */}
+        <div className="flex gap-2 pt-2">
+          {onView && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onView(visit);
+              }}
+            >
+              {t("visits.viewDetails")}
+              <ArrowUpRight className="size-3.5" />
+            </Button>
           )}
 
-          {/* DEALER sees: Assigned Seller / P. Manager (first) */}
-          {isDealer && visit.assignedSeller && (
-            <div className="flex items-center gap-2.5 text-sm min-h-11">
-              <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-primary/10">
-                <User className="size-4 text-primary" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-foreground font-semibold truncate text-sm">
-                  {visit.assignedSeller.name || t("users.card.noName")}
-                </span>
-                <span className="text-muted-foreground text-xs truncate">
-                  {t("dealerPage.columns.assignedSeller")}
-                </span>
-              </div>
-            </div>
+          {onCreateVisit && (
+            <Button
+              variant="default"
+              size="sm"
+              className="flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCreateVisit();
+              }}
+            >
+              <Plus className="size-3.5" />
+              {t("visits.createVisit")}
+            </Button>
           )}
-
-          {/* Company / Customer (second for both SELLER and DEALER) */}
-          {/* Shows customer.accountName OR razonSocial from formulario */}
-          {(isSeller || isDealer) && (
-            <div className="flex items-center gap-2.5 text-sm min-h-11">
-              <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
-                <ClipboardList className="size-4" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-foreground font-semibold truncate text-sm">
-                  {visit.customer?.accountName ||
-                    visit.formularioCSSAnalisis?.razonSocial ||
-                    visit.formularioIndustrialAnalisis?.razonSocial ||
-                    visit.formularioLogisticaAnalisis?.razonSocial ||
-                    visit.formularioStraddleCarrierAnalisis?.razonSocial ||
-                    "-"}
-                </span>
-                <span className="text-muted-foreground text-xs truncate">
-                  {t("dealerPage.columns.company")}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* ADMIN sees: Both Dealer and P.Manager */}
-          {isAdmin && (
-            <>
-              <div className="flex items-center gap-2.5 text-sm min-h-11">
-                <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
-                  <User className="size-4" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-foreground font-semibold truncate text-sm">
-                    {visit.user?.name || t("users.card.noName")}
-                  </span>
-                  <span className="text-muted-foreground text-xs truncate">
-                    {t("dealerPage.columns.dealer")}
-                  </span>
-                </div>
-              </div>
-              {visit.assignedSeller && (
-                <div className="flex items-center gap-2.5 text-sm min-h-11">
-                  <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-primary/10">
-                    <User className="size-4 text-primary" />
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-foreground font-semibold truncate text-sm">
-                      {visit.assignedSeller.name || t("users.card.noName")}
-                    </span>
-                    <span className="text-muted-foreground text-xs truncate">
-                      {t("dealerPage.columns.assignedSeller")}
-                    </span>
-                  </div>
-                </div>
-              )}
-              {/* Company for ADMIN - shows customer.accountName OR razonSocial from formulario */}
-              <div className="flex items-center gap-2.5 text-sm min-h-11">
-                <div className="size-8 rounded-full flex items-center justify-center shrink-0 bg-muted">
-                  <ClipboardList className="size-4" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-foreground font-semibold truncate text-sm">
-                    {visit.customer?.accountName ||
-                      visit.formularioCSSAnalisis?.razonSocial ||
-                      visit.formularioIndustrialAnalisis?.razonSocial ||
-                      visit.formularioLogisticaAnalisis?.razonSocial ||
-                      visit.formularioStraddleCarrierAnalisis?.razonSocial ||
-                      "-"}
-                  </span>
-                  <span className="text-muted-foreground text-xs truncate">
-                    {t("dealerPage.columns.company")}
-                  </span>
-                </div>
-              </div>
-            </>
-          )}
-
-          <div className="space-y-2 w-full">
-            {onView && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onView(visit);
-                }}
-              >
-                {t("visits.viewDetails")}
-                <ArrowUpRight className="size-4" />
-              </Button>
-            )}
-
-            {onCreateVisit && (
-              <Button
-                variant="default"
-                size="sm"
-                className="w-full"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCreateVisit();
-                }}
-              >
-                <Plus className="size-4" />
-                {t("visits.createVisit")}
-              </Button>
-            )}
-          </div>
         </div>
       </div>
     </Card>

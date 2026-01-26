@@ -256,7 +256,7 @@ export function StraddleCarrierDetail({
             )}
 
             {/* Additional container options */}
-            <div className="flex justify-start items-center gap-2">
+            <div className="flex justify-start items-center gap-2 flex-wrap">
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-xs">
                   {formulario.dobleApilamiento ? (
