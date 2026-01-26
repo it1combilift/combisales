@@ -35,6 +35,7 @@ export function FormNavigation({
   onSaveChanges,
   visitIsCompleted,
   readOnly = false,
+  totalSteps,
 }: FormNavigationProps) {
   const { t } = useI18n();
   const isDisabled =
@@ -43,6 +44,9 @@ export function FormNavigation({
     isSavingChanges ||
     isUploading ||
     deletingFileId !== null;
+
+  // Use dynamic totalSteps if provided, otherwise fall back to FORM_STEPS.length
+  const stepsCount = totalSteps ?? FORM_STEPS.length;
 
   return (
     <footer className="shrink-0 px-3 py-3 border-t bg-linear-to-t from-muted/30 to-background/80 backdrop-blur-sm">
@@ -69,7 +73,7 @@ export function FormNavigation({
           <span className="text-xs font-bold text-primary">{currentStep}</span>
           <span className="text-muted-foreground text-xs">/</span>
           <span className="text-xs text-muted-foreground font-medium">
-            {FORM_STEPS.length}
+            {stepsCount}
           </span>
         </div>
 

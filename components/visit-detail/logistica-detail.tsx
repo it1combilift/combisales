@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDateShort } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import AttachmentsGallery from "@/components/attachments-gallery";
@@ -218,14 +218,14 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 {formulario.fechaCierre && (
                   <InfoField
                     label={t("forms.fields.closingDate")}
-                    value={formatDate(formulario.fechaCierre, locale)}
+                    value={formatDateShort(formulario.fechaCierre, locale)}
                     icon={Calendar}
                   />
                 )}
                 {formulario.fechaEstimadaDefinicion && (
                   <InfoField
                     label={t("forms.fields.estimatedDefinitionDate")}
-                    value={formatDate(formulario.fechaEstimadaDefinicion, locale)}
+                    value={formatDateShort(formulario.fechaEstimadaDefinicion, locale)}
                     icon={Calendar}
                   />
                 )}

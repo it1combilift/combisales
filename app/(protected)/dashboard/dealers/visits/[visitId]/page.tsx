@@ -3,7 +3,7 @@
 import React from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { formatDate } from "@/lib/utils";
+import { formatDateShort } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
@@ -70,7 +70,7 @@ export default function DealerVisitDetailPage({
   const [userRole, setUserRole] = useState<Role | null>(null);
 
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { data: session } = useSession();
 
   // User role helpers
@@ -423,13 +423,13 @@ export default function DealerVisitDetailPage({
                         visit.clonedFrom.user?.email}
                     </span>
                     <span>•</span>
-                    <span>{formatDate(visit.clonedFrom.visitDate)}</span>
+                    <span>{formatDateShort(visit.clonedFrom.visitDate, locale)}</span>
                     {visit.clonedAt && (
                       <>
                         <span>•</span>
                         <span>
                           {t("dealerPage.seller.clonedAt")}:{" "}
-                          {formatDate(visit.clonedAt)}
+                          {formatDateShort(visit.clonedAt, locale)}
                         </span>
                       </>
                     )}
@@ -445,14 +445,21 @@ export default function DealerVisitDetailPage({
               icon={ClipboardList}
               label={t("tasks.type")}
               value={
-                FORM_TYPE_LABELS[visit.formType]?.replace("Análisis ", "") ||
-                visit.formType
+                visit.formType === "ANALISIS_CSS"
+                  ? t("forms.formTypes.css")
+                  : visit.formType === "ANALISIS_INDUSTRIAL"
+                    ? t("forms.formTypes.industrial")
+                    : visit.formType === "ANALISIS_LOGISTICA"
+                      ? t("forms.formTypes.logistica")
+                      : visit.formType === "ANALISIS_STRADDLE_CARRIER"
+                        ? t("forms.formTypes.straddleCarrier")
+                        : visit.formType
               }
             />
             <StatCard
               icon={Calendar}
               label={t("visits.visitDate")}
-              value={formatDate(visit.visitDate)}
+              value={formatDateShort(visit.visitDate, locale)}
             />
             <StatCard
               icon={User}
@@ -464,7 +471,7 @@ export default function DealerVisitDetailPage({
             <StatCard
               icon={Clock}
               label={t("tasks.createdDate")}
-              value={visit.createdAt ? formatDate(visit.createdAt) : "N/A"}
+              value={visit.createdAt ? formatDateShort(visit.createdAt, locale) : "N/A"}
             />
           </div>
 

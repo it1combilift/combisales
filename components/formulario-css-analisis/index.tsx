@@ -71,6 +71,7 @@ export default function FormularioCSSAnalisis({
     isLastStep,
     formSteps,
     enableCustomerEntry: enableCustomerEntryFromHook,
+    totalSteps,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -236,6 +237,7 @@ export default function FormularioCSSAnalisis({
               VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }
             readOnly={readOnly}
+            totalSteps={totalSteps}
           />
         </form>
       </Form>

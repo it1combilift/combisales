@@ -86,6 +86,16 @@ export interface FormHeaderProps {
   progress: number;
   completedSteps: Set<number>;
   onGoToStep: (step: number) => void;
+  /** Form steps array - dynamic based on enableCustomerEntry */
+  formSteps?: Array<{
+    number: number;
+    title: string;
+    shortTitle: string;
+    description: string;
+    icon: any;
+    color: string;
+    fields: string[];
+  }>;
 }
 
 // ==================== FORM NAVIGATION PROPS ====================
@@ -108,6 +118,8 @@ export interface FormNavigationProps {
   visitIsCompleted?: VisitStatus;
   /** When true, hides all action buttons (Save, Submit, etc.) - view mode only */
   readOnly?: boolean;
+  /** Total number of steps (dynamic based on enableCustomerEntry) */
+  totalSteps?: number;
 }
 
 // ==================== SAVE VISIT PARAMS ====================

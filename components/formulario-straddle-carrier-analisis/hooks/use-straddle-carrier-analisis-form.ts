@@ -441,6 +441,11 @@ export function useStraddleCarrierAnalisisForm({
     shouldSkipContainersStep,
     shouldSkipSpecialLoadStep,
 
+    // Form steps configuration (dynamic based on enableCustomerEntry)
+    formSteps,
+    enableCustomerEntry,
+    totalSteps: formSteps.length,
+
     // Actions
     handleNextStep,
     handlePrevStep,

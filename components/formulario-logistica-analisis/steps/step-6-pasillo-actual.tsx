@@ -61,7 +61,7 @@ export function Step6Content({ form }: StepContentProps) {
             name="pasilloActual.distanciaEntreEstanterias"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-xs">
+                <FormLabel className="text-[11px] text-balance">
                   {t("forms.fields.distBetweenRacks")}
                 </FormLabel>
                 <FormControl>
@@ -70,12 +70,12 @@ export function Step6Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-[11px] sm:text-xs md:text-sm h-9 pr-7"
+                      className="text-[11px] sm:text-xs md:text-sm h-9 pr-7 text-balance"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value ? parseFloat(e.target.value) : null
+                          e.target.value ? parseFloat(e.target.value) : null,
                         )
                       }
                     />
@@ -95,7 +95,7 @@ export function Step6Content({ form }: StepContentProps) {
             name="pasilloActual.distanciaEntreProductos"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-xs">
+                <FormLabel className="text-[11px] text-balance">
                   {t("forms.fields.distBetweenProducts")}
                 </FormLabel>
                 <FormControl>
@@ -104,12 +104,12 @@ export function Step6Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-[11px] sm:text-xs h-9 pr-7"
+                      className="text-[11px] sm:text-xs h-9 pr-7 text-balance"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value ? parseFloat(e.target.value) : null
+                          e.target.value ? parseFloat(e.target.value) : null,
                         )
                       }
                     />
@@ -129,7 +129,7 @@ export function Step6Content({ form }: StepContentProps) {
             name="pasilloActual.anchoPasilloDisponible"
             render={({ field }) => (
               <FormItem className="col-span-2 sm:col-span-1">
-                <FormLabel className="text-[11px] sm:text-xs">
+                <FormLabel className="text-[11px] text-balance">
                   {t("forms.fields.availableAisleWidth")}
                 </FormLabel>
                 <FormControl>
@@ -138,12 +138,12 @@ export function Step6Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-[11px] sm:text-xs md:text-sm h-9 pr-7"
+                      className="text-[11px] sm:text-xs md:text-sm h-9 pr-7 text-balance"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value ? parseFloat(e.target.value) : null
+                          e.target.value ? parseFloat(e.target.value) : null,
                         )
                       }
                     />
@@ -223,7 +223,7 @@ export function Step6Content({ form }: StepContentProps) {
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value ? parseInt(e.target.value) : null
+                          e.target.value ? parseInt(e.target.value) : null,
                         )
                       }
                     />
@@ -253,7 +253,7 @@ export function Step6Content({ form }: StepContentProps) {
                         value={field.value ?? ""}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value ? parseFloat(e.target.value) : null
+                            e.target.value ? parseFloat(e.target.value) : null,
                           )
                         }
                       />

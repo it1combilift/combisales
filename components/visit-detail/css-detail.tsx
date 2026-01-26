@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDateShort } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/lib/i18n/context";
 import { Separator } from "@/components/ui/separator";
@@ -159,7 +159,7 @@ export function CSSDetail({ formulario }: CSSDetailProps) {
                 {formulario.fechaCierre && (
                   <InfoField
                     label={t("forms.fields.closingDate")}
-                    value={formatDate(formulario.fechaCierre, locale)}
+                    value={formatDateShort(formulario.fechaCierre, locale)}
                     icon={Calendar}
                   />
                 )}

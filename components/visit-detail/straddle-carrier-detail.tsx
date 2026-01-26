@@ -90,8 +90,6 @@ export function StraddleCarrierDetail({
                   value={formulario.personaContacto}
                 />
               </div>
-
-              <Separator />
             </>
           )}
 

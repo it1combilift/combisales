@@ -82,6 +82,8 @@ export default function FormularioStraddleCarrierAnalisis({
     isLastStep,
     shouldSkipContainersStep,
     shouldSkipSpecialLoadStep,
+    formSteps: hookFormSteps,
+    totalSteps,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -209,7 +211,7 @@ export default function FormularioStraddleCarrierAnalisis({
         onGoToStep={goToStep}
         shouldSkipStep2={shouldSkipContainersStep}
         shouldSkipStep3={shouldSkipSpecialLoadStep}
-        formSteps={formSteps}
+        formSteps={hookFormSteps}
       />
 
       {/* Form content */}
@@ -247,6 +249,7 @@ export default function FormularioStraddleCarrierAnalisis({
               visitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }
             readOnly={readOnly}
+            totalSteps={totalSteps}
           />
         </form>
       </Form>

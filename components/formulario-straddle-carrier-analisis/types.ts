@@ -114,6 +114,8 @@ export interface FormNavigationProps {
   visitIsCompleted?: VisitStatus;
   /** When true, hides all action buttons (Save, Submit, etc.) - view mode only */
   readOnly?: boolean;
+  /** Total number of steps (dynamic based on enableCustomerEntry) */
+  totalSteps?: number;
 }
 
 // ==================== SAVE VISIT PARAMS ====================

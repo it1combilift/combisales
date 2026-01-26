@@ -215,6 +215,47 @@ export function createColumns(
         EN_PROGRESO: "info",
         COMPLETADA: "success",
       };
+
+      // SELLER/ADMIN: Show dual status when clone exists
+      if ((isSeller || isAdmin) && hasClone && clone) {
+        const originalStatus = VisitStatus.EN_PROGRESO; // Original from DEALER always shows as EN_PROGRESO for SELLER
+        const cloneStatus = clone.status;
+        return (
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+                {t("dealerPage.seller.originalBadge")}:
+              </span>
+              <Badge variant={variants[originalStatus]} className="text-xs">
+                {VISIT_STATUS_ICONS[originalStatus] && (
+                  <span className="inline-flex">
+                    {React.createElement(VISIT_STATUS_ICONS[originalStatus], {
+                      className: "size-3",
+                    })}
+                  </span>
+                )}
+                {t(`visits.statuses.${statusKeys[originalStatus]}`)}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+                {t("dealerPage.seller.clonedBadge")}:
+              </span>
+              <Badge variant={variants[cloneStatus]} className="text-xs">
+                {VISIT_STATUS_ICONS[cloneStatus] && (
+                  <span className="inline-flex">
+                    {React.createElement(VISIT_STATUS_ICONS[cloneStatus], {
+                      className: "size-3",
+                    })}
+                  </span>
+                )}
+                {t(`visits.statuses.${statusKeys[cloneStatus]}`)}
+              </Badge>
+            </div>
+          </div>
+        );
+      }
+
       return (
         <Badge variant={variants[status]}>
           {VISIT_STATUS_ICONS[status] && (

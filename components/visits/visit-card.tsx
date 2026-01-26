@@ -159,18 +159,70 @@ export const VisitCard = ({
                 {t(`visits.formTypes.${formTypeKeys[formType]}` as any)}
               </Badge>
 
-              <Badge variant={STATUS_VARIANTS[status]} className="text-xs">
-                {VISIT_STATUS_ICONS[status] && (
-                  <span>
-                    {React.createElement(VISIT_STATUS_ICONS[status], {
-                      className: "size-3",
-                    })}
-                  </span>
-                )}
-                {t(`visits.statuses.${statusKeys[status]}` as any)}
-              </Badge>
+              {/* Status display: Dual status for SELLER/ADMIN when clone exists */}
+              {(isSeller || isAdmin) && hasClone && clone ? (
+                // SELLER/ADMIN with clone: Show dual status badges
+                <div className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[9px] text-muted-foreground font-medium uppercase tracking-wide">
+                      {t("dealerPage.seller.originalBadge")}:
+                    </span>
+                    <Badge
+                      variant={STATUS_VARIANTS[VisitStatus.EN_PROGRESO]}
+                      className="text-xs"
+                    >
+                      {VISIT_STATUS_ICONS[VisitStatus.EN_PROGRESO] && (
+                        <span>
+                          {React.createElement(
+                            VISIT_STATUS_ICONS[VisitStatus.EN_PROGRESO],
+                            {
+                              className: "size-3",
+                            },
+                          )}
+                        </span>
+                      )}
+                      {t(
+                        `visits.statuses.${statusKeys[VisitStatus.EN_PROGRESO]}` as any,
+                      )}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[9px] text-muted-foreground font-medium uppercase tracking-wide">
+                      {t("dealerPage.seller.clonedBadge")}:
+                    </span>
+                    <Badge
+                      variant={STATUS_VARIANTS[clone.status]}
+                      className="text-xs"
+                    >
+                      {VISIT_STATUS_ICONS[clone.status] && (
+                        <span>
+                          {React.createElement(
+                            VISIT_STATUS_ICONS[clone.status],
+                            {
+                              className: "size-3",
+                            },
+                          )}
+                        </span>
+                      )}
+                      {t(`visits.statuses.${statusKeys[clone.status]}` as any)}
+                    </Badge>
+                  </div>
+                </div>
+              ) : (
+                // Default: Single status badge
+                <Badge variant={STATUS_VARIANTS[status]} className="text-xs">
+                  {VISIT_STATUS_ICONS[status] && (
+                    <span>
+                      {React.createElement(VISIT_STATUS_ICONS[status], {
+                        className: "size-3",
+                      })}
+                    </span>
+                  )}
+                  {t(`visits.statuses.${statusKeys[status]}` as any)}
+                </Badge>
+              )}
 
-              {/* Show clone status badges for SELLER/ADMIN */}
+              {/* Show clone type badges for SELLER/ADMIN */}
               {/* UI/UX: When clone exists, show BOTH badges [Original] [Cloned] for full visibility */}
               {(isSeller || isAdmin) && (
                 <>

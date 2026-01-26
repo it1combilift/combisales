@@ -82,6 +82,8 @@ export default function FormularioLogisticaAnalisis({
     isFirstStep,
     isLastStep,
     shouldSkipElectricStep,
+    formSteps: hookFormSteps,
+    totalSteps,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -212,7 +214,7 @@ export default function FormularioLogisticaAnalisis({
         completedSteps={completedSteps}
         onGoToStep={goToStep}
         shouldSkipStep3={shouldSkipElectricStep}
-        formSteps={formSteps}
+        formSteps={hookFormSteps}
       />
 
       {/* Form content */}
@@ -250,6 +252,7 @@ export default function FormularioLogisticaAnalisis({
               VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }
             readOnly={readOnly}
+            totalSteps={totalSteps}
           />
         </form>
       </Form>

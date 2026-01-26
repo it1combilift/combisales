@@ -74,6 +74,8 @@ export default function FormularioIndustrialAnalisis({
     isFirstStep,
     isLastStep,
     shouldSkipStep3,
+    formSteps,
+    totalSteps,
     handleNextStep,
     handlePrevStep,
     goToStep,
@@ -205,6 +207,7 @@ export default function FormularioIndustrialAnalisis({
         completedSteps={completedSteps}
         onGoToStep={goToStep}
         shouldSkipStep3={shouldSkipStep3}
+        formSteps={formSteps}
       />
 
       {/* Form content */}
@@ -242,6 +245,7 @@ export default function FormularioIndustrialAnalisis({
               VisitIsCompleted ? VisitStatus.COMPLETADA : undefined
             }
             readOnly={readOnly}
+            totalSteps={totalSteps}
           />
         </form>
       </Form>

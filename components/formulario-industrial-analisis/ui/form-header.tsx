@@ -18,15 +18,19 @@ export function FormHeader({
   completedSteps,
   onGoToStep,
   shouldSkipStep3,
+  formSteps,
 }: FormHeaderPropsExtended) {
   const { t } = useI18n();
   const currentColors = getStepColorClasses(currentStepConfig.color);
   const StepIcon = currentStepConfig.icon;
   const skipStep3 = shouldSkipStep3?.() ?? false;
 
+  // Use dynamic formSteps if provided, otherwise fall back to FORM_STEPS
+  const stepsToUse = formSteps || FORM_STEPS;
+
   const visibleSteps = skipStep3
-    ? FORM_STEPS.filter((step) => step.number !== 3)
-    : FORM_STEPS;
+    ? stepsToUse.filter((step) => step.number !== 3)
+    : stepsToUse;
 
   return (
     <header className="shrink-0 px-2 sm:px-4 py-2 bg-muted/20 border-b">
@@ -36,7 +40,7 @@ export function FormHeader({
         <div
           className={cn(
             "size-7 rounded-lg flex items-center justify-center shrink-0",
-            currentColors.bg
+            currentColors.bg,
           )}
         >
           <StepIcon className={cn("size-3.5", currentColors.text)} />
@@ -75,7 +79,7 @@ export function FormHeader({
                 onClick={() => onGoToStep(step.number)}
                 className={cn(
                   "relative flex flex-col items-center justify-center transition-all duration-200 cursor-pointer",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5"
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5",
                 )}
                 title={t(step.title as any)}
               >
@@ -85,8 +89,8 @@ export function FormHeader({
                     isCurrent
                       ? "bg-primary text-primary-foreground shadow-sm"
                       : isCompleted
-                      ? "bg-primary/15 text-primary"
-                      : "bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "bg-primary/15 text-primary"
+                        : "bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
                   {isCompleted && !isCurrent ? (
@@ -101,8 +105,8 @@ export function FormHeader({
                     isCurrent
                       ? "text-primary"
                       : isCompleted
-                      ? "text-primary/70"
-                      : "text-muted-foreground"
+                        ? "text-primary/70"
+                        : "text-muted-foreground",
                   )}
                 >
                   {t(step.shortTitle as any)}
@@ -116,7 +120,7 @@ export function FormHeader({
                     completedSteps.has(step.number) &&
                       completedSteps.has(visibleSteps[idx + 1]?.number)
                       ? "bg-primary/40"
-                      : "bg-border"
+                      : "bg-border",
                   )}
                 />
               )}
