@@ -296,6 +296,7 @@
     "rows": "row(s)"
   },
   "clients": {
+    "visits": "Visits",
     "title": "Client Management",
     "description": "Manage your client visits",
     "searchPlaceholder": "Search clients...",
@@ -368,7 +369,7 @@
   },
   "visits": {
     "title": "Visits",
-    "searchPlaceholder": "Search by client, dealer...",
+    "searchPlaceholder": "Search...",
     "filterByStatus": "Filter by status",
     "filters": {
       "all": "All",

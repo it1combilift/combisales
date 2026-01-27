@@ -295,6 +295,7 @@
     "rows": "fila(s)"
   },
   "clients": {
+    "visits": "Visitas",
     "title": "Gestión de clientes",
     "description": "Administra las visitas de tus clientes",
     "searchPlaceholder": "Buscar clientes...",
@@ -368,7 +369,7 @@
   "visits": {
     "title": "Visitas",
     "description": "Información completa de la visita realizada al cliente",
-    "searchPlaceholder": "Buscar por cliente, dealer...",
+    "searchPlaceholder": "Buscar...",
     "filterByStatus": "Filtrar por estado",
     "filters": {
       "all": "Todos",

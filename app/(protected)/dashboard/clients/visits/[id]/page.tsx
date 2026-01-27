@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 import { ZohoAccount } from "@/interfaces/zoho";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -16,7 +17,6 @@ import { VisitsDataTable } from "@/components/visits/data-table";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { AccountDetailsCard } from "@/components/accounts/account-details-card";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   AlertDialog,
@@ -36,7 +36,6 @@ import {
   Plus,
   Link,
   FileText,
-  FolderKanban,
   History,
   Hash,
 } from "lucide-react";
@@ -150,7 +149,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
           try {
             const customerResponse = await axios.get(
-              `/api/customers?zohoAccountId=${accountId}`
+              `/api/customers?zohoAccountId=${accountId}`,
             );
             if (customerResponse.data.exists) {
               setCustomer(customerResponse.data.customer);
@@ -296,20 +295,6 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
     </div>
   );
 
-  const projectsTabContent = (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      <div className="rounded-full bg-muted/50 p-6 mb-4">
-        <FolderKanban className=" text-muted-foreground" />
-      </div>
-      <h3 className="text-xl font-semibold mb-2 text-foreground">
-        {t("visits.projectsTab")}
-      </h3>
-      <p className="text-sm text-muted-foreground max-w-md">
-        {t("visits.projectsTabDescription")}
-      </p>
-    </div>
-  );
-
   const tabs = [
     {
       name: t("visits.visitsTab"),
@@ -324,13 +309,6 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
       icon: FileText,
       description: t("visits.detailsTabDescription"),
       content: detailsTabContent,
-    },
-    {
-      name: t("visits.projectsTab"),
-      value: "projects",
-      icon: FolderKanban,
-      description: t("visits.projectsTabDescription"),
-      content: projectsTabContent,
     },
   ];
 
@@ -376,7 +354,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       >
                         {account.Website.replace(/^https?:\/\//, "").replace(
                           /\/$/,
-                          ""
+                          "",
                         )}
                       </a>
                     </MonoText>
@@ -392,11 +370,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   className="h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
                 >
                   <ArrowLeft className="size-4" />
-                  <span className="hidden sm:inline">
-                    {
-                      t("common.back")
-                    }
-                  </span>
+                  <span className="hidden sm:inline">{t("common.back")}</span>
                 </Button>
 
                 <Button
@@ -406,9 +380,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 >
                   <Plus className="size-4" />
                   <span className="hidden sm:inline">
-                    {
-                      t("visits.createVisit")
-                    }
+                    {t("visits.createVisit")}
                   </span>
                 </Button>
               </div>
@@ -467,17 +439,13 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           >
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {t("visits.deleteVisit")}
-                </AlertDialogTitle>
+                <AlertDialogTitle>{t("visits.deleteVisit")}</AlertDialogTitle>
                 <AlertDialogDescription className="text-pretty">
                   {t("visits.deleteVisitModalDescription")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>
-                  {t("common.cancel")}
-                </AlertDialogCancel>
+                <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDeleteVisit}>
                   {t("visits.deleteVisit")}
                 </AlertDialogAction>

@@ -77,7 +77,7 @@ export const VisitCard = ({
   onDelete,
   onClone,
   onViewForm,
-  onCreateVisit,
+  // onCreateVisit,
   userRole,
   onViewClone,
   onEditClone,
@@ -493,7 +493,7 @@ export const VisitCard = ({
               <ArrowUpRight className="size-3.5" />
             </Button>
           )}
-
+          {/* 
           {onCreateVisit && (
             <Button
               variant="default"
@@ -507,7 +507,7 @@ export const VisitCard = ({
               <Plus className="size-3.5" />
               {t("visits.createVisit")}
             </Button>
-          )}
+          )} */}
         </div>
       </div>
     </Card>

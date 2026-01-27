@@ -16,7 +16,7 @@ import { useIsMobile } from "@/components/ui/use-mobile";
 import { TasksCardsSkeleton } from "../dashboard-skeleton";
 import { COMMERCIAL_TASK_TYPES } from "@/constants/constants";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
-import { ListTodo, X, Loader2, Filter, FilterX, RefreshCw } from "lucide-react";
+import { ListTodo, X, Loader2, FilterX, RefreshCw } from "lucide-react";
 
 import {
   ColumnFiltersState,

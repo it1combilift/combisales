@@ -1,7 +1,6 @@
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
 import { useRouter } from "next/navigation";
 import { formatDateShort } from "@/lib/utils";
 import { ZohoAccount } from "@/interfaces/zoho";
