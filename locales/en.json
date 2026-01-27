@@ -368,7 +368,7 @@
   },
   "visits": {
     "title": "Visits",
-    "searchPlaceholder": "Search visits...",
+    "searchPlaceholder": "Search by client, dealer...",
     "filterByStatus": "Filter by status",
     "filters": {
       "all": "All",
@@ -414,7 +414,9 @@
     },
     "statuses": {
       "draft": "Draft",
+      "draftClone": "Draft (Clone)",
       "inProgress": "In Progress",
+      "inProgressOriginal": "In Progress (Original)",
       "completed": "Completed"
     },
     "visitHistory": "Visit history",

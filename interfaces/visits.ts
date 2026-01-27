@@ -17,6 +17,7 @@ import {
   ContenedorTipo,
   ContenedorMedida,
   TipoArchivo,
+  Role,
 } from "@prisma/client";
 
 // Re-export enums for easier import
@@ -26,6 +27,7 @@ export {
   ContenedorTipo,
   ContenedorMedida,
   TipoArchivo,
+  Role,
 };
 
 // ==================== CUSTOMER INTERFACES ====================
@@ -823,6 +825,13 @@ export interface DataTableProps<TData, TValue> {
   onDelete?: (visit: Visit) => void;
   onCreateVisit?: () => void;
   customerName?: string;
+  userRole?: Role | null;
+  // Clone handlers
+  onClone?: (visit: Visit) => void;
+  onViewClone?: (visit: Visit) => void;
+  onEditClone?: (visit: Visit) => void;
+  onDeleteClone?: (visit: Visit) => void;
+  onViewForm?: (visit: Visit) => void;
 }
 
 export interface ColumnsConfig {

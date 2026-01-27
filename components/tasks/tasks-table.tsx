@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Label } from "../ui/label";
 import { TaskCard } from "./task-card";
 import { Spinner } from "../ui/spinner";
 import { Skeleton } from "../ui/skeleton";
@@ -67,7 +66,7 @@ import {
 
 const getTaskTypeLabel = (
   value: string,
-  t: (key: string) => string
+  t: (key: string) => string,
 ): string => {
   const typeMap: Record<string, string> = {
     "Propuesta de Visita": "tasks.types.visitProposal",
@@ -83,7 +82,7 @@ const getTaskTypeLabel = (
 const getFilterLabel = (
   type: "status" | "priority" | "taskType",
   value: string,
-  t: (key: string) => string
+  t: (key: string) => string,
 ): string => {
   if (type === "status") {
     const statusMap: Record<string, string> = {
@@ -140,24 +139,24 @@ export function TasksTable({
   const { t } = useTranslation();
 
   const [localSearchValue, setLocalSearchValue] = React.useState(
-    externalSearchQuery || ""
+    externalSearchQuery || "",
   );
 
   const [pageIndex, setPageIndex] = useQueryState(
     "page",
-    parseAsInteger.withDefault(1)
+    parseAsInteger.withDefault(1),
   );
   const [pageSize, setPageSize] = useQueryState(
     "pageSize",
-    parseAsInteger.withDefault(10)
+    parseAsInteger.withDefault(10),
   );
   const [sortBy, setSortBy] = useQueryState(
     "sortBy",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [sortOrder, setSortOrder] = useQueryState(
     "sortOrder",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -170,15 +169,15 @@ export function TasksTable({
   // Filter states
   const [statusFilter, setStatusFilter] = useQueryState(
     "status",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [priorityFilter, setPriorityFilter] = useQueryState(
     "priority",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [tipoFilter, setTipoFilter] = useQueryState(
     "type",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [showFilters, setShowFilters] = React.useState(false);
 
@@ -312,7 +311,7 @@ export function TasksTable({
                 placeholder={t("common.searchPlaceholder")}
                 value={localSearchValue}
                 onChange={(event) => handleSearchChange(event.target.value)}
-                className="pl-9 pr-9 h-10 text-xs sm:text-sm"
+                className="pl-9 pr-9 h-10 text-xs sm:text-sm w-full"
               />
               {isSearching ? (
                 <Loader2 className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground animate-spin" />
@@ -328,40 +327,8 @@ export function TasksTable({
               ) : null}
             </div>
 
-            {externalSearchQuery && !isSearching && (
-              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary whitespace-nowrap">
-                {t("common.resultsFor")} &quot;{externalSearchQuery}&quot;
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
             {(statusFilter || priorityFilter || tipoFilter) && (
               <div className="flex items-center gap-2 flex-wrap">
-                {statusFilter && (
-                  <Badge variant="secondary" className="text-xs">
-                    {t("common.status")}{" "}
-                    {getFilterLabel("status", statusFilter, t)}
-                    <button
-                      onClick={() => setStatusFilter("")}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      <X className="size-3" />
-                    </button>
-                  </Badge>
-                )}
-                {priorityFilter && (
-                  <Badge variant="secondary" className="text-xs">
-                    {t("taskPage.columns.priority")}:{" "}
-                    {getFilterLabel("priority", priorityFilter, t)}
-                    <button
-                      onClick={() => setPriorityFilter("")}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      <X className="size-3" />
-                    </button>
-                  </Badge>
-                )}
                 {tipoFilter && (
                   <Badge variant="secondary" className="text-xs">
                     {t("taskPage.filters.type")}:{" "}
@@ -374,35 +341,53 @@ export function TasksTable({
                     </button>
                   </Badge>
                 )}
+
+                <Button
+                  onClick={() => {
+                    setStatusFilter("");
+                    setPriorityFilter("");
+                    setTipoFilter("");
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                >
+                  <FilterX className="size-3" />
+                  <span className="hidden sm:inline">
+                    {t("common.clearFilters")}
+                  </span>
+                </Button>
               </div>
             )}
 
-            {(statusFilter || priorityFilter || tipoFilter) && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setStatusFilter("");
-                  setPriorityFilter("");
-                  setTipoFilter("");
-                }}
-              >
-                <FilterX className="size-4" />
-                <span className="hidden sm:inline">
-                  {t("common.clearFilters")}
-                </span>
-              </Button>
+            {externalSearchQuery && !isSearching && (
+              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary whitespace-nowrap">
+                {t("common.resultsFor")} &quot;{externalSearchQuery}&quot;
+              </span>
             )}
+          </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-              className={showFilters ? "bg-primary/10" : ""}
+          <div className="flex items-center gap-2 flex-wrap">
+            <Select
+              value={tipoFilter || undefined}
+              onValueChange={(value) => {
+                setTipoFilter(value);
+              }}
             >
-              <Filter className="size-4" />
-              <span className="hidden sm:inline">{t("common.filters")}</span>
-            </Button>
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue
+                  placeholder={t("taskPage.filters.typePlaceholderType")}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {COMMERCIAL_TASK_TYPES.map((tipo) => (
+                  <SelectItem key={tipo} value={tipo}>
+                    {getTaskTypeLabel(tipo, t)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -430,18 +415,18 @@ export function TasksTable({
                         {column.id === "Subject"
                           ? t("taskPage.columns.matter")
                           : column.id === "Tipo_de_Tarea"
-                          ? t("taskPage.columns.type")
-                          : column.id === "Status"
-                          ? t("taskPage.columns.status")
-                          : column.id === "Priority"
-                          ? t("taskPage.columns.priority")
-                          : column.id === "Due_Date"
-                          ? t("taskPage.columns.dueDate")
-                          : column.id === "Owner"
-                          ? t("taskPage.columns.assignedTo")
-                          : column.id === "What_Id"
-                          ? t("taskPage.columns.relatedTo")
-                          : column.id}
+                            ? t("taskPage.columns.type")
+                            : column.id === "Status"
+                              ? t("taskPage.columns.status")
+                              : column.id === "Priority"
+                                ? t("taskPage.columns.priority")
+                                : column.id === "Due_Date"
+                                  ? t("taskPage.columns.dueDate")
+                                  : column.id === "Owner"
+                                    ? t("taskPage.columns.assignedTo")
+                                    : column.id === "What_Id"
+                                      ? t("taskPage.columns.relatedTo")
+                                      : column.id}
                       </DropdownMenuCheckboxItem>
                     );
                   })}
@@ -476,6 +461,7 @@ export function TasksTable({
                   ))}
                 </SelectContent>
               </Select>
+
               {(statusFilter || priorityFilter || tipoFilter) && (
                 <p className="text-xs text-muted-foreground whitespace-nowrap hidden sm:block">
                   ({table.getFilteredRowModel().rows.length}{" "}
@@ -568,69 +554,6 @@ export function TasksTable({
             </div>
           </div>
         </div>
-
-        {/* Filters Panel */}
-        {showFilters && (
-          <div className="flex justify-start items-center gap-3 p-3 border rounded-lg bg-muted/30 flex-wrap">
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">
-                {t("taskPage.filters.type")}
-              </Label>
-              <div className="flex items-center gap-2">
-                <Select
-                  value={tipoFilter || undefined}
-                  onValueChange={(value) => {
-                    setTipoFilter(value);
-                  }}
-                >
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue
-                      placeholder={t("taskPage.filters.typePlaceholderType")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COMMERCIAL_TASK_TYPES.map((tipo) => (
-                      <SelectItem key={tipo} value={tipo}>
-                        {getTaskTypeLabel(tipo, t)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {tipoFilter && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                    onClick={() => setTipoFilter("")}
-                  >
-                    <X className="size-4" />
-                    <span className="sr-only">
-                      {t("taskPage.filters.type")}
-                    </span>
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {(statusFilter || priorityFilter || tipoFilter) && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setStatusFilter("");
-                  setPriorityFilter("");
-                  setTipoFilter("");
-                }}
-                className="h-9 ml-auto"
-              >
-                <X className="size-4" />
-                <span className="hidden sm:inline">
-                  {t("common.clearFilters")}
-                </span>
-              </Button>
-            )}
-          </div>
-        )}
       </div>
 
       {isMobile ? (
@@ -696,7 +619,7 @@ export function TasksTable({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     );
@@ -729,7 +652,7 @@ export function TasksTable({
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

@@ -1,18 +1,37 @@
 "use client";
 
 import * as React from "react";
-import { VisitStatus } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/empty-card";
 import { useIsMobile } from "@/components/ui/use-mobile";
-import { VISIT_STATUS_LABELS } from "@/interfaces/visits";
+
+import {
+  VISIT_STATUS_LABELS,
+  FORM_TYPE_LABELS,
+  FORM_TYPE_ICONS,
+} from "@/interfaces/visits";
 import { VisitCardSkeleton } from "../dashboard-skeleton";
 import { VisitCard } from "@/components/visits/visit-card";
-import { GalleryHorizontalEnd, History, X } from "lucide-react";
+import {
+  GalleryHorizontalEnd,
+  History,
+  X,
+  Check,
+  Calendar as CalendarIcon,
+} from "lucide-react";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { Visit, DataTableProps, VISIT_STATUS_ICONS } from "@/interfaces/visits";
+import { Role, VisitStatus, VisitFormType } from "@prisma/client";
 
 import {
   type ColumnFiltersState,
@@ -87,37 +106,50 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   onEdit,
   onDelete,
   onCreateVisit,
+  userRole,
+  onClone,
+  onViewClone,
+  onEditClone,
+  onDeleteClone,
+  onViewForm,
 }: DataTableProps<TData, TValue>) {
   const { t } = useI18n();
   const isMobile = useIsMobile();
+  const isDealer = userRole === Role.DEALER;
+  const isSeller = userRole === Role.SELLER;
+  const isAdmin = userRole === Role.ADMIN;
 
   const [searchQuery, setSearchQuery] = useQueryState(
     "search",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [pageIndex, setPageIndex] = useQueryState(
     "page",
-    parseAsInteger.withDefault(1)
+    parseAsInteger.withDefault(1),
   );
   const [pageSize, setPageSize] = useQueryState(
     "pageSize",
-    parseAsInteger.withDefault(10)
+    parseAsInteger.withDefault(10),
   );
   const [sortBy, setSortBy] = useQueryState(
     "sortBy",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [sortOrder, setSortOrder] = useQueryState(
     "sortOrder",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [statusFilter, setStatusFilter] = useQueryState(
     "status",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [formTypeFilter, setFormTypeFilter] = useQueryState(
     "formType",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
+  );
+  const [dateFilter, setDateFilter] = useQueryState(
+    "date",
+    parseAsString.withDefault(""),
   );
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -152,13 +184,50 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   React.useEffect(() => {
     const newFilters: ColumnFiltersState = [];
     if (statusFilter) {
-      newFilters.push({ id: "status", value: [statusFilter] });
+      // Logic for DEALER: "Completed" filter should include EN_PROGRESO if visual mapping applies
+      if (userRole === Role.DEALER && statusFilter === "COMPLETADA") {
+        newFilters.push({
+          id: "status",
+          value: ["COMPLETADA", "EN_PROGRESO"],
+        });
+      } else {
+        newFilters.push({ id: "status", value: [statusFilter] });
+      }
     }
     if (formTypeFilter) {
       newFilters.push({ id: "formType", value: [formTypeFilter] });
     }
+    if (dateFilter) {
+      newFilters.push({ id: "visitDate", value: [dateFilter] });
+    }
     setColumnFilters(newFilters);
-  }, [statusFilter, formTypeFilter, setColumnFilters]);
+  }, [statusFilter, formTypeFilter, dateFilter, setColumnFilters, userRole]);
+
+  // Custom Global Filter Function: Searches across multiple fields
+  const globalFilterFn = (row: any, columnId: string, filterValue: string) => {
+    const value = filterValue.toLowerCase();
+    const visit = row.original as Visit;
+
+    // Fields to search
+    const companyName =
+      visit.customer?.accountName ||
+      visit.formularioCSSAnalisis?.razonSocial ||
+      visit.formularioIndustrialAnalisis?.razonSocial ||
+      visit.formularioLogisticaAnalisis?.razonSocial ||
+      visit.formularioStraddleCarrierAnalisis?.razonSocial ||
+      "";
+    const dealerName = visit.user?.name || visit.user?.email || "";
+    const sellerName =
+      visit.assignedSeller?.name || visit.assignedSeller?.email || "";
+    const formType = visit.formType || "";
+
+    return (
+      companyName.toLowerCase().includes(value) ||
+      dealerName.toLowerCase().includes(value) ||
+      sellerName.toLowerCase().includes(value) ||
+      formType.toLowerCase().includes(value)
+    );
+  };
 
   const table = useReactTable({
     data,
@@ -172,7 +241,8 @@ export function VisitsDataTable<TData extends Visit, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "includesString",
+    globalFilterFn: globalFilterFn,
+
     state: {
       sorting,
       columnFilters,
@@ -199,12 +269,14 @@ export function VisitsDataTable<TData extends Visit, TValue>({
     }
   }, [pageIndex, pageSize, table]);
 
-  const hasActiveFilters = globalFilter || statusFilter || formTypeFilter;
+  const hasActiveFilters =
+    globalFilter || statusFilter || formTypeFilter || dateFilter;
 
   const clearAllFilters = () => {
     setSearchQuery("");
     setStatusFilter(null);
     setFormTypeFilter(null);
+    setDateFilter(null);
     setPageIndex(1);
   };
 
@@ -228,6 +300,38 @@ export function VisitsDataTable<TData extends Visit, TValue>({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Date Filter */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "justify-start text-left font-normal",
+                  !dateFilter && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="size-4" />
+                {dateFilter ? (
+                  format(new Date(dateFilter), "dd/MM/yyyy")
+                ) : (
+                  <span>{t("common.selectDate")}</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dateFilter ? new Date(dateFilter) : undefined}
+                onSelect={(date) => {
+                  setDateFilter(date ? date.toISOString() : null);
+                  setPageIndex(1);
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -254,34 +358,125 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                 }}
                 className="cursor-pointer"
               >
-                <GalleryHorizontalEnd className="size-3.5 inline-flex" />
+                <GalleryHorizontalEnd className="size-3.5 inline-flex mr-2" />
                 {t("visits.filters.all")}
               </DropdownMenuCheckboxItem>
-              {Object.keys(VISIT_STATUS_LABELS).map((key) => (
+              {Object.keys(VISIT_STATUS_LABELS)
+                .filter((key) => {
+                  if (isDealer) {
+                    // DEALER only sees BORRADOR and COMPLETADA options (EN_PROGRESO is mapped to COMPLETADA)
+                    return key === "BORRADOR" || key === "COMPLETADA";
+                  }
+                  return true; // SELLER/ADMIN sees all
+                })
+                .map((key) => (
+                  <DropdownMenuCheckboxItem
+                    key={key}
+                    checked={statusFilter === key}
+                    onCheckedChange={() => {
+                      setStatusFilter(statusFilter === key ? null : key);
+                      setPageIndex(1);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    {VISIT_STATUS_ICONS[key as VisitStatus] && (
+                      <span className="inline-flex mr-2">
+                        {React.createElement(
+                          VISIT_STATUS_ICONS[key as VisitStatus],
+                          {
+                            className: "size-3.5",
+                          },
+                        )}
+                      </span>
+                    )}
+                    {/* Custom Label logic based on Role */}
+                    {isSeller || isAdmin ? (
+                      <span>
+                        {key === "EN_PROGRESO"
+                          ? t("visits.statuses.inProgressOriginal")
+                          : key === "BORRADOR"
+                            ? t("visits.statuses.draftClone")
+                            : t("visits.statuses.completed")}
+                      </span>
+                    ) : (
+                      t(
+                        `visits.statuses.${
+                          key === "BORRADOR"
+                            ? "draft"
+                            : key === "EN_PROGRESO"
+                              ? "inProgress"
+                              : "completed"
+                        }`,
+                      )
+                    )}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Form Type Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <IconFilter className="size-4" />
+                <span className="hidden sm:inline">{t("visits.formType")}</span>
+                {formTypeFilter && (
+                  <Badge variant="secondary" className="ml-1 px-1.5 text-xs">
+                    1
+                  </Badge>
+                )}
+                <IconChevronDown className="size-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[220px]">
+              <DropdownMenuLabel>
+                {t("visits.selectFormType")}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={!formTypeFilter}
+                onCheckedChange={() => {
+                  setFormTypeFilter(null);
+                  setPageIndex(1);
+                }}
+                className="cursor-pointer"
+              >
+                <GalleryHorizontalEnd className="size-3.5 inline-flex mr-2" />
+                {t("visits.filters.all")}
+              </DropdownMenuCheckboxItem>
+              {Object.keys(FORM_TYPE_LABELS).map((key) => (
                 <DropdownMenuCheckboxItem
                   key={key}
-                  checked={statusFilter === key}
+                  checked={formTypeFilter === key}
                   onCheckedChange={() => {
-                    setStatusFilter(statusFilter === key ? null : key);
+                    setFormTypeFilter(formTypeFilter === key ? null : key);
                     setPageIndex(1);
                   }}
                   className="cursor-pointer"
                 >
-                  {VISIT_STATUS_ICONS[key as VisitStatus] && (
-                    <span className="inline-flex">
+                  {FORM_TYPE_ICONS[key as VisitFormType] && (
+                    <span className="inline-flex mr-2">
                       {React.createElement(
-                        VISIT_STATUS_ICONS[key as VisitStatus],
+                        FORM_TYPE_ICONS[key as VisitFormType],
                         {
                           className: "size-3.5",
-                        }
+                        },
                       )}
                     </span>
                   )}
-                  {t(
-                    `visits.statuses.${
-                      key === "BORRADOR" ? "draft" : "completed"
-                    }`
-                  )}
+                  <span className="truncate">
+                    {t(
+                      `visits.formTypes.${
+                        key === "ANALISIS_CSS"
+                          ? "css"
+                          : key === "ANALISIS_INDUSTRIAL"
+                            ? "industrial"
+                            : key === "ANALISIS_LOGISTICA"
+                              ? "logistica"
+                              : "straddleCarrier"
+                      }`,
+                    )}
+                  </span>
                 </DropdownMenuCheckboxItem>
               ))}
             </DropdownMenuContent>
@@ -336,11 +531,23 @@ export function VisitsDataTable<TData extends Visit, TValue>({
           {statusFilter && (
             <Badge variant="secondary" className="text-xs">
               {t("visits.status")}:{" "}
-              {t(
-                `visits.statuses.${
-                  statusFilter === "BORRADOR" ? "draft" : "completed"
-                }`
-              )}
+              {isSeller || isAdmin
+                ? statusFilter === "EN_PROGRESO"
+                  ? t("visits.statuses.inProgressOriginal")
+                  : statusFilter === "BORRADOR"
+                    ? t("visits.statuses.draftClone")
+                    : t("visits.statuses.completed")
+                : t(
+                    `visits.statuses.${
+                      statusFilter === "BORRADOR" ? "draft" : "completed"
+                    }`,
+                  )}
+            </Badge>
+          )}
+          {dateFilter && (
+            <Badge variant="secondary" className="text-xs">
+              {t("visits.visitDate")}:{" "}
+              {format(new Date(dateFilter), "dd/MM/yyyy")}
             </Badge>
           )}
           {formTypeFilter && (
@@ -351,11 +558,11 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                   formTypeFilter === "ANALISIS_CSS"
                     ? "css"
                     : formTypeFilter === "ANALISIS_INDUSTRIAL"
-                    ? "industrial"
-                    : formTypeFilter === "ANALISIS_LOGISTICA"
-                    ? "logistica"
-                    : "straddleCarrier"
-                }`
+                      ? "industrial"
+                      : formTypeFilter === "ANALISIS_LOGISTICA"
+                        ? "logistica"
+                        : "straddleCarrier"
+                }`,
               )}
             </Badge>
           )}
@@ -374,7 +581,11 @@ export function VisitsDataTable<TData extends Visit, TValue>({
       {/* Mobile View - Cards */}
       {isMobile ? (
         <div className="space-y-3">
-          { table.getRowModel().rows?.length ? (
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <VisitCardSkeleton key={index} />
+            ))
+          ) : table.getRowModel().rows?.length ? (
             table
               .getRowModel()
               .rows.map((row) => (
@@ -387,6 +598,12 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                   onEdit={onEdit}
                   onDelete={onDelete}
                   onCreateVisit={onCreateVisit}
+                  onClone={onClone}
+                  onViewClone={onViewClone}
+                  onEditClone={onEditClone}
+                  onDeleteClone={onDeleteClone}
+                  onViewForm={onViewForm}
+                  userRole={userRole}
                 />
               ))
           ) : (
@@ -422,7 +639,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   ))}
@@ -450,7 +667,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

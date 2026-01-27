@@ -149,6 +149,26 @@ export function createColumns(
         </span>
       );
     },
+    filterFn: (row, columnId, filterValue) => {
+      // filterValue is an array [ISOString]
+      const filterDateStr = Array.isArray(filterValue)
+        ? filterValue[0]
+        : filterValue;
+      if (!filterDateStr) return true;
+
+      const rowDateVal = row.getValue(columnId);
+      if (!rowDateVal) return false;
+
+      const rowDate = new Date(rowDateVal as string | Date);
+      const filterDate = new Date(filterDateStr);
+
+      // Compare only YYYY-MM-DD
+      return (
+        rowDate.getFullYear() === filterDate.getFullYear() &&
+        rowDate.getMonth() === filterDate.getMonth() &&
+        rowDate.getDate() === filterDate.getDate()
+      );
+    },
   };
 
   // Status Column
@@ -271,6 +291,42 @@ export function createColumns(
           {t(`visits.statuses.${statusKeys[status]}`)}
         </Badge>
       );
+    },
+    filterFn: (row, columnId, filterValue) => {
+      // filterValue is an array from the column filter
+      const filter = Array.isArray(filterValue) ? filterValue[0] : filterValue;
+      if (!filter) return true;
+
+      const visit = row.original;
+      const status = visit.status;
+      const hasClone = visit.clones && visit.clones.length > 0;
+      const clone = hasClone ? visit.clones![0] : null;
+
+      if (isDealer) {
+        if (filter === "COMPLETADA") {
+          return status === "COMPLETADA" || status === "EN_PROGRESO";
+        }
+        return status === filter;
+      }
+
+      if (isSeller || isAdmin) {
+        // SELLER Logic
+        if (filter === "BORRADOR") {
+          // "Draft (Clone)" -> Matches if clone exists and is Draft
+          return !!(clone && clone.status === "BORRADOR");
+        }
+        if (filter === "EN_PROGRESO") {
+          // "In Progress (Original)" -> Matches if Original is In Progress/Completed AND no completed clone
+          if (clone && clone.status === "COMPLETADA") return false;
+          return status === "EN_PROGRESO" || status === "COMPLETADA";
+        }
+        if (filter === "COMPLETADA") {
+          // "Completed" -> Matches if Clone is Completed
+          return !!(clone && clone.status === "COMPLETADA");
+        }
+      }
+
+      return status === filter;
     },
   };
 

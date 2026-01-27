@@ -328,36 +328,7 @@ const DealersPage = () => {
             ) : undefined
           }
         />
-      ) : isMobile ? (
-        // Mobile: Cards view
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4">
-          {isLoading ||
-            (isRefreshing &&
-              Array.from({ length: visits.length }).map((_, index) => (
-                <TasksCardsSkeleton key={index} />
-              )))}
-
-          {visits.map((visit) => (
-            <VisitCard
-              key={visit.id}
-              visit={visit}
-              isSelected={false}
-              onSelect={() => {}}
-              onView={handleViewVisit}
-              onEdit={handleEditVisit}
-              onDelete={(v) => setVisitToDelete(v)}
-              onClone={isSeller ? handleCloneVisit : undefined}
-              onViewForm={isSeller ? handleViewForm : undefined}
-              // Phase 4: Clone-specific handlers for unified row logic
-              onViewClone={isSeller ? handleViewClone : undefined}
-              onEditClone={isSeller ? handleEditClone : undefined}
-              onDeleteClone={isSeller ? handleDeleteClone : undefined}
-              userRole={userRole}
-            />
-          ))}
-        </div>
       ) : (
-        // Desktop: Table view
         <VisitsDataTable
           columns={columns}
           data={visits}
@@ -365,6 +336,12 @@ const DealersPage = () => {
           onView={handleViewVisit}
           onEdit={handleEditVisit}
           onDelete={(v) => setVisitToDelete(v)}
+          userRole={userRole}
+          onClone={isSeller ? handleCloneVisit : undefined}
+          onViewClone={isSeller ? handleViewClone : undefined}
+          onEditClone={isSeller ? handleEditClone : undefined}
+          onDeleteClone={isSeller ? handleDeleteClone : undefined}
+          onViewForm={isSeller ? handleViewForm : undefined}
         />
       )}
 
