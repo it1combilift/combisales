@@ -1,19 +1,19 @@
 "use client";
 
-import { ArrowRight, ChevronLeft, UserCheck } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { VisitFormType } from "@prisma/client";
+import axios from "axios";
 import { Visit } from "@/interfaces/visits";
-import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
+import { useI18n } from "@/lib/i18n/context";
+import { Badge } from "@/components/ui/badge";
+import { VisitFormType } from "@prisma/client";
+import { Button } from "@/components/ui/button";
 import { FORM_OPTIONS } from "@/interfaces/visits";
+import { useEffect, useState, useCallback } from "react";
+import { DealerSellerSelector } from "./dealer-seller-selector";
+import { ArrowRight, ChevronLeft, UserCheck } from "lucide-react";
+import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
 import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
 import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
 import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
-import { useI18n } from "@/lib/i18n/context";
-import { DealerSellerSelector } from "./dealer-seller-selector";
-import axios from "axios";
 
 import {
   Dialog,

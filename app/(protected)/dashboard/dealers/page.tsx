@@ -17,11 +17,12 @@ import { VisitCard } from "@/components/visits/visit-card";
 import { createColumns } from "@/components/visits/columns";
 import { Plus, RefreshCw, ClipboardList } from "lucide-react";
 import { VisitsDataTable } from "@/components/visits/data-table";
+import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
+
 import {
   DashboardPageSkeleton,
   TasksCardsSkeleton,
 } from "@/components/dashboard-skeleton";
-import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
 
 import {
   AlertDialog,

@@ -69,7 +69,7 @@
     "columns": {
       "dealer": "Dealer",
       "assignedSeller": "P. Manager",
-      "company": "Company"
+      "company": "Client"
     }
   },
   "dashboard": {

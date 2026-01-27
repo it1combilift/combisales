@@ -35,6 +35,7 @@ import {
   PencilLine,
   ClipboardList,
   Eye,
+  BookmarkCheck,
 } from "lucide-react";
 
 const STATUS_VARIANTS: Record<
@@ -223,7 +224,7 @@ export const VisitCard = ({
                             onViewForm(visit);
                           }}
                         >
-                          <Eye className="size-4" />
+                          <BookmarkCheck className="size-4" />
                           {t("dealerPage.seller.viewOriginalForm")}
                         </DropdownMenuItem>
                       )}
@@ -351,16 +352,16 @@ export const VisitCard = ({
 
         {/* Status Section: Original and Clone (when applicable) */}
         {(isSeller || isAdmin) && hasClone && clone ? (
-          // DUAL STATUS VIEW for SELLER/ADMIN with clone
-          <div className="space-y-2">
+          // DUAL STATUS VIEW for SELLER/ADMIN with clone - REFACTORED
+          <div className="flex flex-col overflow-hidden space-y-2">
             {/* Original Record Status */}
-            <div className="flex items-center justify-between p-2.5 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="size-7 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
-                  <User className="size-3.5 text-blue-600 dark:text-blue-400" />
+            <div className="flex items-center justify-between p-2.5 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900 border-b relative">
+              <div className="flex items-center gap-3">
+                <div className="size-8 rounded-full bg-blue-100 dark:bg-blue-900/40 border flex items-center justify-center shrink-0">
+                  <BookmarkCheck className="size-4 text-blue-600 dark:text-blue-400" />
                 </div>
-                <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wide">
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wider">
                     {t("dealerPage.seller.originalBadge")}
                   </span>
                   <span className="text-xs text-blue-900 dark:text-blue-200 font-medium truncate">
@@ -370,24 +371,20 @@ export const VisitCard = ({
               </div>
               <Badge
                 variant={STATUS_VARIANTS[status]}
-                className="shrink-0 text-xs"
+                className="shrink-0 text-[10px] h-5 px-2 font-medium"
               >
-                {VISIT_STATUS_ICONS[status] &&
-                  React.createElement(VISIT_STATUS_ICONS[status], {
-                    className: "size-3",
-                  })}
                 {t(`visits.statuses.${statusKeys[status]}` as any)}
               </Badge>
             </div>
 
             {/* Clone Record Status */}
             <div className="flex items-center justify-between p-2.5 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg border border-emerald-200 dark:border-emerald-900">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="size-7 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
-                  <Split className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+              <div className="flex items-center gap-3">
+                <div className="size-8 rounded-full bg-emerald-100 dark:bg-emerald-900/40 border flex items-center justify-center shrink-0">
+                  <Split className="size-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium uppercase tracking-wide">
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 font-medium uppercase tracking-wider">
                     {t("dealerPage.seller.clonedBadge")}
                   </span>
                   <span className="text-xs text-emerald-900 dark:text-emerald-200 font-medium truncate">
@@ -397,12 +394,8 @@ export const VisitCard = ({
               </div>
               <Badge
                 variant={STATUS_VARIANTS[clone.status]}
-                className="shrink-0 text-xs"
+                className="shrink-0 text-[10px] h-5 px-2 font-medium"
               >
-                {VISIT_STATUS_ICONS[clone.status] &&
-                  React.createElement(VISIT_STATUS_ICONS[clone.status], {
-                    className: "size-3",
-                  })}
                 {t(`visits.statuses.${statusKeys[clone.status]}` as any)}
               </Badge>
             </div>

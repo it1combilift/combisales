@@ -24,6 +24,7 @@ import {
   MoreVertical,
   Split,
   Eye,
+  BookmarkCheck,
 } from "lucide-react";
 
 import {
@@ -216,39 +217,41 @@ export function createColumns(
         COMPLETADA: "success",
       };
 
-      // SELLER/ADMIN: Show dual status when clone exists
+      // SELLER/ADMIN: Show dual status when clone exists - UNIFIED VIEW
       if ((isSeller || isAdmin) && hasClone && clone) {
-        const originalStatus = status; // Use actual original status (syncs to COMPLETADA when clone is submitted)
+        const originalStatus = status;
         const cloneStatus = clone.status;
+
         return (
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
-                {t("dealerPage.seller.originalBadge")}:
-              </span>
-              <Badge variant={variants[originalStatus]} className="text-xs">
-                {VISIT_STATUS_ICONS[originalStatus] && (
-                  <span className="inline-flex">
-                    {React.createElement(VISIT_STATUS_ICONS[originalStatus], {
-                      className: "size-3",
-                    })}
-                  </span>
-                )}
+          <div className="flex flex-col gap-1.5 w-fit min-w-[140px]">
+            {/* Original Status Row */}
+            <div className="flex items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-1.5 text-primary">
+                <BookmarkCheck className="size-3 text-primary/70" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider opacity-90">
+                  {t("dealerPage.seller.originalBadge")}
+                </span>
+              </div>
+              <Badge
+                variant={variants[originalStatus]}
+                className="h-5 px-1.5 font-normal text-[10px]"
+              >
                 {t(`visits.statuses.${statusKeys[originalStatus]}`)}
               </Badge>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
-                {t("dealerPage.seller.clonedBadge")}:
-              </span>
-              <Badge variant={variants[cloneStatus]} className="text-xs">
-                {VISIT_STATUS_ICONS[cloneStatus] && (
-                  <span className="inline-flex">
-                    {React.createElement(VISIT_STATUS_ICONS[cloneStatus], {
-                      className: "size-3",
-                    })}
-                  </span>
-                )}
+
+            {/* Clone Status Row */}
+            <div className="flex items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-1.5 text-primary">
+                <Split className="size-3 text-primary/70" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider opacity-90">
+                  {t("dealerPage.seller.clonedBadge")}
+                </span>
+              </div>
+              <Badge
+                variant={variants[cloneStatus]}
+                className="h-5 px-1.5 font-normal text-[10px]"
+              >
                 {t(`visits.statuses.${statusKeys[cloneStatus]}`)}
               </Badge>
             </div>
@@ -623,7 +626,7 @@ export function createColumns(
       formTypeColumn,
       visitDateColumn,
       statusColumn,
-      cloneStatusColumn,
+      // cloneStatusColumn removed as it is now integrated into statusColumn
       actionsColumn,
     ];
   }
@@ -649,7 +652,7 @@ export function createColumns(
       formTypeColumn,
       visitDateColumn,
       statusColumn,
-      cloneStatusColumn,
+      // cloneStatusColumn removed as it is now integrated into statusColumn
       actionsColumn,
     ];
   }
