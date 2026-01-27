@@ -196,11 +196,8 @@ export default function ProfileHeader({
 
       <style jsx>{`
         .bg-grid-pattern {
-          background-image: linear-gradient(
-              to right,
-              rgb(0 0 0 / 0.05) 1px,
-              transparent 1px
-            ),
+          background-image:
+            linear-gradient(to right, rgb(0 0 0 / 0.05) 1px, transparent 1px),
             linear-gradient(to bottom, rgb(0 0 0 / 0.05) 1px, transparent 1px);
           background-size: 20px 20px;
         }

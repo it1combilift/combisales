@@ -82,7 +82,7 @@ export function getRoleBadge(role: Role, label?: string) {
   return (
     <Badge variant="outline-success">
       <PackageCheck className="size-3.5" />
-      {label || "Vendedor"}
+      {label || "P. Manager"}
     </Badge>
   );
 }

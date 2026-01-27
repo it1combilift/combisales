@@ -1167,19 +1167,22 @@ function buildMetadataSection(
       ? data.vendedor.name
       : notAssigned;
 
-  // ==================== SELLER/ADMIN FLOW - COMPLETADA ====================
-  // When SELLER/ADMIN submits clone as COMPLETADA: show minimal compact layout
-  // Only show: Submitted By (SELLER/ADMIN) - NO DEALER info
+  // Common variables
   const isSellerOrAdmin =
     ownerRole === Role.SELLER || ownerRole === Role.ADMIN || data.vendedor;
   const isCompletada = data.status === VisitStatus.COMPLETADA;
   const isClone = data.isClone;
 
-  if (isSellerOrAdmin && isCompletada && isClone) {
-    // Compact single-row layout for SELLER/ADMIN COMPLETADA
-    return `
-     <span style="font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800}; font-weight: ${DESIGN.fonts.weights.medium};">${sellerName}</span>
-    `;
+  // ==================== SELLER/ADMIN FLOW - COMPACT HEADER METADATA ====================
+  // We want the compact header format (Status | Company | Date | Seller) for:
+  // 1. Direct visits by SELLER/ADMIN (No Clones)
+  // 2. Cloned visits submitted as COMPLETADA by SELLER/ADMIN
+  // So we return EMPTY metadata section here (metadata is handled in the main template header)
+  if (
+    (isSellerOrAdmin && !isClone) ||
+    (isSellerOrAdmin && isClone && isCompletada)
+  ) {
+    return "";
   }
 
   // ==================== STANDARD METADATA LAYOUT ====================
@@ -1290,6 +1293,19 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
     ${endSection()}`
     : "";
 
+  // Variables for metadata logic
+  const ownerRole = data.owner?.role || data.submitterRole;
+  const isSellerOrAdmin =
+    ownerRole === Role.SELLER || ownerRole === Role.ADMIN || data.vendedor;
+  const isClone = data.isClone;
+  const isCompletada = data.status === VisitStatus.COMPLETADA;
+
+  // Seller/P.Manager info
+  const sellerName =
+    data.vendedor?.name && data.vendedor.name.trim() !== ""
+      ? data.vendedor.name
+      : notAssigned;
+
   // Get the title based on status and clone
   let emailTitle =
     data.status === VisitStatus.COMPLETADA
@@ -1372,6 +1388,12 @@ export function generateVisitCompletedEmailHTML(data: VisitEmailData): string {
                     <span style="display: inline-block; padding: 6px 14px; background-color: ${statusConfig.bgColor}; border-radius: 6px; border-left: 4px solid ${statusConfig.borderColor}; font-family: ${DESIGN.fonts.family}; font-size: 11px; font-weight: ${DESIGN.fonts.weights.normal}; color: ${statusConfig.textColor}; text-transform: uppercase; letter-spacing: 0.5px;">${statusConfig.label}</span>
                     <span style="display: inline-block; margin-left: 12px; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.sm}; color: ${DESIGN.colors.gray800}; font-weight: ${DESIGN.fonts.weights.normal};">${companyName}</span>
                     <span style="display: inline-block; margin-left: 8px; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">${formatDateShort(data.visitDate, locale)}</span>
+                    ${
+                      (isSellerOrAdmin && !isClone) ||
+                      (isSellerOrAdmin && isClone && isCompletada)
+                        ? `<span style="display: inline-block; margin-left: 8px; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray800}; font-weight: ${DESIGN.fonts.weights.medium};">| ${sellerName}</span>`
+                        : ""
+                    }
                   </td>
                 </tr>
               </table>

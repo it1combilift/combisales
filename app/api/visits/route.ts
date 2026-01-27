@@ -300,13 +300,11 @@ export async function POST(req: NextRequest) {
     });
 
     const finalStatus = visitData.status || VisitStatus.COMPLETADA;
-    if (shouldSendVisitNotification(finalStatus) && formularioData) {
-      // Get user role for email metadata
-      const userRole = visit.user?.role as
-        | "ADMIN"
-        | "DEALER"
-        | "SELLER"
-        | undefined;
+
+    // Get user role for email notifications
+    const userRole = currentUser?.role as "ADMIN" | "DEALER" | "SELLER" | undefined;
+
+    if (shouldSendVisitNotification(finalStatus, userRole) && formularioData) {
 
       // Determine context name (customer or task)
       let contextName = "";
