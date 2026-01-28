@@ -129,10 +129,62 @@
     "add": "Add",
     "select": "Select",
     "selectDate": "Select date",
+    "user": "User",
+    "email": "Email",
+    "role": "Role",
+    "date": "Date",
+    "characters": "characters",
+    "uploading": "Uploading",
     "powerSource": {
       "ELECTRICO": "Electric",
       "DIESEL": "Diesel",
       "GLP": "LPG"
+    }
+  },
+  "help": {
+    "title": "Help Center",
+    "subtitle": "Need assistance? We're here to help",
+    "description": "Send us your questions, report technical issues, or request assistance. Our team will respond as soon as possible.",
+    "form": {
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "subject": "Subject",
+      "subjectPlaceholder": "Briefly describe your inquiry",
+      "description": "Description",
+      "descriptionPlaceholder": "Provide all relevant details about your inquiry or issue...",
+      "images": "Attached images",
+      "imagesDescription": "Attach screenshots or images that help explain your problem",
+      "uploadImages": "Upload images",
+      "dragAndDrop": "Drag and drop images here, or click to select",
+      "maxFiles": "Maximum {{count}} files",
+      "removeImage": "Remove image"
+    },
+    "categories": {
+      "bug": "Bug Report",
+      "technical": "Technical Issue",
+      "feature": "Feature Request",
+      "question": "General Question",
+      "other": "Other"
+    },
+    "validation": {
+      "categoryRequired": "Please select a category",
+      "subjectRequired": "Subject is required",
+      "subjectMin": "Subject must be at least 5 characters",
+      "subjectMax": "Subject cannot exceed 100 characters",
+      "descriptionRequired": "Description is required",
+      "descriptionMin": "Description must be at least 20 characters",
+      "descriptionMax": "Description cannot exceed 2000 characters"
+    },
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "success": {
+      "title": "Request submitted!",
+      "message": "We've received your request. Our team will review it and respond soon."
+    },
+    "error": {
+      "title": "Submission error",
+      "message": "We couldn't send your request. Please try again.",
+      "network": "Connection error. Check your internet and try again."
     }
   },
   "navigation": {

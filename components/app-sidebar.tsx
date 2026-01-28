@@ -12,16 +12,8 @@ import { useTranslation } from "@/lib/i18n/context";
 import { NavSecondary } from "@/components/nav-secondary";
 
 import {
-  IconCamera,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
   IconHelp,
-  IconReport,
-  IconSearch,
-  IconSettings,
   IconUsers,
-  IconFileWord,
   IconBuildings,
   IconTruckDelivery,
 } from "@tabler/icons-react";
@@ -75,87 +67,11 @@ export function AppSidebar({
         icon: IconUsers,
       },
     ],
-
-    navClouds: [
-      {
-        title: "Capture",
-        icon: IconCamera,
-        isActive: true,
-        url: "#",
-        items: [
-          {
-            title: "Active Proposals",
-            url: "#",
-          },
-          {
-            title: "Archived",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Proposal",
-        icon: IconFileDescription,
-        url: "#",
-        items: [
-          {
-            title: "Active Proposals",
-            url: "#",
-          },
-          {
-            title: "Archived",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Prompts",
-        icon: IconFileAi,
-        url: "#",
-        items: [
-          {
-            title: "Active Proposals",
-            url: "#",
-          },
-          {
-            title: "Archived",
-            url: "#",
-          },
-        ],
-      },
-    ],
     navSecondary: [
       {
-        title: t("common.settings"),
-        url: "#",
-        icon: IconSettings,
-      },
-      {
         title: t("common.help"),
-        url: "#",
+        url: "/dashboard/help",
         icon: IconHelp,
-      },
-      {
-        title: t("common.search"),
-        url: "#",
-        icon: IconSearch,
-      },
-    ],
-    documents: [
-      {
-        name: t("navigation.documents"),
-        url: "#",
-        icon: IconDatabase,
-      },
-      {
-        name: t("navigation.reports"),
-        url: "#",
-        icon: IconReport,
-      },
-      {
-        name: t("navigation.assistant"),
-        url: "#",
-        icon: IconFileWord,
       },
     ],
   };
@@ -227,7 +143,6 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={filteredNavMain} />
-        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

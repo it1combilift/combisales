@@ -129,10 +129,62 @@
     "add": "Agregar",
     "select": "Seleccionar",
     "selectDate": "Seleccionar fecha",
+    "user": "Usuario",
+    "email": "Correo electrónico",
+    "role": "Rol",
+    "date": "Fecha",
+    "characters": "caracteres",
+    "uploading": "Subiendo",
     "powerSource": {
       "ELECTRICO": "Eléctrico",
       "DIESEL": "Diésel",
       "GLP": "GLP"
+    }
+  },
+  "help": {
+    "title": "Centro de Ayuda",
+    "subtitle": "¿Necesitas asistencia? Estamos aquí para ayudarte",
+    "description": "Envíanos tus preguntas, reporta problemas técnicos o solicita asistencia. Nuestro equipo te responderá lo antes posible.",
+    "form": {
+      "category": "Categoría",
+      "categoryPlaceholder": "Selecciona una categoría",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Describe brevemente tu consulta",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Proporciona todos los detalles relevantes sobre tu consulta o problema...",
+      "images": "Imágenes adjuntas",
+      "imagesDescription": "Adjunta capturas de pantalla o imágenes que ayuden a explicar tu problema",
+      "uploadImages": "Subir imágenes",
+      "dragAndDrop": "Arrastra y suelta imágenes aquí, o haz clic para seleccionar",
+      "maxFiles": "Máximo {{count}} archivos",
+      "removeImage": "Eliminar imagen"
+    },
+    "categories": {
+      "bug": "Reporte de Error",
+      "technical": "Problema Técnico",
+      "feature": "Solicitud de Función",
+      "question": "Pregunta General",
+      "other": "Otro"
+    },
+    "validation": {
+      "categoryRequired": "Por favor selecciona una categoría",
+      "subjectRequired": "El asunto es obligatorio",
+      "subjectMin": "El asunto debe tener al menos 5 caracteres",
+      "subjectMax": "El asunto no puede exceder 100 caracteres",
+      "descriptionRequired": "La descripción es obligatoria",
+      "descriptionMin": "La descripción debe tener al menos 20 caracteres",
+      "descriptionMax": "La descripción no puede exceder 2000 caracteres"
+    },
+    "submit": "Enviar",
+    "submitting": "Enviando...",
+    "success": {
+      "title": "¡Solicitud enviada!",
+      "message": "Hemos recibido tu solicitud. Nuestro equipo la revisará y te responderá pronto."
+    },
+    "error": {
+      "title": "Error al enviar",
+      "message": "No pudimos enviar tu solicitud. Por favor, inténtalo de nuevo.",
+      "network": "Error de conexión. Verifica tu internet e inténtalo de nuevo."
     }
   },
   "navigation": {

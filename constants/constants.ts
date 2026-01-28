@@ -75,3 +75,13 @@ export const COMMERCIAL_TASK_TYPES = [
   "Oferta",
   "Cotización",
 ];
+
+// ======= HELP/SUPPORT CONFIG =======
+export const HELP_CONFIG = {
+  categories: ["bug", "technical", "feature", "question", "other"] as const,
+  supportRecipients: ["it1@combilift.es"],
+  maxImages: 5,
+  maxImageSize: MAX_IMAGE_SIZE, // 10MB per image
+} as const;
+
+export type HelpCategory = (typeof HELP_CONFIG.categories)[number];
