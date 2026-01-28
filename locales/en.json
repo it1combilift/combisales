@@ -135,6 +135,7 @@
     "date": "Date",
     "characters": "characters",
     "uploading": "Uploading",
+    "remove": "Remove",
     "powerSource": {
       "ELECTRICO": "Electric",
       "DIESEL": "Diesel",
@@ -142,49 +143,79 @@
     }
   },
   "help": {
-    "title": "Help Center",
+    "title": "Help center",
     "subtitle": "Need assistance? We're here to help",
-    "description": "Send us your questions, report technical issues, or request assistance. Our team will respond as soon as possible.",
-    "form": {
-      "category": "Category",
-      "categoryPlaceholder": "Select a category",
-      "subject": "Subject",
-      "subjectPlaceholder": "Briefly describe your inquiry",
-      "description": "Description",
-      "descriptionPlaceholder": "Provide all relevant details about your inquiry or issue...",
-      "images": "Attached images",
-      "imagesDescription": "Attach screenshots or images that help explain your problem",
-      "uploadImages": "Upload images",
-      "dragAndDrop": "Drag and drop images here, or click to select",
-      "maxFiles": "Maximum {{count}} files",
-      "removeImage": "Remove image"
-    },
+    "description": "Send us your questions, report technical issues, or request assistance.",
+    "requestDetails": "Request details",
+    "requestDetailsDescription": "Fill out the form below to submit your help request.",
+    "requestTypeLabel": "Request type",
+    "requestTypePlaceholder": "Select request type",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "your@email.com",
+    "emailDescription": "We'll send the response to this email.",
+    "subjectLabel": "Subject",
+    "subjectPlaceholder": "Briefly describe your inquiry",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Provide all relevant details about your inquiry or issue...",
+    "descriptionDescription": "Be as specific as possible",
+    "attachments": "Attachments",
+    "attachmentsDescription": "Attach screenshots or images that help explain your problem (optional).",
+    "dragDropActive": "Drop files here",
+    "dragDropInactive": "Drag & drop files here",
+    "clickToBrowse": "or click to browse",
+    "fileTypesAllowed": "PNG, JPG, GIF, or WebP up to 10MB",
+    "filesAttached": "file attached",
+    "filesAttachedPlural": "files attached",
     "categories": {
       "bug": "Bug Report",
+      "bugDescription": "Report unexpected behavior or errors",
       "technical": "Technical Issue",
+      "technicalDescription": "Issues with setup, configuration, or integration",
       "feature": "Feature Request",
+      "featureDescription": "Suggest new features or improvements",
       "question": "General Question",
-      "other": "Other"
+      "questionDescription": "Ask questions about our product",
+      "other": "Other",
+      "otherDescription": "Any other inquiries"
     },
     "validation": {
       "categoryRequired": "Please select a category",
       "subjectRequired": "Subject is required",
       "subjectMin": "Subject must be at least 5 characters",
-      "subjectMax": "Subject cannot exceed 100 characters",
+      "subjectMax": "Subject must be less than 100 characters",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
       "descriptionRequired": "Description is required",
       "descriptionMin": "Description must be at least 20 characters",
-      "descriptionMax": "Description cannot exceed 2000 characters"
+      "descriptionMax": "Description must be less than 2000 characters",
+      "fileTypeNotAccepted": "File type not allowed",
+      "fileSizeExceeded": "File exceeds maximum size (10MB)",
+      "maxFilesReached": "Maximum file limit reached"
     },
     "submit": "Submit",
     "submitting": "Submitting...",
     "success": {
-      "title": "Request submitted!",
-      "message": "We've received your request. Our team will review it and respond soon."
+      "title": "Request Submitted Successfully!",
+      "message": "Thank you for reaching out. Our support team will review your request and respond within 24-48 hours. You will receive a confirmation email shortly.",
+      "submitAnother": "Submit Another Request"
     },
     "error": {
-      "title": "Submission error",
+      "title": "Submission Error",
       "message": "We couldn't send your request. Please try again.",
-      "network": "Connection error. Check your internet and try again."
+      "network": "Connection error. Check your internet and try again.",
+      "uploadFailed": "Failed to upload files",
+      "serverError": "Server error. Please try again later."
+    },
+    "toast": {
+      "fileTypeError": "File type not allowed: {{fileName}}",
+      "fileSizeError": "File {{fileName}} exceeds maximum size (10MB)",
+      "maxFilesError": "Maximum {{max}} files allowed",
+      "uploadSuccess": "{{count}} file(s) uploaded successfully",
+      "submitSuccess": "Request submitted successfully",
+      "submitError": "Error submitting request"
+    },
+    "form": {
+      "images": "Images"
     }
   },
   "navigation": {

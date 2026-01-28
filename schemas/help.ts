@@ -27,22 +27,20 @@ const imageAttachmentSchema = z.object({
  * Help request form schema factory
  * Returns a Zod schema with internationalized error messages
  */
-export function createHelpFormSchema(t: (key: string) => string) {
-  return z.object({
-    category: z.enum(helpCategories, {
+export const createHelpFormSchema = (t: (key: string) => string) =>
+  z.object({
+    category: z.enum(["bug", "technical", "feature", "question", "other"], {
       required_error: t("help.validation.categoryRequired"),
     }),
     subject: z
-      .string()
-      .min(5, { message: t("help.validation.subjectMin") })
-      .max(100, { message: t("help.validation.subjectMax") }),
+      .string({ required_error: t("help.validation.subjectRequired") })
+      .min(5, t("help.validation.subjectMin"))
+      .max(100, t("help.validation.subjectMax")),
     description: z
-      .string()
-      .min(20, { message: t("help.validation.descriptionMin") })
-      .max(2000, { message: t("help.validation.descriptionMax") }),
-    images: z.array(imageAttachmentSchema).max(5).optional(),
+      .string({ required_error: t("help.validation.descriptionRequired") })
+      .min(5, t("help.validation.descriptionMin"))
+      .max(2000, t("help.validation.descriptionMax")),
   });
-}
 
 /**
  * Type inference for help form data
@@ -55,7 +53,7 @@ export type HelpFormData = z.infer<ReturnType<typeof createHelpFormSchema>>;
 export const helpRequestSchema = z.object({
   category: z.enum(helpCategories),
   subject: z.string().min(5).max(100),
-  description: z.string().min(20).max(2000),
+  description: z.string().min(5).max(2000),
   images: z.array(imageAttachmentSchema).max(5).optional(),
 });
 

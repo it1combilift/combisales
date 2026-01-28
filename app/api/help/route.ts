@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { sendEmail } from "@/lib/resend";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { helpRequestSchema } from "@/schemas/help";
 import { HELP_CONFIG } from "@/constants/constants";
-import { sendEmail } from "@/lib/resend";
+import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import {
   generateSupportRequestEmailHTML,

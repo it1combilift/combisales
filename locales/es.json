@@ -135,6 +135,7 @@
     "date": "Fecha",
     "characters": "caracteres",
     "uploading": "Subiendo",
+    "remove": "Eliminar",
     "powerSource": {
       "ELECTRICO": "Eléctrico",
       "DIESEL": "Diésel",
@@ -142,49 +143,79 @@
     }
   },
   "help": {
-    "title": "Centro de Ayuda",
+    "title": "Centro de ayuda",
     "subtitle": "¿Necesitas asistencia? Estamos aquí para ayudarte",
-    "description": "Envíanos tus preguntas, reporta problemas técnicos o solicita asistencia. Nuestro equipo te responderá lo antes posible.",
-    "form": {
-      "category": "Categoría",
-      "categoryPlaceholder": "Selecciona una categoría",
-      "subject": "Asunto",
-      "subjectPlaceholder": "Describe brevemente tu consulta",
-      "description": "Descripción",
-      "descriptionPlaceholder": "Proporciona todos los detalles relevantes sobre tu consulta o problema...",
-      "images": "Imágenes adjuntas",
-      "imagesDescription": "Adjunta capturas de pantalla o imágenes que ayuden a explicar tu problema",
-      "uploadImages": "Subir imágenes",
-      "dragAndDrop": "Arrastra y suelta imágenes aquí, o haz clic para seleccionar",
-      "maxFiles": "Máximo {{count}} archivos",
-      "removeImage": "Eliminar imagen"
-    },
+    "description": "Envíanos tus preguntas, reporta problemas técnicos o solicita asistencia.",
+    "requestDetails": "Detalles de la solicitud",
+    "requestDetailsDescription": "Completa el formulario a continuación para enviar tu solicitud de ayuda.",
+    "requestTypeLabel": "Tipo de solicitud",
+    "requestTypePlaceholder": "Selecciona el tipo de solicitud",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@email.com",
+    "emailDescription": "Te enviaremos la respuesta a este correo.",
+    "subjectLabel": "Asunto",
+    "subjectPlaceholder": "Describe brevemente tu consulta",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "Proporciona todos los detalles relevantes sobre tu consulta o problema...",
+    "descriptionDescription": "Sé lo más específico posible",
+    "attachments": "Archivos adjuntos",
+    "attachmentsDescription": "Adjunta capturas de pantalla o imágenes que ayuden a explicar tu problema (opcional).",
+    "dragDropActive": "Suelta los archivos aquí",
+    "dragDropInactive": "Arrastra y suelta archivos aquí",
+    "clickToBrowse": "o haz clic para buscar",
+    "fileTypesAllowed": "PNG, JPG, GIF o WebP hasta 10MB",
+    "filesAttached": "archivo adjunto",
+    "filesAttachedPlural": "archivos adjuntos",
     "categories": {
       "bug": "Reporte de Error",
+      "bugDescription": "Reporta comportamientos inesperados o errores",
       "technical": "Problema Técnico",
+      "technicalDescription": "Problemas con configuración o integración",
       "feature": "Solicitud de Función",
+      "featureDescription": "Sugiere nuevas funciones o mejoras",
       "question": "Pregunta General",
-      "other": "Otro"
+      "questionDescription": "Haz preguntas sobre nuestro producto",
+      "other": "Otro",
+      "otherDescription": "Cualquier otra consulta"
     },
     "validation": {
       "categoryRequired": "Por favor selecciona una categoría",
       "subjectRequired": "El asunto es obligatorio",
       "subjectMin": "El asunto debe tener al menos 5 caracteres",
-      "subjectMax": "El asunto no puede exceder 100 caracteres",
+      "subjectMax": "El asunto debe tener menos de 100 caracteres",
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Por favor ingresa un correo electrónico válido",
       "descriptionRequired": "La descripción es obligatoria",
       "descriptionMin": "La descripción debe tener al menos 20 caracteres",
-      "descriptionMax": "La descripción no puede exceder 2000 caracteres"
+      "descriptionMax": "La descripción debe tener menos de 2000 caracteres",
+      "fileTypeNotAccepted": "Tipo de archivo no permitido",
+      "fileSizeExceeded": "El archivo excede el tamaño máximo permitido (10MB)",
+      "maxFilesReached": "Has alcanzado el límite máximo de archivos"
     },
     "submit": "Enviar",
     "submitting": "Enviando...",
     "success": {
-      "title": "¡Solicitud enviada!",
-      "message": "Hemos recibido tu solicitud. Nuestro equipo la revisará y te responderá pronto."
+      "title": "¡Solicitud enviada exitosamente!",
+      "message": "Gracias por contactarnos. Nuestro equipo de soporte revisará tu solicitud y responderá en 24-48 horas. Recibirás un correo de confirmación en breve.",
+      "submitAnother": "Enviar otra solicitud"
     },
     "error": {
       "title": "Error al enviar",
       "message": "No pudimos enviar tu solicitud. Por favor, inténtalo de nuevo.",
-      "network": "Error de conexión. Verifica tu internet e inténtalo de nuevo."
+      "network": "Error de conexión. Verifica tu internet e inténtalo de nuevo.",
+      "uploadFailed": "Error al subir archivos",
+      "serverError": "Error del servidor. Por favor, inténtalo más tarde."
+    },
+    "toast": {
+      "fileTypeError": "Tipo de archivo no permitido: {{fileName}}",
+      "fileSizeError": "El archivo {{fileName}} excede el tamaño máximo (10MB)",
+      "maxFilesError": "Máximo {{max}} archivos permitidos",
+      "uploadSuccess": "{{count}} archivo(s) subido(s) exitosamente",
+      "submitSuccess": "Solicitud enviada exitosamente",
+      "submitError": "Error al enviar la solicitud"
+    },
+    "form": {
+      "images": "Imágenes"
     }
   },
   "navigation": {
