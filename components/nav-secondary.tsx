@@ -46,17 +46,22 @@ export function NavSecondary({
                   )}
                 >
                   <Link href={item.url} className="flex items-center gap-3">
-                    <item.icon
-                      className={cn(
-                        "size-[18px] transition-all duration-300",
-                        isActive
-                          ? "text-primary scale-110"
-                          : "text-muted-foreground/70 group-hover:text-foreground group-hover:scale-110",
-                      )}
-                    />
+                    {isActive && (
+                      <div className="absolute left-0 top-1.5 bottom-1.5 w-0.5 bg-primary rounded-r-full shadow-[0_0_8px_rgba(var(--primary),0.4)]" />
+                    )}
+                    {item.icon && (
+                      <item.icon
+                        className={cn(
+                          "size-[18px] transition-all duration-300",
+                          isActive
+                            ? "text-primary scale-110"
+                            : "group-hover:text-foreground group-hover:scale-110",
+                        )}
+                      />
+                    )}
                     <span
                       className={cn(
-                        "text-[13px] tracking-tight transition-colors",
+                        "transition-colors text-[13px] tracking-tight",
                         isActive
                           ? "text-primary"
                           : "text-foreground/80 group-hover:text-foreground",

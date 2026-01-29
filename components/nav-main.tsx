@@ -25,8 +25,8 @@ export function NavMain({
 
   return (
     <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col">
-        <SidebarMenu className="gap-0.5">
+      <SidebarGroupContent className="flex flex-col p-0">
+        <SidebarMenu className="gap-0.5 w-full">
           {items.map((item) => {
             const isActive =
               item.url === "/dashboard"
@@ -40,7 +40,7 @@ export function NavMain({
                   tooltip={item.title}
                   isActive={isActive}
                   className={cn(
-                    "transition-all duration-300 group relative h-9 px-3",
+                    "transition-all duration-300 group relative h-8 px-3 w-full",
                     isActive
                       ? "bg-primary/8 dark:bg-primary/12 text-primary font-semibold shadow-sm"
                       : "dark:hover:bg-accent/40 hover:bg-gray-200/50",
@@ -56,7 +56,7 @@ export function NavMain({
                           "size-[18px] transition-all duration-300",
                           isActive
                             ? "text-primary scale-110"
-                            : "group-hover:text-foreground group-hover:scale-110",
+                            : "group-hover:text-foreground group-hover:scale-110 text-muted-foreground",
                         )}
                       />
                     )}
@@ -65,7 +65,7 @@ export function NavMain({
                         "transition-colors text-[13px] tracking-tight",
                         isActive
                           ? "text-primary"
-                          : "text-foreground/80 group-hover:text-foreground",
+                          : "text-muted-foreground group-hover:text-foreground",
                       )}
                     >
                       {item.title}

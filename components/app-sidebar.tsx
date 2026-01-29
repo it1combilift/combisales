@@ -149,7 +149,7 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="px-2 py-3">
+      <SidebarContent className="p-0">
         <NavMain items={filteredNavMain} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
