@@ -30,7 +30,7 @@ export default function DashboardLayout({
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--sidebar-width": "calc(var(--spacing) * 60)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
@@ -40,7 +40,7 @@ export default function DashboardLayout({
         <SiteHeader session={session} />
         <div className="flex flex-1 flex-col w-full">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <main className="flex flex-col gap-4 py-4 md:gap-6">
+            <main className="flex flex-col gap-4 py-4 md:gap-6 w-full">
               <NuqsAdapter>{children}</NuqsAdapter>
               <Toaster position="bottom-right" richColors />
             </main>
