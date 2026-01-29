@@ -59,71 +59,80 @@ export function NavUser({ user }: { user: User }) {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground bg-muted cursor-pointer hover:bg-muted/80 h-16 w-full">
-              <Avatar className="size-10 rounded-lg">
+            <SidebarMenuButton className="data-[state=open]:bg-accent/40 cursor-pointer hover:bg-accent/40 h-11 w-full transition-all duration-300 px-0">
+              <Avatar className="size-8 rounded-lg border border-border/40 shadow-sm">
                 <AvatarImage
                   src={userImage || undefined}
                   alt={userName}
                   className="object-cover object-center"
                 />
-                <AvatarFallback className="rounded-lg">
+                <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold text-sm">
                   {getInitials(userName)}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col text-left text-sm leading-tight">
-                <span className="truncate font-medium">{userName}</span>
+              <div className="flex flex-col text-left text-sm leading-tight flex-1 min-w-0">
+                <span className="truncate font-semibold text-sm">
+                  {userName}
+                </span>
                 <span className="text-muted-foreground truncate text-xs">
                   {userEmail}
                 </span>
-                {getRoleBadge(
-                  userRole,
-                  t(`users.roles.${userRole.toLowerCase()}`)
-                )}
               </div>
-              <IconDotsVertical className="ml-auto size-4" />
+              <IconDotsVertical className="ml-auto size-4 text-muted-foreground" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
+              <div className="flex items-center gap-2.5 px-2 py-2 text-left text-sm">
+                <Avatar className="h-9 w-9 rounded-lg border border-border/50">
                   <AvatarImage
                     src={userImage || undefined}
                     alt={userName}
                     className="object-cover object-center"
                   />
-                  <AvatarFallback className="rounded-lg">
+                  <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold text-sm">
                     {getInitials(userName)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{userName}</span>
+                  <span className="truncate font-semibold">{userName}</span>
                   <span className="text-muted-foreground truncate text-xs">
                     {userEmail}
                   </span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user.country}
-                  </span>
+                  {userCountry && (
+                    <span className="text-muted-foreground truncate text-xs mt-0.5">
+                      {userCountry}
+                    </span>
+                  )}
+                  <div className="mt-1.5">
+                    {getRoleBadge(
+                      userRole,
+                      t(`users.roles.${userRole.toLowerCase()}`),
+                    )}
+                  </div>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/dashboard/profile">
-                  <IconUserCircle />
+                <Link href="/dashboard/profile" className="cursor-pointer">
+                  <IconUserCircle className="size-4" />
                   {t("profile.title")}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <IconLogout />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="cursor-pointer text-destructive focus:text-destructive"
+            >
+              <IconLogout className="size-4" />
               {t("common.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
