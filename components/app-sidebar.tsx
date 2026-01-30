@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import * as React from "react";
 import { Session } from "next-auth";
@@ -122,8 +121,7 @@ export function AppSidebar({
               size="lg"
               className="data-[slot=sidebar-menu-button]:px-0 data-[slot=sidebar-menu-button]:py-0 hover:bg-transparent"
             >
-              <Link
-                href="/dashboard"
+              <div
                 className="flex items-center gap-2 group outline-none"
               >
                 <div className="flex items-center justify-center dark:invert">
@@ -144,7 +142,7 @@ export function AppSidebar({
                     {t("common.shortDescription")}
                   </span>
                 </div>
-              </Link>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
