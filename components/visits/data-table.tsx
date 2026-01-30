@@ -282,9 +282,9 @@ export function VisitsDataTable<TData extends Visit, TValue>({
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex gap-3 flex-row items-center justify-between">
-        <div className="flex flex-1 items-center gap-2">
-          <div className="relative flex-1 max-w-full sm:max-w-sm">
+      <div className="flex gap-2 flex-col lg:flex-row flex-wrap items-start justify-center lg:items-center lg:justify-between">
+        <div className="flex flex-1 items-center gap-2 w-fit">
+          <div className="relative flex-1 max-w-full lg:max-w-sm w-full">
             <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t("visits.searchPlaceholder")}
@@ -299,7 +299,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Date Filter */}
           <Popover>
             <PopoverTrigger asChild>

@@ -13,16 +13,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
 import { useEffect, useState, useCallback } from "react";
 import { H1, Paragraph } from "@/components/fonts/fonts";
-import { VisitCard } from "@/components/visits/visit-card";
 import { createColumns } from "@/components/visits/columns";
 import { Plus, RefreshCw, ClipboardList } from "lucide-react";
 import { VisitsDataTable } from "@/components/visits/data-table";
+import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
-
-import {
-  DashboardPageSkeleton,
-  TasksCardsSkeleton,
-} from "@/components/dashboard-skeleton";
 
 import {
   AlertDialog,
