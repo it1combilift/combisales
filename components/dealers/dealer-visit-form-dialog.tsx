@@ -276,9 +276,24 @@ export default function DealerVisitFormDialog({
                             }` as any,
                           )}
                         </h3>
-                        <p className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate">
+                        <p
+                          title={t(
+                            `visits.formTypes.descriptions.${
+                              option.type === VisitFormType.ANALISIS_CSS
+                                ? "css"
+                                : option.type ===
+                                    VisitFormType.ANALISIS_INDUSTRIAL
+                                  ? "industrial"
+                                  : option.type ===
+                                      VisitFormType.ANALISIS_LOGISTICA
+                                    ? "logistica"
+                                    : "straddleCarrier"
+                            }` as any,
+                          )}
+                          className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate"
+                        >
                           {t(
-                            `visits.formTypes.${
+                            `visits.formTypes.descriptions.${
                               option.type === VisitFormType.ANALISIS_CSS
                                 ? "css"
                                 : option.type ===

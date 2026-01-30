@@ -141,28 +141,43 @@ export default function VisitFormDialog({
                               option.type === VisitFormType.ANALISIS_CSS
                                 ? "css"
                                 : option.type ===
-                                  VisitFormType.ANALISIS_INDUSTRIAL
-                                ? "industrial"
-                                : option.type ===
-                                  VisitFormType.ANALISIS_LOGISTICA
-                                ? "logistica"
-                                : "straddleCarrier"
-                            }` as any
+                                    VisitFormType.ANALISIS_INDUSTRIAL
+                                  ? "industrial"
+                                  : option.type ===
+                                      VisitFormType.ANALISIS_LOGISTICA
+                                    ? "logistica"
+                                    : "straddleCarrier"
+                            }` as any,
                           )}
                         </h3>
-                        <p className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate">
-                          {t(
-                            `visits.formTypes.${
+                        <p
+                          title={t(
+                            `visits.formTypes.descriptions.${
                               option.type === VisitFormType.ANALISIS_CSS
                                 ? "css"
                                 : option.type ===
-                                  VisitFormType.ANALISIS_INDUSTRIAL
-                                ? "industrial"
+                                    VisitFormType.ANALISIS_INDUSTRIAL
+                                  ? "industrial"
+                                  : option.type ===
+                                      VisitFormType.ANALISIS_LOGISTICA
+                                    ? "logistica"
+                                    : "straddleCarrier"
+                            }` as any,
+                          )}
+                          className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate"
+                        >
+                          {t(
+                            `visits.formTypes.descriptions.${
+                              option.type === VisitFormType.ANALISIS_CSS
+                                ? "css"
                                 : option.type ===
-                                  VisitFormType.ANALISIS_LOGISTICA
-                                ? "logistica"
-                                : "straddleCarrier"
-                            }` as any
+                                    VisitFormType.ANALISIS_INDUSTRIAL
+                                  ? "industrial"
+                                  : option.type ===
+                                      VisitFormType.ANALISIS_LOGISTICA
+                                    ? "logistica"
+                                    : "straddleCarrier"
+                            }` as any,
                           )}
                         </p>
                       </div>

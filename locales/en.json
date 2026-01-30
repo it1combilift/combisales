@@ -494,7 +494,13 @@
       "css": "CSS Analysis",
       "industrial": "Industrial Analysis",
       "logistica": "Logistics Analysis",
-      "straddleCarrier": "Straddle Carrier Analysis"
+      "straddleCarrier": "Straddle Carrier Analysis",
+      "descriptions": {
+        "css": "Comprehensive evaluation of the client's CSS requirements and operational standards.",
+        "industrial": "Detailed assessment of industrial facilities, production processes, and safety protocols.",
+        "logistica": "Strategic analysis of logistics operations, distribution efficiency, and supply chain management.",
+        "straddleCarrier": "In-depth technical and operational review of straddle carrier applications and infrastructure."
+      }
     },
     "statuses": {
       "draft": "Draft",

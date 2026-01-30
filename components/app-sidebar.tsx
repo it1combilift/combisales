@@ -100,7 +100,7 @@ export function AppSidebar({
         item.url === "/dashboard/clients" ||
         item.url === "/dashboard/equipment" ||
         item.url === "/dashboard/dealers"
-      );
+    );
     }
 
     return false;

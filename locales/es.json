@@ -493,7 +493,13 @@
       "css": "Análisis CSS",
       "industrial": "Análisis Industrial",
       "logistica": "Análisis Logística",
-      "straddleCarrier": "Análisis Straddle Carrier"
+      "straddleCarrier": "Análisis Straddle Carrier",
+      "descriptions": {
+        "css": "Evaluación integral de los requisitos CSS del cliente y estándares operativos.",
+        "industrial": "Evaluación detallada de las instalaciones industriales, procesos de producción y protocolos de seguridad.",
+        "logistica": "Análisis estratégico de las operaciones logísticas, eficiencia de distribución y gestión de la cadena de suministro.",
+        "straddleCarrier": "Revisión técnica y operativa en profundidad de las aplicaciones e infraestructura de straddle carriers."
+      }
     },
     "statuses": {
       "draft": "Borrador",
