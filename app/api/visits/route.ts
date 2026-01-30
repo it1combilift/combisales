@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { VisitFormType, VisitStatus, Role } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { createZohoCRMService } from "@/service/ZohoCRMService";
 
 import {
   VISIT_INCLUDE,
@@ -191,9 +192,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Si se proporcionan ambos, error
-    if (visitData.customerId && visitData.zohoTaskId) {
-      return badRequestResponse("ONLY_ONE_ASSOCIATION");
-    }
+    // if (visitData.customerId && visitData.zohoTaskId) {
+    //   return badRequestResponse("ONLY_ONE_ASSOCIATION");
+    // }
 
     // Para DEALERS: validar que assignedSellerId esté presente
     if (isDealer && !visitData.assignedSellerId) {
@@ -204,13 +205,123 @@ export async function POST(req: NextRequest) {
       return badRequestResponse("FORM_TYPE");
     }
 
-    // Validar que el cliente existe si se proporciona customerId
+    // Logic to validate/link customer: Find existing, Find by Zoho ID, or Sync from Zoho
+    let validCustomerId: string | null = null;
+
     if (visitData.customerId) {
-      const customer = await prisma.customer.findUnique({
+      // 1. Try finding by local DB ID
+      const customerById = await prisma.customer.findUnique({
         where: { id: visitData.customerId },
       });
 
-      if (!customer) {
+      if (customerById) {
+        validCustomerId = customerById.id;
+      } else {
+        // 2. Try finding by Zoho Account ID (maybe already synced)
+        const customerByZoho = await prisma.customer.findFirst({
+          where: { zohoAccountId: visitData.customerId },
+        });
+
+        if (customerByZoho) {
+          validCustomerId = customerByZoho.id;
+        } else {
+          // 3. Not found locally. Try fetching from Zoho and sync/create
+          try {
+            const zohoService = await createZohoCRMService(session.user.id);
+            if (zohoService) {
+              // Determine if ID is likely a Zoho ID (numbers) or CUID
+              // Zoho IDs are usually long numeric strings. safe check.
+              const zohoAccount = await zohoService.getAccountById(
+                visitData.customerId,
+              );
+
+              if (zohoAccount) {
+                // Create new customer record
+                const newCustomer = await prisma.customer.create({
+                  data: {
+                    zohoAccountId: zohoAccount.id,
+                    accountName: zohoAccount.Account_Name,
+                    razonSocial: zohoAccount.Razon_Social,
+                    accountNumber: zohoAccount.Account_Number,
+                    cif: zohoAccount.CIF,
+                    codigoCliente: zohoAccount.C_digo_Cliente,
+                    accountType: zohoAccount.Account_Type,
+                    industry: zohoAccount.Industry,
+                    subSector: zohoAccount.Sub_Sector,
+                    phone: zohoAccount.Phone,
+                    fax: zohoAccount.Fax,
+                    email: zohoAccount.Correo_electr_nico || zohoAccount.Email,
+                    website: zohoAccount.Website,
+                    billingStreet: zohoAccount.Billing_Street,
+                    billingCity: zohoAccount.Billing_City,
+                    billingState: zohoAccount.Billing_State,
+                    billingCode: zohoAccount.Billing_Code,
+                    billingCountry: zohoAccount.Billing_Country,
+                    shippingStreet: zohoAccount.Shipping_Street,
+                    shippingCity: zohoAccount.Shipping_City,
+                    shippingState: zohoAccount.Shipping_State,
+                    shippingCode: zohoAccount.Shipping_Code,
+                    shippingCountry: zohoAccount.Shipping_Country,
+                    latitude: zohoAccount.dealsingooglemaps__Latitude,
+                    longitude: zohoAccount.dealsingooglemaps__Longitude,
+                    zohoOwnerId: zohoAccount.Owner?.id,
+                    zohoOwnerName: zohoAccount.Owner?.name,
+                    zohoOwnerEmail: zohoAccount.Owner?.email,
+                    zohoCreatedById: zohoAccount.Created_By?.id,
+                    zohoCreatedByName: zohoAccount.Created_By?.name,
+                    zohoCreatedByEmail: zohoAccount.Created_By?.email,
+                    parentAccountId: zohoAccount.Parent_Account?.id,
+                    parentAccountName: zohoAccount.Parent_Account?.name,
+                    clienteConEquipo: zohoAccount.Cliente_con_Equipo ?? false,
+                    cuentaNacional: zohoAccount.Cuenta_Nacional ?? false,
+                    clienteBooks: zohoAccount.Cliente_Books ?? false,
+                    condicionesEspeciales:
+                      zohoAccount.Condiciones_Especiales ?? false,
+                    proyectoAbierto: zohoAccount.Proyecto_abierto ?? false,
+                    revisado: zohoAccount.Revisado ?? false,
+                    localizacionesMultiples:
+                      zohoAccount.Localizaciones_multiples ?? false,
+                    description: zohoAccount.Description,
+                    comunidadAutonoma: zohoAccount.Comunidad_Aut_noma,
+                    tipoPedido: zohoAccount.Tipo_de_pedido,
+                    estadoCuenta: zohoAccount.Estado_de_la_Cuenta,
+                    zohoCreatedAt: zohoAccount.Created_Time
+                      ? new Date(zohoAccount.Created_Time)
+                      : null,
+                    zohoModifiedAt: zohoAccount.Modified_Time
+                      ? new Date(zohoAccount.Modified_Time)
+                      : null,
+                    lastActivityTime: zohoAccount.Last_Activity_Time
+                      ? new Date(zohoAccount.Last_Activity_Time)
+                      : null,
+                  },
+                });
+                validCustomerId = newCustomer.id;
+              }
+            }
+          } catch (error) {
+            console.error(
+              "Error syncing customer from Zoho during visit create:",
+              error,
+            );
+            // If explicit customerId was requested (not dealer fallback), we should probably fail if we can't find/sync it
+            // checking if user forced it
+            if (!visitData.zohoTaskId && !isDealer) {
+              return notFoundResponse("CUSTOMER");
+            }
+            // Proceed without customer (e.g. just task link)
+            validCustomerId = null;
+          }
+        }
+      }
+
+      // Final check: if we expected a customer but failed to resolve one
+      if (
+        visitData.customerId &&
+        !validCustomerId &&
+        !visitData.zohoTaskId &&
+        !isDealer
+      ) {
         return notFoundResponse("CUSTOMER");
       }
     }
@@ -286,7 +397,7 @@ export async function POST(req: NextRequest) {
 
     const visit = await prisma.visit.create({
       data: {
-        customerId: visitData.customerId,
+        customerId: validCustomerId,
         zohoTaskId: visitData.zohoTaskId,
         userId: session.user.id,
         formType: visitData.formType,
@@ -302,10 +413,13 @@ export async function POST(req: NextRequest) {
     const finalStatus = visitData.status || VisitStatus.COMPLETADA;
 
     // Get user role for email notifications
-    const userRole = currentUser?.role as "ADMIN" | "DEALER" | "SELLER" | undefined;
+    const userRole = currentUser?.role as
+      | "ADMIN"
+      | "DEALER"
+      | "SELLER"
+      | undefined;
 
     if (shouldSendVisitNotification(finalStatus, userRole) && formularioData) {
-
       // Determine context name (customer or task)
       let contextName = "";
       if (visitData.customerId && visit.customer) {

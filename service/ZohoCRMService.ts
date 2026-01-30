@@ -36,7 +36,7 @@ export class ZohoCRMService {
    */
   private async request<T>(
     endpoint: string,
-    params?: Record<string, any>
+    params?: Record<string, any>,
   ): Promise<T> {
     try {
       const response = await this.axiosInstance.get<T>(endpoint, {
@@ -52,12 +52,12 @@ export class ZohoCRMService {
         if (errorData?.code === "NO_PERMISSION") {
           throw new Error(
             "ZOHO_NO_PERMISSION: El usuario no tiene permisos de API habilitados en Zoho CRM. " +
-              'Contacte al administrador para habilitar "API Access" en Setup > Security Control > API Settings.'
+              'Contacte al administrador para habilitar "API Access" en Setup > Security Control > API Settings.',
           );
         }
 
         throw new Error(
-          `Zoho CRM API error: ${errorData?.message || error.message}`
+          `Zoho CRM API error: ${errorData?.message || error.message}`,
         );
       }
       throw error;
@@ -91,8 +91,13 @@ export class ZohoCRMService {
    */
   async getAccountById(accountId: string): Promise<ZohoAccount> {
     const response = await this.request<ZohoCRMResponse<ZohoAccount>>(
-      `/Accounts/${accountId}`
+      `/Accounts/${accountId}`,
     );
+
+    if (!response.data || response.data.length === 0) {
+      throw new Error(`Account with ID ${accountId} not found in Zoho CRM`);
+    }
+
     return response.data[0];
   }
 
@@ -106,7 +111,7 @@ export class ZohoCRMService {
     options?: {
       page?: number;
       per_page?: number;
-    }
+    },
   ): Promise<ZohoCRMResponse<ZohoAccount>> {
     // Escape special characters that could break the criteria
     const escapedText = searchText.replace(/[()"']/g, "").trim();
@@ -128,7 +133,7 @@ export class ZohoCRMService {
 
     return this.request<ZohoCRMResponse<ZohoAccount>>(
       "/Accounts/search",
-      params
+      params,
     );
   }
 
@@ -159,8 +164,11 @@ export class ZohoCRMService {
    */
   async getContactById(contactId: string): Promise<ZohoContact> {
     const response = await this.request<ZohoCRMResponse<ZohoContact>>(
-      `/Contacts/${contactId}`
+      `/Contacts/${contactId}`,
     );
+    if (!response.data || response.data.length === 0) {
+      throw new Error(`Contact with ID ${contactId} not found in Zoho CRM`);
+    }
     return response.data[0];
   }
 
@@ -172,7 +180,7 @@ export class ZohoCRMService {
     options?: {
       page?: number;
       per_page?: number;
-    }
+    },
   ): Promise<ZohoCRMResponse<ZohoContact>> {
     const params: Record<string, any> = {
       criteria: `(Account_Name:equals:${accountId})`,
@@ -182,7 +190,7 @@ export class ZohoCRMService {
 
     return this.request<ZohoCRMResponse<ZohoContact>>(
       "/Contacts/search",
-      params
+      params,
     );
   }
 
@@ -190,7 +198,7 @@ export class ZohoCRMService {
    * Search contacts by email
    */
   async searchContactsByEmail(
-    email: string
+    email: string,
   ): Promise<ZohoCRMResponse<ZohoContact>> {
     const params = {
       criteria: `(Email:equals:${email})`,
@@ -199,7 +207,7 @@ export class ZohoCRMService {
 
     return this.request<ZohoCRMResponse<ZohoContact>>(
       "/Contacts/search",
-      params
+      params,
     );
   }
 
@@ -230,8 +238,11 @@ export class ZohoCRMService {
    */
   async getTaskById(taskId: string): Promise<ZohoTask> {
     const response = await this.request<ZohoCRMResponse<ZohoTask>>(
-      `/Tasks/${taskId}`
+      `/Tasks/${taskId}`,
     );
+    if (!response.data || response.data.length === 0) {
+      throw new Error(`Task with ID ${taskId} not found in Zoho CRM`);
+    }
     return response.data[0];
   }
 
@@ -244,7 +255,7 @@ export class ZohoCRMService {
     options?: {
       page?: number;
       per_page?: number;
-    }
+    },
   ): Promise<ZohoCRMResponse<ZohoTask>> {
     // Escape special characters that could break the criteria
     const escapedText = searchText.replace(/[()"']/g, "").trim();
@@ -269,7 +280,7 @@ export class ZohoCRMService {
     options?: {
       page?: number;
       per_page?: number;
-    }
+    },
   ): Promise<ZohoCRMResponse<ZohoTask>> {
     const params: Record<string, any> = {
       criteria: `(What_Id:equals:${accountId})`,
@@ -288,7 +299,7 @@ export class ZohoCRMService {
     options?: {
       page?: number;
       per_page?: number;
-    }
+    },
   ): Promise<ZohoCRMResponse<ZohoTask>> {
     const params: Record<string, any> = {
       criteria: `(Who_Id:equals:${contactId})`,
@@ -304,7 +315,7 @@ export class ZohoCRMService {
  * Factory function to create an instance of the Zoho CRM service
  */
 export async function createZohoCRMService(
-  userId: string
+  userId: string,
 ): Promise<ZohoCRMService | null> {
   try {
     const tokens = await getValidZohoTokens(userId);

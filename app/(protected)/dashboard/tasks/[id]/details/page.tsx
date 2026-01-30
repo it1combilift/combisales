@@ -2,10 +2,8 @@
 
 import { toast } from "sonner";
 import { es } from "date-fns/locale";
-import { Visit } from "@/interfaces/visits";
 import { useI18n } from "@/lib/i18n/context";
 import { useRouter } from "next/navigation";
-import { ZohoTask } from "@/interfaces/zoho";
 import { Label } from "@/components/ui/label";
 import { H1 } from "@/components/fonts/fonts";
 import { Badge } from "@/components/ui/badge";
@@ -15,11 +13,13 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { EmptyCard } from "@/components/empty-card";
 import { CopyButton } from "@/components/copy-button";
+import { Customer, Visit } from "@/interfaces/visits";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect, useCallback } from "react";
+import { ZohoAccount, ZohoTask } from "@/interfaces/zoho";
+import { ColumnFiltersState } from "@tanstack/react-table";
 import { VisitCard } from "@/components/visits/visit-card";
 import { createColumns } from "@/components/visits/columns";
-import { ColumnFiltersState } from "@tanstack/react-table";
 import { VisitsDataTable } from "@/components/visits/data-table";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
@@ -55,6 +55,7 @@ interface TaskDetailPageProps {
 
 const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
   const [task, setTask] = useState<ZohoTask | null>(null);
+  const [account, setAccount] = useState<ZohoAccount | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [taskId, setTaskId] = useState<string>("");
   const [visits, setVisits] = useState<Visit[]>([]);
@@ -72,6 +73,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     const fetchTaskDetail = async () => {
       try {
         const resolvedParams = await params;
+        console.log(resolvedParams.id);
         setTaskId(resolvedParams.id);
 
         const response = await fetch(`/api/zoho/tasks/${resolvedParams.id}`);
@@ -82,6 +84,21 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
 
         const result = await response.json();
         setTask(result.task);
+
+        // Fetch account data if task is related to an account
+        if (result.task?.What_Id?.id) {
+          try {
+            const accountRes = await fetch(
+              `/api/zoho/accounts/${result.task.What_Id.id}`,
+            );
+            if (accountRes.ok) {
+              const accountData = await accountRes.json();
+              setAccount(accountData.account);
+            }
+          } catch (accountError) {
+            console.error("Error fetching account:", accountError);
+          }
+        }
 
         await fetchVisits(resolvedParams.id);
       } catch (error) {
@@ -284,7 +301,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                 <Badge variant="outline">
                   <Calendar className="size-3" />
                   {new Date(task.Due_Date).toLocaleDateString(
-                    locale === "es" ? "es-ES" : "en-US"
+                    locale === "es" ? "es-ES" : "en-US",
                   )}
                 </Badge>
               )}
@@ -622,6 +639,51 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
       <VisitFormDialog
         open={isVisitDialogOpen}
         onOpenChange={handleDialogClose}
+        customer={
+          account
+            ? {
+                id: account.id,
+                zohoAccountId: account.id,
+                accountName: account.Account_Name,
+                razonSocial: account.Razon_Social || null,
+                accountNumber: account.Account_Number || null,
+                cif: account.CIF || null,
+                codigoCliente: account.C_digo_Cliente || null,
+                accountType: account.Account_Type || null,
+                industry: account.Industry || null,
+                subSector: account.Sub_Sector || null,
+                phone: account.Phone || null,
+                fax: account.Fax || null,
+                email: account.Correo_electr_nico || account.Email || null,
+                website: account.Website || null,
+                billingStreet: account.Billing_Street || null,
+                billingCity: account.Billing_City || null,
+                billingState: account.Billing_State || null,
+                billingCode: account.Billing_Code || null,
+                billingCountry: account.Billing_Country || null,
+                shippingStreet: account.Shipping_Street || null,
+                shippingCity: account.Shipping_City || null,
+                shippingState: account.Shipping_State || null,
+                shippingCode: account.Shipping_Code || null,
+                shippingCountry: account.Shipping_Country || null,
+                latitude: account.dealsingooglemaps__Latitude || null,
+                longitude: account.dealsingooglemaps__Longitude || null,
+                zohoOwnerId: account.Owner?.id || null,
+                zohoOwnerName: account.Owner?.name || null,
+                zohoOwnerEmail: account.Owner?.email || null,
+                clienteConEquipo: account.Cliente_con_Equipo || false,
+                cuentaNacional: account.Cuenta_Nacional || false,
+                clienteBooks: account.Cliente_Books || false,
+                condicionesEspeciales: account.Condiciones_Especiales || false,
+                proyectoAbierto: account.Proyecto_abierto || false,
+                revisado: account.Revisado || false,
+                localizacionesMultiples:
+                  account.Localizaciones_multiples || false,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }
+            : undefined
+        }
         zohoTaskId={taskId}
         onSuccess={handleVisitSuccess}
         existingVisit={visitToEdit || undefined}

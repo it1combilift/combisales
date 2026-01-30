@@ -187,7 +187,6 @@ export function ProfileEditDialog({
               name="image"
               render={() => (
                 <FormItem>
-                  <FormLabel className="text-xs md:text-sm">{t("profile.edit.image")}</FormLabel>
                   <FormControl>
                     <ProfileImageUpload
                       currentImage={form.watch("image")}
