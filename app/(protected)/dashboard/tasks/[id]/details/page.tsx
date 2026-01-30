@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { H1 } from "@/components/fonts/fonts";
+import { formatDateShort } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -48,7 +49,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { formatDateShort } from "@/lib/utils";
 
 interface TaskDetailPageProps {
   params: Promise<{ id: string }>;
@@ -500,33 +500,6 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                 <p className="text-sm text-foreground/80 whitespace-pre-wrap leading-relaxed">
                   {task.Description}
                 </p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Recordatorio si existe */}
-          {task.Remind_At && (
-            <Card className="border-l-4 border-l-amber-500 pt-0">
-              <CardHeader className="bg-muted pt-3 rounded-t-xl">
-                <CardTitle className="flex items-center gap-2 text-sm md:text-base">
-                  <Clock className="size-4 text-amber-600 dark:text-amber-400" />
-                  {t("visits.reminderSection")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">
-                      {formatDateShort(task.Remind_At, locale)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatRelativeTime(task.Remind_At)}
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="bg-amber-500/10">
-                    {t("tasks.active")}
-                  </Badge>
-                </div>
               </CardContent>
             </Card>
           )}
