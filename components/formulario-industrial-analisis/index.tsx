@@ -31,7 +31,7 @@ import {
 } from "./utils/default-values";
 
 import { useI18n } from "@/lib/i18n/context";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 
 export default function FormularioIndustrialAnalisis({
   customer,
@@ -43,6 +43,7 @@ export default function FormularioIndustrialAnalisis({
   originalArchivos = [],
   readOnly = false,
   enableCustomerEntry = false,
+  onDirtyChange,
 }: FormularioIndustrialAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioIndustrialAnalisis;
@@ -60,6 +61,13 @@ export default function FormularioIndustrialAnalisis({
           ? getDefaultValuesForNew(customer)
           : getDefaultValuesForNew({} as any),
   });
+
+  // ==================== NOTIFY DIRTY STATE ====================
+  useEffect(() => {
+    if (onDirtyChange) {
+      onDirtyChange(form.formState.isDirty);
+    }
+  }, [form.formState.isDirty, onDirtyChange]);
 
   // ==================== CUSTOM HOOKS ====================
   const {

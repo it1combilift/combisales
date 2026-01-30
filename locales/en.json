@@ -140,6 +140,12 @@
       "ELECTRICO": "Electric",
       "DIESEL": "Diesel",
       "GLP": "LPG"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved Changes",
+      "description": "You have unsaved changes. Are you sure you want to close? Your data will be lost.",
+      "discard": "Discard changes",
+      "continue": "Continue editing"
     }
   },
   "help": {

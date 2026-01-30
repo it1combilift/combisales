@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -44,6 +44,7 @@ export default function FormularioStraddleCarrierAnalisis({
   originalArchivos = [],
   readOnly = false,
   enableCustomerEntry = false,
+  onDirtyChange,
 }: FormularioStraddleCarrierAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioStraddleCarrierAnalisis;
@@ -67,6 +68,13 @@ export default function FormularioStraddleCarrierAnalisis({
           ? getDefaultValuesForNew(customer)
           : getDefaultValuesForNew({} as any),
   });
+
+  // ==================== NOTIFY DIRTY STATE ====================
+  useEffect(() => {
+    if (onDirtyChange) {
+      onDirtyChange(form.formState.isDirty);
+    }
+  }, [form.formState.isDirty, onDirtyChange]);
 
   // ==================== CUSTOM HOOKS ====================
   const {

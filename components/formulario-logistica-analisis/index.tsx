@@ -10,7 +10,7 @@ import { FormularioLogisticaAnalisisProps } from "./types";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useLogisticaAnalisisForm } from "./hooks/use-logistica-analisis-form";
 import { useI18n } from "@/lib/i18n/context";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { getFormSteps } from "./constants";
 
 // Customer data step (shown only when enableCustomerEntry is true)
@@ -44,6 +44,7 @@ export default function FormularioLogisticaAnalisis({
   originalArchivos = [],
   readOnly = false,
   enableCustomerEntry = false,
+  onDirtyChange,
 }: FormularioLogisticaAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioLogisticaAnalisis;
@@ -68,6 +69,13 @@ export default function FormularioLogisticaAnalisis({
           ? getDefaultValuesForNew(customer)
           : getDefaultValuesForNew({} as any),
   });
+
+  // ==================== NOTIFY DIRTY STATE ====================
+  useEffect(() => {
+    if (onDirtyChange) {
+      onDirtyChange(form.formState.isDirty);
+    }
+  }, [form.formState.isDirty, onDirtyChange]);
 
   // ==================== CUSTOM HOOKS ====================
   const {

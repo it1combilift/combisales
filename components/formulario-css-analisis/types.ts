@@ -18,6 +18,8 @@ export interface FormularioCSSAnalisisProps {
   readOnly?: boolean;
   // Si es true, habilita el paso de datos del cliente (para flujo DEALER)
   enableCustomerEntry?: boolean;
+  // Callback para notificar cambios no guardados al componente padre
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 // ==================== ARCHIVO TYPES ====================

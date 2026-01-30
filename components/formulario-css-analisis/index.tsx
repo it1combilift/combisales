@@ -6,7 +6,7 @@ import { FormularioCSSAnalisisProps } from "./types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getFormularioCSSSchema, FormularioCSSSchema } from "./schemas";
 import { useI18n } from "@/lib/i18n/context";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 
 import {
   getDefaultValuesForNew,
@@ -38,6 +38,7 @@ export default function FormularioCSSAnalisis({
   originalArchivos = [],
   readOnly = false,
   enableCustomerEntry = false,
+  onDirtyChange,
 }: FormularioCSSAnalisisProps) {
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioCSSAnalisis;
@@ -56,6 +57,13 @@ export default function FormularioCSSAnalisis({
           ? getDefaultValuesForNew(customer)
           : getDefaultValuesForNew({} as any),
   });
+
+  // ==================== NOTIFY DIRTY STATE ====================
+  useEffect(() => {
+    if (onDirtyChange) {
+      onDirtyChange(form.formState.isDirty);
+    }
+  }, [form.formState.isDirty, onDirtyChange]);
 
   // ==================== CUSTOM HOOKS ====================
   const {
