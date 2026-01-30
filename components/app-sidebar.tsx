@@ -126,13 +126,13 @@ export function AppSidebar({
                 href="/dashboard"
                 className="flex items-center gap-2 group outline-none"
               >
-                <div className="flex items-center justify-center rounded-lg bg-white dark:bg-neutral-900 p-1.5 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.07)] dark:shadow-none border border-border/50 group-hover:border-primary/30 transition-all duration-300">
+                <div className="flex items-center justify-center dark:invert">
                   <Image
-                    src="/combilift-logo.webp"
+                    src="https://res.cloudinary.com/dwjxcpfrf/image/upload/v1768957949/Untitled_design__1_-removebg-preview_t8oji9.png"
                     alt="Combilift"
-                    width={56}
-                    height={22}
-                    className="object-contain h-4.5 w-auto"
+                    width={100}
+                    height={100}
+                    className="object-contain object-center"
                     priority
                   />
                 </div>
