@@ -2,6 +2,7 @@
 
 import { toast } from "sonner";
 import { es } from "date-fns/locale";
+import { Visit } from "@/interfaces/visits";
 import { useI18n } from "@/lib/i18n/context";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { EmptyCard } from "@/components/empty-card";
 import { CopyButton } from "@/components/copy-button";
-import { Customer, Visit } from "@/interfaces/visits";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect, useCallback } from "react";
 import { ZohoAccount, ZohoTask } from "@/interfaces/zoho";
@@ -48,6 +48,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { formatDateShort } from "@/lib/utils";
 
 interface TaskDetailPageProps {
   params: Promise<{ id: string }>;
@@ -516,7 +517,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                 <div className="flex items-center gap-3">
                   <div className="flex-1">
                     <p className="text-sm font-medium">
-                      {formatDate(task.Remind_At)}
+                      {formatDateShort(task.Remind_At, locale)}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {formatRelativeTime(task.Remind_At)}
@@ -548,7 +549,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                     {t("visits.createdSection")}
                   </Label>
                   <p className="text-sm font-medium">
-                    {formatDate(task.Created_Time)}
+                    {formatDateShort(task.Created_Time, locale)}
                   </p>
                   {task.Created_By?.name && (
                     <p className="text-xs text-muted-foreground">
@@ -566,7 +567,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                       {t("visits.modifiedSection")}
                     </Label>
                     <p className="text-sm font-medium">
-                      {formatDate(task.Modified_Time)}
+                      {formatDateShort(task.Modified_Time, locale)}
                     </p>
                     {task.Modified_By?.name && (
                       <p className="text-xs text-muted-foreground">
@@ -585,7 +586,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
                       {t("tasks.completedSection")}
                     </Label>
                     <p className="text-sm font-medium">
-                      {formatDate(task.Closed_Time)}
+                      {formatDateShort(task.Closed_Time, locale)}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {formatRelativeTime(task.Closed_Time)}

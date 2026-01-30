@@ -457,6 +457,7 @@
     }
   },
   "visits": {
+    "reminderSection": "Reminder",
     "title": "Visits",
     "searchPlaceholder": "Search...",
     "filterByStatus": "Filter by status",

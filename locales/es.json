@@ -456,6 +456,7 @@
     }
   },
   "visits": {
+    "reminderSection": "Recordatorio",
     "title": "Visitas",
     "description": "Información completa de la visita realizada al cliente",
     "searchPlaceholder": "Buscar...",
