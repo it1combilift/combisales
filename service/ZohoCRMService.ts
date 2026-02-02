@@ -5,6 +5,7 @@ import {
   ZohoAccount,
   ZohoContact,
   ZohoCRMResponse,
+  ZohoDeal,
   ZohoTask,
   ZohoTokens,
 } from "@/interfaces/zoho";
@@ -302,6 +303,82 @@ export class ZohoCRMService {
     };
 
     return this.request<ZohoCRMResponse<ZohoTask>>("/Tasks/search", params);
+  }
+  
+  /**
+   * Get list of deals (projects) from Zoho CRM
+   */
+  async getDeals(options?: {
+    page?: number;
+    per_page?: number;
+    sort_order?: "asc" | "desc";
+    sort_by?: string;
+    fields?: string[];
+  }): Promise<ZohoCRMResponse<ZohoDeal>> {
+    const params: Record<string, any> = {
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    if (options?.sort_order) params.sort_order = options.sort_order;
+    if (options?.sort_by) params.sort_by = options.sort_by;
+    if (options?.fields) params.fields = options.fields.join(",");
+
+    return this.request<ZohoCRMResponse<ZohoDeal>>("/Deals", params);
+  }
+
+  /**
+   * Get a specific deal by ID
+   */
+  async getDealById(dealId: string): Promise<ZohoDeal> {
+    const response = await this.request<ZohoCRMResponse<ZohoDeal>>(
+      `/Deals/${dealId}`,
+    );
+    if (!response.data || response.data.length === 0) {
+      throw new Error(`Deal with ID ${dealId} not found in Zoho CRM`);
+    }
+    return response.data[0];
+  }
+
+  /**
+   * Search deals by Deal_Name
+   */
+  async searchDeals(
+    searchText: string,
+    options?: {
+      page?: number;
+      per_page?: number;
+    },
+  ): Promise<ZohoCRMResponse<ZohoDeal>> {
+    const escapedText = searchText.replace(/[()"']/g, "").trim();
+    const criteria = `(Deal_Name:starts_with:${escapedText})`;
+
+    const params: Record<string, any> = {
+      criteria,
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    return this.request<ZohoCRMResponse<ZohoDeal>>("/Deals/search", params);
+  }
+
+  /**
+   * Get deals related to a specific account
+   */
+  async getDealsByAccountId(
+    accountId: string,
+    options?: {
+      page?: number;
+      per_page?: number;
+    },
+  ): Promise<ZohoCRMResponse<ZohoDeal>> {
+    const params: Record<string, any> = {
+      criteria: `(Account_Name:equals:${accountId})`,
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    return this.request<ZohoCRMResponse<ZohoDeal>>("/Deals/search", params);
   }
 }
 

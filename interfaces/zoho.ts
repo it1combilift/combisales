@@ -264,6 +264,62 @@ export interface ZohoTask {
   Tag?: Array<{ name: string }>;
 }
 
+// ==================== ZOHO DEAL INTERFACE (PROJECTS) ====================
+export interface ZohoDeal {
+  // Identificación
+  id: string;
+  Deal_Name: string;
+
+  // Estado y montos
+  Stage?: string;
+  Amount?: number;
+  Currency?: string;
+  Closing_Date?: string;
+  Probability?: number;
+
+  // Relaciones
+  Account_Name?: {
+    name: string;
+    id: string;
+  } | null;
+  Contact_Name?: {
+    name: string;
+    id: string;
+  } | null;
+
+  // Propietario
+  Owner?: {
+    name: string;
+    id: string;
+    email: string;
+  };
+  Created_By?: {
+    name: string;
+    id: string;
+    email?: string;
+  };
+  Modified_By?: {
+    name: string;
+    id: string;
+    email?: string;
+  };
+
+  // Fechas
+  Created_Time?: string;
+  Modified_Time?: string;
+  Last_Activity_Time?: string;
+
+  // Descripción
+  Description?: string;
+
+  // Campos de sistema
+  $currency_symbol?: string;
+  $editable?: boolean;
+
+  // Tags
+  Tag?: Array<{ name: string }>;
+}
+
 export interface ZohoCRMResponse<T> {
   data: T[];
   info: {

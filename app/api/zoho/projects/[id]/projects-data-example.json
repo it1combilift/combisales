@@ -1,0 +1,132 @@
+{
+  "project": {
+    "DealerCountry": "Panamá",
+    "APP": "LATAM €",
+
+    "Owner": {
+      "name": "Rodolfo Tuñón Marciaga",
+      "id": "1627275000047983001",
+      "email": "ventas1@combilift.es"
+    },
+    "$currency_symbol": "€",
+
+    "$field_states": null,
+    "Provincia_Estado": "Panama",
+    "Deal_Closure_Date_Prediction": "2026-03-06",
+
+    "$followers": null,
+    "Venta_Directa": false,
+
+    "Lista_de_selecci_n_10": null,
+    "Last_Activity_Time": "2026-01-21T12:21:20-05:00",
+    "$state": "save",
+    "$process_flow": false,
+    "Deal_Name": "PNM NATHAN FOODS AM20NE",
+    "Deal_Stage_Prediction": "Cerrada Ganada",
+    "Numero_de_equipos": 2,
+    "Stage": "Negociacion/Revision",
+    "$locked_for_me": false,
+    "id": "1627275000150465192",
+    "$approved": true,
+
+    "Status": null,
+
+    "$approval": {
+      "delegate": false,
+      "takeover": false,
+      "approve": false,
+      "reject": false,
+      "resubmit": false
+    },
+
+    "Territory": ["PANAMÁ COMERCIALES"],
+    "$followed": false,
+    "$editable": true,
+
+    "dealsingooglemaps__Last_Call_ID": null,
+
+    "dealsingooglemaps__Last_Call_Date": null,
+    "Demo_Completa": false,
+
+    "A_adir_Formulario": null,
+    "Tipo_de_proyecto": "Venta Directa",
+
+    "dealsingooglemaps__Contact_Email": null,
+
+    "Divisi_n_de_M_xico": null,
+    "Numeraci_n_autom_tica_1": "Z-8509",
+    "$zia_owner_assignment": "owner_recommendation_unavailable",
+
+    "dealsingooglemaps__Last_Event_Date": null,
+
+    "Description": null,
+
+    "Nombre_Cliente_Final": {
+      "name": "NATHAN FOODS CORPORATION",
+      "id": "1627275000150465156"
+    },
+
+    "dealsingooglemaps__Last_Task_ID": null,
+
+    "$review_process": {
+      "approve": false,
+      "reject": false,
+      "resubmit": false
+    },
+
+    "Raz_n_Ganado_Perdido": null,
+    "Correo_electr_nico": "logistica@nathanfoods.com",
+
+    "$layout_id": {
+      "display_label": "Estándar",
+      "name": "Estándar",
+      "id": "1627275000000504003"
+    },
+    "Closing_Date": "2026-03-31",
+
+    "Estado": null,
+
+    "$review": null,
+
+    "Lead_Conversion_Time": null,
+    "Overall_Sales_Duration": 114,
+
+    "Account_Name": {
+      "name": "NATHAN FOODS CORPORATION",
+      "id": "1627275000150465156"
+    },
+
+    "Linea_de_Producto": [],
+
+    "dealsingooglemaps__Last_Event_ID": null,
+
+    "Competidores": [],
+    "Deal_Stage_Prediction_Score": 71,
+    "Sector": "Agriculture & Food",
+    "Site_Survey_Complete": false,
+    "$orchestration": false,
+
+    "Contact_Name": {
+      "name": "Clemente Ramos",
+      "id": "1627275000150465176"
+    },
+    "Sales_Cycle_Duration": 114,
+
+    "Type": null,
+
+    "Layout": {
+      "display_label": "Estándar",
+      "name": "Estándar",
+      "id": "1627275000000504003"
+    },
+
+    "dealsingooglemaps__Last_Task_Date": null,
+    "$in_merge": false,
+    "Familia_de_Producto": "AISLE-MASTER",
+    "Locked__s": false,
+    "Lead_Source": "Visita Fría",
+
+    "Tag": [],
+    "$approval_state": "approved"
+  }
+}
