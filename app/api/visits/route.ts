@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { VisitFormType, VisitStatus, Role } from "@prisma/client";
+import { Role, VisitFormType, VisitStatus } from "@prisma/client";
 
 import {
   VISIT_INCLUDE,
@@ -410,11 +410,7 @@ export async function POST(req: NextRequest) {
     const finalStatus = visitData.status || VisitStatus.COMPLETADA;
 
     // Get user role for email notifications
-    const userRole = currentUser?.role as
-      | "ADMIN"
-      | "DEALER"
-      | "SELLER"
-      | undefined;
+    const userRole = currentUser?.role;
 
     if (shouldSendVisitNotification(finalStatus, userRole) && formularioData) {
       // Determine context name (customer or task)
@@ -443,7 +439,7 @@ export async function POST(req: NextRequest) {
           : undefined,
         // For DEALER: the dealer is the owner
         dealer:
-          userRole === "DEALER" && visit.user
+          userRole === Role.DEALER && visit.user
             ? {
                 name: visit.user.name,
                 email: visit.user.email,
@@ -451,7 +447,7 @@ export async function POST(req: NextRequest) {
             : undefined,
         // Seller is either the owner (if SELLER) or the assigned seller (if DEALER created)
         vendedor:
-          userRole === "SELLER" && visit.user
+          userRole === Role.SELLER && visit.user
             ? {
                 name: visit.user.name,
                 email: visit.user.email,

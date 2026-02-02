@@ -1,72 +1,85 @@
 {
-    "tasks": [
-        {
-            "Ubicaci_n": "Tocumen",
-            "Owner": {
-                "name": "Rodolfo Tuñón Marciaga",
-                "id": "1627275000047983001",
-                "email": "ventas1@combilift.es"
-            },
-            "Description": "Visita a cliente para presentar estudios de Layout y dibujos de equipo para fábrica de techos.",
-            "$currency_symbol": "€",
-            "$field_states": null,
-            "Closed_Time": "2025-12-23T17:58:31-06:00",
-            "$review_process": null,
-            "Last_Activity_Time": "2025-12-23T17:58:31-06:00",
-            "Send_Notification_Email": false,
-            "Modified_By": {
-                "name": "Rodolfo Tuñón Marciaga",
-                "id": "1627275000047983001",
-                "email": "ventas1@combilift.es"
-            },
-            "$review": null,
-            "$state": "save",
-            "$process_flow": false,
-            "$locked_for_me": false,
-            "id": "1627275000151976218",
-            "$approved": true,
-            "Remind_At": null,
-            "Who_Id": {
-                "name": "Isaac Reyes",
-                "id": "1627275000001641035"
-            },
-            "Status": "Completada",
-            "$approval": {
-                "delegate": false,
-                "takeover": false,
-                "approve": false,
-                "reject": false,
-                "resubmit": false
-            },
-            "Modified_Time": "2025-12-23T17:58:31-06:00",
-            "Due_Date": "2025-12-23",
-            "Priority": "Alta",
-            "Created_Time": "2025-12-19T14:18:38-06:00",
-            "Fecha_de_Realizaci_n": "2025-12-23T16:00:00-06:00",
-            "$editable": true,
-            "Tarea_relacionada_con": "Cliente actual",
-            "Subject": "PNM COCHEZ (CEDIS) - Visita Comercial",
-            "$orchestration": false,
-            "$se_module": "Deals",
-            "Fecha_de_Inicio": "2025-12-23T15:00:00-06:00",
-            "Recurring_Activity": null,
-            "What_Id": {
-                "name": "PNM COCHEZ (CEDIS) AM20WHE",
-                "id": "1627275000150465346"
-            },
-            "Tipo_de_Tarea": "Visita Comercial",
-            "$in_merge": false,
-            "$u_id": null,
-            "Locked__s": false,
-            "Created_By": {
-                "name": "Rodolfo Tuñón Marciaga",
-                "id": "1627275000047983001",
-                "email": "ventas1@combilift.es"
-            },
-            "Tag": [],
-            "$zia_owner_assignment": null,
-            "BEST_TIME": [],
-            "$approval_state": "approved"
-        }
-    ]
+  "task": {
+    "Ubicaci_n": "Llano Bonito",
+
+    "Owner": {
+      "name": "Rodolfo Tuñón Marciaga",
+      "id": "1627275000047983001",
+      "email": "ventas1@combilift.es"
+    },
+    "Description": "Visita a cliente para presentar adelanto de estudios. Cliente esta acorde a las propuestas y nos pide cotización formal.",
+    "$currency_symbol": "€",
+
+    "$field_states": null,
+    "Closed_Time": "2026-01-20T16:24:42-05:00",
+
+    "$review_process": null,
+    "Last_Activity_Time": "2026-01-20T16:24:42-05:00",
+    "Send_Notification_Email": false,
+
+    "Modified_By": {
+      "name": "Rodolfo Tuñón Marciaga",
+      "id": "1627275000047983001",
+      "email": "ventas1@combilift.es"
+    },
+
+    "$review": null,
+    "$state": "save",
+    "$process_flow": false,
+    "$locked_for_me": false,
+    "id": "1627275000151976192",
+    "$approved": true,
+
+    "Remind_At": null,
+
+    "Who_Id": {
+      "name": "Clemente Ramos",
+      "id": "1627275000150465176"
+    },
+    "Status": "Completada",
+
+    "$approval": {
+      "delegate": false,
+      "takeover": false,
+      "approve": false,
+      "reject": false,
+      "resubmit": false
+    },
+    "Modified_Time": "2026-01-20T16:24:42-05:00",
+    "Due_Date": "2026-01-20",
+    "Priority": "Alta",
+    "Created_Time": "2025-12-19T14:59:08-05:00",
+    "Fecha_de_Realizaci_n": "2026-01-20T16:00:00-05:00",
+    "$editable": true,
+    "Tarea_relacionada_con": "Cliente actual",
+    "Subject": "PNM NATHAN FOODS - Visita Comercial",
+    "$orchestration": false,
+    "$se_module": "Deals",
+    "Fecha_de_Inicio": "2026-01-20T15:00:00-05:00",
+
+    "Recurring_Activity": null,
+
+    "What_Id": {
+      "name": "PNM NATHAN FOODS AM20NE",
+      "id": "1627275000150465192"
+    },
+    "Tipo_de_Tarea": "Visita Comercial",
+    "$in_merge": false,
+
+    "$u_id": null,
+    "Locked__s": false,
+
+    "Created_By": {
+      "name": "Rodolfo Tuñón Marciaga",
+      "id": "1627275000047983001",
+      "email": "ventas1@combilift.es"
+    },
+
+    "Tag": [],
+
+    "$zia_owner_assignment": null,
+
+    "BEST_TIME": [],
+    "$approval_state": "approved"
+  }
 }
