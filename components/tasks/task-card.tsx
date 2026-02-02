@@ -20,7 +20,7 @@ import {
   CheckCircle2,
   FileText,
   Timer,
-  Plus,
+  FilePen,
 } from "lucide-react";
 
 export const TaskCard = ({
@@ -276,7 +276,7 @@ export const TaskCard = ({
         "border-l-4 cursor-pointer",
         overdue
           ? "border-l-red-500 bg-red-500/5"
-          : "border-l-primary/20 hover:border-l-primary/40"
+          : "border-l-primary/20 hover:border-l-primary/40",
       )}
       onClick={() => router.push(TASK_DETAIL_URL(task.id))}
     >
@@ -340,7 +340,7 @@ export const TaskCard = ({
               <div
                 className={cn(
                   "flex items-center justify-center size-8 rounded-lg shrink-0",
-                  overdue ? "bg-red-500/10" : "bg-muted"
+                  overdue ? "bg-red-500/10" : "bg-muted",
                 )}
               >
                 <Calendar
@@ -348,7 +348,7 @@ export const TaskCard = ({
                     "size-4",
                     overdue
                       ? "text-red-600 dark:text-red-400"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground",
                   )}
                 />
               </div>
@@ -361,7 +361,7 @@ export const TaskCard = ({
                     "text-xs md:text-sm font-medium truncate",
                     overdue
                       ? "text-red-600 dark:text-red-400"
-                      : "text-foreground"
+                      : "text-foreground",
                   )}
                 >
                   {formatDate(task.Due_Date)}
@@ -454,7 +454,7 @@ export const TaskCard = ({
                 onCreateVisit();
               }}
             >
-              <Plus className="size-4" />
+              <FilePen className="size-4" />
               {t("tasks.createVisit")}
             </Button>
           )}

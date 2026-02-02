@@ -1,23 +1,22 @@
 "use client";
 
 import { toast } from "sonner";
-import { es } from "date-fns/locale";
 import { Visit } from "@/interfaces/visits";
 import { useI18n } from "@/lib/i18n/context";
 import { useRouter } from "next/navigation";
-import { H1, MonoText } from "@/components/fonts/fonts";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
+import { H1, MonoText } from "@/components/fonts/fonts";
 import { useState, useEffect, useCallback } from "react";
 import { ZohoAccount, ZohoTask } from "@/interfaces/zoho";
 import { ColumnFiltersState } from "@tanstack/react-table";
 import { VisitCard } from "@/components/visits/visit-card";
 import { createColumns } from "@/components/visits/columns";
+import AnimatedTabsComponent from "@/components/accounts/tabs";
 import { VisitsDataTable } from "@/components/visits/data-table";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
-import AnimatedTabsComponent from "@/components/accounts/tabs";
 import { TaskDetailsCard } from "@/components/tasks/task-details-card";
 
 import {
