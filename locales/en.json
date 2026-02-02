@@ -4,7 +4,7 @@
     "description": "Manage your visits and documentation",
     "titleAdmin": "Dealer Visits Management",
     "descriptionAdmin": "View and manage all visits documented by dealers",
-    "createVisit": "Create Visit",
+    "createVisit": "Complete Form",
     "viewMode": {
       "table": "Table",
       "cards": "Cards"
@@ -405,7 +405,7 @@
     "billingAddress": "Billing address",
     "shippingAddress": "Shipping address",
     "viewVisits": "View visits",
-    "createVisit": "Create visit",
+    "createVisit": "Complete Form",
     "accountDetails": "Account details",
     "basicInfo": "Basic information",
     "contactInfo": "Contact information",
@@ -474,8 +474,8 @@
     "detailsTabDescription": "Complete information of the visit made to the client.",
     "projectsTab": "Projects",
     "projectsTabDescription": "Projects associated with this client, statuses and progress.",
-    "createVisit": "Create visit",
-    "registerVisit": "Register visit",
+    "createVisit": "Complete Form",
+    "registerVisit": "Document visit",
     "selectFormTypeDescription": "Select the form type to document this visit.",
     "editVisit": "Edit visit",
     "viewForm": "View form",
@@ -625,7 +625,7 @@
     "moreTasksLoaded": "{{count}} more tasks loaded",
     "createTask": "Create task",
     "viewDetails": "View details",
-    "createVisit": "Create visit",
+    "createVisit": "Complete Form",
     "relatedVisits": "Related visits",
     "noRelatedVisits": "No related visits for this task",
     "taskInformation": "Task information",
@@ -1270,7 +1270,7 @@
   "forms": {
     "languageValidation": {
       "title": "Required language: English",
-      "description": "Sellers must complete forms in English. Please switch the language to English to save or submit the form.",
+      "description": "Sellers must complete Forms in English. Please switch the language to save or submit the form.",
       "switchLanguage": "Switch to English",
       "currentLanguage": "Current language: {{language}}"
     },

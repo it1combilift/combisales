@@ -100,12 +100,12 @@ export default function VisitFormDialog({
           {!selectedFormType && !isEditing ? (
             <div className="flex flex-col h-full max-h-[90vh]">
               {/* HEADER */}
-              <div className="px-2 md:px-3 py-3 border-b border-border">
+              <div className="px-3 py-3 border-b border-border">
                 <DialogHeader className="text-left">
                   <DialogTitle className="text-sm font-semibold leading-tight tracking-tight text-balance">
                     {t("visits.registerVisit")}
                   </DialogTitle>
-                  <DialogDescription className="text-sm text-muted-foreground leading-snug text-balance">
+                  <DialogDescription className="text-xs font-medium md:text-sm text-muted-foreground leading-snug text-balance">
                     {t("visits.selectFormTypeDescription")}
                   </DialogDescription>
                 </DialogHeader>
@@ -114,7 +114,7 @@ export default function VisitFormDialog({
               <div
                 className="
                   flex-1 overflow-y-auto
-                  px-2 md:px-3 py-2 md:py-3
+                  px-3 py-3
                 "
               >
                 {/* Language validation alert for SELLER users */}
@@ -163,7 +163,7 @@ export default function VisitFormDialog({
                         </div>
 
                         <div className="mt-2 space-y-1">
-                          <h3 className="text-[10px] leading-tight line-clamp-2 text-balance font-balance font-semibold md:text-xs">
+                          <h3 className="text-xs leading-tight line-clamp-2 text-balance font-balance font-semibold">
                             {t(
                               `visits.formTypes.${
                                 option.type === VisitFormType.ANALISIS_CSS
@@ -192,7 +192,7 @@ export default function VisitFormDialog({
                                       : "straddleCarrier"
                               }` as any,
                             )}
-                            className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate"
+                            className="text-xs text-muted-foreground leading-snug line-clamp-2 text-balance truncate"
                           >
                             {t(
                               `visits.formTypes.descriptions.${
@@ -213,7 +213,7 @@ export default function VisitFormDialog({
                         {isAvailable && (
                           <div
                             className="
-                              mt-2 flex items-center gap-1 text-[10px] font-medium text-primary 
+                              mt-2 flex items-center gap-1 text-xs font-medium text-primary 
                               opacity-0 group-hover:opacity-100 transition-opacity
                             "
                           >

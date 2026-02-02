@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface LanguageValidationAlertProps {
-  /** Whether to show the alert */
   show: boolean;
-  /** Optional className for styling */
   className?: string;
 }
 
@@ -32,18 +30,19 @@ export function LanguageValidationAlert({
 
   return (
     <Alert variant="info" className={className}>
-      <Languages className="size-4" />
-      <AlertTitle>{t("forms.languageValidation.title")}</AlertTitle>
-      <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-xs text-balance">
+      <AlertTitle className="text-pretty text-sm">
+        {t("forms.languageValidation.title")}
+      </AlertTitle>
+      <AlertDescription className="flex flex-col gap-3">
+        <span className="text-xs text-pretty">
           {t("forms.languageValidation.description")}
         </span>
         <Button
           type="button"
-          variant="outline"
+          variant="default"
           size="sm"
           onClick={handleSwitchToEnglish}
-          className="shrink-0 gap-2"
+          className="shrink-0"
         >
           <Languages className="size-4" />
           {t("forms.languageValidation.switchLanguage")}

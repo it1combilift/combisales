@@ -113,11 +113,8 @@ export class ZohoCRMService {
       per_page?: number;
     },
   ): Promise<ZohoCRMResponse<ZohoAccount>> {
-    // Escape special characters that could break the criteria
     const escapedText = searchText.replace(/[()"']/g, "").trim();
 
-    // Build OR criteria to search across multiple fields
-    // Using 'starts_with' as 'contains' is not supported by Zoho CRM API
     const criteria = [
       `(Account_Name:starts_with:${escapedText})`,
       `(Razon_Social:starts_with:${escapedText})`,
@@ -257,10 +254,7 @@ export class ZohoCRMService {
       per_page?: number;
     },
   ): Promise<ZohoCRMResponse<ZohoTask>> {
-    // Escape special characters that could break the criteria
     const escapedText = searchText.replace(/[()"']/g, "").trim();
-
-    // Build criteria to search by Subject
     const criteria = `(Subject:starts_with:${escapedText})`;
 
     const params: Record<string, any> = {
