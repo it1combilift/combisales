@@ -66,7 +66,7 @@ export function DealerSellerSelector({
               "hover:border-primary/50 hover:shadow-md hover:-translate-y-px",
               isSelected
                 ? "border-primary bg-primary/5 ring-1 ring-primary"
-                : "border-border bg-card"
+                : "border-border bg-card",
             )}
           >
             <Avatar className="size-10 shrink-0">
@@ -81,7 +81,9 @@ export function DealerSellerSelector({
               <AvatarFallback
                 className={cn(
                   "text-sm font-medium",
-                  isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
+                  isSelected
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted",
                 )}
               >
                 {getInitials(seller.name)}

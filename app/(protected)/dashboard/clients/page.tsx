@@ -2,19 +2,19 @@
 
 import axios from "axios";
 import { toast } from "sonner";
-import { ZohoAccount } from "@/interfaces/zoho";
+import { useI18n } from "@/lib/i18n/context";
+import { Customer } from "@/interfaces/visits";
 import { Button } from "@/components/ui/button";
+import { ZohoAccount } from "@/interfaces/zoho";
 import { EmptyCard } from "@/components/empty-card";
 import { H1, Paragraph } from "@/components/fonts/fonts";
 import { createColumns } from "@/components/accounts/columns";
 import type { ColumnFiltersState } from "@tanstack/react-table";
 import { useState, useEffect, useCallback, useRef } from "react";
+import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { AccountsTable } from "@/components/accounts/accounts-table";
 import { RefreshCw, Building2, AlertCircle, Search } from "lucide-react";
 import { DashboardProjectsPageSkeleton } from "@/components/dashboard-skeleton";
-import VisitFormDialog from "@/components/visits/visit-form-dialog";
-import { Customer } from "@/interfaces/visits";
-import { useI18n } from "@/lib/i18n/context";
 
 const PER_PAGE = 200;
 const INITIAL_LOAD_ONLY_FIRST_PAGE = true;
@@ -83,7 +83,7 @@ export default function ClientsPage() {
         },
       };
     },
-    []
+    [],
   );
 
   /**
@@ -100,7 +100,7 @@ export default function ClientsPage() {
 
           const existingIds = new Set(allAccountsRef.current.map((a) => a.id));
           const newAccounts = result.accounts.filter(
-            (a: ZohoAccount) => !existingIds.has(a.id)
+            (a: ZohoAccount) => !existingIds.has(a.id),
           );
 
           const updatedAccounts = [...allAccountsRef.current, ...newAccounts];
@@ -126,7 +126,7 @@ export default function ClientsPage() {
 
       setPagination((prev) => ({ ...prev, isLoadingMore: false }));
     },
-    [fetchAccountsPage]
+    [fetchAccountsPage],
   );
 
   /**
@@ -167,7 +167,7 @@ export default function ClientsPage() {
             t("clients.clientsLoaded", {
               count: accounts.length,
             }),
-            { closeButton: true }
+            { closeButton: true },
           );
         }
       } catch (err: any) {
@@ -181,7 +181,7 @@ export default function ClientsPage() {
         isLoadingRef.current = false;
       }
     },
-    [fetchAccountsPage, loadMoreAccountsInBackground]
+    [fetchAccountsPage, loadMoreAccountsInBackground],
   );
 
   /**
@@ -199,7 +199,7 @@ export default function ClientsPage() {
 
       const existingIds = new Set(allAccountsRef.current.map((a) => a.id));
       const newAccounts = result.accounts.filter(
-        (a: ZohoAccount) => !existingIds.has(a.id)
+        (a: ZohoAccount) => !existingIds.has(a.id),
       );
 
       const updatedAccounts = [...allAccountsRef.current, ...newAccounts];
@@ -213,7 +213,7 @@ export default function ClientsPage() {
       });
 
       toast.success(
-        t("clients.moreClientsLoaded", { count: newAccounts.length })
+        t("clients.moreClientsLoaded", { count: newAccounts.length }),
       );
     } catch (err: any) {
       const errorMessage =
@@ -252,7 +252,7 @@ export default function ClientsPage() {
         isLoadingRef.current = false;
       }
     },
-    [fetchAccountsPage]
+    [fetchAccountsPage],
   );
 
   // Initial load - fetch first page only
@@ -281,7 +281,7 @@ export default function ClientsPage() {
 
       fetchSearchResults(searchText);
     },
-    [fetchSearchResults]
+    [fetchSearchResults],
   );
 
   // Handle clear search

@@ -1,24 +1,24 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { useMemo, useEffect } from "react";
 import { Form } from "@/components/ui/form";
 import { VisitStatus } from "@prisma/client";
+import { useI18n } from "@/lib/i18n/context";
 import { FormHeader } from "./ui/form-header";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormNavigation } from "./ui/form-navigation";
 import { FormularioIndustrialAnalisisProps } from "./types";
 import { useFileUploader } from "./hooks/use-file-uploader";
+import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
 import { useIndustrialAnalisisForm } from "./hooks/use-industrial-analisis-form";
 
-// Customer data step (only for DEALER flow)
-import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
-// Regular steps
-import { Step1Content } from "./steps/step-2-descripcion-operacion";
+import { Step6Content } from "./steps/step-7-archivos";
 import { Step2Content } from "./steps/step-3-datos-aplicacion";
 import { Step3Content } from "./steps/step-4-equipos-electricos";
 import { Step4Content } from "./steps/step-5-dimensiones-cargas";
+import { Step1Content } from "./steps/step-2-descripcion-operacion";
 import { Step5Content } from "./steps/step-6-especificaciones-pasillo";
-import { Step6Content } from "./steps/step-7-archivos";
 
 import {
   FormularioIndustrialSchema,
@@ -29,9 +29,6 @@ import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
-
-import { useI18n } from "@/lib/i18n/context";
-import { useMemo, useEffect } from "react";
 
 export default function FormularioIndustrialAnalisis({
   customer,

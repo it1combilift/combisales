@@ -5,17 +5,10 @@ import { es } from "date-fns/locale";
 import { Visit } from "@/interfaces/visits";
 import { useI18n } from "@/lib/i18n/context";
 import { useRouter } from "next/navigation";
-import { Label } from "@/components/ui/label";
-import { H1 } from "@/components/fonts/fonts";
-import { formatDateShort } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { formatDistanceToNow } from "date-fns";
+import { H1, MonoText } from "@/components/fonts/fonts";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import { EmptyCard } from "@/components/empty-card";
-import { CopyButton } from "@/components/copy-button";
-import { Separator } from "@/components/ui/separator";
 import { useState, useEffect, useCallback } from "react";
 import { ZohoAccount, ZohoTask } from "@/interfaces/zoho";
 import { ColumnFiltersState } from "@tanstack/react-table";
@@ -24,18 +17,19 @@ import { createColumns } from "@/components/visits/columns";
 import { VisitsDataTable } from "@/components/visits/data-table";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AnimatedTabsComponent from "@/components/accounts/tabs";
+import { TaskDetailsCard } from "@/components/tasks/task-details-card";
 
 import {
   ArrowLeft,
   Calendar,
-  Clock,
-  User,
-  Building2,
   Flag,
   FileText,
   ListTodo,
   Plus,
+  History,
+  Hash,
+  CheckCircle2,
   FileCheck,
 } from "lucide-react";
 
@@ -49,6 +43,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface TaskDetailPageProps {
   params: Promise<{ id: string }>;
@@ -74,7 +69,6 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     const fetchTaskDetail = async () => {
       try {
         const resolvedParams = await params;
-        console.log(resolvedParams.id);
         setTaskId(resolvedParams.id);
 
         const response = await fetch(`/api/zoho/tasks/${resolvedParams.id}`);
@@ -111,24 +105,27 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     };
 
     fetchTaskDetail();
-  }, [params]);
+  }, [params, t]);
 
-  const fetchVisits = useCallback(async (taskId: string) => {
-    try {
-      setIsLoadingVisits(true);
-      const response = await fetch(`/api/visits?zohoTaskId=${taskId}`);
-      if (!response.ok) {
-        throw new Error(t("messages.error"));
+  const fetchVisits = useCallback(
+    async (taskId: string) => {
+      try {
+        setIsLoadingVisits(true);
+        const response = await fetch(`/api/visits?zohoTaskId=${taskId}`);
+        if (!response.ok) {
+          throw new Error(t("messages.error"));
+        }
+        const result = await response.json();
+        setVisits(result.visits || []);
+      } catch (error) {
+        console.error("Error fetching visits:", error);
+        toast.error(t("messages.error"));
+      } finally {
+        setIsLoadingVisits(false);
       }
-      const result = await response.json();
-      setVisits(result.visits || []);
-    } catch (error) {
-      console.error("Error fetching visits:", error);
-      toast.error(t("messages.error"));
-    } finally {
-      setIsLoadingVisits(false);
-    }
-  }, []);
+    },
+    [t],
+  );
 
   const handleNewVisit = () => {
     setVisitToEdit(null);
@@ -183,73 +180,14 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     }
   };
 
-  const getPriorityConfig = (priority?: string) => {
-    const PRIORITY_KEYS: Record<string, string> = {
-      Highest: "tasks.priorities.highest",
-      High: "tasks.priorities.high",
-      Alta: "tasks.priorities.high",
-      Normal: "tasks.priorities.normal",
-      Low: "tasks.priorities.low",
-      Baja: "tasks.priorities.low",
-      Lowest: "tasks.priorities.lowest",
-    };
-
-    switch (priority) {
-      case "Highest":
-      case "Alta":
-      case "High":
-        return {
-          label: t(PRIORITY_KEYS[priority]),
-          className: "bg-red-500/10 text-red-700 dark:text-red-400 w-fit h-7",
-        };
-      case "Normal":
-        return {
-          label: t(PRIORITY_KEYS[priority]),
-          className:
-            "bg-blue-500/10 text-blue-700 dark:text-blue-400 w-fit h-7",
-        };
-      case "Low":
-      case "Baja":
-      case "Lowest":
-        return {
-          label: t(PRIORITY_KEYS[priority]),
-          className:
-            "bg-gray-500/10 text-gray-700 dark:text-gray-400 w-fit h-7",
-        };
-      default:
-        return {
-          label: priority || t("tasks.priorities.normal"),
-          className: "w-fit h-7",
-        };
-    }
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return t("tasks.notSpecified");
+  const formatDateShortLocal = (dateString?: string) => {
+    if (!dateString) return "N/A";
     try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+      return new Date(dateString).toLocaleDateString(
+        locale === "es" ? "es-ES" : "en-US",
+      );
     } catch {
-      return t("tasks.invalidDate");
-    }
-  };
-
-  const formatRelativeTime = (dateString?: string) => {
-    if (!dateString) return null;
-    try {
-      const date = new Date(dateString);
-      return formatDistanceToNow(date, {
-        addSuffix: true,
-        locale: locale === "es" ? es : undefined,
-      });
-    } catch {
-      return null;
+      return "Invalid Date";
     }
   };
 
@@ -278,46 +216,147 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     );
   }
 
+  // --- TAB CONTENT: VISITS ---
+  const visitsTabContent = (
+    <div className="w-full pt-4 m-0">
+      {isLoadingVisits ? (
+        <DashboardPageSkeleton />
+      ) : visits.length === 0 ? (
+        <EmptyCard
+          title={t("visits.emptyTitle")}
+          description={t("visits.emptyDescription")}
+          icon={<FileCheck className="text-muted-foreground" />}
+          actions={
+            <Button onClick={handleNewVisit} variant="secondary">
+              <Plus className="size-4" />
+              {t("visits.createVisit")}
+            </Button>
+          }
+        />
+      ) : isMobile ? (
+        <div className="space-y-3">
+          {visits.map((visit) => (
+            <VisitCard
+              key={visit.id}
+              visit={visit}
+              onSelect={() => {}}
+              isSelected={false}
+              onView={handleViewVisit}
+              onEdit={handleEditVisit}
+              onDelete={(visit) => setVisitToDelete(visit)}
+              onCreateVisit={handleNewVisit}
+            />
+          ))}
+        </div>
+      ) : (
+        <VisitsDataTable
+          columns={createColumns({
+            onView: handleViewVisit,
+            onEdit: handleEditVisit,
+            onDelete: (visit) => setVisitToDelete(visit),
+            t,
+            locale,
+          })}
+          data={visits}
+          isLoading={isLoadingVisits}
+          rowSelection={rowSelection}
+          setRowSelection={setRowSelection}
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+          onView={handleViewVisit}
+          onEdit={handleEditVisit}
+          onDelete={(visit) => setVisitToDelete(visit)}
+          onCreateVisit={handleNewVisit}
+        />
+      )}
+    </div>
+  );
+
+  // --- TAB CONTENT: DETAILS ---
+  const detailsTabContent = (
+    <div className="py-4">
+      <TaskDetailsCard task={task} />
+    </div>
+  );
+
+  const tabs = [
+    {
+      name: t("visits.visitsTab"),
+      value: "visits",
+      icon: History,
+      description: t("visits.visitsTabDescription"),
+      content: visitsTabContent,
+    },
+    {
+      name: t("visits.detailsTab"),
+      value: "details",
+      icon: FileText,
+      description: t("visits.detailsTabDescription"),
+      content: detailsTabContent,
+    },
+  ];
+
   return (
-    <section className="space-y-6 px-3 sm:px-4 w-full">
-      {/* Header information */}
-      <header className="space-y-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
-          <div className="flex-1 min-w-0 space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="min-w-0">
-                <H1>{task.Subject}</H1>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center justify-start gap-2">
-              <Badge
-                className={getPriorityConfig(task.Priority).className}
-                variant="outline"
-              >
-                <Flag className="size-3" />
-                {getPriorityConfig(task.Priority).label}
-              </Badge>
+    <section className="mx-auto px-4 space-y-6 w-full h-full">
+      {/* HEADER */}
+      <header
+        className="
+            sticky top-0 z-20 
+            -mx-4 px-4 pb-2
+            bg-background/95 backdrop-blur-md 
+            border-b border-border/50
+          "
+        role="banner"
+      >
+        <div className="flex items-start justify-between flex-wrap gap-2">
+          <div className="min-w-0 flex-1 space-y-1">
+            <H1>{task.Subject}</H1>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <MonoText>
+                <Hash className="size-3 inline-block mr-1" />
+                {task.id || "N/A"}
+              </MonoText>
+
+              {task.Priority && (
+                <MonoText>
+                  <Flag className="size-3 inline-block mr-1" />
+                  {task.Priority}
+                </MonoText>
+              )}
+
+              {task.Status && (
+                <MonoText>
+                  <CheckCircle2 className="size-3 inline-block mr-1" />
+                  {task.Status}
+                </MonoText>
+              )}
 
               {task.Due_Date && (
-                <Badge variant="outline">
-                  <Calendar className="size-3" />
-                  {new Date(task.Due_Date).toLocaleDateString(
-                    locale === "es" ? "es-ES" : "en-US",
-                  )}
-                </Badge>
+                <MonoText>
+                  <Calendar className="size-3 inline-block mr-1" />
+                  {formatDateShortLocal(task.Due_Date)}
+                </MonoText>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => router.back()}>
+          <div className="flex gap-1 sm:gap-x-2 shrink-0">
+            <Button
+              onClick={() => router.back()}
+              variant="secondary"
+              size="icon"
+              className="h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
+            >
               <ArrowLeft className="size-4" />
-              <span className="text-muted-foreground hidden sm:inline">
-                {t("common.back")}
-              </span>
+              <span className="hidden sm:inline">{t("common.back")}</span>
             </Button>
 
-            <Button onClick={handleNewVisit} size="sm">
+            <Button
+              onClick={handleNewVisit}
+              size="icon"
+              className="h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
+            >
               <Plus className="size-4" />
               <span className="hidden sm:inline">
                 {t("visits.createVisit")}
@@ -325,289 +364,10 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
             </Button>
           </div>
         </div>
-
-        {/* Task summary card - información esencial */}
-        <Card className="border-l-4 border-l-primary hidden md:block">
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-              {/* Responsable */}
-              {task.Owner && (
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10 shrink-0">
-                    <User className="size-4 text-primary" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <Label className="text-xs text-muted-foreground">
-                      {t("tasks.assignedTo")}
-                    </Label>
-                    <p className="text-sm font-medium truncate">
-                      {task.Owner.name}
-                    </p>
-                    {task.Owner.email && (
-                      <p className="text-xs text-muted-foreground truncate">
-                        {task.Owner.email}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Cuenta relacionada */}
-              {task.What_Id?.name && (
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-lg bg-blue-500/10 shrink-0">
-                    <Building2 className="size-4 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <Label className="text-xs text-muted-foreground">
-                      {t("tasks.relatedTo")}
-                    </Label>
-                    <p className="text-sm font-medium truncate">
-                      {task.What_Id.name}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Contacto */}
-              {task.Who_Id?.name && (
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-lg bg-violet-500/10 shrink-0">
-                    <User className="size-4 text-violet-600 dark:text-violet-400" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <Label className="text-xs text-muted-foreground">
-                      {t("tasks.contact")}
-                    </Label>
-                    <p className="text-sm font-medium truncate">
-                      {task.Who_Id.name}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Última modificación */}
-              {task.Modified_Time && (
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-lg bg-amber-500/10 shrink-0">
-                    <Clock className="size-4 text-amber-600 dark:text-amber-400" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <Label className="text-xs text-muted-foreground">
-                      {t("visits.modifiedSection")}
-                    </Label>
-                    <p className="text-sm font-medium">
-                      {formatRelativeTime(task.Modified_Time)}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
       </header>
 
-      <Card className="shadow-none p-0 w-full border-none">
-        <CardHeader className="p-0">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div className="space-y-1">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <FileCheck className="size-4 text-primary" />
-                {t("visits.registeredVisitsTitleSection")}
-                {visits.length > 0 && (
-                  <Badge variant="secondary">{visits.length}</Badge>
-                )}
-              </CardTitle>
-              <p className="text-sm text-muted-foreground text-pretty">
-                {t("visits.registeredVisitsDescriptionSection")}
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {isLoadingVisits ? (
-            <div className="flex flex-row items-center justify-center gap-2">
-              <Spinner variant="bars" className="size-4" />
-              <span className="text-sm text-muted-foreground animate-pulse">
-                {t("common.loading")}
-              </span>
-            </div>
-          ) : visits.length === 0 ? (
-            <EmptyCard
-              title={t("visits.emptyTitle")}
-              description={t("visits.emptyDescription")}
-              icon={<FileCheck />}
-              actions={
-                <Button onClick={handleNewVisit} size="sm">
-                  <Plus className="size-4" />
-                  {t("visits.createVisit")}
-                </Button>
-              }
-            />
-          ) : isMobile ? (
-            <div className="space-y-3">
-              {visits.map((visit) => (
-                <VisitCard
-                  key={visit.id}
-                  visit={visit}
-                  onSelect={() => {}}
-                  isSelected={false}
-                  onView={handleViewVisit}
-                  onEdit={handleEditVisit}
-                  onDelete={(visit) => setVisitToDelete(visit)}
-                  onCreateVisit={handleNewVisit}
-                />
-              ))}
-            </div>
-          ) : (
-            <VisitsDataTable
-              columns={createColumns({
-                onView: handleViewVisit,
-                onEdit: handleEditVisit,
-                onDelete: (visit) => setVisitToDelete(visit),
-                t,
-                locale,
-              })}
-              data={visits}
-              isLoading={isLoadingVisits}
-              rowSelection={rowSelection}
-              setRowSelection={setRowSelection}
-              columnFilters={columnFilters}
-              setColumnFilters={setColumnFilters}
-              onView={handleViewVisit}
-              onEdit={handleEditVisit}
-              onDelete={(visit) => setVisitToDelete(visit)}
-              onCreateVisit={handleNewVisit}
-            />
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Información detallada de la tarea */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Columna principal - Descripción y detalles */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Descripción */}
-          {task.Description && (
-            <Card className="pt-0">
-              <CardHeader className="bg-muted pt-3 rounded-t-xl">
-                <CardTitle className="flex items-center gap-2 text-sm md:text-base">
-                  <FileText className="size-4" />
-                  {t("visits.descriptionSection")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-foreground/80 whitespace-pre-wrap leading-relaxed">
-                  {task.Description}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        {/* Columna lateral - Metadatos e información del sistema */}
-        <div className="space-y-3">
-          {/* Fechas importantes */}
-          <Card className="pt-0">
-            <CardHeader className="bg-muted pt-3 rounded-t-xl">
-              <CardTitle className="text-sm md:text-base flex items-center gap-2">
-                <Calendar className="size-4" />
-                {t("visits.datesSection")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {task.Created_Time && (
-                <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">
-                    {t("visits.createdSection")}
-                  </Label>
-                  <p className="text-sm font-medium">
-                    {formatDateShort(task.Created_Time, locale)}
-                  </p>
-                  {task.Created_By?.name && (
-                    <p className="text-xs text-muted-foreground">
-                      {t("visits.createdBySection")} {task.Created_By.name}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {task.Modified_Time && (
-                <>
-                  <Separator />
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">
-                      {t("visits.modifiedSection")}
-                    </Label>
-                    <p className="text-sm font-medium">
-                      {formatDateShort(task.Modified_Time, locale)}
-                    </p>
-                    {task.Modified_By?.name && (
-                      <p className="text-xs text-muted-foreground">
-                        {t("visits.modifiedBySection")} {task.Modified_By.name}
-                      </p>
-                    )}
-                  </div>
-                </>
-              )}
-
-              {task.Closed_Time && (
-                <>
-                  <Separator />
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">
-                      {t("tasks.completedSection")}
-                    </Label>
-                    <p className="text-sm font-medium">
-                      {formatDateShort(task.Closed_Time, locale)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatRelativeTime(task.Closed_Time)}
-                    </p>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* ID y metadatos del sistema */}
-          <Card className="pt-0">
-            <CardHeader className="bg-muted pt-3 rounded-t-xl">
-              <CardTitle className="text-sm md:text-base flex items-center gap-2">
-                <ListTodo className="size-4" />
-                {t("visits.systemInfoSection")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <Label className="text-xs text-muted-foreground">
-                  {t("visits.taskIdSection")}
-                </Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <code className="text-xs font-mono bg-muted px-2 py-1 rounded flex-1">
-                    {task.id}
-                  </code>
-                  <CopyButton
-                    content={task.id}
-                    variant="outline"
-                    size="icon"
-                    className="size-8"
-                  />
-                </div>
-              </div>
-
-              {task.Ubicaci_n && (
-                <div>
-                  <Label className="text-xs text-muted-foreground">
-                    {t("visits.locationSection")}
-                  </Label>
-                  <p className="text-sm font-medium mt-1">{task.Ubicaci_n}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      {/* TABS CONTENT */}
+      <AnimatedTabsComponent tabs={tabs} defaultValue="visits" />
 
       {/* Visit Form Dialog */}
       <VisitFormDialog

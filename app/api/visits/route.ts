@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { VisitFormType, VisitStatus, Role } from "@prisma/client";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { VisitFormType, VisitStatus, Role } from "@prisma/client";
 
 import {
   VISIT_INCLUDE,
@@ -58,12 +58,9 @@ export async function GET(req: NextRequest) {
     const customerId = searchParams.get("customerId");
     const zohoTaskId = searchParams.get("zohoTaskId");
     const dealerVisits = searchParams.get("dealerVisits");
-    // Keep backward compatibility with myVisits param
     const myVisits = searchParams.get("myVisits");
 
-    // Para la página de DEALERS: obtener visitas según el rol
     if (dealerVisits === "true" || myVisits === "true") {
-      // Obtener el rol del usuario actual
       const currentUser = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { role: true },

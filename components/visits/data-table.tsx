@@ -1,37 +1,39 @@
 "use client";
 
 import * as React from "react";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/empty-card";
+import { Calendar } from "@/components/ui/calendar";
 import { useIsMobile } from "@/components/ui/use-mobile";
+import { VisitCardSkeleton } from "../dashboard-skeleton";
+import { VisitCard } from "@/components/visits/visit-card";
+import { Role, VisitStatus, VisitFormType } from "@prisma/client";
+import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
+import { Visit, DataTableProps, VISIT_STATUS_ICONS } from "@/interfaces/visits";
 
 import {
   VISIT_STATUS_LABELS,
   FORM_TYPE_LABELS,
   FORM_TYPE_ICONS,
 } from "@/interfaces/visits";
-import { VisitCardSkeleton } from "../dashboard-skeleton";
-import { VisitCard } from "@/components/visits/visit-card";
+
 import {
   GalleryHorizontalEnd,
   History,
   X,
-  Check,
   Calendar as CalendarIcon,
 } from "lucide-react";
-import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { Visit, DataTableProps, VISIT_STATUS_ICONS } from "@/interfaces/visits";
-import { Role, VisitStatus, VisitFormType } from "@prisma/client";
 
 import {
   type ColumnFiltersState,
@@ -53,7 +55,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   DropdownMenu,

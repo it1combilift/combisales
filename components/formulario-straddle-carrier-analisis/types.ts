@@ -1,8 +1,8 @@
-import { UseFormReturn } from "react-hook-form";
-import { Customer } from "@/interfaces/visits";
-import { FormularioStraddleCarrierSchema } from "./schemas";
 import { RefObject } from "react";
 import { VisitStatus } from "@prisma/client";
+import { Customer } from "@/interfaces/visits";
+import { UseFormReturn } from "react-hook-form";
+import { FormularioStraddleCarrierSchema } from "./schemas";
 
 // ==================== FORM PROPS ====================
 export interface FormularioStraddleCarrierAnalisisProps {
@@ -11,11 +11,8 @@ export interface FormularioStraddleCarrierAnalisisProps {
   onBack: () => void;
   onSuccess: () => void;
   existingVisit?: any;
-  // Para visitas creadas por DEALER: vendedor asignado
   assignedSellerId?: string;
-  // Archivos de la visita original (para clones - solo lectura)
   originalArchivos?: ArchivoSubido[];
-  // Si es true, el formulario es solo lectura (SELLER viendo original)
   readOnly?: boolean;
   // Si es true, habilita el paso de datos del cliente (para flujo DEALER)
   enableCustomerEntry?: boolean;

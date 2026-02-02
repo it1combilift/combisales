@@ -9,13 +9,13 @@ import { Button } from "@/components/ui/button";
 import { FORM_OPTIONS } from "@/interfaces/visits";
 import { useEffect, useState, useCallback } from "react";
 import { DealerSellerSelector } from "./dealer-seller-selector";
+import { useFormProtection } from "@/hooks/use-form-protection";
 import { ArrowRight, ChevronLeft, UserCheck } from "lucide-react";
 import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
 import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
 import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
 import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
-import { useFormProtection } from "@/hooks/use-form-protection";
-import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
 
 import {
   Dialog,

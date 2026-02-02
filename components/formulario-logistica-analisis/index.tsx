@@ -1,7 +1,10 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { getFormSteps } from "./constants";
+import { useMemo, useEffect } from "react";
 import { Form } from "@/components/ui/form";
+import { useI18n } from "@/lib/i18n/context";
 import { VisitStatus } from "@prisma/client";
 import { FormHeader } from "./ui/form-header";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,14 +12,8 @@ import { FormNavigation } from "./ui/form-navigation";
 import { FormularioLogisticaAnalisisProps } from "./types";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useLogisticaAnalisisForm } from "./hooks/use-logistica-analisis-form";
-import { useI18n } from "@/lib/i18n/context";
-import { useMemo, useEffect } from "react";
-import { getFormSteps } from "./constants";
-
-// Customer data step (shown only when enableCustomerEntry is true)
 import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
 
-// Regular steps (renumbered when customer entry is enabled)
 import { Step1Content } from "./steps/step-2-descripcion-operacion";
 import { Step2Content } from "./steps/step-3-datos-aplicacion";
 import { Step3Content } from "./steps/step-4-equipos-electricos";

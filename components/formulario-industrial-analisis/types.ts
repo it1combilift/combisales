@@ -1,8 +1,8 @@
-import { UseFormReturn } from "react-hook-form";
-import { Customer } from "@/interfaces/visits";
-import { FormularioIndustrialSchema } from "./schemas";
 import { RefObject } from "react";
 import { VisitStatus } from "@prisma/client";
+import { Customer } from "@/interfaces/visits";
+import { UseFormReturn } from "react-hook-form";
+import { FormularioIndustrialSchema } from "./schemas";
 
 // ==================== FORM PROPS ====================
 export interface FormularioIndustrialAnalisisProps {

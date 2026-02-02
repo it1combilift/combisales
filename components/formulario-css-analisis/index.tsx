@@ -1,32 +1,30 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Form } from "@/components/ui/form";
-import { FormularioCSSAnalisisProps } from "./types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { getFormularioCSSSchema, FormularioCSSSchema } from "./schemas";
-import { useI18n } from "@/lib/i18n/context";
 import { useMemo, useEffect } from "react";
+import { Form } from "@/components/ui/form";
+import { useI18n } from "@/lib/i18n/context";
+import { FormHeader } from "./ui/form-header";
+import { FormularioCSSAnalisisProps } from "./types";
+import { FormNavigation } from "./ui/form-navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Step1Content as CompanyStep } from "./steps/step-1-empresa";
+import { Step2Content as LocationStep } from "./steps/step-2-ubicacion";
+import { getFormularioCSSSchema, FormularioCSSSchema } from "./schemas";
+import { Step3Content as CommercialStep } from "./steps/step-3-comercial";
+
+import { VisitStatus } from "@prisma/client";
+import { Step1Content } from "./steps/step-4-producto";
+import { Step3Content } from "./steps/step-6-medidas";
+import { Step4Content } from "./steps/step-7-archivos";
+import { Step2Content } from "./steps/step-5-contenedor";
+import { useFileUploader } from "./hooks/use-file-uploader";
+import { useCSSAnalisisForm } from "./hooks/use-css-analisis-form";
 
 import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
-
-import { FormHeader } from "./ui/form-header";
-import { FormNavigation } from "./ui/form-navigation";
-// Customer data steps (for DEALER flow)
-import { Step1Content as CompanyStep } from "./steps/step-1-empresa";
-import { Step2Content as LocationStep } from "./steps/step-2-ubicacion";
-import { Step3Content as CommercialStep } from "./steps/step-3-comercial";
-// Regular steps
-import { Step1Content } from "./steps/step-4-producto";
-import { Step2Content } from "./steps/step-5-contenedor";
-import { Step3Content } from "./steps/step-6-medidas";
-import { Step4Content } from "./steps/step-7-archivos";
-import { useFileUploader } from "./hooks/use-file-uploader";
-import { useCSSAnalisisForm } from "./hooks/use-css-analisis-form";
-import { VisitStatus } from "@prisma/client";
 
 export default function FormularioCSSAnalisis({
   customer,

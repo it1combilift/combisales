@@ -1,22 +1,19 @@
 "use client";
 
-import { useMemo, useEffect } from "react";
-import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
+import { getFormSteps } from "./constants";
+import { useMemo, useEffect } from "react";
 import { Form } from "@/components/ui/form";
 import { useI18n } from "@/lib/i18n/context";
+import { VisitStatus } from "@prisma/client";
 import { FormHeader } from "./ui/form-header";
 import { FormNavigation } from "./ui/form-navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { FormularioStraddleCarrierAnalisisProps } from "./types";
-import { useStraddleCarrierAnalisisForm } from "./hooks/use-straddle-carrier-analisis-form";
-import { getFormSteps } from "./constants";
-
-// Customer data step (shown only when enableCustomerEntry is true)
 import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
+import { useStraddleCarrierAnalisisForm } from "./hooks/use-straddle-carrier-analisis-form";
 
-// Regular steps (renumbered when customer entry is enabled)
 import { Step1Content } from "./steps/step-2-instrucciones";
 import { Step2Content } from "./steps/step-3-contenedores";
 import { Step3Content } from "./steps/step-4-carga-especial";
@@ -32,7 +29,6 @@ import {
   getDefaultValuesForNew,
   getDefaultValuesForEdit,
 } from "./utils/default-values";
-import { VisitStatus } from "@prisma/client";
 
 export default function FormularioStraddleCarrierAnalisis({
   customer,

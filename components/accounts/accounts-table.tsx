@@ -4,6 +4,7 @@ import * as React from "react";
 import { Spinner } from "../ui/spinner";
 import { EmptyCard } from "../empty-card";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/lib/i18n/context";
 import { AccountCard } from "./accounts-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import { useIsMobile } from "@/components/ui/use-mobile";
 import { Building2, X, Loader2, RefreshCw } from "lucide-react";
 import { AccountsCardsPageSkeleton } from "../dashboard-skeleton";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   ColumnFiltersState,

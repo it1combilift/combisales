@@ -1,18 +1,18 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { useI18n } from "@/lib/i18n/context";
 import { VisitFormType } from "@prisma/client";
+import { useEffect, useState, useCallback } from "react";
 import FormularioCSSAnalisis from "../formulario-css-analisis";
+import { useFormProtection } from "@/hooks/use-form-protection";
+import { useLanguageValidation } from "@/hooks/use-language-validation";
 import { FORM_OPTIONS, VisitFormDialogProps } from "@/interfaces/visits";
 import FormularioLogisticaAnalisis from "../formulario-logistica-analisis";
 import FormularioIndustrialAnalisis from "../formulario-industrial-analisis";
-import FormularioStraddleCarrierAnalisis from "../formulario-straddle-carrier-analisis";
-import { useI18n } from "@/lib/i18n/context";
-import { useLanguageValidation } from "@/hooks/use-language-validation";
-import { LanguageValidationAlert } from "@/components/ui/language-validation-alert";
-import { useFormProtection } from "@/hooks/use-form-protection";
 import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { LanguageValidationAlert } from "@/components/ui/language-validation-alert";
+import FormularioStraddleCarrierAnalisis from "../formulario-straddle-carrier-analisis";
 
 import {
   Dialog,
