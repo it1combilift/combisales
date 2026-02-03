@@ -346,7 +346,7 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 md:px-6 space-y-3">
+    <div className="min-h-screen bg-background px-4 space-y-3">
       <header>
         <div className="mx-auto flex items-center justify-between">
           <div className="flex items-start w-full">
@@ -450,7 +450,7 @@ export default function HelpPage() {
                       <FormControl>
                         <Textarea
                           placeholder={t("help.descriptionPlaceholder")}
-                          className="min-h-[160px] resize-none text-xs md:text-sm"
+                          className="min-h-40 resize-none text-xs md:text-sm"
                           {...field}
                         />
                       </FormControl>

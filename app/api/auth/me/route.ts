@@ -10,7 +10,7 @@ export async function GET() {
     if (!session || !session.user?.email) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -27,7 +27,7 @@ export async function GET() {
         emailVerified: true,
         createdAt: true,
         updatedAt: true,
-        password: true, // To check if password is configured
+        password: true,
         accounts: {
           select: {
             provider: true,
@@ -40,7 +40,7 @@ export async function GET() {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -60,7 +60,7 @@ export async function GET() {
         error: "Error al obtener el usuario",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

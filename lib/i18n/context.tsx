@@ -51,26 +51,52 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
     initialLocale ?? defaultLocale,
   );
   const [isHydrated, setIsHydrated] = useState(false);
+  const [hasAppliedRoleDefault, setHasAppliedRoleDefault] = useState(false);
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
-  // Load saved locale from localStorage on mount or when session loads
+  // Determine if the user is a SELLER or ADMIN (should default to English)
+  const isSellerOrAdmin =
+    session?.user?.role === Role.ADMIN || session?.user?.role === Role.SELLER;
+
+  // Load saved locale from localStorage on mount
   useEffect(() => {
     const savedLocale = localStorage.getItem(
       LOCALE_STORAGE_KEY,
     ) as Locale | null;
 
     if (savedLocale && locales[savedLocale]) {
+      // User has a saved preference - respect it
       setLocaleState(savedLocale);
-    } else if (
-      session?.user?.role === Role.ADMIN ||
-      session?.user?.role === Role.SELLER
-    ) {
-      setLocaleState("en");
+      setHasAppliedRoleDefault(true); // Mark as handled since user has explicit preference
     }
 
     setIsHydrated(true);
-  }, [session]);
+  }, []);
+
+  // Apply role-based default language ONLY when:
+  // 1. Session is authenticated (status === "authenticated")
+  // 2. User is SELLER or ADMIN
+  // 3. We haven't already applied the role default
+  // 4. No saved locale exists (first time users)
+  useEffect(() => {
+    if (
+      status === "authenticated" &&
+      isSellerOrAdmin &&
+      !hasAppliedRoleDefault &&
+      isHydrated
+    ) {
+      const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
+
+      // Only apply role-based default if user has no saved preference
+      if (!savedLocale) {
+        setLocaleState("en");
+        localStorage.setItem(LOCALE_STORAGE_KEY, "en");
+      }
+
+      setHasAppliedRoleDefault(true);
+    }
+  }, [status, isSellerOrAdmin, hasAppliedRoleDefault, isHydrated]);
 
   // Update HTML lang attribute when locale changes
   useEffect(() => {
