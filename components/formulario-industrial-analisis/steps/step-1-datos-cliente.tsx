@@ -25,7 +25,7 @@ export function Step1Content({ form }: StepContentProps) {
         {/* Grid: 1 col mobile, 2 cols md, 3 cols xl - Reduce vertical scrolling */}
         <div className="grid grid-cols-2 gap-2 md:gap-3">
           {/* Razón Social - Spans 2 on XL */}
-          <div className="md:col-span-2">
+          <div className="col-span-2">
             <FormField
               control={form.control}
               name="razonSocial"
