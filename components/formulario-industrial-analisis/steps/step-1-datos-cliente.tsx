@@ -52,6 +52,33 @@ export function Step1Content({ form }: StepContentProps) {
             />
           </div>
 
+          <div className="col-span-2">
+            <FormField
+              control={form.control}
+              name="personaContacto"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium flex items-center gap-1">
+                    {t("forms.clientData.fields.contactName.label")}{" "}
+                    <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        placeholder={t(
+                          "forms.clientData.fields.contactName.placeholder",
+                        )}
+                        className="text-sm h-9"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-sm" />
+                </FormItem>
+              )}
+            />
+          </div>
+
           {/* NIF */}
           <div>
             <FormField
@@ -80,35 +107,6 @@ export function Step1Content({ form }: StepContentProps) {
             />
           </div>
 
-          {/* Persona Contacto */}
-          <div>
-            <FormField
-              control={form.control}
-              name="personaContacto"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium flex items-center gap-1">
-                    {t("forms.clientData.fields.contactName.label")}{" "}
-                    <span className="text-destructive">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        placeholder={t(
-                          "forms.clientData.fields.contactName.placeholder",
-                        )}
-                        className="text-sm h-9"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-sm" />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Email */}
           <div>
             <FormField
               control={form.control}

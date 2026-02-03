@@ -174,8 +174,8 @@ export default function DealerVisitFormDialog({
         <DialogContent
           className="
             max-w-none
-            w-[95vw] h-[95vh]
-            md:w-[90vw] md:h-[75vh]
+            w-[95vw] h-[90vh]
+            md:w-[90vw] md:h-[80vh]
             bg-background p-0 overflow-hidden flex flex-col
           "
         >
@@ -256,7 +256,7 @@ export default function DealerVisitFormDialog({
                           isAvailable && handleFormTypeSelected(option.type)
                         }
                         className={`
-                            group overflow-hidden rounded-lg px-3 pb-0 pt-3 text-left
+                            group overflow-hidden rounded-lg px-3 pb-2 pt-3 text-left
                                               transition-all duration-300
                                               cursor-pointer border border-border
                                               h-full

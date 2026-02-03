@@ -93,7 +93,7 @@ export default function VisitFormDialog({
         <DialogContent
           className="
             max-w-none
-            w-[95vw] h-[95vh]
+            w-[95vw] h-[80vh]
             md:max-h-[80vh]
             border border-border
             bg-background p-0 overflow-hidden flex flex-col

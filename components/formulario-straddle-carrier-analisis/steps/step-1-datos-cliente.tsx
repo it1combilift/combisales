@@ -87,6 +87,16 @@ export function Step1Content({ form }: StepContentProps) {
             required
             className="md:col-span-2"
           />
+          {/* Persona Contacto */}
+          <TextInput
+            control={form.control}
+            name="personaContacto"
+            label={t("forms.clientData.fields.contactName.label")}
+            placeholder={t("forms.clientData.fields.contactName.placeholder")}
+            icon={User}
+            required
+            className="md:col-span-2"
+          />
 
           {/* NIF */}
           <TextInput
@@ -95,16 +105,6 @@ export function Step1Content({ form }: StepContentProps) {
             label={t("forms.clientData.fields.fiscalId.label")}
             placeholder={t("forms.clientData.fields.fiscalId.placeholder")}
             icon={Hash}
-            required
-          />
-
-          {/* Persona Contacto */}
-          <TextInput
-            control={form.control}
-            name="personaContacto"
-            label={t("forms.clientData.fields.contactName.label")}
-            placeholder={t("forms.clientData.fields.contactName.placeholder")}
-            icon={User}
             required
           />
 
@@ -127,6 +127,7 @@ export function Step1Content({ form }: StepContentProps) {
             placeholder={t("forms.clientData.fields.website.placeholder")}
             icon={Globe}
             type="url"
+            className="md:col-span-2"
           />
         </div>
       </section>
