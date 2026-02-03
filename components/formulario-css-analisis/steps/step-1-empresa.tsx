@@ -397,7 +397,7 @@ export function Step1Content({ form }: StepContentProps) {
                       placeholder={t(
                         "forms.fields.clientEndUserDataPlaceholder",
                       )}
-                      className="min-h-[80px] text-sm bg-background/50 resize-none border-input/80 focus:border-primary rounded-lg leading-relaxed"
+                      className="min-h-20 text-sm bg-background/50 resize-none border-input/80 focus:border-primary rounded-lg leading-relaxed"
                       {...field}
                     />
                   </FormControl>

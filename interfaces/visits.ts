@@ -132,12 +132,14 @@ export interface Visit {
     name: string | null;
     email: string;
     role?: string;
+    image?: string | null;
   };
   // Vendedor asignado (cuando un DEALER crea la visita)
   assignedSeller?: {
     id: string;
     name: string | null;
     email: string;
+    image: string | null;
   } | null;
   // Clones of this visit (for unified row logic in SELLER view)
   // Phase 4: Each original visit can have at most one clone
@@ -150,6 +152,7 @@ export interface Visit {
       id: string;
       name: string | null;
       email: string;
+      image?: string | null;
     };
   }>;
   // Visita original (si esta es un clon)
@@ -161,6 +164,7 @@ export interface Visit {
       id: string;
       name: string | null;
       email: string;
+      image?: string | null;
     };
     // Formularios del original con sus archivos
     formularioCSSAnalisis?: FormularioCSSAnalisis;

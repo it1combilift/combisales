@@ -128,7 +128,7 @@ export function UploadedFilesList({
       )}
 
       {/* Scrollable Files Container */}
-      <div className="max-h-[200px] overflow-y-auto space-y-1.5 pr-1 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+      <div className="overflow-y-auto space-y-1.5 pr-1 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent max-h-full pb-2">
         {allArchivos.map((archivo) => {
           const config = getFileConfig(archivo);
           const IconComponent = config.icon;

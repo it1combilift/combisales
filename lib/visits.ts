@@ -23,6 +23,7 @@ export const VISIT_INCLUDE = {
       name: true,
       email: true,
       role: true,
+      image: true,
     },
   },
   // Vendedor asignado (para visitas creadas por DEALER)
@@ -31,6 +32,7 @@ export const VISIT_INCLUDE = {
       id: true,
       name: true,
       email: true,
+      image: true,
     },
   },
   // Clones of this visit (for checking if original has been cloned)
@@ -46,6 +48,7 @@ export const VISIT_INCLUDE = {
           id: true,
           name: true,
           email: true,
+          image: true,
         },
       },
     },
@@ -61,6 +64,7 @@ export const VISIT_INCLUDE = {
           id: true,
           name: true,
           email: true,
+          image: true,
         },
       },
       // Include original visit's forms with files for cloned visits

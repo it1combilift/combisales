@@ -1,11 +1,11 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner";
+import { I18nProvider } from "@/lib/i18n/context";
 import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
-import { I18nProvider } from "@/lib/i18n/context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,19 +23,19 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/combilift-logo.webp",
+        url: "https://www.combilift.es/wp-content/uploads/2025/10/images.png",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/combilift-logo.webp",
+        url: "https://www.combilift.es/wp-content/uploads/2025/10/images.png",
         media: "(prefers-color-scheme: dark)",
       },
       {
-        url: "/combilift-logo.webp",
+        url: "https://www.combilift.es/wp-content/uploads/2025/10/images.png",
         type: "image/svg+xml",
       },
     ],
-    apple: "/combilift-logo.webp",
+    apple: "https://www.combilift.es/wp-content/uploads/2025/10/images.png",
   },
 };
 

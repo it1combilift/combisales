@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { formatDateShort } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
+import { formatDateShort, getInitials } from "@/lib/utils";
 import { VisitStatus, VisitFormType, Role } from "@prisma/client";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 import {
   ColumnsConfig,
@@ -292,7 +293,7 @@ export function createColumns(
         </Badge>
       );
     },
-    filterFn: (row, columnId, filterValue) => {
+    filterFn: (row, filterValue) => {
       // filterValue is an array from the column filter
       const filter = Array.isArray(filterValue) ? filterValue[0] : filterValue;
       if (!filter) return true;
@@ -303,26 +304,32 @@ export function createColumns(
       const clone = hasClone ? visit.clones![0] : null;
 
       if (isDealer) {
-        if (filter === "COMPLETADA") {
-          return status === "COMPLETADA" || status === "EN_PROGRESO";
+        if (filter === VisitStatus.COMPLETADA) {
+          return (
+            status === VisitStatus.COMPLETADA ||
+            status === VisitStatus.EN_PROGRESO
+          );
         }
         return status === filter;
       }
 
       if (isSeller || isAdmin) {
         // SELLER Logic
-        if (filter === "BORRADOR") {
+        if (filter === VisitStatus.BORRADOR) {
           // "Draft (Clone)" -> Matches if clone exists and is Draft
-          return !!(clone && clone.status === "BORRADOR");
+          return !!(clone && clone.status === VisitStatus.BORRADOR);
         }
-        if (filter === "EN_PROGRESO") {
+        if (filter === VisitStatus.EN_PROGRESO) {
           // "In Progress (Original)" -> Matches if Original is In Progress/Completed AND no completed clone
-          if (clone && clone.status === "COMPLETADA") return false;
-          return status === "EN_PROGRESO" || status === "COMPLETADA";
+          if (clone && clone.status === VisitStatus.COMPLETADA) return false;
+          return (
+            status === VisitStatus.EN_PROGRESO ||
+            status === VisitStatus.COMPLETADA
+          );
         }
-        if (filter === "COMPLETADA") {
+        if (filter === VisitStatus.COMPLETADA) {
           // "Completed" -> Matches if Clone is Completed
-          return !!(clone && clone.status === "COMPLETADA");
+          return !!(clone && clone.status === VisitStatus.COMPLETADA);
         }
       }
 
@@ -399,9 +406,25 @@ export function createColumns(
           ? visit.clonedFrom.user
           : visit.user;
       return (
-        <span className="text-xs sm:text-sm leading-relaxed text-primary">
-          {dealer?.name || dealer?.email || "-"}
-        </span>
+        <div className="flex items-center gap-2">
+          <Avatar className="size-10">
+            <AvatarImage
+              src={dealer?.image || undefined}
+              alt={dealer?.name || dealer?.email || "Dealer Avatar"}
+              className="object-center object-cover"
+            />
+            <AvatarFallback className="text-[10px]">
+              {dealer?.name
+                ? getInitials(dealer.name)
+                : dealer?.email
+                  ? getInitials(dealer.email)
+                  : "D"}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-xs sm:text-sm leading-relaxed text-primary">
+            {dealer?.name || dealer?.email || "-"}
+          </span>
+        </div>
       );
     },
     sortingFn: (rowA, rowB) => {
@@ -496,11 +519,38 @@ export function createColumns(
     cell: ({ row }) => {
       const assignedSeller = row.original.assignedSeller;
       return (
-        <span className="text-xs sm:text-sm leading-relaxed text-primary">
-          {assignedSeller?.name || assignedSeller?.email || "-"}
-        </span>
+        <div>
+          {assignedSeller ? (
+            <div className="flex items-center gap-2">
+              <Avatar className="size-10">
+                <AvatarImage
+                  src={assignedSeller.image || undefined}
+                  alt={
+                    assignedSeller.name || assignedSeller.email || "User Avatar"
+                  }
+                  className="object-center object-cover"
+                />
+                <AvatarFallback>
+                  {assignedSeller.name
+                    ? getInitials(assignedSeller.name)
+                    : assignedSeller.email
+                      ? getInitials(assignedSeller.email)
+                      : "U"}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-xs sm:text-sm leading-relaxed text-primary">
+                {assignedSeller.name || assignedSeller.email || "-"}
+              </span>
+            </div>
+          ) : (
+            <span className="text-xs sm:text-sm leading-relaxed text-primary">
+              -
+            </span>
+          )}
+        </div>
       );
     },
+
     sortingFn: (rowA, rowB) => {
       const nameA =
         rowA.original.assignedSeller?.name ||
