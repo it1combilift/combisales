@@ -21,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Badge } from "../ui/badge";
 
 export default function VisitFormDialog({
   open,
@@ -91,14 +92,16 @@ export default function VisitFormDialog({
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
           className="
-            max-w-[95vw] sm:max-w-dvw max-h-[90vh]
-            bg-background border border-border rounded-2xl
-            p-0 overflow-hidden
+            max-w-none
+            w-[95vw] h-[95vh]
+            md:max-h-[80vh]
+            border border-border
+            bg-background p-0 overflow-hidden flex flex-col
           "
         >
           {/* Show form selector only for new visits */}
           {!selectedFormType && !isEditing ? (
-            <div className="flex flex-col h-full max-h-[90vh]">
+            <div className="flex flex-col h-full">
               {/* HEADER */}
               <div className="px-3 py-3 border-b border-border">
                 <DialogHeader className="text-left">
@@ -111,19 +114,13 @@ export default function VisitFormDialog({
                 </DialogHeader>
               </div>
 
-              <div
-                className="
-                  flex-1 overflow-y-auto
-                  px-3 py-3
-                "
-              >
+              <div className="p-3 h-fit">
                 {/* Language validation alert for SELLER users */}
                 <LanguageValidationAlert
                   show={showLanguageWarning}
                   className="mb-4"
                 />
-
-                <div className="grid grid-cols-2 gap-1 sm:gap-2 md:gap-3">
+                <div className="flex flex-col gap-3 justify-center items-center flex-wrap">
                   {FORM_OPTIONS.map((option) => {
                     const Icon = option.icon;
                     const isAvailable = option.available && canSubmit;
@@ -136,21 +133,23 @@ export default function VisitFormDialog({
                           isAvailable && setSelectedFormType(option.type)
                         }
                         className={`
-                          group relative overflow-hidden rounded-lg p-3 text-left
-                          border transition-all duration-300
+                            group relative overflow-hidden rounded-lg px-3 pb-0 pt-2 text-left
+                                              transition-all duration-300
+                                              cursor-pointer border border-border
+                                              h-full
                           ${
                             isAvailable
-                              ? "bg-card border-border hover:border-primary/50 hover:shadow-md hover:-translate-y-px cursor-pointer"
-                              : "bg-muted border-border/30 cursor-not-allowed opacity-50"
+                              ? "bg-card border-border hover:border-primary/50 hover:shadow-md hover:-translate-y-px"
+                              : "bg-muted/30 border-border/30 cursor-not-allowed opacity-50"
                           }
                         `}
-                        style={{ minHeight: "82px" }}
+                        style={{ height: "100%" }}
                       >
-                        <div className="flex items-start justify-between">
+                        <div className="h-full flex justify-between items-center gap-3 w-full">
                           <div
                             className={`
                               size-8 flex items-center justify-center rounded-md
-                              transition-all duration-300 
+                              transition-all duration-300
                               ${
                                 isAvailable
                                   ? "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
@@ -160,63 +159,57 @@ export default function VisitFormDialog({
                           >
                             <Icon className="size-4" />
                           </div>
-                        </div>
-
-                        <div className="mt-2 space-y-1">
-                          <h3 className="text-xs leading-tight line-clamp-2 text-balance font-balance font-semibold">
-                            {t(
-                              `visits.formTypes.${
-                                option.type === VisitFormType.ANALISIS_CSS
-                                  ? "css"
-                                  : option.type ===
-                                      VisitFormType.ANALISIS_INDUSTRIAL
-                                    ? "industrial"
+                          <div className="w-full flex flex-col gap-1 justify-center items-start">
+                            <h3 className="text-xs leading-tight line-clamp-2 text-balance font-balance font-semibold">
+                              {t(
+                                `visits.formTypes.${
+                                  option.type === VisitFormType.ANALISIS_CSS
+                                    ? "css"
                                     : option.type ===
-                                        VisitFormType.ANALISIS_LOGISTICA
-                                      ? "logistica"
-                                      : "straddleCarrier"
-                              }` as any,
-                            )}
-                          </h3>
-                          <p
-                            title={t(
-                              `visits.formTypes.descriptions.${
-                                option.type === VisitFormType.ANALISIS_CSS
-                                  ? "css"
-                                  : option.type ===
-                                      VisitFormType.ANALISIS_INDUSTRIAL
-                                    ? "industrial"
+                                        VisitFormType.ANALISIS_INDUSTRIAL
+                                      ? "industrial"
+                                      : option.type ===
+                                          VisitFormType.ANALISIS_LOGISTICA
+                                        ? "logistica"
+                                        : "straddleCarrier"
+                                }` as any,
+                              )}
+                            </h3>
+                            <p
+                              className="text-xs text-muted-foreground text-pretty"
+                              title={t(
+                                `visits.formTypes.descriptions.${
+                                  option.type === VisitFormType.ANALISIS_CSS
+                                    ? "css"
                                     : option.type ===
-                                        VisitFormType.ANALISIS_LOGISTICA
-                                      ? "logistica"
-                                      : "straddleCarrier"
-                              }` as any,
-                            )}
-                            className="text-xs text-muted-foreground leading-snug line-clamp-2 text-balance truncate"
-                          >
-                            {t(
-                              `visits.formTypes.descriptions.${
-                                option.type === VisitFormType.ANALISIS_CSS
-                                  ? "css"
-                                  : option.type ===
-                                      VisitFormType.ANALISIS_INDUSTRIAL
-                                    ? "industrial"
+                                        VisitFormType.ANALISIS_INDUSTRIAL
+                                      ? "industrial"
+                                      : option.type ===
+                                          VisitFormType.ANALISIS_LOGISTICA
+                                        ? "logistica"
+                                        : "straddleCarrier"
+                                }` as any,
+                              )}
+                            >
+                              {t(
+                                `visits.formTypes.descriptions.${
+                                  option.type === VisitFormType.ANALISIS_CSS
+                                    ? "css"
                                     : option.type ===
-                                        VisitFormType.ANALISIS_LOGISTICA
-                                      ? "logistica"
-                                      : "straddleCarrier"
-                              }` as any,
-                            )}
-                          </p>
+                                        VisitFormType.ANALISIS_INDUSTRIAL
+                                      ? "industrial"
+                                      : option.type ===
+                                          VisitFormType.ANALISIS_LOGISTICA
+                                        ? "logistica"
+                                        : "straddleCarrier"
+                                }` as any,
+                              )}
+                            </p>
+                          </div>
                         </div>
 
                         {isAvailable && (
-                          <div
-                            className="
-                              mt-2 flex items-center gap-1 text-xs font-medium text-primary 
-                              opacity-0 group-hover:opacity-100 transition-opacity
-                            "
-                          >
+                          <div className="mt-2 flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                             {t("visits.select")}
                             <ArrowRight className="size-3 group-hover:translate-x-1 transition-transform" />
                           </div>

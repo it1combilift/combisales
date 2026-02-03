@@ -54,7 +54,7 @@ export function Step1Content({ form }: StepContentProps) {
   const tieneRestricciones = form.watch("tieneRestricciones");
 
   return (
-    <div className="space-y-2 md:space-y-4">
+    <div className="space-y-2 md:space-y-4 pb-2">
       {/* ==================== NOTAS OPERACIÓN ==================== */}
       <section>
         <FormField
@@ -62,7 +62,7 @@ export function Step1Content({ form }: StepContentProps) {
           name="notasOperacion"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-1 text-balance">
+              <FormLabel className="text-sm font-medium flex items-center gap-1 text-balance">
                 {t("forms.logistica.fields.operation.notes.label")}
                 <span className="text-destructive">*</span>
               </FormLabel>
@@ -71,11 +71,11 @@ export function Step1Content({ form }: StepContentProps) {
                   placeholder={t(
                     "forms.logistica.fields.operation.notes.placeholder"
                   )}
-                  className="min-h-[100px] text-[11px] sm:text-xs md:text-sm bg-background/50 resize-none leading-relaxed text-balance"
+                  className="min-h-[100px] text-sm bg-background/50 resize-none leading-relaxed text-balance"
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -87,7 +87,7 @@ export function Step1Content({ form }: StepContentProps) {
           {/* Rampas */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-[11px] sm:text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-2 text-balance">
+              <Label className="text-sm font-medium flex items-center gap-2 text-balance">
                 <ArrowUpDown className="size-3.5 text-muted-foreground" />
                 {t("forms.logistica.fields.operation.ramps.label")}
               </Label>
@@ -117,11 +117,11 @@ export function Step1Content({ form }: StepContentProps) {
                         placeholder={t(
                           "forms.logistica.fields.operation.ramps.placeholder"
                         )}
-                        className="min-h-[60px] text-[11px] sm:text-xs bg-background/50 resize-none"
+                        className="min-h-[60px] text-sm bg-background/50 resize-none"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-[10px]" />
+                    <FormMessage className="text-sm" />
                   </FormItem>
                 )}
               />
@@ -131,7 +131,7 @@ export function Step1Content({ form }: StepContentProps) {
           {/* Pasos por puertas */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-2 text-balance">
+              <Label className="text-sm font-medium flex items-center gap-2 text-balance">
                 <DoorOpen className="size-3.5 text-muted-foreground" />
                 {t("forms.logistica.fields.operation.doors.label")}
               </Label>
@@ -161,11 +161,11 @@ export function Step1Content({ form }: StepContentProps) {
                         placeholder={t(
                           "forms.logistica.fields.operation.doors.placeholder"
                         )}
-                        className="min-h-[60px] text-[11px] sm:text-xs bg-background/50 resize-none"
+                        className="min-h-[60px] text-sm bg-background/50 resize-none"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-[10px]" />
+                    <FormMessage className="text-sm" />
                   </FormItem>
                 )}
               />
@@ -175,7 +175,7 @@ export function Step1Content({ form }: StepContentProps) {
           {/* Restricciones */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-2 text-balance">
+              <Label className="text-sm font-medium flex items-center gap-2 text-balance">
                 <AlertTriangle className="size-3.5 text-muted-foreground" />
                 {t("forms.logistica.fields.operation.restrictions.label")}
               </Label>
@@ -206,11 +206,11 @@ export function Step1Content({ form }: StepContentProps) {
                         placeholder={t(
                           "forms.logistica.fields.operation.restrictions.placeholder"
                         )}
-                        className="min-h-[60px] text-[11px] sm:text-xs bg-background/50 resize-none"
+                        className="min-h-[60px] text-sm bg-background/50 resize-none"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-[10px]" />
+                    <FormMessage className="text-sm" />
                   </FormItem>
                 )}
               />
@@ -221,16 +221,16 @@ export function Step1Content({ form }: StepContentProps) {
 
       {/* ==================== DATOS DE LA NAVE ==================== */}
       <section>
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Row 1: Dimensiones principales */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {/* Altura máxima nave */}
             <FormField
               control={form.control}
               name="alturaMaximaNave"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[11px] sm:text-xs font-medium flex items-center gap-1 text-balance">
+                  <FormLabel className="text-sm font-medium flex items-center gap-1 text-balance">
                     <Building className="size-3 text-muted-foreground" />
                     {t("forms.logistica.fields.operation.maxHeight.label")} (m)
                   </FormLabel>
@@ -239,7 +239,7 @@ export function Step1Content({ form }: StepContentProps) {
                       type="number"
                       step="0.1"
                       placeholder="0.0"
-                      className="text-xs  h-9"
+                      className="text-sm h-9"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
@@ -249,7 +249,7 @@ export function Step1Content({ form }: StepContentProps) {
                       }
                     />
                   </FormControl>
-                  <FormMessage className="text-[10px]" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
@@ -260,7 +260,7 @@ export function Step1Content({ form }: StepContentProps) {
               name="anchoPasilloActual"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[11px] sm:text-xs font-medium flex items-center gap-1 text-balance">
+                  <FormLabel className="text-sm font-medium flex items-center gap-1 text-balance">
                     <Route className="size-3 text-muted-foreground" />
                     {t("forms.logistica.fields.operation.aisleWidth.label")} (m)
                   </FormLabel>
@@ -269,7 +269,7 @@ export function Step1Content({ form }: StepContentProps) {
                       type="number"
                       step="0.1"
                       placeholder="0.0"
-                      className="text-[11px] sm:text-xs h-9"
+                      className="text-sm h-9"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
@@ -279,7 +279,7 @@ export function Step1Content({ form }: StepContentProps) {
                       }
                     />
                   </FormControl>
-                  <FormMessage className="text-[10px]" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
@@ -290,7 +290,7 @@ export function Step1Content({ form }: StepContentProps) {
               name="superficieTrabajo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[11px] sm:text-xs font-medium flex items-center gap-1 text-balance">
+                  <FormLabel className="text-sm font-medium flex items-center gap-1 text-balance">
                     <Layers className="size-3 text-muted-foreground" />
                     {t("forms.logistica.fields.operation.surface.label")} (m²)
                   </FormLabel>
@@ -299,7 +299,7 @@ export function Step1Content({ form }: StepContentProps) {
                       type="number"
                       step="1"
                       placeholder="0"
-                      className="text-[11px] sm:text-xs h-9"
+                      className="text-sm h-9"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
@@ -309,7 +309,7 @@ export function Step1Content({ form }: StepContentProps) {
                       }
                     />
                   </FormControl>
-                  <FormMessage className="text-[10px]" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
@@ -320,7 +320,7 @@ export function Step1Content({ form }: StepContentProps) {
               name="tipoOperacion"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[11px] sm:text-xs font-medium text-balance">
+                  <FormLabel className="text-sm font-medium text-balance">
                     {t("forms.logistica.fields.operation.type.label")}
                   </FormLabel>
                   <Select
@@ -328,20 +328,20 @@ export function Step1Content({ form }: StepContentProps) {
                     defaultValue={field.value || undefined}
                   >
                     <FormControl>
-                      <SelectTrigger className="h-9 text-[11px] sm:text-xs md:text-sm w-full">
+                      <SelectTrigger className="h-9 text-sm w-full">
                         <SelectValue placeholder={t("common.select")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem
                         value="almacenamiento"
-                        className="text-[11px] sm:text-xs md:text-sm"
+                        className="text-sm"
                       >
                         {t("forms.logistica.options.operationType.storage")}
                       </SelectItem>
                       <SelectItem
                         value="cross-docking"
-                        className="text-[11px] sm:text-xs md:text-sm"
+                        className="text-sm"
                       >
                         {t(
                           "forms.logistica.options.operationType.crossDocking"
@@ -349,13 +349,13 @@ export function Step1Content({ form }: StepContentProps) {
                       </SelectItem>
                       <SelectItem
                         value="picking"
-                        className="text-[11px] sm:text-xs md:text-sm"
+                        className="text-sm"
                       >
                         {t("forms.logistica.options.operationType.picking")}
                       </SelectItem>
                       <SelectItem
                         value="carga-descarga"
-                        className="text-[11px] sm:text-xs md:text-sm"
+                        className="text-sm"
                       >
                         {t(
                           "forms.logistica.options.operationType.loadingUnloading"
@@ -363,19 +363,19 @@ export function Step1Content({ form }: StepContentProps) {
                       </SelectItem>
                       <SelectItem
                         value="preparacion-pedidos"
-                        className="text-[11px] sm:text-xs md:text-sm"
+                        className="text-sm"
                       >
                         {t("forms.logistica.options.operationType.orderPrep")}
                       </SelectItem>
                       <SelectItem
                         value="mixto"
-                        className="text-[11px] sm:text-xs md:text-sm"
+                        className="text-sm"
                       >
                         {t("forms.logistica.options.operationType.mixed")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage className="text-[10px]" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
@@ -388,7 +388,7 @@ export function Step1Content({ form }: StepContentProps) {
               name="condicionesSuelo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[11px] sm:text-xs font-medium text-balance">
+                  <FormLabel className="text-sm font-medium text-balance">
                     {t("forms.logistica.fields.operation.floor.label")}
                   </FormLabel>
                   <FormControl>
@@ -396,11 +396,11 @@ export function Step1Content({ form }: StepContentProps) {
                       placeholder={t(
                         "forms.logistica.fields.operation.floor.placeholder"
                       )}
-                      className="text-[11px] sm:text-xs md:text-sm h-9"
+                      className="text-sm h-9"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage className="text-[10px]" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
@@ -415,7 +415,7 @@ export function Step1Content({ form }: StepContentProps) {
           name="fechaCierre"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel className="text-[11px] sm:text-xs font-medium text-balance">
+              <FormLabel className="text-sm font-medium text-balance">
                 {t("forms.logistica.fields.operation.closingDate.label")}
               </FormLabel>
               <Popover>
@@ -448,7 +448,7 @@ export function Step1Content({ form }: StepContentProps) {
                   />
                 </PopoverContent>
               </Popover>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />

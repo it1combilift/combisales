@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "sonner";
 import { SaveType } from "../types";
-import { FORM_STEPS, getFormSteps } from "../constants";
+import { getFormSteps } from "../constants";
 import { UseFormReturn } from "react-hook-form";
 import { FormularioCSSSchema } from "../schemas";
 import { VisitStatus, VisitFormType } from "@prisma/client";

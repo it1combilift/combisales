@@ -9,9 +9,7 @@ import { FormularioCSSAnalisisProps } from "./types";
 import { FormNavigation } from "./ui/form-navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Step1Content as CompanyStep } from "./steps/step-1-empresa";
-import { Step2Content as LocationStep } from "./steps/step-2-ubicacion";
 import { getFormularioCSSSchema, FormularioCSSSchema } from "./schemas";
-import { Step3Content as CommercialStep } from "./steps/step-3-comercial";
 
 import { VisitStatus } from "@prisma/client";
 import { Step1Content } from "./steps/step-4-producto";
@@ -124,21 +122,17 @@ export default function FormularioCSSAnalisis({
     // When enableCustomerEntry is true, first 3 steps are customer data
     // Otherwise, the numbering starts from the regular steps
     if (enableCustomerEntry) {
-      // DEALER flow: 7 steps total (3 Customer + 4 regular)
+      // DEALER flow: 5 steps total (1 Customer + 4 regular)
       switch (currentStep) {
         case 1:
           return <CompanyStep {...stepProps} />;
         case 2:
-          return <LocationStep {...stepProps} />;
-        case 3:
-          return <CommercialStep {...stepProps} />;
-        case 4:
           return <Step1Content {...stepProps} />;
-        case 5:
+        case 3:
           return <Step2Content {...stepProps} />;
-        case 6:
+        case 4:
           return <Step3Content {...stepProps} />;
-        case 7:
+        case 5:
           return (
             <Step4Content
               form={form}
@@ -196,7 +190,7 @@ export default function FormularioCSSAnalisis({
 
   // ==================== MAIN RENDER ====================
   return (
-    <div className="flex flex-col h-full max-h-[90vh] bg-background max-w-dvw">
+    <div className="flex flex-col h-full bg-background max-w-dvw">
       {/* Header with stepper */}
       <FormHeader
         currentStep={currentStep}
@@ -212,11 +206,11 @@ export default function FormularioCSSAnalisis({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, onSubmitError)}
-          className="flex flex-col flex-1 min-h-0 max-w-dvw mx-auto w-full"
+          className="flex flex-col flex-1 min-h-0 max-w-dvw mx-auto w-full h-full"
         >
           <main className="flex-1 overflow-y-auto scrollbar-thin">
-            <div className="p-4 mx-auto w-full">
-              <div className="animate-in fade-in-50 slide-in-from-right-4 duration-300">
+            <div className="p-2 mx-auto w-full h-full">
+              <div className="animate-in fade-in-50 slide-in-from-right-4 duration-300 h-full">
                 {renderStepContent()}
               </div>
             </div>

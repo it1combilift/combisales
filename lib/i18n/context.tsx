@@ -8,6 +8,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { useSession } from "next-auth/react";
 
 import {
   type Locale,
@@ -24,6 +25,7 @@ import {
   pluralize,
   type TranslationKeys,
 } from "./translations";
+import { Role } from "@prisma/client";
 
 interface I18nContextType {
   locale: Locale;
@@ -46,20 +48,29 @@ interface I18nProviderProps {
 
 export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
   const [locale, setLocaleState] = useState<Locale>(
-    initialLocale ?? defaultLocale
+    initialLocale ?? defaultLocale,
   );
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load saved locale from localStorage on mount
+  const { data: session } = useSession();
+
+  // Load saved locale from localStorage on mount or when session loads
   useEffect(() => {
     const savedLocale = localStorage.getItem(
-      LOCALE_STORAGE_KEY
+      LOCALE_STORAGE_KEY,
     ) as Locale | null;
+
     if (savedLocale && locales[savedLocale]) {
       setLocaleState(savedLocale);
+    } else if (
+      session?.user?.role === Role.ADMIN ||
+      session?.user?.role === Role.SELLER
+    ) {
+      setLocaleState("en");
     }
+
     setIsHydrated(true);
-  }, []);
+  }, [session]);
 
   // Update HTML lang attribute when locale changes
   useEffect(() => {
@@ -83,11 +94,11 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
     (key: string, values?: Record<string, string | number>): string => {
       const translation = getNestedValue(
         translations as unknown as Record<string, unknown>,
-        key
+        key,
       );
       return values ? interpolate(translation, values) : translation;
     },
-    [translations]
+    [translations],
   );
 
   // Pluralization function
@@ -95,17 +106,17 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
     (key: string, count: number): string => {
       return pluralize(translations, key, count);
     },
-    [translations]
+    [translations],
   );
 
   // Number formatting
   const formatNumber = useCallback(
     (value: number): string => {
       return new Intl.NumberFormat(locale, localeConfig.numberFormat).format(
-        value
+        value,
       );
     },
-    [locale, localeConfig.numberFormat]
+    [locale, localeConfig.numberFormat],
   );
 
   // Date formatting
@@ -117,7 +128,7 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
         day: "2-digit",
       }).format(date);
     },
-    [locale]
+    [locale],
   );
 
   // Currency formatting
@@ -128,7 +139,7 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
         currency,
       }).format(value);
     },
-    [locale]
+    [locale],
   );
 
   // Prevent hydration mismatch by rendering default until hydrated

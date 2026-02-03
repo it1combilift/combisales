@@ -1,12 +1,4 @@
-import {
-  FileText,
-  Package,
-  Ruler,
-  Paperclip,
-  Building2,
-  MapPin,
-  Users,
-} from "lucide-react";
+import { Package, Ruler, Paperclip, Building2, PencilLine } from "lucide-react";
 
 export type StepColor =
   | "primary"
@@ -86,31 +78,11 @@ const CUSTOMER_STEPS: StepConfig[] = [
       "email",
       "numeroIdentificacionFiscal",
       "website",
-    ],
-  },
-  {
-    number: 2,
-    title: "forms.css.steps.location.title",
-    shortTitle: "forms.css.steps.location.shortTitle",
-    description: "forms.css.steps.location.description",
-    icon: MapPin,
-    color: "blue",
-    fields: [
       "direccion",
       "localidad",
       "codigoPostal",
       "provinciaEstado",
       "pais",
-    ],
-  },
-  {
-    number: 3,
-    title: "forms.css.steps.commercial.title",
-    shortTitle: "forms.css.steps.commercial.shortTitle",
-    description: "forms.css.steps.commercial.description",
-    icon: Users,
-    color: "amber",
-    fields: [
       "distribuidor",
       "contactoDistribuidor",
       "fechaCierre",
@@ -126,7 +98,7 @@ const REGULAR_STEPS: StepConfig[] = [
     title: "forms.css.steps.product.title",
     shortTitle: "forms.css.steps.product.shortTitle",
     description: "forms.css.steps.product.description",
-    icon: FileText,
+    icon: PencilLine,
     color: "violet",
     fields: ["descripcionProducto", "fechaCierre"],
   },

@@ -32,7 +32,7 @@ function SectionHeader({
       <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
         <Icon className="size-3 text-primary" />
       </div>
-      <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wide text-balance">
+      <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide text-balance">
         {title}
       </h3>
     </div>
@@ -47,21 +47,21 @@ export function Step6Content({ form }: StepContentProps) {
   const { t } = useI18n();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4 min-h-full">
       {/* ==================== DISTANCIAS DEL PASILLO ==================== */}
       <section>
         <SectionHeader
           icon={Route}
           title={t("forms.logistica.fields.aisle.distancesHeader")}
         />
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {/* Distancia entre estanterías */}
           <FormField
             control={form.control}
             name="pasilloActual.distanciaEntreEstanterias"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] text-balance">
+                <FormLabel className="text-sm text-balance">
                   {t("forms.fields.distBetweenRacks")}
                 </FormLabel>
                 <FormControl>
@@ -70,7 +70,7 @@ export function Step6Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-[11px] sm:text-xs md:text-sm h-9 pr-7 text-balance"
+                      className="text-sm h-9 pr-7 text-balance"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
@@ -79,12 +79,12 @@ export function Step6Content({ form }: StepContentProps) {
                         )
                       }
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                       m
                     </span>
                   </div>
                 </FormControl>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-sm" />
               </FormItem>
             )}
           />
@@ -95,7 +95,7 @@ export function Step6Content({ form }: StepContentProps) {
             name="pasilloActual.distanciaEntreProductos"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] text-balance">
+                <FormLabel className="text-sm text-balance">
                   {t("forms.fields.distBetweenProducts")}
                 </FormLabel>
                 <FormControl>
@@ -104,7 +104,7 @@ export function Step6Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-[11px] sm:text-xs h-9 pr-7 text-balance"
+                      className="text-sm h-9 pr-7 text-balance"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
@@ -113,12 +113,12 @@ export function Step6Content({ form }: StepContentProps) {
                         )
                       }
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                       m
                     </span>
                   </div>
                 </FormControl>
-                <FormMessage className="text-[10px]" />
+                <FormMessage className="text-sm" />
               </FormItem>
             )}
           />
@@ -128,8 +128,8 @@ export function Step6Content({ form }: StepContentProps) {
             control={form.control}
             name="pasilloActual.anchoPasilloDisponible"
             render={({ field }) => (
-              <FormItem className="col-span-2 sm:col-span-1">
-                <FormLabel className="text-[11px] text-balance">
+              <FormItem className="md:col-span-1">
+                <FormLabel className="text-sm text-balance">
                   {t("forms.fields.availableAisleWidth")}
                 </FormLabel>
                 <FormControl>
@@ -138,7 +138,7 @@ export function Step6Content({ form }: StepContentProps) {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className="text-[11px] sm:text-xs md:text-sm h-9 pr-7 text-balance"
+                      className="text-sm h-9 pr-7 text-balance"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
@@ -147,12 +147,12 @@ export function Step6Content({ form }: StepContentProps) {
                         )
                       }
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                       m
                     </span>
                   </div>
                 </FormControl>
-                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
+                <FormMessage className="text-sm" />
               </FormItem>
             )}
           />
@@ -172,7 +172,7 @@ export function Step6Content({ form }: StepContentProps) {
             name="pasilloActual.tipoEstanterias"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+                <FormLabel className="text-sm">
                   {t("forms.logistica.fields.aisle.shelfType")}
                 </FormLabel>
                 <Select
@@ -180,7 +180,7 @@ export function Step6Content({ form }: StepContentProps) {
                   defaultValue={field.value || undefined}
                 >
                   <FormControl>
-                    <SelectTrigger className="h-9 text-[11px] sm:text-xs md:text-sm w-full">
+                    <SelectTrigger className="h-9 text-sm w-full">
                       <SelectValue placeholder={t("common.select")} />
                     </SelectTrigger>
                   </FormControl>
@@ -189,27 +189,27 @@ export function Step6Content({ form }: StepContentProps) {
                       <SelectItem
                         key={option.value}
                         value={option.value}
-                        className="text-[11px] sm:text-xs md:text-sm"
+                        className="text-sm"
                       >
                         {t(option.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
+                <FormMessage className="text-sm" />
               </FormItem>
             )}
           />
 
           {/* Row 2: Niveles y Altura - 2 columnas */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid md:grid-cols-2 gap-2">
             {/* Nivel de estanterías */}
             <FormField
               control={form.control}
               name="pasilloActual.nivelEstanterias"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+                  <FormLabel className="text-sm">
                     {t("forms.fields.rackLevels")}
                   </FormLabel>
                   <FormControl>
@@ -218,7 +218,7 @@ export function Step6Content({ form }: StepContentProps) {
                       min="1"
                       step="1"
                       placeholder="0"
-                      className="text-[11px] sm:text-xs md:text-sm h-9"
+                      className="text-sm h-9"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
@@ -228,7 +228,7 @@ export function Step6Content({ form }: StepContentProps) {
                       }
                     />
                   </FormControl>
-                  <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
@@ -239,7 +239,7 @@ export function Step6Content({ form }: StepContentProps) {
               name="pasilloActual.alturaMaximaEstanteria"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+                  <FormLabel className="text-sm">
                     {t("forms.fields.maxRackHeight")}
                   </FormLabel>
                   <FormControl>
@@ -248,7 +248,7 @@ export function Step6Content({ form }: StepContentProps) {
                         type="number"
                         step="0.01"
                         placeholder="0.00"
-                        className="text-[11px] sm:text-xs md:text-sm h-9 pr-7"
+                        className="text-sm h-9 pr-7"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) =>
@@ -257,12 +257,12 @@ export function Step6Content({ form }: StepContentProps) {
                           )
                         }
                       />
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                         m
                       </span>
                     </div>
                   </FormControl>
-                  <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />

@@ -2,11 +2,11 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { FileText, CalendarDays } from "lucide-react";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   Popover,
@@ -31,36 +31,26 @@ import {
 export function Step1Content({ form }: StepContentProps) {
   const { t, locale } = useI18n();
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="hidden md:flex items-center gap-2 pb-2 border-b">
-        <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
-          <FileText className="size-3 text-primary" />
-        </div>
-        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          {t("forms.industrial.steps.operation.title")}
-        </h3>
-      </div>
-
+    <div className="flex flex-col h-full space-y-3 sm:space-y-4">
       <FormField
         control={form.control}
         name="notasOperacion"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-1">
+          <FormItem className="flex-1 flex flex-col min-h-0">
+            <FormLabel className="text-sm flex items-center gap-1 shrink-0">
               {t("forms.industrial.fields.operationNotes.label")}
               <span className="text-destructive">*</span>
             </FormLabel>
             <FormControl>
               <Textarea
                 placeholder={t(
-                  "forms.industrial.fields.operationNotes.placeholder"
+                  "forms.industrial.fields.operationNotes.placeholder",
                 )}
-                className="min-h-[120px] sm:min-h-40 text-[11px] sm:text-xs md:text-sm bg-background/50 resize-none leading-relaxed text-pretty"
+                className="flex-1 text-sm bg-background/50 resize-none leading-relaxed text-pretty"
                 {...field}
               />
             </FormControl>
-            <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
+            <FormMessage className="text-sm shrink-0" />
           </FormItem>
         )}
       />
@@ -70,8 +60,8 @@ export function Step1Content({ form }: StepContentProps) {
         control={form.control}
         name="fechaCierre"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-1">
+          <FormItem className="shrink-0">
+            <FormLabel className="text-sm flex items-center gap-1">
               {t("forms.industrial.fields.closingDate.label")}
               <span className="text-muted-foreground text-[10px] ml-1">
                 {t("forms.industrial.fields.closingDate.optional")}
@@ -83,8 +73,8 @@ export function Step1Content({ form }: StepContentProps) {
                   <Button
                     variant="outline"
                     className={cn(
-                      "h-10 w-full sm:w-auto min-w-[220px] justify-start text-left font-normal text-[11px] sm:text-xs md:text-sm rounded-lg border-input/80",
-                      !field.value && "text-muted-foreground"
+                      "h-10 w-full sm:w-auto min-w-[220px] justify-start text-left font-normal text-sm rounded-lg border-input/80",
+                      !field.value && "text-muted-foreground",
                     )}
                   >
                     <CalendarDays className="size-4" />
@@ -107,7 +97,7 @@ export function Step1Content({ form }: StepContentProps) {
                 />
               </PopoverContent>
             </Popover>
-            <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
+            <FormMessage className="text-sm" />
           </FormItem>
         )}
       />

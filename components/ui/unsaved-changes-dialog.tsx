@@ -41,11 +41,11 @@ export function UnsavedChangesDialog({
             {t("common.unsavedChanges.description")}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="gap-2 md:gap-x-4 flex-wrap flex-row justify-center">
-          <AlertDialogCancel onClick={onCancel} className="text-sm w-fit">
+        <AlertDialogFooter className="gap-2 md:gap-x-4 flex flex-col md:flex-row md:justify-center justify-between items-center">
+          <AlertDialogCancel onClick={onCancel} className="text-sm w-full md:w-fit">
             {t("common.unsavedChanges.continue")}
           </AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} className="text-sm w-fit">
+          <AlertDialogAction onClick={onConfirm} className="text-sm w-full md:w-fit">
             {t("common.unsavedChanges.discard")}
           </AlertDialogAction>
         </AlertDialogFooter>

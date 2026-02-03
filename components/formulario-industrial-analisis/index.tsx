@@ -203,7 +203,7 @@ export default function FormularioIndustrialAnalisis({
 
   // ==================== MAIN RENDER ====================
   return (
-    <div className="flex flex-col h-full max-h-[85vh] bg-background w-full overflow-hidden">
+    <div className="flex flex-col h-full bg-background w-full overflow-hidden">
       {/* Header with stepper */}
       <FormHeader
         currentStep={currentStep}
@@ -219,11 +219,11 @@ export default function FormularioIndustrialAnalisis({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, onSubmitError)}
-          className="flex flex-col flex-1 min-h-0 w-full overflow-hidden"
+          className="flex flex-col flex-1 min-h-0 max-w-dvw mx-auto w-full h-full"
         >
-          <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
-            <div className="px-1.5 py-2 mx-auto w-full max-w-4xl">
-              <div className="animate-in fade-in-20 duration-150">
+          <main className="flex-1 overflow-y-auto scrollbar-thin">
+            <div className="p-2 mx-auto w-full h-full">
+              <div className="animate-in fade-in-50 slide-in-from-right-4 duration-300 h-full">
                 {renderStepContent()}
               </div>
             </div>

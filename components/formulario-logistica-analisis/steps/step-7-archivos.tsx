@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { FileUploadProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Progress } from "@/components/ui/progress";
-import { FileUploadProps } from "../types";
-import { useI18n } from "@/lib/i18n/context";
 import { MAX_FILES, ALL_ALLOWED_TYPES } from "@/constants/constants";
 import { UploadedFilesList } from "@/components/ui/uploaded-files-list";
-
 import { Upload, Camera, Video, FolderOpen, Paperclip } from "lucide-react";
 
 // ==================== SECTION HEADER ====================
@@ -28,7 +27,7 @@ function SectionHeader({
         <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
           <Icon className="size-3 text-primary" />
         </div>
-        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground text-balance">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground text-balance">
           {title}
         </h3>
       </div>
@@ -66,18 +65,17 @@ export function Step7Content({
   const canAddMore = !readOnly && totalFiles < MAX_FILES;
 
   return (
-    <div className="flex flex-col h-full space-y-4">
-      {/* Section Header */}
+    <div className="flex flex-col h-full space-y-3 sm:space-y-4 min-h-full pb-2">
+      {/* Section Header - Desktop only */}
       <SectionHeader
         icon={Paperclip}
-        title={t("forms.logistica.steps.files.title")}
+        title={t("forms.css.steps.files.title")}
         badge={
           <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
             {totalFiles}/{MAX_FILES}
           </span>
         }
       />
-
       {/* Hidden inputs */}
       <input
         ref={cameraPhotoRef}
@@ -127,8 +125,7 @@ export function Step7Content({
                 <Camera className="size-4 text-blue-600" />
               </div>
               <span className="text-xs font-medium">
-                {t("forms.files.takePhoto").split(" ")[1] ||
-                  t("forms.files.takePhoto")}
+                {t("forms.files.takePhoto")}
               </span>
             </Button>
 
@@ -147,8 +144,7 @@ export function Step7Content({
                 <Video className="size-4 text-violet-600" />
               </div>
               <span className="text-xs font-medium">
-                {t("forms.files.recordVideo").split(" ")[1] ||
-                  t("forms.files.recordVideo")}
+                {t("forms.files.recordVideo")}
               </span>
             </Button>
 
@@ -190,13 +186,13 @@ export function Step7Content({
 
           {/* Mobile file limits info */}
           <div className="flex flex-wrap gap-2 justify-center pt-1">
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
               <Camera className="size-3" /> {t("forms.files.limits.images")}
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400">
               <Video className="size-3" /> {t("forms.files.limits.videos")}
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400">
               <FolderOpen className="size-3" /> {t("forms.files.limits.docs")}
             </span>
           </div>
@@ -340,15 +336,15 @@ export function Step7Content({
 
                     {/* File type limits */}
                     <div className="flex flex-wrap gap-2 justify-center pt-1">
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
                         <Camera className="size-3" />{" "}
                         {t("forms.files.limits.images")}
                       </span>
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400">
                         <Video className="size-3" />{" "}
                         {t("forms.files.limits.videos")}
                       </span>
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400">
                         <FolderOpen className="size-3" />{" "}
                         {t("forms.files.limits.docs")}
                       </span>
@@ -376,7 +372,7 @@ export function Step7Content({
       {archivos.length === 0 &&
         originalArchivos.length === 0 &&
         !isUploading && (
-          <p className="text-xs text-center text-muted-foreground py-2 text-balance italic">
+          <p className="text-sm text-center text-muted-foreground py-2 text-balance italic">
             {t("forms.files.noFiles")}
           </p>
         )}

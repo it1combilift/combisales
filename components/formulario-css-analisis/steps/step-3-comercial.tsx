@@ -1,3 +1,4 @@
+import { CalendarDays } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,6 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { StepContentProps } from "../types";
 import { FieldWrapper } from "../ui/field-wrapper";
-import { Briefcase, Phone, CalendarDays } from "lucide-react";
 
 import {
   Popover,
@@ -34,24 +34,24 @@ export function Step3Content({ form }: StepContentProps) {
 
   return (
     <div className="space-y-4 sm:space-y-5">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 gap-4 sm:gap-5">
         <FieldWrapper>
           <FormField
             control={form.control}
             name="distribuidor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+                <FormLabel className="text-sm font-medium flex items-center gap-1.5">
                   {t("forms.fields.distributor")}
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder={t("forms.fields.distributorPlaceholder")}
-                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs" />
+                <FormMessage className="text-sm" />
               </FormItem>
             )}
           />
@@ -63,19 +63,19 @@ export function Step3Content({ form }: StepContentProps) {
             name="contactoDistribuidor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+                <FormLabel className="text-sm font-medium flex items-center gap-1.5">
                   {t("forms.fields.distributorContact")}
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder={t(
-                      "forms.fields.distributorContactPlaceholder"
+                      "forms.fields.distributorContactPlaceholder",
                     )}
-                    className="h-11 sm:h-12 text-xs sm:text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                    className="h-11 sm:h-12 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs" />
+                <FormMessage className="text-sm" />
               </FormItem>
             )}
           />
@@ -87,7 +87,7 @@ export function Step3Content({ form }: StepContentProps) {
         name="fechaCierre"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+            <FormLabel className="text-sm font-medium flex items-center gap-1.5">
               {t("forms.fields.closingDate")}
             </FormLabel>
             <Popover>
@@ -95,10 +95,9 @@ export function Step3Content({ form }: StepContentProps) {
                 <FormControl>
                   <Button
                     variant="outline"
-                    size="sm"
                     className={cn(
-                      "w-full justify-start text-left font-normal text-xs sm:text-sm rounded-lg border-input/80",
-                      !field.value && "text-muted-foreground"
+                      "w-full justify-start text-left font-normal text-sm rounded-lg border-input/80",
+                      !field.value && "text-muted-foreground",
                     )}
                   >
                     <CalendarDays className="size-4" />
@@ -121,7 +120,7 @@ export function Step3Content({ form }: StepContentProps) {
                 />
               </PopoverContent>
             </Popover>
-            <FormMessage className="text-xs" />
+            <FormMessage className="text-sm" />
           </FormItem>
         )}
       />
@@ -132,17 +131,17 @@ export function Step3Content({ form }: StepContentProps) {
           name="datosClienteUsuarioFinal"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+              <FormLabel className="text-sm font-medium flex items-center gap-1.5">
                 {t("forms.fields.clientEndUserData")}
               </FormLabel>
               <FormControl>
                 <Textarea
                   placeholder={t("forms.fields.clientEndUserDataPlaceholder")}
-                  className="min-h-[100px] sm:min-h-[120px] text-xs sm:text-sm bg-background/50 resize-none border-input/80 focus:border-primary rounded-lg leading-relaxed"
+                  className="min-h-[100px] sm:min-h-[120px] text-sm bg-background/50 resize-none border-input/80 focus:border-primary rounded-lg leading-relaxed"
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-xs" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />

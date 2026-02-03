@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 import { FORM_STEPS } from "../constants";
 import { Progress } from "@/components/ui/progress";
 import { DialogTitle } from "@/components/ui/dialog";
@@ -72,10 +71,10 @@ export function FormHeader({
 
         {/* Title */}
         <div className="flex-1 min-w-0">
-          <DialogTitle className="text-xs font-bold text-foreground truncate">
+          <DialogTitle className="text-sm font-bold text-foreground truncate">
             {t(currentStepConfig.title as any)}
           </DialogTitle>
-          <p className="text-[10px] text-muted-foreground truncate hidden sm:block">
+          <p className="text-xs text-muted-foreground truncate">
             {t(currentStepConfig.description as any)}
           </p>
         </div>
@@ -83,68 +82,62 @@ export function FormHeader({
         {/* Compact progress badge */}
         <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded-md mr-6">
           <Progress value={progress} className="h-1 w-16" />
-          <span className="text-[10px] font-medium text-primary">
-            {progress}%
-          </span>
+          <span className="text-xs font-medium text-primary">{progress}%</span>
         </div>
       </div>
 
-      {/* Compact stepper */}
-      <div className="flex items-center justify-center gap-0.5 mt-2 w-full">
+      {/* Responsive Stepper Wrapper - Compact Grid */}
+      <div className="flex items-center justify-center gap-y-2 gap-x-1 mt-2 w-full p-0">
         {visibleSteps.map((step, idx) => {
           const isCompleted = completedSteps.has(step.number);
           const isCurrent = currentStep === step.number;
           const Icon = step.icon;
 
           return (
-            <div key={step.number} className="flex items-center">
+            <div key={step.number} className="flex items-center px-0.5">
               <button
                 type="button"
                 onClick={() => onGoToStep(step.number)}
                 className={cn(
-                  "relative flex flex-col items-center justify-center transition-all duration-200 cursor-pointer",
+                  "relative flex flex-col items-center justify-start transition-all duration-200 cursor-pointer group w-fit",
                   "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5",
                 )}
                 title={t(step.title as any)}
               >
                 <div
                   className={cn(
-                    "size-6 sm:size-7 rounded-md flex items-center justify-center transition-all duration-200",
+                    "size-7 sm:size-8 rounded-lg flex items-center justify-center transition-all duration-200 border shadow-sm",
                     isCurrent
-                      ? "bg-primary text-primary-foreground shadow-sm"
+                      ? "bg-primary border-primary text-primary-foreground shadow-md scale-105"
                       : isCompleted
-                        ? "bg-primary/15 text-primary"
-                        : "bg-muted/80 text-muted-foreground hover:bg-muted hover:text-foreground",
+                        ? "bg-background border-primary/20 text-primary"
+                        : "bg-muted/40 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground hover:border-border",
                   )}
                 >
-                  {isCompleted && !isCurrent ? (
-                    <Check className="size-3" strokeWidth={2.5} />
-                  ) : (
-                    <Icon className="size-3" />
-                  )}
+                  <Icon className="size-4.5" />
                 </div>
-
                 <span
                   className={cn(
-                    "text-[9px] mt-1 font-medium max-w-[60px] truncate text-center leading-tight",
+                    "text-[10px] sm:text-[11px] mt-1 font-medium w-full text-center leading-none transition-colors line-clamp-1",
                     isCurrent
-                      ? "text-primary"
+                      ? "text-primary font-semibold"
                       : isCompleted
                         ? "text-primary/70"
-                        : "text-muted-foreground",
+                        : "text-muted-foreground group-hover:text-foreground",
                   )}
                 >
                   {t(step.shortTitle as any)}
                 </span>
               </button>
-              {/* Connector line */}
+
+              {/* Connector line - Only visible on very large screens */}
               {idx < visibleSteps.length - 1 && (
                 <div
                   className={cn(
-                    "w-2 sm:w-3 h-0.5 mx-0.5 self-start mt-3 sm:mt-3.5",
+                    "hidden sm:block sm:w-3 h-px mx-0.5 self-start mt-4 transition-colors duration-300",
                     completedSteps.has(step.number) &&
                       completedSteps.has(visibleSteps[idx + 1]?.number)
-                      ? "bg-primary/40"
+                      ? "bg-primary"
                       : "bg-border",
                   )}
                 />

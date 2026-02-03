@@ -173,14 +173,15 @@ export default function DealerVisitFormDialog({
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
           className="
-            max-w-[95vw] sm:max-w-dvw max-h-[90vh]
-            bg-background border border-border rounded-2xl
-            p-0 overflow-hidden
+            max-w-none
+            w-[95vw] h-[95vh]
+            md:w-[90vw] md:h-[75vh]
+            bg-background p-0 overflow-hidden flex flex-col
           "
         >
           {/* Step 1: Seller Selection */}
           {currentStep === "seller" && !isEditing && (
-            <div className="flex flex-col h-full max-h-[90vh]">
+            <div className="flex flex-col h-full">
               <div className="px-2 md:px-3 py-3 border-b border-border">
                 <DialogHeader className="text-left">
                   <DialogTitle className="text-sm font-semibold leading-tight tracking-tight text-balance">
@@ -205,7 +206,7 @@ export default function DealerVisitFormDialog({
 
           {/* Step 2: Form Type Selection */}
           {currentStep === "formType" && !isEditing && (
-            <div className="flex flex-col h-full max-h-[90vh]">
+            <div className="flex flex-col h-full">
               <div className="px-2 md:px-3 py-3 border-b border-border">
                 <div className="flex items-center gap-2 mb-2">
                   <Button
@@ -219,18 +220,19 @@ export default function DealerVisitFormDialog({
                   </Button>
                 </div>
                 <DialogHeader className="text-left">
-                  <DialogTitle className="text-xs sm:text-sm font-semibold leading-tight tracking-tight text-balance">
+                  <DialogTitle className="text-sm font-semibold leading-tight tracking-tight text-balance">
                     {t("visits.registerVisit")}
                   </DialogTitle>
-                  <DialogDescription className="text-[10px] md:text-xs text-muted-foreground leading-snug text-balance">
+                  <DialogDescription className="text-sm text-muted-foreground leading-snug text-balance">
                     {t("visits.selectFormTypeDescription")}
                   </DialogDescription>
                 </DialogHeader>
+
                 {/* Selected seller indicator */}
                 {selectedSeller && (
-                  <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="mt-2 flex items-center gap-2 text-muted-foreground">
                     <UserCheck className="size-3" />
-                    <span>
+                    <span className="text-sm">
                       {t("dealerPage.dialog.assignedTo")}:{" "}
                       <strong>
                         {selectedSeller.name || selectedSeller.email}
@@ -240,8 +242,8 @@ export default function DealerVisitFormDialog({
                 )}
               </div>
 
-              <div className="flex-1 overflow-y-auto px-2 md:px-3 py-2 md:py-3">
-                <div className="grid grid-cols-2 gap-1 sm:gap-2 md:gap-3">
+              <div className="p-3 w-full">
+                <div className="flex flex-col gap-3 justify-center items-center flex-wrap">
                   {FORM_OPTIONS.map((option) => {
                     const Icon = option.icon;
                     const isAvailable = option.available;
@@ -254,22 +256,24 @@ export default function DealerVisitFormDialog({
                           isAvailable && handleFormTypeSelected(option.type)
                         }
                         className={`
-                          group relative overflow-hidden rounded-lg p-3 text-left
-                          border transition-all duration-300
-                          cursor-pointer
+                            group overflow-hidden rounded-lg px-3 pb-0 pt-3 text-left
+                                              transition-all duration-300
+                                              cursor-pointer border border-border
+                                              h-full
+                                              md:py-4
                           ${
                             isAvailable
                               ? "bg-card border-border hover:border-primary/50 hover:shadow-md hover:-translate-y-px"
                               : "bg-muted/30 border-border/30 cursor-not-allowed opacity-50"
                           }
                         `}
-                        style={{ minHeight: "82px" }}
+                        style={{ height: "100%" }}
                       >
-                        <div className="flex items-start justify-between">
+                        <div className="h-full flex justify-between items-center gap-3 w-full">
                           <div
                             className={`
                               size-8 flex items-center justify-center rounded-md
-                              transition-all duration-300 
+                              transition-all duration-300
                               ${
                                 isAvailable
                                   ? "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
@@ -279,67 +283,57 @@ export default function DealerVisitFormDialog({
                           >
                             <Icon className="size-4" />
                           </div>
-
-                          {!isAvailable && (
-                            <Badge
-                              variant="secondary"
-                              className="text-[9px] font-medium"
+                          <div className="w-full flex flex-col gap-1 justify-center items-start">
+                            <h3 className="text-xs leading-tight line-clamp-2 text-balance font-balance font-semibold">
+                              {t(
+                                `visits.formTypes.${
+                                  option.type === VisitFormType.ANALISIS_CSS
+                                    ? "css"
+                                    : option.type ===
+                                        VisitFormType.ANALISIS_INDUSTRIAL
+                                      ? "industrial"
+                                      : option.type ===
+                                          VisitFormType.ANALISIS_LOGISTICA
+                                        ? "logistica"
+                                        : "straddleCarrier"
+                                }` as any,
+                              )}
+                            </h3>
+                            <p
+                              className="text-xs text-muted-foreground text-pretty"
+                              title={t(
+                                `visits.formTypes.descriptions.${
+                                  option.type === VisitFormType.ANALISIS_CSS
+                                    ? "css"
+                                    : option.type ===
+                                        VisitFormType.ANALISIS_INDUSTRIAL
+                                      ? "industrial"
+                                      : option.type ===
+                                          VisitFormType.ANALISIS_LOGISTICA
+                                        ? "logistica"
+                                        : "straddleCarrier"
+                                }` as any,
+                              )}
                             >
-                              {t("visits.comingSoon")}
-                            </Badge>
-                          )}
-                        </div>
-
-                        <div className="mt-2 space-y-1">
-                          <h3 className="text-[10px] leading-tight line-clamp-2 text-balance font-balance font-semibold md:text-xs">
-                            {t(
-                              `visits.formTypes.${
-                                option.type === VisitFormType.ANALISIS_CSS
-                                  ? "css"
-                                  : option.type ===
-                                      VisitFormType.ANALISIS_INDUSTRIAL
-                                    ? "industrial"
+                              {t(
+                                `visits.formTypes.descriptions.${
+                                  option.type === VisitFormType.ANALISIS_CSS
+                                    ? "css"
                                     : option.type ===
-                                        VisitFormType.ANALISIS_LOGISTICA
-                                      ? "logistica"
-                                      : "straddleCarrier"
-                              }` as any,
-                            )}
-                          </h3>
-                          <p
-                            title={t(
-                              `visits.formTypes.descriptions.${
-                                option.type === VisitFormType.ANALISIS_CSS
-                                  ? "css"
-                                  : option.type ===
-                                      VisitFormType.ANALISIS_INDUSTRIAL
-                                    ? "industrial"
-                                    : option.type ===
-                                        VisitFormType.ANALISIS_LOGISTICA
-                                      ? "logistica"
-                                      : "straddleCarrier"
-                              }` as any,
-                            )}
-                            className="text-[10px] text-muted-foreground leading-snug line-clamp-2 text-balance truncate"
-                          >
-                            {t(
-                              `visits.formTypes.descriptions.${
-                                option.type === VisitFormType.ANALISIS_CSS
-                                  ? "css"
-                                  : option.type ===
-                                      VisitFormType.ANALISIS_INDUSTRIAL
-                                    ? "industrial"
-                                    : option.type ===
-                                        VisitFormType.ANALISIS_LOGISTICA
-                                      ? "logistica"
-                                      : "straddleCarrier"
-                              }` as any,
-                            )}
-                          </p>
+                                        VisitFormType.ANALISIS_INDUSTRIAL
+                                      ? "industrial"
+                                      : option.type ===
+                                          VisitFormType.ANALISIS_LOGISTICA
+                                        ? "logistica"
+                                        : "straddleCarrier"
+                                }` as any,
+                              )}
+                            </p>
+                          </div>
                         </div>
 
                         {isAvailable && (
-                          <div className="mt-2 flex items-center gap-1 text-[10px] font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="mt-2 flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                             {t("visits.select")}
                             <ArrowRight className="size-3 group-hover:translate-x-1 transition-transform" />
                           </div>
@@ -356,11 +350,6 @@ export default function DealerVisitFormDialog({
           {currentStep === "form" && selectedFormType && (
             <>
               {(() => {
-                // For cloned visits being edited by SELLER, ALL files should be editable
-                // We merge original files into the main archivos array instead of keeping them separate
-                const isClonedVisit =
-                  !!existingVisit?.clonedFromId && !!existingVisit?.clonedFrom;
-
                 // When editing a clone as SELLER, we should NOT pass originalArchivos
                 // All files (including those from original) are now fully editable
                 const originalArchivos: any[] = [];

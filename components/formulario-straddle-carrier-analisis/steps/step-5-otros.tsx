@@ -2,10 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   ArrowUpDown,
@@ -39,7 +39,7 @@ function SectionHeader({
       <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
         <Icon className="size-3 text-primary" />
       </div>
-      <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wide text-balance">
+      <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide text-balance">
         {title}
       </h3>
     </div>
@@ -70,9 +70,7 @@ function DimensionInput({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-[10px] sm:text-[11px] font-medium text-muted-foreground">
-            {label}
-          </FormLabel>
+          <FormLabel className="text-sm font-medium">{label}</FormLabel>
           <FormControl>
             <div className="relative">
               <Icon className="absolute left-2 top-1/2 -translate-y-1/2 size-3 sm:size-3.5 text-muted-foreground" />
@@ -81,20 +79,20 @@ function DimensionInput({
                 min="0"
                 step="0.01"
                 placeholder={placeholder}
-                className="text-[11px] sm:text-xs md:text-sm h-8 sm:h-9 pl-7 sm:pl-8 pr-7 sm:pr-8"
+                className="text-sm h-8 sm:h-9 pl-7 sm:pl-8 pr-7 sm:pr-8"
                 value={field.value ?? ""}
                 onChange={(e) =>
                   field.onChange(
-                    e.target.value ? parseFloat(e.target.value) : null
+                    e.target.value ? parseFloat(e.target.value) : null,
                   )
                 }
               />
-              <span className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
+              <span className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                 {unit}
               </span>
             </div>
           </FormControl>
-          <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
+          <FormMessage className="text-sm" />
         </FormItem>
       )}
     />
@@ -110,7 +108,7 @@ export function Step5Content({ form }: StepContentProps) {
   const pisoPlano = form.watch("pisoPlano");
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3 sm:space-y-4 min-h-full pb-2">
       {/* ==================== ZONAS DE PASO ==================== */}
       <section>
         <SectionHeader
@@ -134,7 +132,7 @@ export function Step5Content({ form }: StepContentProps) {
       </section>
 
       {/* ==================== CONDICIONES DEL PISO ==================== */}
-      <section>
+      <section className="pt-2">
         <SectionHeader
           icon={Route}
           title={t("forms.straddleCarrier.fields.others.floorConditions.title")}
@@ -150,7 +148,7 @@ export function Step5Content({ form }: StepContentProps) {
                   "flex items-center gap-3 rounded-lg border p-1.5 cursor-pointer transition-all select-none",
                   field.value
                     ? "border-green-500/50 bg-green-50/50 dark:bg-green-950/20"
-                    : "border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+                    : "border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30",
                 )}
                 onClick={() => field.onChange(!field.value)}
               >
@@ -159,7 +157,7 @@ export function Step5Content({ form }: StepContentProps) {
                     "shrink-0 size-8 rounded-lg flex items-center justify-center",
                     field.value
                       ? "bg-green-100 dark:bg-green-900/50"
-                      : "bg-amber-100 dark:bg-amber-900/50"
+                      : "bg-amber-100 dark:bg-amber-900/50",
                   )}
                 >
                   {field.value ? (
@@ -169,18 +167,18 @@ export function Step5Content({ form }: StepContentProps) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer">
+                  <FormLabel className="text-sm font-medium cursor-pointer">
                     {t(
-                      "forms.straddleCarrier.fields.others.floorConditions.isFlat.label"
+                      "forms.straddleCarrier.fields.others.floorConditions.isFlat.label",
                     )}
                   </FormLabel>
-                  <FormDescription className="text-[11px] sm:text-xs text-pretty">
+                  <FormDescription className="text-xs text-pretty">
                     {field.value
                       ? t(
-                          "forms.straddleCarrier.fields.others.floorConditions.isFlat.flatDescription"
+                          "forms.straddleCarrier.fields.others.floorConditions.isFlat.flatDescription",
                         )
                       : t(
-                          "forms.straddleCarrier.fields.others.floorConditions.isFlat.irregularDescription"
+                          "forms.straddleCarrier.fields.others.floorConditions.isFlat.irregularDescription",
                         )}
                   </FormDescription>
                 </div>
@@ -202,9 +200,9 @@ export function Step5Content({ form }: StepContentProps) {
             name="condicionesPiso"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[11px] sm:text-[11px] font-medium text-muted-foreground">
+                <FormLabel className="text-sm font-medium">
                   {t(
-                    "forms.straddleCarrier.fields.others.floorConditions.description.label"
+                    "forms.straddleCarrier.fields.others.floorConditions.description.label",
                   )}
                 </FormLabel>
                 <FormControl>
@@ -212,17 +210,17 @@ export function Step5Content({ form }: StepContentProps) {
                     placeholder={
                       pisoPlano
                         ? t(
-                            "forms.straddleCarrier.fields.others.floorConditions.description.placeholderFlat"
+                            "forms.straddleCarrier.fields.others.floorConditions.description.placeholderFlat",
                           )
                         : t(
-                            "forms.straddleCarrier.fields.others.floorConditions.description.placeholderIrregular"
+                            "forms.straddleCarrier.fields.others.floorConditions.description.placeholderIrregular",
                           )
                     }
-                    className="min-h-16 sm:min-h-20 text-[11px] sm:text-sm resize-none"
+                    className="min-h-16 sm:min-h-20 text-sm resize-none"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
+                <FormMessage className="text-sm" />
               </FormItem>
             )}
           />
@@ -265,13 +263,13 @@ export function Step5Content({ form }: StepContentProps) {
               <FormControl>
                 <Textarea
                   placeholder={t(
-                    "forms.straddleCarrier.fields.others.additionalNotes.placeholder"
+                    "forms.straddleCarrier.fields.others.additionalNotes.placeholder",
                   )}
-                  className="min-h-20 sm:min-h-24 text-[11px] sm:text-sm resize-none"
+                  className="min-h-20 sm:min-h-24 text-sm resize-none"
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-[11px] sm:text-xs md:text-sm" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />

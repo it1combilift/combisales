@@ -340,7 +340,19 @@
     "rememberMe": "Remember me",
     "loginWithZoho": "Login with Zoho",
     "login": "Login",
-    "or_continue_with": "Or continue with"
+    "or_continue_with": "Or continue with",
+    "password_placeholder": "••••••••",
+    "toasts": {
+      "accountBlocked": "Your account has been blocked. Contact the administrator.",
+      "zohoLinkError": "Could not link your Zoho account. Contact the administrator.",
+      "authError": "Authentication error: {{error}}",
+      "accessDeniedBlocked": "Access denied, your account has been blocked. Contact the administrator.",
+      "invalidCredentials": "Incorrect email or password.",
+      "loginSuccess": "Logged in successfully.",
+      "unexpectedError": "Unexpected error during login.",
+      "genericAuthError": "Authentication error. Please try again.",
+      "zohoAuthError": "Zoho authentication error. Please try again."
+    }
   },
   "taskPage": {
     "title": "Task Management",
@@ -1538,8 +1550,8 @@
           "description": "Commercial information"
         },
         "product": {
-          "title": "Product",
-          "shortTitle": "Product",
+          "title": "Description",
+          "shortTitle": "Description",
           "description": "Project description"
         },
         "container": {
@@ -1548,13 +1560,13 @@
           "description": "Type and operation"
         },
         "measurements": {
-          "title": "Measurements",
-          "shortTitle": "Measurements",
+          "title": "Measures",
+          "shortTitle": "Measures",
           "description": "Container dimensions"
         },
         "files": {
-          "title": "Files",
-          "shortTitle": "Files",
+          "title": "Attach",
+          "shortTitle": "Attach",
           "description": "Photos, videos and documents"
         }
       },
@@ -1618,17 +1630,17 @@
         },
         "operation": {
           "title": "Operation Description",
-          "shortTitle": "Operation",
+          "shortTitle": "Description",
           "description": "Operation details and restrictions"
         },
         "application": {
           "title": "Application Details",
-          "shortTitle": "Application",
+          "shortTitle": "Details",
           "description": "Technical information"
         },
         "batteries": {
           "title": "Electrical Specifications",
-          "shortTitle": "Batteries",
+          "shortTitle": "Energy",
           "description": "Power supply details"
         },
         "loads": {
@@ -1643,7 +1655,7 @@
         },
         "files": {
           "title": "Attached Files",
-          "shortTitle": "Files",
+          "shortTitle": "Attach",
           "description": "Photos, videos and documents"
         }
       },
@@ -1790,17 +1802,17 @@
         },
         "operation": {
           "title": "Operation Description",
-          "shortTitle": "Operation",
+          "shortTitle": "Description",
           "description": "Specify ramps, doorways, restrictions"
         },
         "application": {
           "title": "Application Details",
-          "shortTitle": "Application",
+          "shortTitle": "Details",
           "description": "Technical information"
         },
         "batteries": {
           "title": "Electrical Specifications",
-          "shortTitle": "Batteries",
+          "shortTitle": "Energy",
           "description": "Power supply details"
         },
         "loads": {
@@ -1815,7 +1827,7 @@
         },
         "files": {
           "title": "Attachments",
-          "shortTitle": "Files",
+          "shortTitle": "Attach",
           "description": "Photos, videos and documents"
         }
       },
@@ -2085,7 +2097,7 @@
         },
         "files": {
           "title": "Attachments",
-          "shortTitle": "Files",
+          "shortTitle": "Attach",
           "description": "Photos, videos and documents"
         }
       },

@@ -9,7 +9,7 @@ import { Spinner } from "../ui/spinner";
 import { signIn } from "next-auth/react";
 import { Checkbox } from "../ui/checkbox";
 import { useState, useEffect } from "react";
-import { loginSchema } from "@/schemas/auth";
+import { createLoginSchema } from "@/schemas/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Controller, useForm } from "react-hook-form";
@@ -28,7 +28,8 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
-  type LoginValues = z.infer<typeof loginSchema>;
+  const schema = createLoginSchema(t);
+  type LoginValues = z.infer<typeof schema>;
 
   const {
     register,
@@ -36,7 +37,7 @@ export function LoginForm({
     control,
     formState: { errors },
   } = useForm<LoginValues>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       email: "",
       password: "",
@@ -48,25 +49,26 @@ export function LoginForm({
   useEffect(() => {
     const error = searchParams.get("error");
     if (error === "AccountBlocked") {
-      toast.error("Tu cuenta ha sido bloqueada. Contacta al administrador.");
+      toast.error(t("loginForm.toasts.accountBlocked"));
       const url = new URL(window.location.href);
       url.searchParams.delete("error");
       window.history.replaceState({}, "", url.toString());
     } else if (error === "OAuthAccountNotLinked") {
-      toast.error(
-        "No se pudo vincular tu cuenta de Zoho. Contacta al administrador.",
-        { duration: 6000 }
-      );
+      toast.error(t("loginForm.toasts.zohoLinkError"), { duration: 6000 });
       const url = new URL(window.location.href);
       url.searchParams.delete("error");
       window.history.replaceState({}, "", url.toString());
     } else if (error) {
-      toast.error(`Error de autenticación: ${error}`);
+      toast.error(
+        t("loginForm.toasts.authError", {
+          error: decodeURIComponent(error), // Decode for cleaner message if needed, or pass raw
+        }),
+      );
       const url = new URL(window.location.href);
       url.searchParams.delete("error");
       window.history.replaceState({}, "", url.toString());
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   // Function to handle credentials login
   async function onSubmit(values: LoginValues) {
@@ -81,27 +83,24 @@ export function LoginForm({
 
       if (result?.error) {
         if (result.error === "ACCOUNT_BLOCKED") {
-          toast.error(
-            "Acceso denegado, tu cuenta ha sido bloqueada. Contacta al administrador.",
-            {
-              duration: 6000,
-            }
-          );
+          toast.error(t("loginForm.toasts.accessDeniedBlocked"), {
+            duration: 6000,
+          });
         } else {
-          toast.error("Correo o contraseña incorrectos.");
+          toast.error(t("loginForm.toasts.invalidCredentials"));
         }
         setIsLoading(false);
       } else if (result?.ok) {
-        toast.success("Has iniciado sesión correctamente.");
+        toast.success(t("loginForm.toasts.loginSuccess"));
         await new Promise((resolve) => setTimeout(resolve, 800));
         router.push("/dashboard/tasks");
         router.refresh();
       } else {
-        toast.error("Error inesperado al iniciar sesión.");
+        toast.error(t("loginForm.toasts.unexpectedError"));
         setIsLoading(false);
       }
     } catch (error) {
-      toast.error("Error de autenticación. Intenta nuevamente.");
+      toast.error(t("loginForm.toasts.genericAuthError"));
       setIsLoading(false);
     }
   }
@@ -112,7 +111,7 @@ export function LoginForm({
     try {
       await signIn("zoho", { callbackUrl: "/dashboard/tasks" });
     } catch (error) {
-      toast.error("Error de autenticación con Zoho. Intenta nuevamente.");
+      toast.error(t("loginForm.toasts.zohoAuthError"));
       setIsLoading(false);
     }
   }
@@ -161,7 +160,7 @@ export function LoginForm({
                         disabled={isLoading}
                         className={cn(
                           "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all",
-                          errors.email && "border-destructive"
+                          errors.email && "border-destructive",
                         )}
                       />
                     </div>
@@ -191,14 +190,14 @@ export function LoginForm({
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="password"
-                        placeholder="••••••••"
+                        placeholder={t("loginForm.password_placeholder")}
                         type="password"
                         aria-invalid={Boolean(errors.password)}
                         {...register("password")}
                         disabled={isLoading}
                         className={cn(
                           "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all",
-                          errors.password && "border-destructive"
+                          errors.password && "border-destructive",
                         )}
                       />
                     </div>

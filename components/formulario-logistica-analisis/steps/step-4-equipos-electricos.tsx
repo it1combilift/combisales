@@ -1,14 +1,14 @@
 "use client";
 
 import { Zap, Ban } from "lucide-react";
+import { TipoCorriente } from "../types";
 import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { AlertMessage } from "@/components/alert";
 import { TipoAlimentacion } from "@prisma/client";
-import { TipoCorriente } from "../types";
-import { useI18n } from "@/lib/i18n/context";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
   FormField,
@@ -42,7 +42,7 @@ export function Step4Content({ form }: StepContentProps) {
           variant="info"
           title={t("forms.logistica.fields.electricEquipment.notApplicable")}
           description={t(
-            "forms.logistica.fields.electricEquipment.notApplicableDescription"
+            "forms.logistica.fields.electricEquipment.notApplicableDescription",
           )}
         />
       </div>
@@ -50,14 +50,14 @@ export function Step4Content({ form }: StepContentProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4 pb-2">
       {/* Header */}
       <div className="hidden md:flex items-center justify-between gap-2 pb-2 border-b">
         <div className="flex items-center gap-2">
           <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
             <Zap className="size-3 text-primary" />
           </div>
-          <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             {t("forms.logistica.fields.electricEquipment.header")}
           </h3>
         </div>
@@ -72,15 +72,15 @@ export function Step4Content({ form }: StepContentProps) {
             <div className="space-y-0.5">
               <div className="flex items-center gap-x-1.5">
                 <Ban className="size-3 text-muted-foreground" />
-                <FormLabel className="text-xs font-medium cursor-pointer text-pretty">
+                <FormLabel className="text-sm font-medium cursor-pointer text-pretty">
                   {t(
-                    "forms.logistica.fields.electricEquipment.notApplicableToggle"
+                    "forms.logistica.fields.electricEquipment.notApplicableToggle",
                   )}
                 </FormLabel>
               </div>
               <FormDescription className="text-xs text-muted-foreground text-pretty max-w-sm border-l-2 border-muted-foreground/30 pl-2">
                 {t(
-                  "forms.logistica.fields.electricEquipment.notApplicableToggleDescription"
+                  "forms.logistica.fields.electricEquipment.notApplicableToggleDescription",
                 )}
               </FormDescription>
             </div>
@@ -97,7 +97,7 @@ export function Step4Content({ form }: StepContentProps) {
 
       {/* Campos de especificaciones (deshabilitados si noAplica) */}
       <div
-        className={`grid grid-cols-2 sm:grid-cols-3 gap-2 transition-opacity duration-200 ${
+        className={` grid grid-cols-2 sm:grid-cols-3 gap-2 transition-opacity duration-200 ${
           noAplica ? "opacity-50 pointer-events-none" : ""
         }`}
       >
@@ -107,24 +107,24 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.tipoCorriente"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+              <FormLabel className="text-sm">
                 {t("forms.fields.currentType")}
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
-                  <SelectTrigger className="h-8 text-[11px] sm:text-xs md:text-sm w-full">
+                  <SelectTrigger className="h-8 text-sm w-full">
                     <SelectValue placeholder={t("common.select")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {Object.values(TipoCorriente).map((tipo) => (
-                    <SelectItem key={tipo} value={tipo} className="text-[11px] sm:text-xs md:text-sm">
+                    <SelectItem key={tipo} value={tipo} className="text-sm">
                       {t(`visits.currentTypes.${tipo}` as any)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -135,7 +135,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.voltaje"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+              <FormLabel className="text-sm">
                 {t("forms.fields.voltage")}
               </FormLabel>
               <FormControl>
@@ -143,17 +143,17 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="220"
-                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-6"
+                    className="text-sm h-8 pr-6"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
                   />
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                     V
                   </span>
                 </div>
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -164,7 +164,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.frecuencia"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+              <FormLabel className="text-sm">
                 {t("forms.fields.frequency")}
               </FormLabel>
               <FormControl>
@@ -172,17 +172,17 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="50"
-                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-7"
+                    className="text-sm h-8 pr-7"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
                   />
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                     Hz
                   </span>
                 </div>
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -193,7 +193,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.amperaje"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+              <FormLabel className="text-sm">
                 {t("forms.fields.amperage")}
               </FormLabel>
               <FormControl>
@@ -201,17 +201,17 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="16"
-                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-5"
+                    className="text-sm h-8 pr-5"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
                   />
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                     A
                   </span>
                 </div>
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -222,7 +222,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.temperaturaAmbiente"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+              <FormLabel className="text-sm">
                 {t("forms.fields.ambientTemperature")}
               </FormLabel>
               <FormControl>
@@ -230,17 +230,17 @@ export function Step4Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     placeholder="20"
-                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-6"
+                    className="text-sm h-8 pr-6"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
                   />
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                     °C
                   </span>
                 </div>
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -251,7 +251,7 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.horasTrabajoPorDia"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+              <FormLabel className="text-sm">
                 {t("forms.fields.workHoursPerDay")}
               </FormLabel>
               <FormControl>
@@ -261,17 +261,17 @@ export function Step4Content({ form }: StepContentProps) {
                     min="0"
                     max="24"
                     placeholder="8"
-                    className="text-[11px] sm:text-xs md:text-sm h-8 pr-5"
+                    className="text-sm h-8 pr-5"
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                     value={field.value ?? ""}
                   />
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                     h
                   </span>
                 </div>
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -288,20 +288,20 @@ export function Step4Content({ form }: StepContentProps) {
           name="equiposElectricos.notas"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[11px] sm:text-xs md:text-sm">
+              <FormLabel className="text-sm">
                 {t("forms.logistica.fields.electricEquipment.notesLabel")}
               </FormLabel>
               <FormControl>
                 <Textarea
                   placeholder={t(
-                    "forms.logistica.fields.electricEquipment.notesPlaceholder"
+                    "forms.logistica.fields.electricEquipment.notesPlaceholder",
                   )}
-                  className="text-[11px] sm:text-xs md:text-sm min-h-[60px] resize-none"
+                  className="text-sm h-full resize-none"
                   {...field}
                   value={field.value ?? ""}
                 />
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />

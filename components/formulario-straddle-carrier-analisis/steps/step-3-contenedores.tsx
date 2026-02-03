@@ -1,6 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Weight, Box } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
 import { CONTAINER_SIZES } from "../constants";
@@ -8,8 +10,6 @@ import { UseFormReturn } from "react-hook-form";
 import { AlertMessage } from "@/components/alert";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Container, Weight, Box } from "lucide-react";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -47,7 +47,7 @@ function ContainerSizeCard({
               "rounded-lg border p-2.5 sm:p-3 transition-all",
               isSelected
                 ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                : "hover:border-primary/40"
+                : "hover:border-primary/40",
             )}
           >
             {/* Size header with checkbox */}
@@ -66,10 +66,10 @@ function ContainerSizeCard({
                 <Box
                   className={cn(
                     "size-3.5",
-                    isSelected ? "text-primary" : "text-muted-foreground"
+                    isSelected ? "text-primary" : "text-muted-foreground",
                   )}
                 />
-                <FormLabel className="text-[11px] sm:text-xs md:text-sm font-semibold cursor-pointer">
+                <FormLabel className="text-sm font-semibold cursor-pointer">
                   {label}
                 </FormLabel>
               </div>
@@ -81,7 +81,7 @@ function ContainerSizeCard({
               name={`contenedoresTamanios.${sizeKey}.cantidad`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] text-muted-foreground">
+                  <FormLabel className="text-sm text-muted-foreground">
                     {quantityLabel}
                   </FormLabel>
                   <FormControl>
@@ -92,12 +92,12 @@ function ContainerSizeCard({
                       disabled={!isSelected}
                       className={cn(
                         "text-center text-xs h-8",
-                        !isSelected && "opacity-50"
+                        !isSelected && "opacity-50",
                       )}
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value ? parseInt(e.target.value) : null
+                          e.target.value ? parseInt(e.target.value) : null,
                         )
                       }
                     />
@@ -126,7 +126,7 @@ export function Step3Content({ form }: StepContentProps) {
           variant="info"
           title={t("forms.straddleCarrier.fields.notApplicable.title")}
           description={t(
-            "forms.straddleCarrier.fields.notApplicable.containersDescription"
+            "forms.straddleCarrier.fields.notApplicable.containersDescription",
           )}
         />
       </div>
@@ -134,7 +134,7 @@ export function Step3Content({ form }: StepContentProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4 min-h-full pb-2">
       {/* ==================== OPCIONES GENERALES ==================== */}
       <section>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -148,7 +148,7 @@ export function Step3Content({ form }: StepContentProps) {
                   "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all select-none",
                   field.value
                     ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                    : "hover:bg-muted/30"
+                    : "hover:bg-muted/30",
                 )}
               >
                 <FormControl>
@@ -161,14 +161,14 @@ export function Step3Content({ form }: StepContentProps) {
                   className="flex-1 min-w-0"
                   onClick={() => field.onChange(!field.value)}
                 >
-                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-sm font-medium cursor-pointer leading-tight">
                     {t(
-                      "forms.straddleCarrier.fields.containers.individualHandling.label"
+                      "forms.straddleCarrier.fields.containers.individualHandling.label",
                     )}
                   </FormLabel>
-                  <FormDescription className="text-[11px] sm:text-xs md:text-sm leading-tight text-pretty">
+                  <FormDescription className="text-sm leading-tight text-pretty">
                     {t(
-                      "forms.straddleCarrier.fields.containers.individualHandling.description"
+                      "forms.straddleCarrier.fields.containers.individualHandling.description",
                     )}
                   </FormDescription>
                 </div>
@@ -186,7 +186,7 @@ export function Step3Content({ form }: StepContentProps) {
                   "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all select-none",
                   field.value
                     ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                    : "hover:bg-muted/30"
+                    : "hover:bg-muted/30",
                 )}
               >
                 <FormControl>
@@ -199,14 +199,14 @@ export function Step3Content({ form }: StepContentProps) {
                   className="flex-1 min-w-0"
                   onClick={() => field.onChange(!field.value)}
                 >
-                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-sm font-medium cursor-pointer leading-tight">
                     {t(
-                      "forms.straddleCarrier.fields.containers.doubleStacking.label"
+                      "forms.straddleCarrier.fields.containers.doubleStacking.label",
                     )}
                   </FormLabel>
-                  <FormDescription className="text-[11px] sm:text-xs md:text-sm leading-tight text-pretty">
+                  <FormDescription className="text-sm leading-tight text-pretty">
                     {t(
-                      "forms.straddleCarrier.fields.containers.doubleStacking.description"
+                      "forms.straddleCarrier.fields.containers.doubleStacking.description",
                     )}
                   </FormDescription>
                 </div>
@@ -226,7 +226,7 @@ export function Step3Content({ form }: StepContentProps) {
               sizeKey={size.key}
               label={size.label}
               quantityLabel={t(
-                "forms.straddleCarrier.fields.containers.quantityPerWeek"
+                "forms.straddleCarrier.fields.containers.quantityPerWeek",
               )}
             />
           ))}
@@ -240,7 +240,7 @@ export function Step3Content({ form }: StepContentProps) {
           name="pesoMaximoContenedor"
           render={({ field }) => (
             <FormItem className="max-w-xs">
-              <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium">
+              <FormLabel className="text-sm font-medium">
                 {t("forms.straddleCarrier.fields.containers.maxWeight.label")}
               </FormLabel>
               <FormControl>
@@ -255,7 +255,7 @@ export function Step3Content({ form }: StepContentProps) {
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? parseFloat(e.target.value) : null
+                        e.target.value ? parseFloat(e.target.value) : null,
                       )
                     }
                   />
@@ -264,7 +264,7 @@ export function Step3Content({ form }: StepContentProps) {
                   </span>
                 </div>
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -280,13 +280,13 @@ export function Step3Content({ form }: StepContentProps) {
               <FormControl>
                 <Textarea
                   placeholder={t(
-                    "forms.straddleCarrier.fields.containers.additionalInfo.placeholder"
+                    "forms.straddleCarrier.fields.containers.additionalInfo.placeholder",
                   )}
-                  className="min-h-20 text-sm resize-none text-[11px] sm:text-xs md:text-sm text-balance"
+                  className="min-h-20 text-sm resize-none text-balance"
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-[10px]" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />

@@ -1,11 +1,11 @@
 import {
-  FileText,
-  Package,
-  Zap,
   Ruler,
-  Layout,
+  Route,
   Paperclip,
   Building2,
+  PencilLine,
+  Unplug,
+  NotebookText,
 } from "lucide-react";
 
 // Customer data step (only for DEALER flow with enableCustomerEntry=true)
@@ -38,7 +38,7 @@ const REGULAR_STEPS = [
     title: "forms.industrial.steps.operation.title",
     shortTitle: "forms.industrial.steps.operation.shortTitle",
     description: "forms.industrial.steps.operation.description",
-    icon: FileText,
+    icon: PencilLine,
     color: "blue" as const,
     fields: ["notasOperacion", "fechaCierre"],
   },
@@ -47,7 +47,7 @@ const REGULAR_STEPS = [
     title: "forms.industrial.steps.application.title",
     shortTitle: "forms.industrial.steps.application.shortTitle",
     description: "forms.industrial.steps.application.description",
-    icon: Package,
+    icon: NotebookText,
     color: "amber" as const,
     fields: [
       "descripcionProducto",
@@ -67,7 +67,7 @@ const REGULAR_STEPS = [
     title: "forms.industrial.steps.batteries.title",
     shortTitle: "forms.industrial.steps.batteries.shortTitle",
     description: "forms.industrial.steps.batteries.description",
-    icon: Zap,
+    icon: Unplug,
     color: "violet" as const,
     fields: ["equiposElectricos"],
   },
@@ -85,7 +85,7 @@ const REGULAR_STEPS = [
     title: "forms.industrial.steps.aisle.title",
     shortTitle: "forms.industrial.steps.aisle.shortTitle",
     description: "forms.industrial.steps.aisle.description",
-    icon: Layout,
+    icon: Route,
     color: "rose" as const,
     fields: ["especificacionesPasillo"],
   },

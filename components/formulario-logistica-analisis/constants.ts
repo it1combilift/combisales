@@ -1,11 +1,11 @@
 import {
-  FileText,
-  Package,
-  Zap,
+  Unplug,
   Ruler,
   Route,
   Paperclip,
   Building2,
+  PencilLine,
+  NotebookText,
 } from "lucide-react";
 
 // Customer data step shown only when enableCustomerEntry is true
@@ -34,7 +34,7 @@ export const REGULAR_STEPS = [
     title: "forms.logistica.steps.operation.title",
     shortTitle: "forms.logistica.steps.operation.shortTitle",
     description: "forms.logistica.steps.operation.description",
-    icon: FileText,
+    icon: PencilLine,
     color: "primary" as const,
     fields: [
       "fechaCierre",
@@ -57,7 +57,7 @@ export const REGULAR_STEPS = [
     title: "forms.logistica.steps.application.title",
     shortTitle: "forms.logistica.steps.application.shortTitle",
     description: "forms.logistica.steps.application.description",
-    icon: Package,
+    icon: NotebookText,
     color: "blue" as const,
     fields: [
       "descripcionProducto",
@@ -77,7 +77,7 @@ export const REGULAR_STEPS = [
     title: "forms.logistica.steps.batteries.title",
     shortTitle: "forms.logistica.steps.batteries.shortTitle",
     description: "forms.logistica.steps.batteries.description",
-    icon: Zap,
+    icon: Unplug,
     color: "amber" as const,
     fields: ["equiposElectricos"],
   },

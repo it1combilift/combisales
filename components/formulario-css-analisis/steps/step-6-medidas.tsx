@@ -1,12 +1,10 @@
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ContenedorMedida } from "@prisma/client";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CONTENEDOR_MEDIDA_LABELS } from "@/interfaces/visits";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,
@@ -38,7 +36,7 @@ export function Step6Content({ form }: StepContentProps) {
   const handleMedidaToggle = (
     medida: ContenedorMedida,
     checked: boolean,
-    currentValue: ContenedorMedida[]
+    currentValue: ContenedorMedida[],
   ) => {
     if (checked) {
       return [...currentValue, medida];
@@ -51,20 +49,20 @@ export function Step6Content({ form }: StepContentProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <FormField
         control={form.control}
         name="contenedorMedidas"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+            <FormLabel className="text-sm font-medium flex items-center gap-1.5">
               {t("forms.css.fields.measurements.label")}
               <span className="text-destructive">*</span>
             </FormLabel>
             <FormControl>
               <div className="space-y-3">
                 {/* Standard sizes - grid layout */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
                   {standardSizes.map((medida) => {
                     const isSelected = field.value?.includes(medida);
                     return (
@@ -74,7 +72,7 @@ export function Step6Content({ form }: StepContentProps) {
                           "flex items-center justify-between rounded-xl border-2 p-2 sm:p-3 cursor-pointer transition-all duration-200 select-none",
                           isSelected
                             ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
-                            : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm"
+                            : "border-input/80 hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm",
                         )}
                       >
                         <div className="flex items-center gap-2 sm:gap-3">
@@ -85,13 +83,13 @@ export function Step6Content({ form }: StepContentProps) {
                                 handleMedidaToggle(
                                   medida,
                                   !!checked,
-                                  field.value || []
-                                )
+                                  field.value || [],
+                                ),
                               );
                             }}
                             className="size-4"
                           />
-                          <span className="text-xs sm:text-sm font-medium">
+                          <span className="text-sm font-medium">
                             {t(`visits.containerMeasures.${medida}` as any)}
                           </span>
                         </div>
@@ -103,7 +101,7 @@ export function Step6Content({ form }: StepContentProps) {
                 {/* Separator */}
                 <div className="flex items-center gap-3 py-1">
                   <div className="flex-1 h-px bg-border/60" />
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">
                     {t("forms.css.fields.measurements.customLabel")}
                   </span>
                   <div className="flex-1 h-px bg-border/60" />
@@ -115,7 +113,7 @@ export function Step6Content({ form }: StepContentProps) {
                     "flex items-center justify-between rounded-xl border-2 p-2 sm:p-3 cursor-pointer transition-all duration-200 select-none",
                     hasOtroSelected
                       ? "border-amber-500 bg-amber-500/5 shadow-md shadow-amber-500/10"
-                      : "border-input/80 hover:border-amber-500/50 hover:bg-accent/50 hover:shadow-sm"
+                      : "border-input/80 hover:border-amber-500/50 hover:bg-accent/50 hover:shadow-sm",
                   )}
                 >
                   <div className="flex items-center gap-2 sm:gap-3">
@@ -126,17 +124,19 @@ export function Step6Content({ form }: StepContentProps) {
                           handleMedidaToggle(
                             ContenedorMedida.OTRO,
                             !!checked,
-                            field.value || []
-                          )
+                            field.value || [],
+                          ),
                         );
                       }}
                       className="size-4"
                     />
                     <div className="flex flex-col">
-                      <span className="text-xs sm:text-sm font-medium">
-                        {t(`visits.containerMeasures.${ContenedorMedida.OTRO}` as any)}
+                      <span className="text-sm font-medium">
+                        {t(
+                          `visits.containerMeasures.${ContenedorMedida.OTRO}` as any,
+                        )}
                       </span>
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         {t("forms.css.fields.measurements.specifyAdditional")}
                       </span>
                     </div>
@@ -144,7 +144,7 @@ export function Step6Content({ form }: StepContentProps) {
                 </Label>
               </div>
             </FormControl>
-            <FormMessage className="text-xs" />
+            <FormMessage className="text-sm" />
           </FormItem>
         )}
       />
@@ -161,7 +161,9 @@ export function Step6Content({ form }: StepContentProps) {
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("forms.css.fields.measurements.specifyPlaceholder")}
+                  placeholder={t(
+                    "forms.css.fields.measurements.specifyPlaceholder",
+                  )}
                   className="h-11 text-xs sm:text-sm bg-background border-input/80 focus:border-primary rounded-lg"
                   {...field}
                 />
@@ -169,7 +171,7 @@ export function Step6Content({ form }: StepContentProps) {
               <FormDescription className="text-xs text-muted-foreground text-pretty">
                 {t("forms.css.fields.measurements.specifyDescription")}
               </FormDescription>
-              <FormMessage className="text-xs" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />

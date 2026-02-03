@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useI18n } from "@/lib/i18n/context";
+import { Calendar } from "@/components/ui/calendar";
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -24,7 +25,6 @@ import {
   ChevronRight,
   ChevronDown,
   CheckCircle2,
-  CalendarIcon,
   CalendarDays,
 } from "lucide-react";
 
@@ -62,7 +62,7 @@ export function Step1Content({ form }: StepContentProps) {
   }, [isMobile]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 sm:space-y-4 min-h-full">
       {/* ==================== INSTRUCCIONES - Collapsible ==================== */}
       <Collapsible
         open={isInstructionsOpen}
@@ -74,16 +74,16 @@ export function Step1Content({ form }: StepContentProps) {
             type="button"
             className="flex items-center w-full p-2 text-left"
           >
-            <div className="shrink-0 size-7  rounded-full flex items-center justify-center">
+            <div className="shrink-0 size-7 rounded-full flex items-center justify-center">
               <Info className="size-3.5" />
             </div>
-            <h3 className="flex-1 text-xs sm:text-sm font-semibold">
+            <h3 className="flex-1 text-sm font-semibold">
               {t("forms.straddleCarrier.fields.instructions.title")}
             </h3>
             <ChevronDown
               className={cn(
                 "size-4 transition-transform duration-200",
-                isInstructionsOpen && "rotate-180"
+                isInstructionsOpen && "rotate-180",
               )}
             />
           </button>
@@ -111,11 +111,8 @@ export function Step1Content({ form }: StepContentProps) {
                   ),
                 },
               ].map((item) => (
-                <div
-                  key={item.num}
-                  className="flex items-center gap-2 text-[11px] sm:text-xs"
-                >
-                  <span className="shrink-0 size-4 rounded-full bg-muted flex items-center justify-center text-[9px] sm:text-[10px]">
+                <div key={item.num} className="flex items-center gap-2 text-xs">
+                  <span className="shrink-0 size-4 rounded-full bg-muted flex items-center justify-center text-[9px] sm:text-xs">
                     {item.num}
                   </span>
                   <span className="truncate">{item.text}</span>
@@ -128,7 +125,7 @@ export function Step1Content({ form }: StepContentProps) {
 
       {/* ==================== SELECCIÓN DE TIPO DE CARGA ==================== */}
       <div className="space-y-3">
-        <h4 className="text-xs font-semibold text-foreground">
+        <h4 className="text-sm font-semibold text-foreground">
           {t("forms.straddleCarrier.fields.handlesContainers.question")}
         </h4>
 
@@ -143,7 +140,7 @@ export function Step1Content({ form }: StepContentProps) {
                   "flex items-center gap-3 rounded-lg border p-1.5 transition-all cursor-pointer select-none",
                   field.value
                     ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm"
-                    : "border-border hover:border-primary/50 hover:bg-muted/30"
+                    : "border-border hover:border-primary/50 hover:bg-muted/30",
                 )}
                 onClick={() => field.onChange(!field.value)}
               >
@@ -152,18 +149,18 @@ export function Step1Content({ form }: StepContentProps) {
                     "shrink-0 size-8 rounded-lg flex items-center justify-center transition-colors",
                     field.value
                       ? "bg-primary/20 text-primary"
-                      : "bg-muted text-muted-foreground"
+                      : "bg-muted text-muted-foreground",
                   )}
                 >
                   <Container className="size-4" />
                 </div>
                 <div className="flex-1 min-w-0 space-y-0.5">
-                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-sm font-medium cursor-pointer leading-tight">
                     {t("forms.straddleCarrier.fields.handlesContainers.label")}
                   </FormLabel>
-                  <FormDescription className="text-[10px] leading-tight text-pretty">
+                  <FormDescription className="text-xs leading-tight text-pretty">
                     {t(
-                      "forms.straddleCarrier.fields.handlesContainers.description"
+                      "forms.straddleCarrier.fields.handlesContainers.description",
                     )}
                   </FormDescription>
                 </div>
@@ -189,7 +186,7 @@ export function Step1Content({ form }: StepContentProps) {
                   "flex items-center gap-3 rounded-lg border p-1.5 transition-all cursor-pointer select-none",
                   field.value
                     ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm"
-                    : "border-border hover:border-primary/50 hover:bg-muted/30"
+                    : "border-border hover:border-primary/50 hover:bg-muted/30",
                 )}
                 onClick={() => field.onChange(!field.value)}
               >
@@ -198,18 +195,18 @@ export function Step1Content({ form }: StepContentProps) {
                     "shrink-0 size-8 rounded-lg flex items-center justify-center transition-colors",
                     field.value
                       ? "bg-primary/20 text-primary"
-                      : "bg-muted text-muted-foreground"
+                      : "bg-muted text-muted-foreground",
                   )}
                 >
                   <Package className="size-4" />
                 </div>
                 <div className="flex-1 min-w-0 space-y-0.5">
-                  <FormLabel className="text-[11px] sm:text-xs md:text-sm font-medium cursor-pointer leading-tight">
+                  <FormLabel className="text-sm font-medium cursor-pointer leading-tight">
                     {t("forms.straddleCarrier.fields.handlesSpecialLoad.label")}
                   </FormLabel>
-                  <FormDescription className="text-[10px] leading-tight text-pretty">
+                  <FormDescription className="text-xs leading-tight text-pretty">
                     {t(
-                      "forms.straddleCarrier.fields.handlesSpecialLoad.description"
+                      "forms.straddleCarrier.fields.handlesSpecialLoad.description",
                     )}
                   </FormDescription>
                 </div>
@@ -228,7 +225,7 @@ export function Step1Content({ form }: StepContentProps) {
 
         {/* Warning if none selected */}
         {!hasSelection && (
-          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 text-[11px] sm:text-xs bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 text-sm bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg px-3 py-2">
             <AlertCircle className="size-3.5 shrink-0" />
             <span>
               {t("forms.straddleCarrier.fields.handlesContainers.warning")}
@@ -241,13 +238,13 @@ export function Step1Content({ form }: StepContentProps) {
           <div className="rounded-lg bg-muted/40 border border-border/50 p-2.5 sm:p-3">
             <div className="flex items-center gap-1.5 mb-2">
               <CheckCircle2 className="size-3.5 text-green-600 dark:text-green-400" />
-              <span className="text-[11px] sm:text-xs font-medium text-foreground">
+              <span className="text-sm font-medium text-foreground">
                 {t(
-                  "forms.straddleCarrier.fields.handlesContainers.stepsToComplete"
+                  "forms.straddleCarrier.fields.handlesContainers.stepsToComplete",
                 )}
               </span>
             </div>
-            <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-balance">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 text-xs text-balance">
               {manejaContenedores && (
                 <>
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
@@ -283,7 +280,7 @@ export function Step1Content({ form }: StepContentProps) {
         name="fechaCierre"
         render={({ field }) => (
           <FormItem className="w-full">
-            <FormLabel className="text-[11px] sm:text-xs md:text-sm flex items-center gap-1.5">
+            <FormLabel className="text-sm flex items-center gap-1.5">
               {t("forms.straddleCarrier.fields.closingDate.label")}
             </FormLabel>
             <Popover>
@@ -292,8 +289,8 @@ export function Step1Content({ form }: StepContentProps) {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal h-8 text-xs",
-                      !field.value && "text-muted-foreground"
+                      "w-full justify-start text-left font-normal h-8 text-sm",
+                      !field.value && "text-muted-foreground",
                     )}
                   >
                     <CalendarDays className="size-3.5" />
@@ -302,7 +299,7 @@ export function Step1Content({ form }: StepContentProps) {
                           locale: locale === "en" ? undefined : es,
                         })
                       : t(
-                          "forms.straddleCarrier.fields.closingDate.placeholder"
+                          "forms.straddleCarrier.fields.closingDate.placeholder",
                         )}
                   </Button>
                 </FormControl>
@@ -318,7 +315,7 @@ export function Step1Content({ form }: StepContentProps) {
                 />
               </PopoverContent>
             </Popover>
-            <FormMessage className="text-[10px]" />
+            <FormMessage className="text-sm" />
           </FormItem>
         )}
       />

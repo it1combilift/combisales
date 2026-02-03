@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { useSession } from "next-auth/react";
 import { Role } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 interface UseLanguageValidationProps {
   locale: string;

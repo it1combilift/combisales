@@ -1,9 +1,11 @@
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { Ruler } from "lucide-react";
 import { StepContentProps } from "../types";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { TipoAlimentacion } from "@prisma/client";
-import { useState } from "react";
+
 import {
   CollapsibleImageTrigger,
   CollapsibleImageContent,
@@ -16,7 +18,6 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { useI18n } from "@/lib/i18n/context";
 
 // ==================== COMPACT NUMBERED INPUT ====================
 function NumberedInput({
@@ -35,34 +36,32 @@ function NumberedInput({
       <FormLabel className="font-medium flex items-center gap-1.5 text-balance">
         <span
           className={cn(
-            "shrink-0 size-4 rounded-full flex items-center justify-center text-[9px] md:text-xs font-bold",
+            "shrink-0 size-4 rounded-full flex items-center justify-center text-xs font-bold",
             isConditional
               ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
-              : "bg-muted text-muted-foreground"
+              : "bg-muted text-muted-foreground",
           )}
         >
           {number}
         </span>
-        <span className="truncate text-balance text-[9px] md:text-xs">
-          {label}
-        </span>
+        <span className="truncate text-pretty text-sm">{label}</span>
       </FormLabel>
       <FormControl>
         <div className="relative">
           <Input
             type="number"
             placeholder="0"
-            className="h-8 text-xs pr-9 font-mono text-balance"
+            className="h-8 text-sm pr-9 font-mono text-balance"
             {...field}
             onChange={(e) => field.onChange(parseFloat(e.target.value))}
             value={field.value ?? ""}
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
             mm
           </span>
         </div>
       </FormControl>
-      <FormMessage className="text-xs" />
+      <FormMessage className="text-sm" />
     </FormItem>
   );
 }
@@ -79,25 +78,22 @@ export function Step6Content({ form }: StepContentProps) {
   const [isImageOpen, setIsImageOpen] = useState(false);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4 min-h-full pb-2">
       {/* Header with reference image trigger */}
       <div className="hidden md:flex items-center gap-2 pb-2 border-b">
-        <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
-          <Ruler className="size-3 text-primary" />
-        </div>
-        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {t("forms.industrial.fields.aisle.header")}
         </h3>
         <div className="ml-auto flex items-center gap-2">
           {isGuided && (
-            <span className="text-[9px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
+            <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
               {t("forms.industrial.fields.aisle.guideRailsLabel")}
             </span>
           )}
 
           <CollapsibleImageTrigger
             buttonLabel={t(
-              "forms.industrial.fields.aisle.referenceImage.button"
+              "forms.industrial.fields.aisle.referenceImage.button",
             )}
             isOpen={isImageOpen}
             onClick={() => setIsImageOpen(!isImageOpen)}
@@ -111,7 +107,7 @@ export function Step6Content({ form }: StepContentProps) {
           <div className="size-5 rounded bg-primary/10 flex items-center justify-center shrink-0">
             <Ruler className="size-3 text-primary" />
           </div>
-          <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             {t("forms.industrial.fields.aisle.header")}
           </h3>
         </div>
@@ -132,7 +128,7 @@ export function Step6Content({ form }: StepContentProps) {
       )}
 
       {/* All fields in compact grid */}
-      <div className="grid grid-cols-2 gap-x-2 gap-y-3 place-items-center">
+      <div className="grid grid-cols-1 gap-x-2 gap-y-3 w-full">
         {/* Dimensiones del producto */}
         <FormField
           control={form.control}
@@ -229,7 +225,7 @@ export function Step6Content({ form }: StepContentProps) {
                 <NumberedInput
                   number={8}
                   label={t(
-                    "forms.industrial.fields.aisle.distBetweenGuideRails"
+                    "forms.industrial.fields.aisle.distBetweenGuideRails",
                   )}
                   field={field}
                   isConditional

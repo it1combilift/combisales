@@ -339,7 +339,19 @@
     "rememberMe": "Recordar usuario",
     "loginWithZoho": "Iniciar sesión con Zoho",
     "login": "Acceder",
-    "or_continue_with": "O continuar con"
+    "or_continue_with": "O continuar con",
+    "password_placeholder": "••••••••",
+    "toasts": {
+      "accountBlocked": "Tu cuenta ha sido bloqueada. Contacta al administrador.",
+      "zohoLinkError": "No se pudo vincular tu cuenta de Zoho. Contacta al administrador.",
+      "authError": "Error de autenticación: {{error}}",
+      "accessDeniedBlocked": "Acceso denegado, tu cuenta ha sido bloqueada. Contacta al administrador.",
+      "invalidCredentials": "Correo o contraseña incorrectos.",
+      "loginSuccess": "Has iniciado sesión correctamente.",
+      "unexpectedError": "Error inesperado al iniciar sesión.",
+      "genericAuthError": "Error de autenticación. Intenta nuevamente.",
+      "zohoAuthError": "Error de autenticación con Zoho. Intenta nuevamente."
+    }
   },
   "taskPage": {
     "title": "Gestión de tareas",
@@ -1536,8 +1548,8 @@
           "description": "Información comercial"
         },
         "product": {
-          "title": "Producto",
-          "shortTitle": "Producto",
+          "title": "Descripción",
+          "shortTitle": "Descripción",
           "description": "Descripción del proyecto"
         },
         "container": {
@@ -1616,18 +1628,18 @@
         },
         "operation": {
           "title": "Descripción de la operación",
-          "shortTitle": "Operación",
+          "shortTitle": "Descripción",
           "description": "Detalles de la operación a realizar"
         },
         "application": {
           "title": "Datos de la aplicación",
-          "shortTitle": "Aplicación",
+          "shortTitle": "Detalles",
           "description": "Información técnica"
         },
         "batteries": {
-          "title": "Datos de baterías",
-          "shortTitle": "Batería",
-          "description": "Información sobre baterías"
+          "title": "Datos de energía",
+          "shortTitle": "Energía",
+          "description": "Información sobre energía"
         },
         "loads": {
           "title": "Dimensiones de las cargas",
@@ -1788,18 +1800,18 @@
         },
         "operation": {
           "title": "Descripción de la operación",
-          "shortTitle": "Operación",
+          "shortTitle": "Descripción",
           "description": "Detalles de la operación a realizar"
         },
         "application": {
           "title": "Datos de la aplicación",
-          "shortTitle": "Aplicación",
+          "shortTitle": "Detalles",
           "description": "Información técnica"
         },
         "batteries": {
-          "title": "Datos de baterías",
-          "shortTitle": "Batería",
-          "description": "Información sobre baterías"
+          "title": "Datos de energía",
+          "shortTitle": "Energía",
+          "description": "Información sobre energía"
         },
         "loads": {
           "title": "Dimensiones y pesos de las cargas",
