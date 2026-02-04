@@ -70,21 +70,15 @@ export async function GET(req: NextRequest) {
         return unauthorizedResponse();
       }
 
-      // ADMIN: puede ver visitas COMPLETADAS creadas por usuarios DEALER + clones de SELLERs
-      // IMPORTANTE: NO mostrar visitas en BORRADOR del DEALER (solo el DEALER ve sus borradores)
+      // ADMIN: puede ver TODAS las visitas creadas por usuarios DEALER (incluyendo BORRADOR)
+      // Los clones se acceden vía la relación `clones` en VISIT_INCLUDE (misma lógica que SELLER)
+      // Esto permite mostrar UNA fila unificada por visita original con vista dual cuando existe clon
       if (currentUser.role === Role.ADMIN) {
         const visits = await prisma.visit.findMany({
           where: {
-            OR: [
-              // Visitas originales creadas por DEALERs que NO están en BORRADOR
-              // (COMPLETADA o EN_PROGRESO - este último se muestra cuando hay clon)
-              {
-                user: { role: Role.DEALER },
-                status: { not: VisitStatus.BORRADOR },
-              },
-              // Clones creados por SELLERs (tienen clonedFromId)
-              { clonedFromId: { not: null } },
-            ],
+            // Solo visitas originales creadas por DEALERs
+            user: { role: Role.DEALER },
+            clonedFromId: null, // Solo originales - los clones vienen vía VISIT_INCLUDE.clones
           },
           include: VISIT_INCLUDE,
           orderBy: { visitDate: "desc" },

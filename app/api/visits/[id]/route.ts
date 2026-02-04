@@ -399,7 +399,7 @@ export async function PUT(
  * Delete a visit
  *
  * Permission rules:
- * - ADMIN: can delete any visit
+ * - ADMIN: can delete any visit (supports cascade=true to delete original + clone)
  * - DEALER: can only delete their own visits
  * - SELLER: can only delete their OWN CLONES
  */
@@ -414,9 +414,16 @@ export async function DELETE(
     }
 
     const { id } = await params;
+    const { searchParams } = new URL(req.url);
+    const cascade = searchParams.get("cascade") === "true";
 
     const visit = await prisma.visit.findUnique({
       where: { id },
+      include: {
+        clones: {
+          select: { id: true },
+        },
+      },
     });
 
     if (!visit) {
@@ -450,7 +457,18 @@ export async function DELETE(
         return badRequestResponse("Solo puedes eliminar tus propias visitas");
       }
     }
-    // ADMIN: puede eliminar cualquier visita
+    // ADMIN: puede eliminar cualquier visita (con cascade opcional)
+
+    // ==================== CASCADE DELETE (ADMIN only) ====================
+    // If cascade=true and visit has clones, delete clones first
+    if (cascade && currentUser.role === Role.ADMIN && visit.clones.length > 0) {
+      // Delete all clones first
+      await prisma.visit.deleteMany({
+        where: {
+          clonedFromId: id,
+        },
+      });
+    }
 
     await prisma.visit.delete({
       where: { id },

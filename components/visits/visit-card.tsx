@@ -2,12 +2,12 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { formatDateShort, getInitials } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatDateShort, getInitials } from "@/lib/utils";
 import { VisitStatus, VisitFormType, Role } from "@prisma/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
   FORM_TYPE_ICONS,
@@ -103,10 +103,12 @@ export const VisitCard = ({
   let status = rawStatus;
 
   if (isDealer && rawStatus === VisitStatus.EN_PROGRESO) {
-    // For DEALER: EN_PROGRESO should appear as COMPLETADA
+    // For DEALER only: EN_PROGRESO should appear as COMPLETADA
+    // From dealer's perspective, they finished their part
     status = VisitStatus.COMPLETADA;
   } else if ((isSeller || isAdmin) && !visit.clonedFromId) {
-    // For SELLER/ADMIN: Determine effective status based on clone status
+    // For SELLER and ADMIN: Determine effective status based on clone status
+    // ADMIN behaves exactly like SELLER for status display
     // Original COMPLETADA visits show as EN_PROGRESO unless clone is COMPLETADA
     if (
       rawStatus === VisitStatus.COMPLETADA ||
@@ -122,11 +124,11 @@ export const VisitCard = ({
     }
   }
 
-  // SELLER: can only clone if no clone exists
-  const canClone = isSeller && !hasClone && onClone;
-  // Non-SELLER permissions
-  const canEdit = !isSeller;
-  const canDelete = !isSeller;
+  // SELLER/ADMIN: can clone if no clone exists
+  const canClone = (isSeller || isAdmin) && !hasClone && onClone;
+  // Permission logic
+  const canEdit = isDealer; // Only DEALER can edit original
+  const canDelete = isDealer || isAdmin; // DEALER can delete own, ADMIN can delete any
 
   const formTypeKeys: Record<VisitFormType, string> = {
     ANALISIS_CSS: "css",
@@ -181,8 +183,8 @@ export const VisitCard = ({
             <DropdownMenuContent align="end" className="w-52">
               <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
 
-              {/* SELLER: Unified dropdown based on clone status */}
-              {isSeller && (
+              {/* SELLER/ADMIN: Unified dropdown based on clone status */}
+              {(isSeller || isAdmin) && (
                 <>
                   {!hasClone ? (
                     // NOT CLONED: Show "View form" and "Clone visit"
@@ -210,6 +212,22 @@ export const VisitCard = ({
                           <Split className="size-4" />
                           {t("dealerPage.seller.cloneAction")}
                         </DropdownMenuItem>
+                      )}
+                      {/* ADMIN: Delete original without clone */}
+                      {isAdmin && onDelete && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="cursor-pointer text-destructive focus:text-destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete(visit);
+                            }}
+                          >
+                            <Trash2 className="size-4 text-destructive" />
+                            {t("visits.deleteVisit")}
+                          </DropdownMenuItem>
+                        </>
                       )}
                     </>
                   ) : (
@@ -251,11 +269,15 @@ export const VisitCard = ({
                           {t("dealerPage.seller.editClonedForm")}
                         </DropdownMenuItem>
                       )}
-                      {onDeleteClone && clone && (
+                      {/* SELLER: Delete clone only */}
+                      {isSeller && onDeleteClone && clone && (
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            onClick={() => onDeleteClone(visit)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteClone(visit);
+                            }}
                             className={`${clone.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
                             disabled={clone.status === VisitStatus.COMPLETADA}
                           >
@@ -264,13 +286,29 @@ export const VisitCard = ({
                           </DropdownMenuItem>
                         </>
                       )}
+                      {/* ADMIN: Delete original with clone (cascade) */}
+                      {isAdmin && onDelete && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="cursor-pointer text-destructive focus:text-destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete(visit);
+                            }}
+                          >
+                            <Trash2 className="size-4 text-destructive" />
+                            {t("dealerPage.admin.deleteWithClone")}
+                          </DropdownMenuItem>
+                        </>
+                      )}
                     </>
                   )}
                 </>
               )}
 
-              {/* Non-SELLER: Standard dropdown */}
-              {!isSeller && (
+              {/* DEALER only: Standard dropdown */}
+              {isDealer && (
                 <>
                   <DropdownMenuItem
                     className="cursor-pointer"
@@ -351,12 +389,13 @@ export const VisitCard = ({
 
         {/* Status Section: Original and Clone (when applicable) */}
         {(isSeller || isAdmin) && hasClone && clone ? (
-          // DUAL STATUS VIEW for SELLER/ADMIN with clone - REFACTORED
+          // DUAL STATUS VIEW for SELLER and ADMIN with clone
+          // Both see the same dual representation
           <div className="flex flex-col overflow-hidden space-y-2">
             {/* Original Record Status */}
             <div className="flex items-center justify-between p-2.5 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-dashed border-blue-200 dark:border-blue-900 border-b relative">
               <div className="flex items-center gap-3">
-                <Avatar className="size-8 shrink-0 border-2 border-blue-200 dark:border-blue-800">
+                <Avatar className="size-10 shrink-0 border-2 border-blue-200 dark:border-blue-800">
                   <AvatarImage
                     src={visit.user?.image || undefined}
                     alt={visit.user?.name || visit.user?.email || "Dealer"}
@@ -390,7 +429,7 @@ export const VisitCard = ({
             {/* Clone Record Status */}
             <div className="flex items-center justify-between p-2.5 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg border border-dashed border-emerald-200 dark:border-emerald-900">
               <div className="flex items-center gap-3">
-                <Avatar className="size-8 shrink-0 border-2 border-emerald-200 dark:border-emerald-800">
+                <Avatar className="size-10 shrink-0 border-2 border-emerald-200 dark:border-emerald-800">
                   <AvatarImage
                     src={clone.user?.image || undefined}
                     alt={clone.user?.name || clone.user?.email || "Seller"}
@@ -440,7 +479,10 @@ export const VisitCard = ({
                 </span>
               </div>
             </div>
-            <Badge variant={STATUS_VARIANTS[status]} className="shrink-0">
+            <Badge
+              variant={STATUS_VARIANTS[status]}
+              className="shrink-0 text-[10px] h-5 px-2 font-medium"
+            >
               {t(`visits.statuses.${statusKeys[status]}` as any)}
             </Badge>
           </div>
@@ -448,16 +490,16 @@ export const VisitCard = ({
 
         {/* Additional Info Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t">
-          {/* Dealer Info (for SELLER/ADMIN) */}
+          {/* Dealer Info (for SELLER/ADMIN when no clone - with clone the DUAL view shows this) */}
           {(isSeller || isAdmin) && !hasClone && (
-            <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors">
-              <Avatar className="size-7 shrink-0">
+            <div className="flex items-center gap-3">
+              <Avatar className="size-10 shrink-0 border-2 border-blue-200 dark:border-blue-800">
                 <AvatarImage
                   src={visit.user?.image || undefined}
                   alt={visit.user?.name || visit.user?.email || "Dealer"}
                   className="object-center object-cover"
                 />
-                <AvatarFallback className="text-[10px]">
+                <AvatarFallback className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">
                   {visit.user?.name
                     ? getInitials(visit.user.name)
                     : visit.user?.email
@@ -465,31 +507,16 @@ export const VisitCard = ({
                       : "D"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col min-w-0 flex-1">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
                   {t("dealerPage.columns.dealer")}
                 </span>
-                <span className="text-xs font-medium truncate">
+                <span className="text-xs text-blue-900 dark:text-blue-200 font-medium truncate">
                   {visit.user?.name || t("users.card.noName")}
                 </span>
               </div>
             </div>
           )}
-
-          {/* Visit Date */}
-          <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors sm:col-span-2">
-            <div className="size-7 rounded-full bg-muted flex items-center justify-center shrink-0">
-              <Calendar className="size-3.5 text-muted-foreground" />
-            </div>
-            <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
-                {t("visits.visitDate")}
-              </span>
-              <span className="text-xs font-medium">
-                {formatDateShort(visit.visitDate, locale)}
-              </span>
-            </div>
-          </div>
 
           {/* Assigned Seller Info (for DEALER or when exists) */}
           {visit.assignedSeller && (

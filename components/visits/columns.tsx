@@ -205,13 +205,14 @@ export function createColumns(
       const hasClone = visit.clones && visit.clones.length > 0;
       const clone = hasClone ? visit.clones![0] : null;
 
-      // For DEALER: EN_PROGRESO should appear as COMPLETADA
-      // EN_PROGRESO is only meaningful in the SELLER flow
+      // For DEALER only: EN_PROGRESO should appear as COMPLETADA
+      // From dealer's perspective, they finished their part
       if (isDealer && status === VisitStatus.EN_PROGRESO) {
         status = VisitStatus.COMPLETADA;
       }
 
-      // For SELLER/ADMIN: Determine effective status based on clone status
+      // For SELLER and ADMIN: Determine effective status based on clone status
+      // ADMIN behaves exactly like SELLER for status display
       // Original COMPLETADA visits show as EN_PROGRESO unless clone is COMPLETADA
       if ((isSeller || isAdmin) && !visit.clonedFromId) {
         // This is an original visit from a DEALER
@@ -238,7 +239,8 @@ export function createColumns(
         COMPLETADA: "success",
       };
 
-      // SELLER/ADMIN: Show dual status when clone exists - UNIFIED VIEW
+      // SELLER and ADMIN: Show dual status when clone exists - UNIFIED VIEW
+      // Both SELLER and ADMIN see the same dual representation
       if ((isSeller || isAdmin) && hasClone && clone) {
         const originalStatus = status;
         const cloneStatus = clone.status;
@@ -574,11 +576,12 @@ export function createColumns(
       const hasClone = visit.clones && visit.clones.length > 0;
       const clone = hasClone ? visit.clones![0] : null;
 
-      // For SELLER: unified row logic - they only see originals
+      // For SELLER/ADMIN: unified row logic - they only see originals
       // Dropdown changes based on whether a clone exists
-      const canClone = isSeller && !hasClone && onClone;
-      const canEdit = !isSeller; // SELLER cannot edit original, but can edit clone via onEditClone
-      const canDelete = !isSeller; // SELLER cannot delete original, but can delete clone via onDeleteClone
+      // ADMIN has same clone capabilities as SELLER
+      const canClone = (isSeller || isAdmin) && !hasClone && onClone;
+      const canEdit = isDealer; // Only DEALER can edit original
+      const canDelete = isDealer || isAdmin; // DEALER can delete own, ADMIN can delete any
 
       return (
         <DropdownMenu>
@@ -596,8 +599,8 @@ export function createColumns(
             <DropdownMenuLabel>{t("table.actions")}</DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            {/* SELLER: Unified dropdown based on clone status */}
-            {isSeller && (
+            {/* SELLER/ADMIN: Unified dropdown based on clone status */}
+            {(isSeller || isAdmin) && (
               <>
                 {!hasClone ? (
                   // NOT CLONED: Show "View form" and "Clone visit"
@@ -619,6 +622,19 @@ export function createColumns(
                         <Split className="size-4" />
                         {t("dealerPage.seller.cloneAction")}
                       </DropdownMenuItem>
+                    )}
+                    {/* ADMIN: Delete original without clone */}
+                    {isAdmin && onDelete && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => onDelete(visit)}
+                          className="cursor-pointer text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="size-4 text-destructive" />
+                          {t("visits.deleteVisit")}
+                        </DropdownMenuItem>
+                      </>
                     )}
                   </>
                 ) : (
@@ -645,14 +661,14 @@ export function createColumns(
                     {onEditClone && clone && (
                       <DropdownMenuItem
                         onClick={() => onEditClone(visit)}
-                        className={`${clone.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-                        disabled={clone.status === VisitStatus.COMPLETADA}
+                        className="cursor-pointer"
                       >
                         <PencilLine className="size-4" />
                         {t("dealerPage.seller.editClonedForm")}
                       </DropdownMenuItem>
                     )}
-                    {onDeleteClone && clone && (
+                    {/* SELLER: Delete clone only */}
+                    {isSeller && onDeleteClone && clone && (
                       <>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -665,20 +681,32 @@ export function createColumns(
                         </DropdownMenuItem>
                       </>
                     )}
+                    {/* ADMIN: Delete original with clone (cascade) */}
+                    {isAdmin && onDelete && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => onDelete(visit)}
+                          className="cursor-pointer text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="size-4 text-destructive" />
+                          {t("dealerPage.admin.deleteWithClone")}
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </>
                 )}
               </>
             )}
 
-            {/* Non-SELLER: Standard dropdown */}
-            {!isSeller && (
+            {/* DEALER only: Standard dropdown */}
+            {isDealer && (
               <>
                 {/* Edit action */}
                 {onEdit && canEdit && (
                   <DropdownMenuItem
                     onClick={() => onEdit(visit)}
-                    className={`${visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-                    disabled={visit.status === VisitStatus.COMPLETADA}
+                    className="cursor-pointer"
                   >
                     <PencilLine className="size-4" />
                     {t("visits.editVisit")}

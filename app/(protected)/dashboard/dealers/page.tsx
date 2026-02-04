@@ -9,7 +9,6 @@ import { useSession } from "next-auth/react";
 import { useI18n } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
 import { useEffect, useState, useCallback } from "react";
 import { H1, Paragraph } from "@/components/fonts/fonts";
@@ -18,6 +17,7 @@ import { Plus, RefreshCw, ClipboardList } from "lucide-react";
 import { VisitsDataTable } from "@/components/visits/data-table";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
+import { DeleteVisitDialog } from "@/components/visits/delete-visit-dialog";
 
 import {
   AlertDialog,
@@ -33,7 +33,6 @@ import {
 const DealersPage = () => {
   const { t, locale } = useI18n();
   const router = useRouter();
-  const isMobile = useIsMobile();
   const { status: sessionStatus } = useSession();
 
   // State
@@ -46,6 +45,7 @@ const DealersPage = () => {
   const [isFormReadOnly, setIsFormReadOnly] = useState(false);
   const [userRole, setUserRole] = useState<Role | null>(null);
   const [isCloning, setIsCloning] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Check user roles
   const isAdmin = userRole === Role.ADMIN;
@@ -111,9 +111,9 @@ const DealersPage = () => {
     setIsVisitDialogOpen(true);
   };
 
-  // Clone visit (SELLER only)
+  // Clone visit (SELLER and ADMIN)
   const handleCloneVisit = async (visit: Visit) => {
-    if (!isSeller) return;
+    if (!isSeller && !isAdmin) return;
 
     // Cannot clone if already has a clone (Phase 4: one clone per original)
     if (visit.clones && visit.clones.length > 0) {
@@ -142,14 +142,14 @@ const DealersPage = () => {
     }
   };
 
-  // Phase 4: View clone detail (navigate to clone's detail page)
+  // Phase 4: View clone detail (navigate to clone's detail page) - SELLER and ADMIN
   const handleViewClone = (visit: Visit) => {
     if (visit.clones && visit.clones.length > 0) {
       router.push(`/dashboard/dealers/visits/${visit.clones[0].id}`);
     }
   };
 
-  // Phase 4: Edit clone (open dialog with clone data)
+  // Phase 4: Edit clone (open dialog with clone data) - SELLER and ADMIN
   const handleEditClone = async (visit: Visit) => {
     if (!visit.clones || visit.clones.length === 0) return;
 
@@ -179,7 +179,7 @@ const DealersPage = () => {
     }
   };
 
-  // Delete visit
+  // Delete visit - supports cascade delete for ADMIN
   const handleDeleteVisit = async () => {
     if (!visitToDelete) return;
 
@@ -190,8 +190,15 @@ const DealersPage = () => {
       return;
     }
 
+    setIsDeleting(true);
     try {
-      const response = await axios.delete(`/api/visits/${visitToDelete.id}`);
+      // For ADMIN deleting original with clone, cascade=true will delete both
+      const hasClone = visitToDelete.clones && visitToDelete.clones.length > 0;
+      const cascade = isAdmin && hasClone ? "?cascade=true" : "";
+
+      const response = await axios.delete(
+        `/api/visits/${visitToDelete.id}${cascade}`,
+      );
       if (response.status === 200) {
         toast.success(t("messages.deleted"));
         // Refresh visits to update the clones array
@@ -201,6 +208,8 @@ const DealersPage = () => {
     } catch (error) {
       console.error("Error deleting visit:", error);
       toast.error(t("messages.error"));
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -332,11 +341,11 @@ const DealersPage = () => {
           onEdit={handleEditVisit}
           onDelete={(v) => setVisitToDelete(v)}
           userRole={userRole}
-          onClone={isSeller ? handleCloneVisit : undefined}
-          onViewClone={isSeller ? handleViewClone : undefined}
-          onEditClone={isSeller ? handleEditClone : undefined}
+          onClone={isSeller || isAdmin ? handleCloneVisit : undefined}
+          onViewClone={isSeller || isAdmin ? handleViewClone : undefined}
+          onEditClone={isSeller || isAdmin ? handleEditClone : undefined}
           onDeleteClone={isSeller ? handleDeleteClone : undefined}
-          onViewForm={isSeller ? handleViewForm : undefined}
+          onViewForm={isSeller || isAdmin ? handleViewForm : undefined}
         />
       )}
 
@@ -356,28 +365,41 @@ const DealersPage = () => {
         readOnly={isFormReadOnly}
       />
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={!!visitToDelete}
-        onOpenChange={(open) => !open && setVisitToDelete(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-sm text-left text-balance">
-              {t("messages.confirmDelete")}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm text-left text-muted-foreground">
-              {t("messages.confirmDeleteDescription")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="space-x-2 grid grid-cols-2">
-            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteVisit}>
-              {t("common.delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Delete Confirmation Dialog - Use custom dialog for ADMIN (cascade support) */}
+      {isAdmin ? (
+        <DeleteVisitDialog
+          visit={visitToDelete}
+          open={!!visitToDelete}
+          onOpenChange={(open) => !open && setVisitToDelete(null)}
+          onConfirm={handleDeleteVisit}
+          isDeleting={isDeleting}
+        />
+      ) : (
+        <AlertDialog
+          open={!!visitToDelete}
+          onOpenChange={(open) => !open && setVisitToDelete(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-sm text-left text-balance">
+                {t("messages.confirmDelete")}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-sm text-left text-muted-foreground">
+                {t("messages.confirmDeleteDescription")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="space-x-2 grid grid-cols-2">
+              <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteVisit}
+                disabled={isDeleting}
+              >
+                {isDeleting ? t("common.deleting") : t("common.delete")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </section>
   );
 };

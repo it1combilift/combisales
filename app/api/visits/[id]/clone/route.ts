@@ -16,16 +16,16 @@ import {
 
 /**
  * POST /api/visits/[id]/clone
- * Clone an existing visit (SELLER only)
+ * Clone an existing visit (SELLER and ADMIN)
  *
  * Creates a complete copy of a visit assigned to the SELLER by a DEALER.
  * The cloned visit:
- * - Belongs to the SELLER (userId = SELLER)
+ * - Belongs to the current user (userId = SELLER or ADMIN)
  * - Has clonedFromId pointing to the original
  * - Status is BORRADOR (draft)
  * - Copies all form data
  * - Copies all file attachments (metadata references to Cloudinary)
- * - SELLER has full edit control over the cloned visit and its files
+ * - User has full edit control over the cloned visit and its files
  */
 export async function POST(
   req: NextRequest,
@@ -40,17 +40,23 @@ export async function POST(
 
     const { id } = await params;
 
-    // 1. Verificar que el usuario es SELLER
+    // 1. Verificar que el usuario es SELLER o ADMIN
     const currentUser = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { role: true },
     });
 
-    if (!currentUser || currentUser.role !== Role.SELLER) {
+    if (
+      !currentUser ||
+      (currentUser.role !== Role.SELLER && currentUser.role !== Role.ADMIN)
+    ) {
       return badRequestResponse(
-        "Solo los usuarios SELLER pueden clonar visitas",
+        "Solo los usuarios SELLER o ADMIN pueden clonar visitas",
       );
     }
+
+    const isSeller = currentUser.role === Role.SELLER;
+    const isAdmin = currentUser.role === Role.ADMIN;
 
     // 2. Obtener la visita original con todos sus datos
     const originalVisit = await prisma.visit.findUnique({
@@ -73,8 +79,10 @@ export async function POST(
       return badRequestResponse("CANNOT_CLONE_NON_DEALER_VISIT");
     }
 
-    // 4. Verificar que la visita está asignada a este SELLER
-    if (originalVisit.assignedSellerId !== session.user.id) {
+    // 4. Verificar permisos específicos
+    // - SELLER: solo puede clonar visitas asignadas a él
+    // - ADMIN: puede clonar cualquier visita de DEALER
+    if (isSeller && originalVisit.assignedSellerId !== session.user.id) {
       return badRequestResponse("Esta visita no está asignada a ti");
     }
 

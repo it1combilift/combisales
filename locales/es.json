@@ -70,6 +70,13 @@
       "dealer": "Dealer",
       "assignedSeller": "P. Manager",
       "company": "Cliente"
+    },
+    "admin": {
+      "deleteWithClone": "Eliminar con clon",
+      "deleteCascadeTitle": "Eliminar visita y clon",
+      "deleteCascadeDescription": "Esta visita tiene un clon asociado. Al eliminarla también se eliminará el clon permanentemente.",
+      "deleteCascadeWarning": "Tanto la visita original como su clon serán eliminados permanentemente.",
+      "deleteAll": "Eliminar todo"
     }
   },
   "dashboard": {
@@ -136,6 +143,7 @@
     "characters": "caracteres",
     "uploading": "Subiendo",
     "remove": "Eliminar",
+    "deleting": "Eliminando...",
     "powerSource": {
       "ELECTRICO": "Eléctrico",
       "DIESEL": "Diésel",

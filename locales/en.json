@@ -70,6 +70,13 @@
       "dealer": "Dealer",
       "assignedSeller": "P. Manager",
       "company": "Client"
+    },
+    "admin": {
+      "deleteWithClone": "Delete with clone",
+      "deleteCascadeTitle": "Delete visit and clone",
+      "deleteCascadeDescription": "This visit has an associated clone. Deleting it will also delete the clone permanently.",
+      "deleteCascadeWarning": "Both the original visit and its clone will be permanently deleted.",
+      "deleteAll": "Delete all"
     }
   },
   "dashboard": {
@@ -136,6 +143,7 @@
     "characters": "characters",
     "uploading": "Uploading",
     "remove": "Remove",
+    "deleting": "Deleting...",
     "powerSource": {
       "ELECTRICO": "Electric",
       "DIESEL": "Diesel",

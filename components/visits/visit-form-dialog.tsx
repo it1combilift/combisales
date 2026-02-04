@@ -21,7 +21,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "../ui/badge";
 
 export default function VisitFormDialog({
   open,
