@@ -3,25 +3,23 @@
 import React from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { formatDateShort } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useI18n } from "@/lib/i18n/context";
+import { formatDateShort } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertMessage } from "@/components/alert";
 import { use, useEffect, useState } from "react";
+import { AlertMessage } from "@/components/alert";
 import { EmptyCard } from "@/components/empty-card";
 import { H1, Paragraph } from "@/components/fonts/fonts";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { VisitStatus, VisitFormType, Role } from "@prisma/client";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
-import { useSession } from "next-auth/react";
-
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-
 import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
-import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
 import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
+import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
 import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
 
 import {
@@ -536,7 +534,15 @@ export default function DealerVisitDetailPage({
 
       {/* Edit Form Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="p-0 m-0 border-none shadow-none bg-none overflow-hidden">
+        <DialogContent
+          className="
+            max-w-none
+            w-[95vw] h-[80vh]
+            md:max-h-[80vh]
+            border border-border
+            bg-background p-0 overflow-hidden flex flex-col
+          "
+        >
           {renderEditForm()}
         </DialogContent>
       </Dialog>
