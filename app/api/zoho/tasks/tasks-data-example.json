@@ -1,43 +1,37 @@
 {
   "task": {
-    "Ubicaci_n": "Llano Bonito",
-
+    "Ubicaci_n": "Managua",
     "Owner": {
       "name": "Rodolfo Tuñón Marciaga",
       "id": "1627275000047983001",
       "email": "ventas1@combilift.es"
     },
-    "Description": "Visita a cliente para presentar adelanto de estudios. Cliente esta acorde a las propuestas y nos pide cotización formal.",
+    "Description": "Visita a cliente para revisar proyecto y cerrar negocio.",
     "$currency_symbol": "€",
-
     "$field_states": null,
-    "Closed_Time": "2026-01-20T16:24:42-05:00",
-
+    "Closed_Time": null,
     "$review_process": null,
-    "Last_Activity_Time": "2026-01-20T16:24:42-05:00",
+    "Last_Activity_Time": "2026-02-05T09:57:18-05:00",
     "Send_Notification_Email": false,
-
     "Modified_By": {
       "name": "Rodolfo Tuñón Marciaga",
       "id": "1627275000047983001",
       "email": "ventas1@combilift.es"
     },
-
     "$review": null,
     "$state": "save",
     "$process_flow": false,
     "$locked_for_me": false,
-    "id": "1627275000151976192",
+    "id": "1627275000155382108",
     "$approved": true,
-
-    "Remind_At": null,
-
-    "Who_Id": {
-      "name": "Clemente Ramos",
-      "id": "1627275000150465176"
+    "Remind_At": {
+      "ALARM": "FREQ=NONE;ACTION=POPUP;TRIGGER=DATE-TIME:2026-02-09T15:00:00-05:00"
     },
-    "Status": "Completada",
-
+    "Who_Id": {
+      "name": "Rimas Rosales",
+      "id": "1627275000104366030"
+    },
+    "Status": "No comenzada",
     "$approval": {
       "delegate": false,
       "takeover": false,
@@ -45,40 +39,33 @@
       "reject": false,
       "resubmit": false
     },
-    "Modified_Time": "2026-01-20T16:24:42-05:00",
-    "Due_Date": "2026-01-20",
+    "Modified_Time": "2026-02-05T09:57:18-05:00",
+    "Due_Date": "2026-02-09",
     "Priority": "Alta",
-    "Created_Time": "2025-12-19T14:59:08-05:00",
-    "Fecha_de_Realizaci_n": "2026-01-20T16:00:00-05:00",
+    "Created_Time": "2026-02-05T09:57:18-05:00",
+    "Fecha_de_Realizaci_n": null,
     "$editable": true,
     "Tarea_relacionada_con": "Cliente actual",
-    "Subject": "PNM NATHAN FOODS - Visita Comercial",
+    "Subject": "NI ECOTEC NICARAGUA - Visita Comercial",
     "$orchestration": false,
     "$se_module": "Deals",
-    "Fecha_de_Inicio": "2026-01-20T15:00:00-05:00",
-
+    "Fecha_de_Inicio": "2026-02-09T15:00:00-05:00",
     "Recurring_Activity": null,
-
     "What_Id": {
-      "name": "PNM NATHAN FOODS AM20NE",
-      "id": "1627275000150465192"
+      "name": "NI ECOTEC NICARAGUA CB2500",
+      "id": "1627275000148739001"
     },
     "Tipo_de_Tarea": "Visita Comercial",
     "$in_merge": false,
-
     "$u_id": null,
     "Locked__s": false,
-
     "Created_By": {
       "name": "Rodolfo Tuñón Marciaga",
       "id": "1627275000047983001",
       "email": "ventas1@combilift.es"
     },
-
     "Tag": [],
-
     "$zia_owner_assignment": null,
-
     "BEST_TIME": [],
     "$approval_state": "approved"
   }

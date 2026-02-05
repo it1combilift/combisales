@@ -1,12 +1,12 @@
 "use client";
 
-import { cn, formatDateShort } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
+import { cn, formatDateShort } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import AttachmentsGallery from "@/components/attachments-gallery";
 import { InfoField, InfoSection, NumberDisplay } from "./shared";
 import { FormularioLogisticaAnalisis } from "@/interfaces/visits";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   Calendar,
@@ -126,67 +126,64 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
           )}
 
           {/* Contact info */}
-          {formulario.email ||
-            (formulario.website && (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <InfoField
-                    label={t("forms.fields.email")}
-                    value={formulario.email}
-                    icon={Mail}
-                  />
-                  <InfoField
-                    label={t("forms.fields.website")}
-                    value={formulario.website}
-                    icon={Globe}
-                    isLink
-                  />
-                  <InfoField
-                    label={t("forms.fields.fiscalId")}
-                    value={formulario.numeroIdentificacionFiscal}
-                    icon={Hash}
-                  />
-                </div>
-
-                <Separator />
-              </>
-            ))}
+          {formulario.email && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <InfoField
+                  label={t("forms.fields.email")}
+                  value={formulario.email}
+                  icon={Mail}
+                />
+                <InfoField
+                  label={t("forms.fields.website")}
+                  value={formulario.website}
+                  icon={Globe}
+                  isLink
+                />
+                <InfoField
+                  label={t("forms.fields.fiscalId")}
+                  value={formulario.numeroIdentificacionFiscal}
+                  icon={Hash}
+                />
+              </div>
+              <Separator />
+            </>
+          )}
 
           {/* Address */}
-          {formulario.direccion ||
-            (formulario.codigoPostal && (
-              <>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                    <MapPin className="size-3" />
-                    {t("forms.sections.address")}
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <InfoField
-                      label={t("forms.fields.address")}
-                      value={formulario.direccion}
-                    />
-                    <InfoField
-                      label={t("forms.fields.city")}
-                      value={formulario.localidad}
-                    />
-                    <InfoField
-                      label={t("forms.fields.state")}
-                      value={formulario.provinciaEstado}
-                    />
-                    <InfoField
-                      label={t("forms.fields.country")}
-                      value={formulario.pais}
-                    />
-                    <InfoField
-                      label={t("forms.fields.postalCode")}
-                      value={formulario.codigoPostal}
-                    />
-                  </div>
+          {formulario.direccion && (
+            <>
+              <div className="space-y-3">
+                <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                  <MapPin className="size-3" />
+                  {t("forms.sections.address")}
                 </div>
-                <Separator />
-              </>
-            ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <InfoField
+                    label={t("forms.fields.address")}
+                    value={formulario.direccion}
+                  />
+                  <InfoField
+                    label={t("forms.fields.city")}
+                    value={formulario.localidad}
+                  />
+                  <InfoField
+                    label={t("forms.fields.state")}
+                    value={formulario.provinciaEstado}
+                  />
+                  <InfoField
+                    label={t("forms.fields.country")}
+                    value={formulario.pais}
+                  />
+                  <InfoField
+                    label={t("forms.fields.postalCode")}
+                    value={formulario.codigoPostal}
+                  />
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
 
           {/* Distributor info */}
           {(formulario.distribuidor || formulario.contactoDistribuidor) && (
@@ -211,10 +208,10 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
             </>
           )}
 
-          {/* Dates */}
-          {(formulario.fechaCierre || formulario.fechaEstimadaDefinicion) && (
+          {/* Additional info */}
+          {formulario.fechaCierre && (
             <>
-              <div className="flex justify-start items-center gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {formulario.fechaCierre && (
                   <InfoField
                     label={t("forms.fields.closingDate")}
@@ -222,32 +219,9 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                     icon={Calendar}
                   />
                 )}
-                {formulario.fechaEstimadaDefinicion && (
-                  <InfoField
-                    label={t("forms.fields.estimatedDefinitionDate")}
-                    value={formatDateShort(formulario.fechaEstimadaDefinicion, locale)}
-                    icon={Calendar}
-                  />
-                )}
               </div>
             </>
           )}
-
-          {/* if not info, set a messagge */}
-          {(!formulario.razonSocial &&
-            !formulario.personaContacto &&
-            !formulario.email &&
-            !formulario.website &&
-            !formulario.direccion &&
-            !formulario.codigoPostal &&
-            !formulario.distribuidor &&
-            !formulario.fechaCierre) ||
-            (!formulario.fechaEstimadaDefinicion &&
-              !formulario.contactoDistribuidor && (
-                <p className="text-sm text-muted-foreground italic">
-                  {t("forms.detail.noClientInfoProvided")}
-                </p>
-              ))}
         </div>
       </InfoSection>
 
@@ -262,7 +236,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
             <p
               className={cn(
                 "text-sm text-foreground whitespace-pre-wrap leading-relaxed",
-                !formulario.notasOperacion && "italic text-muted-foreground"
+                !formulario.notasOperacion && "italic text-muted-foreground",
               )}
             >
               {formulario.notasOperacion || t("forms.detail.notProvided")}
@@ -298,7 +272,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 "p-3 rounded-xl border",
                 formulario.tieneRampas
                   ? "bg-amber-500/5 border-amber-500/20"
-                  : "bg-muted/40 border-border/50"
+                  : "bg-muted/40 border-border/50",
               )}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -307,7 +281,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                     "size-4",
                     formulario.tieneRampas
                       ? "text-amber-600"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground",
                   )}
                 />
                 <span className="text-xs font-medium">
@@ -332,7 +306,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 "p-3 rounded-xl border",
                 formulario.tienePasosPuertas
                   ? "bg-blue-500/5 border-blue-500/20"
-                  : "bg-muted/40 border-border/50"
+                  : "bg-muted/40 border-border/50",
               )}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -341,7 +315,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                     "size-4",
                     formulario.tienePasosPuertas
                       ? "text-blue-600"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground",
                   )}
                 />
                 <span className="text-xs font-medium">
@@ -366,7 +340,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 "p-3 rounded-xl border",
                 formulario.tieneRestricciones
                   ? "bg-red-500/5 border-red-500/20"
-                  : "bg-muted/40 border-border/50"
+                  : "bg-muted/40 border-border/50",
               )}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -375,7 +349,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                     "size-4",
                     formulario.tieneRestricciones
                       ? "text-red-600"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground",
                   )}
                 />
                 <span className="text-xs font-medium">
@@ -447,7 +421,7 @@ export function LogisticaDetail({ formulario }: LogisticaDetailProps) {
                 className={cn(
                   "text-sm text-foreground whitespace-pre-wrap leading-relaxed",
                   !formulario.descripcionProducto &&
-                    "italic text-muted-foreground"
+                    "italic text-muted-foreground",
                 )}
               >
                 {formulario.descripcionProducto ||

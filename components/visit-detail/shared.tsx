@@ -51,7 +51,9 @@ export const InfoField = ({
             <ExternalLink className="size-3 shrink-0" />
           </a>
         ) : (
-          <span className="wrap-break-word text-sm text-wrap">{displayValue}</span>
+          <span className="wrap-break-word text-sm text-wrap">
+            {displayValue}
+          </span>
         )}
       </dd>
     </div>
@@ -110,7 +112,7 @@ export const StatCard = ({
   <div
     className={cn(
       "flex items-center gap-3 p-1 sm:p-2 rounded-xl bg-muted/40 border border-border/50",
-      className
+      className,
     )}
   >
     <div className="flex items-center justify-center size-8 rounded-lg bg-background border border-border/60 shadow-sm">

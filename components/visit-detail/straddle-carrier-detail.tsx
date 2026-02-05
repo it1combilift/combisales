@@ -1,11 +1,11 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import AttachmentsGallery from "@/components/attachments-gallery";
 import { InfoField, InfoSection, NumberDisplay } from "./shared";
+import AttachmentsGallery from "@/components/attachments-gallery";
 import { FormularioStraddleCarrierAnalisis } from "@/interfaces/visits";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   FileText,
@@ -25,7 +25,9 @@ import {
   AlertTriangle,
   Check,
   X,
+  Calendar,
 } from "lucide-react";
+import { formatDateShort } from "@/lib/utils";
 
 // ==================== CONTAINER SIZE LABELS ====================
 const CONTAINER_SIZE_LABELS: Record<string, string> = {
@@ -43,7 +45,7 @@ interface StraddleCarrierDetailProps {
 export function StraddleCarrierDetail({
   formulario,
 }: StraddleCarrierDetailProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const archivos = formulario.archivos || [];
 
   // Parse contenedoresTamanios JSON
@@ -90,39 +92,39 @@ export function StraddleCarrierDetail({
                   value={formulario.personaContacto}
                 />
               </div>
+
+              <Separator />
             </>
           )}
 
           {/* Contact info */}
-          {formulario.email ||
-            (formulario.website && (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <InfoField
-                    label={t("forms.fields.email")}
-                    value={formulario.email}
-                    icon={Mail}
-                  />
-                  <InfoField
-                    label={t("forms.fields.website")}
-                    value={formulario.website}
-                    icon={Globe}
-                    isLink
-                  />
-                  <InfoField
-                    label={t("forms.fields.fiscalId")}
-                    value={formulario.numeroIdentificacionFiscal}
-                    icon={Hash}
-                  />
-                </div>
-
-                <Separator />
-              </>
-            ))}
+          {formulario.email && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <InfoField
+                  label={t("forms.fields.email")}
+                  value={formulario.email}
+                  icon={Mail}
+                />
+                <InfoField
+                  label={t("forms.fields.website")}
+                  value={formulario.website}
+                  icon={Globe}
+                  isLink
+                />
+                <InfoField
+                  label={t("forms.fields.fiscalId")}
+                  value={formulario.numeroIdentificacionFiscal}
+                  icon={Hash}
+                />
+              </div>
+              <Separator />
+            </>
+          )}
 
           {/* Address */}
-          {formulario.direccion ||
-            (formulario.codigoPostal && (
+          {formulario.direccion && (
+            <>
               <div className="space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <MapPin className="size-3" />
@@ -151,12 +153,13 @@ export function StraddleCarrierDetail({
                   />
                 </div>
               </div>
-            ))}
+              <Separator />
+            </>
+          )}
 
           {/* Distributor info */}
           {(formulario.distribuidor || formulario.contactoDistribuidor) && (
             <>
-              <Separator />
               <div className="space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   <Truck className="size-3" />
@@ -173,25 +176,26 @@ export function StraddleCarrierDetail({
                   />
                 </div>
               </div>
+              <Separator />
             </>
           )}
 
-          {/* if not info, set a messagge */}
-          {!formulario.razonSocial &&
-            !formulario.personaContacto &&
-            !formulario.email &&
-            !formulario.website &&
-            !formulario.direccion &&
-            !formulario.codigoPostal &&
-            !formulario.distribuidor &&
-            !formulario.contactoDistribuidor && (
-              <p className="text-sm text-muted-foreground italic">
-                {t("forms.detail.noClientInfoProvided")}
-              </p>
-            )}
+          {/* Additional info */}
+          {formulario.fechaCierre && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {formulario.fechaCierre && (
+                  <InfoField
+                    label={t("forms.fields.closingDate")}
+                    value={formatDateShort(formulario.fechaCierre, locale)}
+                    icon={Calendar}
+                  />
+                )}
+              </div>
+            </>
+          )}
         </div>
       </InfoSection>
-
       {/* ==================== TIPO DE OPERACIÓN ==================== */}
       <InfoSection title={t("forms.detail.operationType")} icon={Forklift}>
         <div className="space-y-4">

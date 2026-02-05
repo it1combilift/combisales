@@ -9,7 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
 import { H1, MonoText } from "@/components/fonts/fonts";
 import { useState, useEffect, useCallback } from "react";
-import { ZohoAccount, ZohoTask } from "@/interfaces/zoho";
+import { ZohoAccount, ZohoDeal, ZohoTask } from "@/interfaces/zoho";
 import { VisitCard } from "@/components/visits/visit-card";
 import { createColumns } from "@/components/visits/columns";
 import AnimatedTabsComponent from "@/components/accounts/tabs";
@@ -17,6 +17,16 @@ import { VisitsDataTable } from "@/components/visits/data-table";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { TaskDetailsCard } from "@/components/tasks/task-details-card";
+import { ClientContext } from "@/interfaces/client-context";
+import {
+  accountToClientContext,
+  dealToClientContext,
+  clientContextToCustomer,
+  getTaskSourceModule,
+  isModuleSupported,
+  hasRelatedEntity,
+  logClientContextResolution,
+} from "@/lib/client-context";
 
 import {
   ArrowLeft,
@@ -48,7 +58,9 @@ interface TaskDetailPageProps {
 
 const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
   const [task, setTask] = useState<ZohoTask | null>(null);
-  const [account, setAccount] = useState<ZohoAccount | null>(null);
+  const [clientContext, setClientContext] = useState<ClientContext | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [taskId, setTaskId] = useState<string>("");
   const [visits, setVisits] = useState<Visit[]>([]);
@@ -59,6 +71,124 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
   const router = useRouter();
   const isMobile = useIsMobile();
   const { t, locale } = useI18n();
+
+  /**
+   * Fetch client data based on $se_module
+   * Supports: Accounts, Deals
+   * Future: Leads (not yet implemented)
+   */
+  const fetchClientContext = useCallback(
+    async (taskData: ZohoTask): Promise<ClientContext | null> => {
+      // Check if task has a related entity
+      if (!hasRelatedEntity(taskData)) {
+        logClientContextResolution(
+          taskData.id,
+          null,
+          false,
+          "No What_Id present",
+        );
+        return null;
+      }
+
+      const sourceModule = getTaskSourceModule(taskData);
+      const whatId = taskData.What_Id!.id;
+
+      // Check if module is supported
+      if (!isModuleSupported(sourceModule)) {
+        logClientContextResolution(
+          taskData.id,
+          sourceModule,
+          false,
+          `Module not supported yet: ${sourceModule}`,
+        );
+        return null;
+      }
+
+      try {
+        if (sourceModule === "Accounts") {
+          // Direct Account fetch
+          const accountRes = await fetch(`/api/zoho/accounts/${whatId}`);
+          if (accountRes.ok) {
+            const accountData = await accountRes.json();
+            const context = accountToClientContext(accountData.account);
+            logClientContextResolution(
+              taskData.id,
+              sourceModule,
+              true,
+              `Account: ${context.name}`,
+            );
+            return context;
+          }
+        } else if (sourceModule === "Deals") {
+          // Fetch Deal first
+          const dealRes = await fetch(`/api/zoho/projects/${whatId}`);
+          if (dealRes.ok) {
+            const dealData = await dealRes.json();
+            const deal: ZohoDeal = dealData.project;
+
+            // Check if Deal has linked Account
+            if (deal.Account_Name?.id) {
+              // Fetch the linked Account for complete data
+              try {
+                const accountRes = await fetch(
+                  `/api/zoho/accounts/${deal.Account_Name.id}`,
+                );
+                if (accountRes.ok) {
+                  const accountData = await accountRes.json();
+                  const context = dealToClientContext(
+                    deal,
+                    accountData.account,
+                  );
+                  logClientContextResolution(
+                    taskData.id,
+                    sourceModule,
+                    true,
+                    `Deal with Account: ${context.name} (Deal: ${deal.Deal_Name})`,
+                  );
+                  return context;
+                }
+              } catch (accountError) {
+                console.warn(
+                  "Could not fetch linked account from Deal, using Deal data only",
+                );
+              }
+            }
+
+            // Deal without linked Account or Account fetch failed
+            const context = dealToClientContext(deal, null);
+            logClientContextResolution(
+              taskData.id,
+              sourceModule,
+              true,
+              `Deal only: ${context.name}`,
+            );
+            return context;
+          }
+        }
+
+        logClientContextResolution(
+          taskData.id,
+          sourceModule,
+          false,
+          "Fetch failed",
+        );
+        return null;
+      } catch (error) {
+        console.error(
+          `Error fetching client context for module ${sourceModule}:`,
+          error,
+        );
+        logClientContextResolution(
+          taskData.id,
+          sourceModule,
+          false,
+          `Error: ${error}`,
+        );
+        return null;
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     const fetchTaskDetail = async () => {
@@ -75,19 +205,10 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
         const result = await response.json();
         setTask(result.task);
 
-        // Fetch account data if task is related to an account
+        // Fetch client context based on $se_module
         if (result.task?.What_Id?.id) {
-          try {
-            const accountRes = await fetch(
-              `/api/zoho/accounts/${result.task.What_Id.id}`,
-            );
-            if (accountRes.ok) {
-              const accountData = await accountRes.json();
-              setAccount(accountData.account);
-            }
-          } catch (accountError) {
-            console.error("Error fetching account:", accountError);
-          }
+          const context = await fetchClientContext(result.task);
+          setClientContext(context);
         }
 
         await fetchVisits(resolvedParams.id);
@@ -100,7 +221,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
     };
 
     fetchTaskDetail();
-  }, [params, t]);
+  }, [params, t, fetchClientContext]);
 
   const fetchVisits = useCallback(
     async (taskId: string) => {
@@ -365,49 +486,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
         open={isVisitDialogOpen}
         onOpenChange={handleDialogClose}
         customer={
-          account
-            ? {
-                id: account.id,
-                zohoAccountId: account.id,
-                accountName: account.Account_Name,
-                razonSocial: account.Razon_Social || null,
-                accountNumber: account.Account_Number || null,
-                cif: account.CIF || null,
-                codigoCliente: account.C_digo_Cliente || null,
-                accountType: account.Account_Type || null,
-                industry: account.Industry || null,
-                subSector: account.Sub_Sector || null,
-                phone: account.Phone || null,
-                fax: account.Fax || null,
-                email: account.Correo_electr_nico || account.Email || null,
-                website: account.Website || null,
-                billingStreet: account.Billing_Street || null,
-                billingCity: account.Billing_City || null,
-                billingState: account.Billing_State || null,
-                billingCode: account.Billing_Code || null,
-                billingCountry: account.Billing_Country || null,
-                shippingStreet: account.Shipping_Street || null,
-                shippingCity: account.Shipping_City || null,
-                shippingState: account.Shipping_State || null,
-                shippingCode: account.Shipping_Code || null,
-                shippingCountry: account.Shipping_Country || null,
-                latitude: account.dealsingooglemaps__Latitude || null,
-                longitude: account.dealsingooglemaps__Longitude || null,
-                zohoOwnerId: account.Owner?.id || null,
-                zohoOwnerName: account.Owner?.name || null,
-                zohoOwnerEmail: account.Owner?.email || null,
-                clienteConEquipo: account.Cliente_con_Equipo || false,
-                cuentaNacional: account.Cuenta_Nacional || false,
-                clienteBooks: account.Cliente_Books || false,
-                condicionesEspeciales: account.Condiciones_Especiales || false,
-                proyectoAbierto: account.Proyecto_abierto || false,
-                revisado: account.Revisado || false,
-                localizacionesMultiples:
-                  account.Localizaciones_multiples || false,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              }
-            : undefined
+          clientContext ? clientContextToCustomer(clientContext) : undefined
         }
         zohoTaskId={taskId}
         onSuccess={handleVisitSuccess}

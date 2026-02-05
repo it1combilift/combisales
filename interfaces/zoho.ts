@@ -286,6 +286,11 @@ export interface ZohoDeal {
     name: string;
     id: string;
   } | null;
+  // Cliente final (some deals have this)
+  Nombre_Cliente_Final?: {
+    name: string;
+    id: string;
+  } | null;
 
   // Propietario
   Owner?: {
@@ -312,9 +317,25 @@ export interface ZohoDeal {
   // Descripción
   Description?: string;
 
+  // Campos adicionales de Deal/Project
+  Correo_electr_nico?: string; // Email del proyecto
+  Provincia_Estado?: string; // State/Province
+  DealerCountry?: string; // Country
+  Sector?: string; // Industry sector
+  Tipo_de_proyecto?: string; // Project type
+  Familia_de_Producto?: string; // Product family
+  Numero_de_equipos?: number; // Number of equipment
+  Venta_Directa?: boolean; // Direct sale
+  Demo_Completa?: boolean; // Demo complete
+  Site_Survey_Complete?: boolean; // Site survey complete
+  Lead_Source?: string; // Lead source
+  Territory?: string[]; // Territories
+  Numeraci_n_autom_tica_1?: string; // Auto numbering (project code)
+
   // Campos de sistema
   $currency_symbol?: string;
   $editable?: boolean;
+  $se_module?: string; // Related module
 
   // Tags
   Tag?: Array<{ name: string }>;

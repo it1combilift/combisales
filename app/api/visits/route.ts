@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { createZohoCRMService } from "@/service/ZohoCRMService";
+import { createZohoCRMService, ZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Role, VisitFormType, VisitStatus } from "@prisma/client";
+import { ZohoAccount } from "@/interfaces/zoho";
 
 import {
   VISIT_INCLUDE,
@@ -36,6 +37,231 @@ import {
   shouldSendVisitNotification,
   buildVisitEmailDataExtended,
 } from "@/lib/visit-notifications";
+
+// ==================== HELPER: Sync Customer from Zoho ====================
+/**
+ * Try to sync customer data from Zoho CRM.
+ * First tries Accounts, then falls back to Deals (extracting Account_Name).
+ * Returns the created/updated customer ID, or null if not found.
+ */
+async function syncCustomerFromZoho(
+  zohoService: ZohoCRMService,
+  entityId: string,
+): Promise<string | null> {
+  // 1. Try fetching as Account
+  try {
+    const zohoAccount = await zohoService.getAccountById(entityId);
+    if (zohoAccount) {
+      const customer = await createOrUpdateCustomerFromAccount(zohoAccount);
+      return customer.id;
+    }
+  } catch (accountError) {
+    // Account not found, try Deal
+    console.log(`Entity ${entityId} not found as Account, trying Deal...`);
+  }
+
+  // 2. Try fetching as Deal
+  try {
+    const deal = await zohoService.getDealById(entityId);
+    if (deal) {
+      // Check if Deal has linked Account
+      if (deal.Account_Name?.id) {
+        // Fetch the linked Account
+        try {
+          const linkedAccount = await zohoService.getAccountById(
+            deal.Account_Name.id,
+          );
+          if (linkedAccount) {
+            const customer =
+              await createOrUpdateCustomerFromAccount(linkedAccount);
+            return customer.id;
+          }
+        } catch (linkedAccountError) {
+          console.warn(
+            `Could not fetch linked account ${deal.Account_Name.id} from Deal`,
+          );
+        }
+      }
+
+      // Deal without linked Account - create minimal customer from Deal data
+      const customer = await createCustomerFromDeal(deal);
+      return customer.id;
+    }
+  } catch (dealError) {
+    console.log(`Entity ${entityId} not found as Deal either`);
+  }
+
+  return null;
+}
+
+/**
+ * Create or update a Customer record from a ZohoAccount
+ */
+async function createOrUpdateCustomerFromAccount(zohoAccount: ZohoAccount) {
+  return prisma.customer.upsert({
+    where: { zohoAccountId: zohoAccount.id },
+    create: {
+      zohoAccountId: zohoAccount.id,
+      accountName: zohoAccount.Account_Name,
+      razonSocial: zohoAccount.Razon_Social,
+      accountNumber: zohoAccount.Account_Number,
+      cif: zohoAccount.CIF,
+      codigoCliente: zohoAccount.C_digo_Cliente,
+      accountType: zohoAccount.Account_Type,
+      industry: zohoAccount.Industry,
+      subSector: zohoAccount.Sub_Sector,
+      phone: zohoAccount.Phone,
+      fax: zohoAccount.Fax,
+      email: zohoAccount.Correo_electr_nico || zohoAccount.Email,
+      website: zohoAccount.Website,
+      billingStreet: zohoAccount.Billing_Street,
+      billingCity: zohoAccount.Billing_City,
+      billingState: zohoAccount.Billing_State,
+      billingCode: zohoAccount.Billing_Code,
+      billingCountry: zohoAccount.Billing_Country,
+      shippingStreet: zohoAccount.Shipping_Street,
+      shippingCity: zohoAccount.Shipping_City,
+      shippingState: zohoAccount.Shipping_State,
+      shippingCode: zohoAccount.Shipping_Code,
+      shippingCountry: zohoAccount.Shipping_Country,
+      latitude: zohoAccount.dealsingooglemaps__Latitude,
+      longitude: zohoAccount.dealsingooglemaps__Longitude,
+      zohoOwnerId: zohoAccount.Owner?.id,
+      zohoOwnerName: zohoAccount.Owner?.name,
+      zohoOwnerEmail: zohoAccount.Owner?.email,
+      zohoCreatedById: zohoAccount.Created_By?.id,
+      zohoCreatedByName: zohoAccount.Created_By?.name,
+      zohoCreatedByEmail: zohoAccount.Created_By?.email,
+      parentAccountId: zohoAccount.Parent_Account?.id,
+      parentAccountName: zohoAccount.Parent_Account?.name,
+      clienteConEquipo: zohoAccount.Cliente_con_Equipo ?? false,
+      cuentaNacional: zohoAccount.Cuenta_Nacional ?? false,
+      clienteBooks: zohoAccount.Cliente_Books ?? false,
+      condicionesEspeciales: zohoAccount.Condiciones_Especiales ?? false,
+      proyectoAbierto: zohoAccount.Proyecto_abierto ?? false,
+      revisado: zohoAccount.Revisado ?? false,
+      localizacionesMultiples: zohoAccount.Localizaciones_multiples ?? false,
+      description: zohoAccount.Description,
+      comunidadAutonoma: zohoAccount.Comunidad_Aut_noma,
+      tipoPedido: zohoAccount.Tipo_de_pedido,
+      estadoCuenta: zohoAccount.Estado_de_la_Cuenta,
+      zohoCreatedAt: zohoAccount.Created_Time
+        ? new Date(zohoAccount.Created_Time)
+        : null,
+      zohoModifiedAt: zohoAccount.Modified_Time
+        ? new Date(zohoAccount.Modified_Time)
+        : null,
+      lastActivityTime: zohoAccount.Last_Activity_Time
+        ? new Date(zohoAccount.Last_Activity_Time)
+        : null,
+    },
+    update: {
+      accountName: zohoAccount.Account_Name,
+      razonSocial: zohoAccount.Razon_Social,
+      accountNumber: zohoAccount.Account_Number,
+      cif: zohoAccount.CIF,
+      codigoCliente: zohoAccount.C_digo_Cliente,
+      accountType: zohoAccount.Account_Type,
+      industry: zohoAccount.Industry,
+      subSector: zohoAccount.Sub_Sector,
+      phone: zohoAccount.Phone,
+      fax: zohoAccount.Fax,
+      email: zohoAccount.Correo_electr_nico || zohoAccount.Email,
+      website: zohoAccount.Website,
+      billingStreet: zohoAccount.Billing_Street,
+      billingCity: zohoAccount.Billing_City,
+      billingState: zohoAccount.Billing_State,
+      billingCode: zohoAccount.Billing_Code,
+      billingCountry: zohoAccount.Billing_Country,
+      zohoOwnerId: zohoAccount.Owner?.id,
+      zohoOwnerName: zohoAccount.Owner?.name,
+      zohoOwnerEmail: zohoAccount.Owner?.email,
+      zohoModifiedAt: zohoAccount.Modified_Time
+        ? new Date(zohoAccount.Modified_Time)
+        : null,
+      lastActivityTime: zohoAccount.Last_Activity_Time
+        ? new Date(zohoAccount.Last_Activity_Time)
+        : null,
+    },
+  });
+}
+
+/**
+ * Create a Customer record from a ZohoDeal (when no Account is linked)
+ * Uses Deal ID as a fallback for zohoAccountId with a prefix to distinguish
+ */
+async function createCustomerFromDeal(deal: any) {
+  const dealAccountId = `DEAL_${deal.id}`; // Prefix to distinguish from real Account IDs
+
+  return prisma.customer.upsert({
+    where: { zohoAccountId: dealAccountId },
+    create: {
+      zohoAccountId: dealAccountId,
+      accountName: deal.Account_Name?.name || deal.Deal_Name,
+      razonSocial: null,
+      accountNumber: deal.Numeraci_n_autom_tica_1 || null,
+      cif: null,
+      codigoCliente: null,
+      accountType: deal.Tipo_de_proyecto || null,
+      industry: deal.Sector || null,
+      subSector: null,
+      phone: null,
+      fax: null,
+      email: deal.Correo_electr_nico || null,
+      website: null,
+      billingStreet: null,
+      billingCity: null,
+      billingState: deal.Provincia_Estado || null,
+      billingCode: null,
+      billingCountry: deal.DealerCountry || null,
+      shippingStreet: null,
+      shippingCity: null,
+      shippingState: null,
+      shippingCode: null,
+      shippingCountry: null,
+      latitude: null,
+      longitude: null,
+      zohoOwnerId: deal.Owner?.id,
+      zohoOwnerName: deal.Owner?.name,
+      zohoOwnerEmail: deal.Owner?.email,
+      zohoCreatedById: deal.Created_By?.id,
+      zohoCreatedByName: deal.Created_By?.name,
+      zohoCreatedByEmail: deal.Created_By?.email,
+      parentAccountId: null,
+      parentAccountName: null,
+      clienteConEquipo: false,
+      cuentaNacional: false,
+      clienteBooks: false,
+      condicionesEspeciales: false,
+      proyectoAbierto: true,
+      revisado: false,
+      localizacionesMultiples: false,
+      description: deal.Description || `Project: ${deal.Deal_Name}`,
+      comunidadAutonoma: null,
+      tipoPedido: null,
+      estadoCuenta: deal.Stage || null,
+      zohoCreatedAt: deal.Created_Time ? new Date(deal.Created_Time) : null,
+      zohoModifiedAt: deal.Modified_Time ? new Date(deal.Modified_Time) : null,
+      lastActivityTime: deal.Last_Activity_Time
+        ? new Date(deal.Last_Activity_Time)
+        : null,
+    },
+    update: {
+      accountName: deal.Account_Name?.name || deal.Deal_Name,
+      email: deal.Correo_electr_nico || null,
+      billingState: deal.Provincia_Estado || null,
+      billingCountry: deal.DealerCountry || null,
+      zohoOwnerId: deal.Owner?.id,
+      zohoOwnerName: deal.Owner?.name,
+      zohoOwnerEmail: deal.Owner?.email,
+      estadoCuenta: deal.Stage || null,
+      zohoModifiedAt: deal.Modified_Time ? new Date(deal.Modified_Time) : null,
+      lastActivityTime: deal.Last_Activity_Time
+        ? new Date(deal.Last_Activity_Time)
+        : null,
+    },
+  });
+}
 
 /**
  * GET /api/visits
@@ -216,79 +442,14 @@ export async function POST(req: NextRequest) {
         if (customerByZoho) {
           validCustomerId = customerByZoho.id;
         } else {
-          // 3. Not found locally. Try fetching from Zoho and sync/create
+          // 3. Not found locally. Try fetching from Zoho (Accounts or Deals) and sync/create
           try {
             const zohoService = await createZohoCRMService(session.user.id);
             if (zohoService) {
-              // Determine if ID is likely a Zoho ID (numbers) or CUID
-              // Zoho IDs are usually long numeric strings. safe check.
-              const zohoAccount = await zohoService.getAccountById(
+              validCustomerId = await syncCustomerFromZoho(
+                zohoService,
                 visitData.customerId,
               );
-
-              if (zohoAccount) {
-                // Create new customer record
-                const newCustomer = await prisma.customer.create({
-                  data: {
-                    zohoAccountId: zohoAccount.id,
-                    accountName: zohoAccount.Account_Name,
-                    razonSocial: zohoAccount.Razon_Social,
-                    accountNumber: zohoAccount.Account_Number,
-                    cif: zohoAccount.CIF,
-                    codigoCliente: zohoAccount.C_digo_Cliente,
-                    accountType: zohoAccount.Account_Type,
-                    industry: zohoAccount.Industry,
-                    subSector: zohoAccount.Sub_Sector,
-                    phone: zohoAccount.Phone,
-                    fax: zohoAccount.Fax,
-                    email: zohoAccount.Correo_electr_nico || zohoAccount.Email,
-                    website: zohoAccount.Website,
-                    billingStreet: zohoAccount.Billing_Street,
-                    billingCity: zohoAccount.Billing_City,
-                    billingState: zohoAccount.Billing_State,
-                    billingCode: zohoAccount.Billing_Code,
-                    billingCountry: zohoAccount.Billing_Country,
-                    shippingStreet: zohoAccount.Shipping_Street,
-                    shippingCity: zohoAccount.Shipping_City,
-                    shippingState: zohoAccount.Shipping_State,
-                    shippingCode: zohoAccount.Shipping_Code,
-                    shippingCountry: zohoAccount.Shipping_Country,
-                    latitude: zohoAccount.dealsingooglemaps__Latitude,
-                    longitude: zohoAccount.dealsingooglemaps__Longitude,
-                    zohoOwnerId: zohoAccount.Owner?.id,
-                    zohoOwnerName: zohoAccount.Owner?.name,
-                    zohoOwnerEmail: zohoAccount.Owner?.email,
-                    zohoCreatedById: zohoAccount.Created_By?.id,
-                    zohoCreatedByName: zohoAccount.Created_By?.name,
-                    zohoCreatedByEmail: zohoAccount.Created_By?.email,
-                    parentAccountId: zohoAccount.Parent_Account?.id,
-                    parentAccountName: zohoAccount.Parent_Account?.name,
-                    clienteConEquipo: zohoAccount.Cliente_con_Equipo ?? false,
-                    cuentaNacional: zohoAccount.Cuenta_Nacional ?? false,
-                    clienteBooks: zohoAccount.Cliente_Books ?? false,
-                    condicionesEspeciales:
-                      zohoAccount.Condiciones_Especiales ?? false,
-                    proyectoAbierto: zohoAccount.Proyecto_abierto ?? false,
-                    revisado: zohoAccount.Revisado ?? false,
-                    localizacionesMultiples:
-                      zohoAccount.Localizaciones_multiples ?? false,
-                    description: zohoAccount.Description,
-                    comunidadAutonoma: zohoAccount.Comunidad_Aut_noma,
-                    tipoPedido: zohoAccount.Tipo_de_pedido,
-                    estadoCuenta: zohoAccount.Estado_de_la_Cuenta,
-                    zohoCreatedAt: zohoAccount.Created_Time
-                      ? new Date(zohoAccount.Created_Time)
-                      : null,
-                    zohoModifiedAt: zohoAccount.Modified_Time
-                      ? new Date(zohoAccount.Modified_Time)
-                      : null,
-                    lastActivityTime: zohoAccount.Last_Activity_Time
-                      ? new Date(zohoAccount.Last_Activity_Time)
-                      : null,
-                  },
-                });
-                validCustomerId = newCustomer.id;
-              }
             }
           } catch (error) {
             console.error(
@@ -296,7 +457,6 @@ export async function POST(req: NextRequest) {
               error,
             );
             // If explicit customerId was requested (not dealer fallback), we should probably fail if we can't find/sync it
-            // checking if user forced it
             if (!visitData.zohoTaskId && !isDealer) {
               return notFoundResponse("CUSTOMER");
             }
