@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import React from "react";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -8,12 +7,14 @@ import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useTranslation } from "@/lib/i18n/context";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useCallback, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Card, CardContent } from "@/components/ui/card";
 import { H1, Paragraph } from "@/components/fonts/fonts";
 import { createHelpFormSchema, HelpFormData } from "@/schemas/help";
 
@@ -28,16 +29,9 @@ import {
   Send,
   FileImage,
   Loader2,
-  UserIcon,
+  ImagePlus,
+  CheckCircle2,
 } from "lucide-react";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 import {
   Form,
@@ -56,7 +50,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 
 // File upload configuration
 const MAX_FILES = 5;
@@ -79,6 +72,40 @@ interface UploadedFile {
   isUploading?: boolean;
 }
 
+// Category configuration with colors for visual hierarchy
+const CATEGORY_CONFIG = {
+  bug: {
+    icon: Bug,
+    color: "text-red-500 dark:text-red-400",
+    bgColor: "bg-red-50 dark:bg-red-950/30",
+    borderColor: "border-red-200 dark:border-red-800",
+  },
+  technical: {
+    icon: Wrench,
+    color: "text-orange-500 dark:text-orange-400",
+    bgColor: "bg-orange-50 dark:bg-orange-950/30",
+    borderColor: "border-orange-200 dark:border-orange-800",
+  },
+  feature: {
+    icon: Lightbulb,
+    color: "text-amber-500 dark:text-amber-400",
+    bgColor: "bg-amber-50 dark:bg-amber-950/30",
+    borderColor: "border-amber-200 dark:border-amber-800",
+  },
+  question: {
+    icon: MessageCircle,
+    color: "text-blue-500 dark:text-blue-400",
+    bgColor: "bg-blue-50 dark:bg-blue-950/30",
+    borderColor: "border-blue-200 dark:border-blue-800",
+  },
+  other: {
+    icon: MoreHorizontal,
+    color: "text-slate-500 dark:text-slate-400",
+    bgColor: "bg-slate-50 dark:bg-slate-950/30",
+    borderColor: "border-slate-200 dark:border-slate-700",
+  },
+} as const;
+
 export default function HelpPage() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -96,28 +123,13 @@ export default function HelpPage() {
     },
   });
 
-  // Category
+  // Category list for rendering
   const categories = [
-    {
-      value: "bug" as const,
-      icon: Bug,
-    },
-    {
-      value: "technical" as const,
-      icon: Wrench,
-    },
-    {
-      value: "feature" as const,
-      icon: Lightbulb,
-    },
-    {
-      value: "question" as const,
-      icon: MessageCircle,
-    },
-    {
-      value: "other" as const,
-      icon: MoreHorizontal,
-    },
+    { value: "bug" as const },
+    { value: "technical" as const },
+    { value: "feature" as const },
+    { value: "question" as const },
+    { value: "other" as const },
   ];
 
   // Upload file to Cloudinary
@@ -202,7 +214,6 @@ export default function HelpPage() {
 
       setUploadedFiles((prev) => [...prev, ...newFiles]);
 
-      // Upload files to Cloudinary
       for (const newFile of newFiles) {
         try {
           const { cloudinaryId, cloudinaryUrl } = await uploadFileToCloudinary(
@@ -221,12 +232,10 @@ export default function HelpPage() {
           toast.error(
             t("help.toast.fileTypeError").replace("{{fileName}}", newFile.name),
           );
-          // Remove failed upload
           setUploadedFiles((prev) => prev.filter((f) => f.id !== newFile.id));
         }
       }
 
-      // Show success toast if files were added
       if (newFiles.length > 0) {
         toast.success(
           t("help.toast.uploadSuccess").replace(
@@ -346,68 +355,78 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 space-y-3">
-      <header>
-        <div className="mx-auto flex items-center justify-between">
-          <div className="flex items-start w-full">
-            <div className="flex flex-col items-start w-full">
+    <section className="mx-auto px-4 space-y-4 w-full">
+      {/* ==================== HEADER SECTION ==================== */}
+      <header className="flex flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-0">
+        <div>
+          <div className="flex items-center gap-3 justify-start">
+            <div className="min-w-0 flex-1">
               <H1>{t("help.title")}</H1>
-              <Paragraph>{t("help.description")}</Paragraph>
+              <Paragraph>{t("help.subtitle")}</Paragraph>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto">
-        {/* Main Form Card */}
-        <Card className="border-border shadow-sm">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-sm">
-              {t("help.requestDetails")}
-            </CardTitle>
-            <CardDescription className="text-xs md:text-sm">
-              {t("help.requestDetailsDescription")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
-                {/* Grid Layout for Category and Subject */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  {/* Category Selection */}
+      {/* ==================== MAIN CONTENT ==================== */}
+      <main className="h-full">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 h-full"
+          >
+            {/* ==================== FORM CARD ==================== */}
+            <Card className="shadow-none p-0 border-none">
+              <CardContent className="space-y-2 md:space-y-4  p-0 border-none">
+                {/* Category & Subject - Grid on larger screens */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Category Select */}
                   <FormField
                     control={form.control}
                     name="category"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("help.requestTypeLabel")}</FormLabel>
+                        <FormLabel className="text-sm">
+                          {t("help.requestTypeLabel")}{" "}
+                          <span className="text-destructive">*</span>
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="w-full text-xs md:text-sm">
+                            <SelectTrigger className="h-11 sm:h-10 w-full">
                               <SelectValue
                                 placeholder={t("help.requestTypePlaceholder")}
                               />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {categories.map((category) => {
-                              const Icon = category.icon;
+                            {categories.map((cat) => {
+                              const config = CATEGORY_CONFIG[cat.value];
+                              const Icon = config.icon;
                               return (
                                 <SelectItem
-                                  key={category.value}
-                                  value={category.value}
-                                  className="text-xs md:text-sm"
+                                  key={cat.value}
+                                  value={cat.value}
+                                  className="py-2.5"
                                 >
-                                  <div className="flex items-center gap-2">
-                                    <Icon className="size-3.5 text-muted-foreground" />
-                                    <span>
-                                      {t(`help.categories.${category.value}`)}
+                                  <div className="flex items-center gap-2.5">
+                                    <div
+                                      className={cn(
+                                        "flex h-6 w-6 items-center justify-center rounded-md",
+                                        config.bgColor,
+                                      )}
+                                    >
+                                      <Icon
+                                        className={cn(
+                                          "h-3.5 w-3.5",
+                                          config.color,
+                                        )}
+                                      />
+                                    </div>
+                                    <span className="font-medium">
+                                      {t(`help.categories.${cat.value}`)}
                                     </span>
                                   </div>
                                 </SelectItem>
@@ -426,11 +445,14 @@ export default function HelpPage() {
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("help.subjectLabel")}</FormLabel>
+                        <FormLabel className="text-sm">
+                          {t("help.subjectLabel")}{" "}
+                          <span className="text-destructive">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input
                             placeholder={t("help.subjectPlaceholder")}
-                            className="w-full text-xs md:text-sm"
+                            className="h-11 sm:h-10"
                             {...field}
                           />
                         </FormControl>
@@ -440,25 +462,30 @@ export default function HelpPage() {
                   />
                 </div>
 
-                {/* Description Field - Full Width */}
+                {/* Description Field */}
                 <FormField
                   control={form.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("help.descriptionLabel")}</FormLabel>
+                      <FormLabel className="text-sm">
+                        {t("help.descriptionLabel")}{" "}
+                        <span className="text-destructive">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder={t("help.descriptionPlaceholder")}
-                          className="min-h-40 resize-none text-xs md:text-sm"
+                          className="min-h-[100px] resize-none text-base leading-relaxed sm:min-h-[120px] sm:text-sm"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription className="flex justify-between text-xs md:text-sm">
-                        <span>{t("help.descriptionDescription")}</span>
+                      <FormDescription className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">
+                          {t("help.descriptionDescription")}
+                        </span>
                         <span
                           className={cn(
-                            "tabular-nums",
+                            "tabular-nums font-medium",
                             field.value.length > 1800 &&
                               "text-amber-600 dark:text-amber-500",
                             field.value.length > 1950 && "text-destructive",
@@ -472,18 +499,34 @@ export default function HelpPage() {
                   )}
                 />
 
-                {/* File Upload Section */}
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium leading-none text-foreground">
-                      {t("help.attachments")}
-                    </label>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {t("help.attachmentsDescription")}
-                    </p>
+                {/* ==================== ATTACHMENTS SECTION (Inside Card) ==================== */}
+                <div className="space-y-3 pt-2 border-t border-border/40">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                        <ImagePlus className="h-4 w-4 text-muted-foreground" />
+                        {t("help.attachments")}
+                      </h3>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] font-normal h-5"
+                      >
+                        {t("common.optional") || "Opcional"}
+                      </Badge>
+                    </div>
+                    <Badge
+                      variant={
+                        uploadedFiles.length >= MAX_FILES
+                          ? "destructive"
+                          : "secondary"
+                      }
+                      className="text-[10px] font-normal h-5"
+                    >
+                      {uploadedFiles.length}/{MAX_FILES}
+                    </Badge>
                   </div>
 
-                  {/* Drag and Drop Zone */}
+                  {/* Upload Zone - Compact */}
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -498,6 +541,7 @@ export default function HelpPage() {
                     }}
                     disabled={uploadedFiles.length >= MAX_FILES}
                   />
+
                   <div
                     onDragEnter={handleDragEnter}
                     onDragLeave={handleDragLeave}
@@ -505,10 +549,12 @@ export default function HelpPage() {
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={cn(
-                      "relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors",
+                      "md:h-28 relative flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition-all duration-200 overflow-hidden",
+                      "py-4 px-4",
+                      "active:scale-[0.99]",
                       isDragging
                         ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50 hover:bg-muted/50",
+                        : "border-border hover:border-primary/50 hover:bg-muted/30",
                       uploadedFiles.length >= MAX_FILES &&
                         "pointer-events-none opacity-50",
                     )}
@@ -522,46 +568,48 @@ export default function HelpPage() {
                       }
                     }}
                   >
-                    <div className="flex flex-col items-center gap-2 p-6 text-center">
+                    <div className="flex items-center gap-3">
                       <div
                         className={cn(
-                          "flex h-12 w-12 items-center justify-center rounded-full transition-colors",
-                          isDragging ? "bg-primary/10" : "bg-muted",
+                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-200",
+                          isDragging ? "bg-primary/15" : "bg-muted",
                         )}
                       >
                         <Upload
                           className={cn(
-                            "h-6 w-6 transition-colors",
+                            "h-5 w-5 transition-colors",
                             isDragging
                               ? "text-primary"
                               : "text-muted-foreground",
                           )}
                         />
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">
+
+                      <div className="text-left">
+                        <p
+                          className={cn(
+                            "text-sm font-medium transition-colors",
+                            isDragging ? "text-primary" : "text-foreground",
+                          )}
+                        >
                           {isDragging
                             ? t("help.dragDropActive")
                             : t("help.dragDropInactive")}
                         </p>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {t("help.clickToBrowse")}
+                        <p className="text-xs text-muted-foreground">
+                          PNG, JPG, GIF, WebP • Max 10MB
                         </p>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {t("help.fileTypesAllowed")} ({uploadedFiles.length}/
-                        {MAX_FILES})
-                      </p>
                     </div>
                   </div>
 
-                  {/* Uploaded Files Preview */}
+                  {/* Uploaded Files Grid - Compact */}
                   {uploadedFiles.length > 0 && (
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
                       {uploadedFiles.map((file) => (
                         <div
                           key={file.id}
-                          className="group relative overflow-hidden rounded-lg border border-border bg-muted/30"
+                          className="group relative overflow-hidden rounded-lg border border-border bg-muted/20 shadow-sm transition-shadow hover:shadow-md"
                         >
                           <div className="aspect-square relative">
                             <Image
@@ -570,30 +618,52 @@ export default function HelpPage() {
                               fill
                               className="object-cover transition-transform duration-200 group-hover:scale-105"
                             />
+
+                            {/* Upload loading overlay */}
                             {file.isUploading && (
-                              <div className="absolute inset-0 flex items-center justify-center bg-background/80">
-                                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                              <div className="absolute inset-0 flex items-center justify-center bg-background/90 backdrop-blur-sm">
+                                <Loader2 className="h-5 w-5 animate-spin text-primary" />
                               </div>
                             )}
+
+                            {/* Success indicator */}
+                            {!file.isUploading && file.cloudinaryUrl && (
+                              <div className="absolute top-1 left-1">
+                                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-green-500 shadow-sm">
+                                  <CheckCircle2 className="h-2.5 w-2.5 text-white" />
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Remove button */}
+                            {!file.isUploading && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeFile(file.id);
+                                }}
+                                className={cn(
+                                  "absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full",
+                                  "bg-foreground/80 text-background shadow-sm",
+                                  "transition-all duration-200",
+                                  "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100",
+                                  "hover:bg-destructive focus:opacity-100 focus:scale-100",
+                                  "touch-manipulation",
+                                )}
+                                aria-label={`${t("common.remove")} ${file.name}`}
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            )}
                           </div>
-                          {!file.isUploading && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeFile(file.id);
-                              }}
-                              className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-foreground/80 text-background opacity-0 transition-opacity hover:bg-foreground focus:opacity-100 group-hover:opacity-100"
-                              aria-label={`${t("common.remove")} ${file.name}`}
-                            >
-                              <X className="h-3.5 w-3.5" />
-                            </button>
-                          )}
-                          <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-foreground/80 to-transparent p-2 pt-6">
-                            <p className="truncate text-xs font-medium text-background">
+
+                          {/* File info overlay */}
+                          <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 via-black/50 to-transparent p-1 pt-3">
+                            <p className="truncate text-[9px] font-medium text-white">
                               {file.name}
                             </p>
-                            <p className="text-xs text-background/70">
+                            <p className="text-[9px] text-white/70">
                               {formatFileSize(file.size)}
                             </p>
                           </div>
@@ -602,55 +672,64 @@ export default function HelpPage() {
                     </div>
                   )}
                 </div>
+              </CardContent>
+            </Card>
 
-                {/* Submit Button */}
-                <div className="flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
-                      <FileImage className="size-4" />
-                      <span>
-                        {uploadedFiles.length}{" "}
-                        {uploadedFiles.length === 1
-                          ? t("help.filesAttached")
-                          : t("help.filesAttachedPlural")}
-                      </span>
-                    </div>
-                    {session?.user && (
-                      <Badge variant="outline-info">
-                        <UserIcon className="size-3.5" />
-                        {session.user.email}
-                      </Badge>
-                    )}
-                  </div>
-                  <Button
-                    type="submit"
-                    disabled={
-                      isSubmitting || uploadedFiles.some((f) => f.isUploading)
-                    }
-                    className="w-full sm:w-auto"
+            {/* ==================== SUBMIT SECTION ==================== */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              {/* Info badges */}
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                {uploadedFiles.length > 0 && (
+                  <Badge variant="secondary" className="gap-1.5 font-normal">
+                    <FileImage className="h-3.5 w-3.5" />
+                    {uploadedFiles.length}{" "}
+                    {uploadedFiles.length === 1
+                      ? t("help.filesAttached")
+                      : t("help.filesAttachedPlural")}
+                  </Badge>
+                )}
+                {uploadedFiles.some((f) => f.isUploading) && (
+                  <Badge
+                    variant="outline"
+                    className="gap-1.5 font-normal text-amber-600 dark:text-amber-500"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Spinner className="size-3.5" variant="bars" />
-                        <span className="animate-pulse text-xs md:text-sm">
-                          {t("help.submitting")}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="size-3.5" />
-                        <span className="text-xs md:text-sm">
-                          {t("help.submit")}
-                        </span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    {t("help.submitting")}
+                  </Badge>
+                )}
+              </div>
+
+              {/* Submit button */}
+              <Button
+                type="submit"
+                size="lg"
+                disabled={
+                  isSubmitting || uploadedFiles.some((f) => f.isUploading)
+                }
+                className={cn(
+                  "w-full gap-2 text-base font-medium shadow-sm sm:w-auto sm:text-sm",
+                  "h-11 sm:h-10",
+                  "transition-all duration-200",
+                )}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Spinner className="h-4 w-4" variant="bars" />
+                    <span className="animate-pulse">
+                      {t("help.submitting")}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" />
+                    <span>{t("help.submit")}</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </main>
-    </div>
+    </section>
   );
 }

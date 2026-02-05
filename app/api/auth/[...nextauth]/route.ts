@@ -34,11 +34,14 @@ export const authOptions: NextAuthOptions = {
       type: "oauth",
       clientId: process.env.ZOHO_CLIENT_ID!,
       clientSecret: process.env.ZOHO_CLIENT_SECRET!,
+      // Permitir vincular cuenta OAuth a usuarios existentes con el mismo email
+      allowDangerousEmailAccountLinking: true,
       authorization: {
         url: "https://accounts.zoho.com/oauth/v2/auth",
         params: {
+          // Scopes: Zoho Profile + CRM + Desk (tickets, contacts, settings)
           scope:
-            "AaaServer.profile.Read,ZohoCRM.modules.ALL,ZohoCRM.settings.ALL",
+            "AaaServer.profile.Read,ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,Desk.tickets.ALL,Desk.contacts.READ,Desk.contacts.CREATE,Desk.settings.READ",
           access_type: "offline",
           prompt: "consent",
           response_type: "code",
@@ -59,8 +62,8 @@ export const authOptions: NextAuthOptions = {
               scope: tokens.scope,
             },
             null,
-            2
-          )
+            2,
+          ),
         );
         console.log("========================");
 
@@ -109,7 +112,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!isPasswordValid) {
@@ -242,7 +245,7 @@ export const authOptions: NextAuthOptions = {
         if (!dbUser || !dbUser.isActive) {
           console.error(
             "User blocked or not found in JWT callback:",
-            token.email
+            token.email,
           );
 
           if (dbUser && !dbUser.isActive) {
@@ -301,7 +304,7 @@ export const authOptions: NextAuthOptions = {
                   client_secret: process.env.ZOHO_CLIENT_SECRET!,
                   grant_type: "refresh_token",
                 }),
-              }
+              },
             );
 
             const tokens = await response.json();
@@ -356,7 +359,7 @@ export const authOptions: NextAuthOptions = {
 
           if (!dbUser || !dbUser.isActive) {
             throw new Error(
-              "Tu cuenta ha sido bloqueada. Contacta al administrador."
+              "Tu cuenta ha sido bloqueada. Contacta al administrador.",
             );
           }
         }

@@ -93,6 +93,7 @@
     "system": "System"
   },
   "common": {
+    "optional": "optional",
     "appName": "CombiSales",
     "description": "Combilift Sales and Customer Management",
     "shortDescription": "Sales and Customers",

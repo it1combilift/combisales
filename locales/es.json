@@ -93,6 +93,7 @@
     "system": "Sistema"
   },
   "common": {
+    "optional": "opcional",
     "appName": "CombiSales",
     "description": "Gestión de ventas y clientes de Combilift",
     "shortDescription": "Ventas y clientes",

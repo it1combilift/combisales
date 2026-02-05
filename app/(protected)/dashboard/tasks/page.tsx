@@ -338,7 +338,7 @@ export default function TasksPage() {
   return (
     <section className="mx-auto px-4 space-y-3 w-full h-full">
       <div className="flex flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-0">
-        <div>
+        <header>
           <H1>{t("taskPage.title")}</H1>
           <div className="flex flex-col justify-start">
             <Paragraph>{t("taskPage.description")}</Paragraph>
@@ -358,7 +358,7 @@ export default function TasksPage() {
               )}
             </Badge>
           </div>
-        </div>
+        </header>
 
         <div className="flex gap-2">
           <Button

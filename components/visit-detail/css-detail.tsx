@@ -1,13 +1,12 @@
 "use client";
 
-import { cn, formatDateShort } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/lib/i18n/context";
+import { Badge } from "@/components/ui/badge";
+import { cn, formatDateShort } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { FormularioCSSAnalisis } from "@/interfaces/visits";
 import { InfoField, InfoSection, NumberDisplay } from "./shared";
 import AttachmentsGallery from "@/components/attachments-gallery";
-
-import { FormularioCSSAnalisis } from "@/interfaces/visits";
 
 import {
   Calendar,
