@@ -9,15 +9,16 @@ import { Spinner } from "../ui/spinner";
 import { signIn } from "next-auth/react";
 import { Checkbox } from "../ui/checkbox";
 import { useState, useEffect } from "react";
-import { createLoginSchema } from "@/schemas/auth";
 import { Input } from "@/components/ui/input";
+import { H1, Paragraph } from "../fonts/fonts";
 import { Button } from "@/components/ui/button";
+import { createLoginSchema } from "@/schemas/auth";
+import { useTranslation } from "@/lib/i18n/context";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTranslation } from "@/lib/i18n/context";
 
 export function LoginForm({
   className,
@@ -128,12 +129,20 @@ export function LoginForm({
               className="w-full max-w-md mx-auto space-y-4 sm:space-y-6"
             >
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-bold tracking-tight">
-                  {t("loginForm.title")}
-                </h1>
-                <p className="text-muted-foreground text-sm max-w-xs mx-auto text-pretty">
-                  {t("loginForm.description")}
-                </p>
+                {/* Logo visible solo en pantallas pequeñas */}
+                <div className="md:hidden mb-3">
+                  <div className="relative w-32 h-16 sm:w-40 sm:h-20 mx-auto dark:rounded-xl dark:bg-white/95 dark:p-3 dark:shadow-sm dark:ring-1 dark:ring-white/10 overflow-hidden bg-white/95 p-2 rounded-lg shadow-sm ring-1 ring-black/5">
+                    <Image
+                      src="https://res.cloudinary.com/dwjxcpfrf/image/upload/v1768957949/Untitled_design__1_-removebg-preview_t8oji9.png"
+                      alt="CombiSales Logo"
+                      fill
+                      className="object-contain object-center"
+                      priority
+                    />
+                  </div>
+                </div>
+                <H1>{t("loginForm.title")}</H1>
+                <Paragraph>{t("loginForm.description")}</Paragraph>
               </div>
 
               <form
@@ -159,7 +168,7 @@ export function LoginForm({
                         {...register("email")}
                         disabled={isLoading}
                         className={cn(
-                          "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all",
+                          "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all text-sm",
                           errors.email && "border-destructive",
                         )}
                       />
@@ -196,7 +205,7 @@ export function LoginForm({
                         {...register("password")}
                         disabled={isLoading}
                         className={cn(
-                          "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all",
+                          "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all text-sm",
                           errors.password && "border-destructive",
                         )}
                       />
@@ -289,13 +298,13 @@ export function LoginForm({
               initial={{ scale: 1.1, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8 }}
-              className="absolute inset-0"
+              className="absolute inset-0 group"
             >
               <Image
-                src="/placeholder.svg"
+                src="https://cdn-ilecokb.nitrocdn.com/hnMkqPskCLTYmYthFPcpNZClCZrSTwWV/assets/images/optimized/rev-42bc04a/combilift.com/wp-content/uploads/2024/10/Aisle-Master-OP-1.jpg"
                 alt="Logística y Almacenamiento"
                 fill
-                className="object-cover opacity-90 dark:opacity-60 grayscale-10"
+                className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 priority
               />
               <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />

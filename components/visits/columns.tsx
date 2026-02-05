@@ -46,6 +46,12 @@ interface ColumnsConfigWithI18n extends ColumnsConfig {
   onViewClone?: (visit: Visit) => void;
   onEditClone?: (visit: Visit) => void;
   onDeleteClone?: (visit: Visit) => void;
+  /**
+   * Indicates if this is the Dealers flow.
+   * When true: SELLER/ADMIN see clone-specific actions.
+   * When false: Normal flow - standard view/edit/delete actions.
+   */
+  isDealerFlow?: boolean;
 }
 
 export function createColumns(
@@ -63,6 +69,7 @@ export function createColumns(
     t,
     locale,
     userRole,
+    isDealerFlow = false,
   } = config;
 
   const isSeller = userRole === Role.SELLER;
@@ -81,7 +88,6 @@ export function createColumns(
     EN_PROGRESO: "inProgress",
     COMPLETADA: "completed",
   };
-
   // ==================== COLUMN DEFINITIONS ====================
 
   // Form Type Column
@@ -151,10 +157,8 @@ export function createColumns(
       );
     },
     filterFn: (row, columnId, filterValue) => {
-      // filterValue is an array [ISOString]
-      const filterDateStr = Array.isArray(filterValue)
-        ? filterValue[0]
-        : filterValue;
+      // filterValue is a string (ISO date string)
+      const filterDateStr = filterValue as string;
       if (!filterDateStr) return true;
 
       const rowDateVal = row.getValue(columnId);
@@ -295,9 +299,9 @@ export function createColumns(
         </Badge>
       );
     },
-    filterFn: (row, filterValue) => {
-      // filterValue is an array from the column filter
-      const filter = Array.isArray(filterValue) ? filterValue[0] : filterValue;
+    filterFn: (row, columnId, filterValue) => {
+      // filterValue is a string from the column filter
+      const filter = filterValue as string;
       if (!filter) return true;
 
       const visit = row.original;
@@ -305,8 +309,10 @@ export function createColumns(
       const hasClone = visit.clones && visit.clones.length > 0;
       const clone = hasClone ? visit.clones![0] : null;
 
+      // DEALER FLOW: Special filtering logic
       if (isDealer) {
         if (filter === VisitStatus.COMPLETADA) {
+          // DEALER sees EN_PROGRESO as COMPLETADA, so filter should match both
           return (
             status === VisitStatus.COMPLETADA ||
             status === VisitStatus.EN_PROGRESO
@@ -315,8 +321,8 @@ export function createColumns(
         return status === filter;
       }
 
-      if (isSeller || isAdmin) {
-        // SELLER Logic
+      // DEALER FLOW for SELLER/ADMIN: Clone-specific filtering
+      if (isDealerFlow && (isSeller || isAdmin)) {
         if (filter === VisitStatus.BORRADOR) {
           // "Draft (Clone)" -> Matches if clone exists and is Draft
           return !!(clone && clone.status === VisitStatus.BORRADOR);
@@ -335,6 +341,8 @@ export function createColumns(
         }
       }
 
+      // NORMAL FLOW: Simple status matching (no clone logic)
+      // This applies to TaskDetailPage, HistoryVisitsPage
       return status === filter;
     },
   };
@@ -572,16 +580,15 @@ export function createColumns(
     header: t("table.actions"),
     cell: ({ row }) => {
       const visit = row.original;
-      // Phase 4: Check if this original visit has a clone
+      // Phase 4: Check if this original visit has a clone (only relevant in dealer flow)
       const hasClone = visit.clones && visit.clones.length > 0;
       const clone = hasClone ? visit.clones![0] : null;
 
-      // For SELLER/ADMIN: unified row logic - they only see originals
-      // Dropdown changes based on whether a clone exists
-      // ADMIN has same clone capabilities as SELLER
-      const canClone = (isSeller || isAdmin) && !hasClone && onClone;
-      const canEdit = isDealer; // Only DEALER can edit original
-      const canDelete = isDealer || isAdmin; // DEALER can delete own, ADMIN can delete any
+      // Permission logic
+      const canEdit = isDealer || !isDealerFlow; // DEALER always, SELLER/ADMIN in normal flow
+      const canDelete = isDealer || isAdmin || !isDealerFlow; // DEALER/ADMIN always, SELLER in normal flow
+      const canClone =
+        isDealerFlow && (isSeller || isAdmin) && !hasClone && onClone;
 
       return (
         <DropdownMenu>
@@ -599,8 +606,9 @@ export function createColumns(
             <DropdownMenuLabel>{t("table.actions")}</DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            {/* SELLER/ADMIN: Unified dropdown based on clone status */}
-            {(isSeller || isAdmin) && (
+            {/* ==================== DEALER FLOW: SELLER/ADMIN ==================== */}
+            {/* Clone-specific actions only appear in dealer flow */}
+            {isDealerFlow && (isSeller || isAdmin) && (
               <>
                 {!hasClone ? (
                   // NOT CLONED: Show "View form" and "Clone visit"
@@ -699,7 +707,51 @@ export function createColumns(
               </>
             )}
 
-            {/* DEALER only: Standard dropdown */}
+            {/* ==================== NORMAL FLOW: SELLER/ADMIN or no specific role ==================== */}
+            {/* Standard actions for tasks/clients pages */}
+            {/* When !isDealerFlow: show standard actions unless user is DEALER */}
+            {!isDealerFlow && !isDealer && (
+              <>
+                {/* View details */}
+                {onView && (
+                  <DropdownMenuItem
+                    onClick={() => onView(visit)}
+                    className="cursor-pointer"
+                  >
+                    <ArrowUpRight className="size-4" />
+                    {t("visits.viewDetails")}
+                  </DropdownMenuItem>
+                )}
+
+                {/* Edit action */}
+                {onEdit && canEdit && (
+                  <DropdownMenuItem
+                    onClick={() => onEdit(visit)}
+                    className="cursor-pointer"
+                  >
+                    <PencilLine className="size-4" />
+                    {t("visits.editVisit")}
+                  </DropdownMenuItem>
+                )}
+
+                {/* Delete */}
+                {onDelete && canDelete && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => onDelete(visit)}
+                      disabled={visit.status === VisitStatus.COMPLETADA}
+                      className={`${visit.status === VisitStatus.COMPLETADA ? "cursor-not-allowed opacity-50 text-destructive focus:text-destructive" : "cursor-pointer text-destructive focus:text-destructive"}`}
+                    >
+                      <Trash2 className="size-4 text-destructive" />
+                      {t("visits.deleteVisit")}
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </>
+            )}
+
+            {/* ==================== DEALER: Standard dropdown ==================== */}
             {isDealer && (
               <>
                 {/* Edit action */}

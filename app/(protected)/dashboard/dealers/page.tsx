@@ -235,6 +235,7 @@ const DealersPage = () => {
     t,
     locale,
     userRole,
+    isDealerFlow: true, // This is the DealersPage - uses clone/EN_PROGRESO workflow
   });
 
   if (sessionStatus === "loading" || isLoading) {
@@ -346,6 +347,7 @@ const DealersPage = () => {
           onEditClone={isSeller || isAdmin ? handleEditClone : undefined}
           onDeleteClone={isSeller ? handleDeleteClone : undefined}
           onViewForm={isSeller || isAdmin ? handleViewForm : undefined}
+          isDealerFlow={true}
         />
       )}
 

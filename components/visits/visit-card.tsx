@@ -67,6 +67,8 @@ interface VisitCardProps {
   onViewClone?: (visit: Visit) => void;
   onEditClone?: (visit: Visit) => void;
   onDeleteClone?: (visit: Visit) => void;
+  // Indicates if this is the dealer flow (DealersPage) vs normal flow (HistoryVisitsPage, TaskDetailPage)
+  isDealerFlow?: boolean;
 }
 
 export const VisitCard = ({
@@ -81,6 +83,7 @@ export const VisitCard = ({
   onViewClone,
   onEditClone,
   onDeleteClone,
+  isDealerFlow = false,
 }: VisitCardProps) => {
   const { t, locale } = useI18n();
   const rawStatus = visit.status as VisitStatus;
@@ -95,34 +98,40 @@ export const VisitCard = ({
   const clone = hasClone ? visit.clones![0] : null;
 
   // STATUS DISPLAY LOGIC:
+  // Only applies special status mapping in DEALER FLOW (DealersPage)
   // - DEALER: EN_PROGRESO → displays as COMPLETADA (from dealer's perspective, they finished)
   // - SELLER/ADMIN viewing DEALER's original visit (COMPLETADA + no clone OR COMPLETADA + clone not completed):
   //   → displays as EN_PROGRESO (work is pending for seller)
   // - SELLER/ADMIN viewing a visit where the clone is COMPLETADA:
   //   → displays as COMPLETADA (work is done)
+  // In NORMAL FLOW (HistoryVisitsPage, TaskDetailPage): status is displayed as-is
   let status = rawStatus;
 
-  if (isDealer && rawStatus === VisitStatus.EN_PROGRESO) {
-    // For DEALER only: EN_PROGRESO should appear as COMPLETADA
-    // From dealer's perspective, they finished their part
-    status = VisitStatus.COMPLETADA;
-  } else if ((isSeller || isAdmin) && !visit.clonedFromId) {
-    // For SELLER and ADMIN: Determine effective status based on clone status
-    // ADMIN behaves exactly like SELLER for status display
-    // Original COMPLETADA visits show as EN_PROGRESO unless clone is COMPLETADA
-    if (
-      rawStatus === VisitStatus.COMPLETADA ||
-      rawStatus === VisitStatus.EN_PROGRESO
-    ) {
-      // Check if clone exists and is completed
-      if (clone && clone.status === VisitStatus.COMPLETADA) {
-        status = VisitStatus.COMPLETADA;
-      } else {
-        // No clone, or clone is not completed → show as EN_PROGRESO
-        status = VisitStatus.EN_PROGRESO;
+  if (isDealerFlow) {
+    // DEALER FLOW: Apply special status mapping logic
+    if (isDealer && rawStatus === VisitStatus.EN_PROGRESO) {
+      // For DEALER only: EN_PROGRESO should appear as COMPLETADA
+      // From dealer's perspective, they finished their part
+      status = VisitStatus.COMPLETADA;
+    } else if ((isSeller || isAdmin) && !visit.clonedFromId) {
+      // For SELLER and ADMIN: Determine effective status based on clone status
+      // ADMIN behaves exactly like SELLER for status display
+      // Original COMPLETADA visits show as EN_PROGRESO unless clone is COMPLETADA
+      if (
+        rawStatus === VisitStatus.COMPLETADA ||
+        rawStatus === VisitStatus.EN_PROGRESO
+      ) {
+        // Check if clone exists and is completed
+        if (clone && clone.status === VisitStatus.COMPLETADA) {
+          status = VisitStatus.COMPLETADA;
+        } else {
+          // No clone, or clone is not completed → show as EN_PROGRESO
+          status = VisitStatus.EN_PROGRESO;
+        }
       }
     }
   }
+  // NORMAL FLOW: status remains as rawStatus (no mapping)
 
   // SELLER/ADMIN: can clone if no clone exists
   const canClone = (isSeller || isAdmin) && !hasClone && onClone;
@@ -183,8 +192,10 @@ export const VisitCard = ({
             <DropdownMenuContent align="end" className="w-52">
               <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
 
-              {/* SELLER/ADMIN: Unified dropdown based on clone status */}
-              {(isSeller || isAdmin) && (
+              {/* ============================================== */}
+              {/* DEALER FLOW (DealersPage): SELLER/ADMIN actions */}
+              {/* ============================================== */}
+              {isDealerFlow && (isSeller || isAdmin) && (
                 <>
                   {!hasClone ? (
                     // NOT CLONED: Show "View form" and "Clone visit"
@@ -302,6 +313,66 @@ export const VisitCard = ({
                           </DropdownMenuItem>
                         </>
                       )}
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* ============================================== */}
+              {/* NORMAL FLOW (HistoryVisitsPage, TaskDetailPage): SELLER/ADMIN actions */}
+              {/* Standard view/edit/delete without clone-specific logic */}
+              {/* When !isDealerFlow: show standard actions unless user is DEALER */}
+              {/* ============================================== */}
+              {!isDealerFlow && !isDealer && (
+                <>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(visit.id);
+                    }}
+                  >
+                    <Copy className="size-4" />
+                    {t("visits.copy")}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {onView && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onView(visit);
+                      }}
+                    >
+                      <ArrowUpRight className="size-4" />
+                      {t("visits.viewDetails")}
+                    </DropdownMenuItem>
+                  )}
+                  {onEdit && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(visit);
+                      }}
+                    >
+                      <PencilLine className="size-4" />
+                      {t("common.edit")}
+                    </DropdownMenuItem>
+                  )}
+                  {onDelete && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="cursor-pointer text-destructive focus:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(visit);
+                        }}
+                      >
+                        <Trash2 className="size-4 text-destructive" />
+                        {t("visits.deleteVisit")}
+                      </DropdownMenuItem>
                     </>
                   )}
                 </>

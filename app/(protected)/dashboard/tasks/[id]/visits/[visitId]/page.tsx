@@ -377,7 +377,15 @@ const TaskVisitDetailPage = ({ params }: VisitDetailPageProps) => {
 
       {/* Edit Form Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="p-0 m-0 border-none shadow-none bg-none overflow-hidden">
+        <DialogContent
+          className="
+            max-w-none
+            w-[95vw] h-[80vh]
+            md:max-h-[80vh]
+            border border-border
+            bg-background p-0 overflow-hidden flex flex-col
+          "
+        >
           {renderEditForm()}
         </DialogContent>
       </Dialog>

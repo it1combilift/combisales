@@ -830,7 +830,13 @@ export interface DataTableProps<TData, TValue> {
   onCreateVisit?: () => void;
   customerName?: string;
   userRole?: Role | null;
-  // Clone handlers
+  /**
+   * Indicates if the data table is used in the Dealers flow (/dashboard/dealers).
+   * When true: Shows EN_PROGRESO status filter for SELLER/ADMIN and clone-specific actions.
+   * When false: Normal flow (tasks/clients) - only shows DRAFT/COMPLETED, standard actions.
+   */
+  isDealerFlow?: boolean;
+  // Clone handlers (only used in dealer flow)
   onClone?: (visit: Visit) => void;
   onViewClone?: (visit: Visit) => void;
   onEditClone?: (visit: Visit) => void;
@@ -848,4 +854,9 @@ export interface ColumnsConfig {
   onViewClone?: (visit: Visit) => void; // View the clone of this original visit
   onEditClone?: (visit: Visit) => void; // Edit the clone of this original visit
   onDeleteClone?: (visit: Visit) => void; // Delete the clone of this original visit
+  /**
+   * Indicates if the columns are used in the Dealers flow.
+   * Affects action buttons and status display logic.
+   */
+  isDealerFlow?: boolean;
 }

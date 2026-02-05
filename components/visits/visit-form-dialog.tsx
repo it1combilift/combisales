@@ -102,7 +102,7 @@ export default function VisitFormDialog({
           {!selectedFormType && !isEditing ? (
             <div className="flex flex-col h-full">
               {/* HEADER */}
-              <div className="px-3 py-3 border-b border-border">
+              <div className="px-2 md:px-3 py-3 border-b border-border">
                 <DialogHeader className="text-left">
                   <DialogTitle className="text-sm font-semibold leading-tight tracking-tight text-balance">
                     {t("visits.registerVisit")}
@@ -113,7 +113,7 @@ export default function VisitFormDialog({
                 </DialogHeader>
               </div>
 
-              <div className="p-3 h-fit">
+              <div className="p-3 w-full">
                 {/* Language validation alert for SELLER users */}
                 <LanguageValidationAlert
                   show={showLanguageWarning}
@@ -132,10 +132,11 @@ export default function VisitFormDialog({
                           isAvailable && setSelectedFormType(option.type)
                         }
                         className={`
-                            group relative overflow-hidden rounded-lg px-3 pb-0 pt-2 text-left
+                              group overflow-hidden rounded-lg px-3 pb-2 pt-3 text-left
                                               transition-all duration-300
                                               cursor-pointer border border-border
                                               h-full
+                                              md:py-4
                           ${
                             isAvailable
                               ? "bg-card border-border hover:border-primary/50 hover:shadow-md hover:-translate-y-px"

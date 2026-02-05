@@ -10,7 +10,6 @@ import { EmptyCard } from "@/components/empty-card";
 import { H1, MonoText } from "@/components/fonts/fonts";
 import { useState, useEffect, useCallback } from "react";
 import { ZohoAccount, ZohoTask } from "@/interfaces/zoho";
-import { ColumnFiltersState } from "@tanstack/react-table";
 import { VisitCard } from "@/components/visits/visit-card";
 import { createColumns } from "@/components/visits/columns";
 import AnimatedTabsComponent from "@/components/accounts/tabs";
@@ -57,8 +56,6 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
   const [isVisitDialogOpen, setIsVisitDialogOpen] = useState(false);
   const [visitToEdit, setVisitToEdit] = useState<Visit | null>(null);
   const [visitToDelete, setVisitToDelete] = useState<Visit | null>(null);
-  const [rowSelection, setRowSelection] = useState({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const router = useRouter();
   const isMobile = useIsMobile();
   const { t, locale } = useI18n();
@@ -257,10 +254,6 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
           })}
           data={visits}
           isLoading={isLoadingVisits}
-          rowSelection={rowSelection}
-          setRowSelection={setRowSelection}
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
           onView={handleViewVisit}
           onEdit={handleEditVisit}
           onDelete={(visit) => setVisitToDelete(visit)}

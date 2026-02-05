@@ -108,6 +108,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   onDelete,
   onCreateVisit,
   userRole,
+  isDealerFlow = false,
   onClone,
   onViewClone,
   onEditClone,
@@ -185,24 +186,17 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   React.useEffect(() => {
     const newFilters: ColumnFiltersState = [];
     if (statusFilter) {
-      // Logic for DEALER: "Completed" filter should include EN_PROGRESO if visual mapping applies
-      if (userRole === Role.DEALER && statusFilter === "COMPLETADA") {
-        newFilters.push({
-          id: "status",
-          value: ["COMPLETADA", "EN_PROGRESO"],
-        });
-      } else {
-        newFilters.push({ id: "status", value: [statusFilter] });
-      }
+      // Pass status filter as string (the column filterFn will handle the logic)
+      newFilters.push({ id: "status", value: statusFilter });
     }
     if (formTypeFilter) {
-      newFilters.push({ id: "formType", value: [formTypeFilter] });
+      newFilters.push({ id: "formType", value: formTypeFilter });
     }
     if (dateFilter) {
-      newFilters.push({ id: "visitDate", value: [dateFilter] });
+      newFilters.push({ id: "visitDate", value: dateFilter });
     }
     setColumnFilters(newFilters);
-  }, [statusFilter, formTypeFilter, dateFilter, setColumnFilters, userRole]);
+  }, [statusFilter, formTypeFilter, dateFilter, setColumnFilters]);
 
   // Custom Global Filter Function: Searches across multiple fields
   const globalFilterFn = (row: any, columnId: string, filterValue: string) => {
@@ -368,7 +362,13 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                     // DEALER only sees BORRADOR and COMPLETADA options (EN_PROGRESO is mapped to COMPLETADA)
                     return key === "BORRADOR" || key === "COMPLETADA";
                   }
-                  return true; // SELLER/ADMIN sees all
+                  // NORMAL FLOW (HistoryVisitsPage, TaskDetailPage): Hide EN_PROGRESO
+                  // EN_PROGRESO is exclusive to dealer flow
+                  if (!isDealerFlow) {
+                    return key === "BORRADOR" || key === "COMPLETADA";
+                  }
+                  // DEALER FLOW (DealersPage): SELLER/ADMIN sees all including EN_PROGRESO
+                  return true;
                 })
                 .map((key) => (
                   <DropdownMenuCheckboxItem
@@ -390,8 +390,9 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                         )}
                       </span>
                     )}
-                    {/* Custom Label logic based on Role */}
-                    {isSeller || isAdmin ? (
+                    {/* Custom Label logic based on Role and Flow */}
+                    {isDealerFlow && (isSeller || isAdmin) ? (
+                      // DEALER FLOW: Show clone-specific labels for SELLER/ADMIN
                       <span>
                         {key === "EN_PROGRESO"
                           ? t("visits.statuses.inProgressOriginal")
@@ -400,6 +401,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                             : t("visits.statuses.completed")}
                       </span>
                     ) : (
+                      // NORMAL FLOW or DEALER: Show standard labels
                       t(
                         `visits.statuses.${
                           key === "BORRADOR"
