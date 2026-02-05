@@ -18,6 +18,20 @@ export interface DealInfo {
   probability?: number | null;
 }
 
+// ==================== LEAD INFO (when source is Leads) ====================
+export interface LeadInfo {
+  leadId: string;
+  leadName: string;
+  company?: string | null;
+  title?: string | null;
+  leadSource?: string | null;
+  leadStatus?: string | null;
+  rating?: string | null;
+  convertedAccountId?: string | null;
+  convertedContactId?: string | null;
+  convertedDealId?: string | null;
+}
+
 // ==================== CLIENT CONTEXT INTERFACE ====================
 export interface ClientContext {
   // ==================== IDENTIFICATION ====================
@@ -137,6 +151,12 @@ export interface ClientContext {
    * Information about the Deal (only present when sourceModule === "Deals")
    */
   dealInfo?: DealInfo | null;
+
+  // ==================== LEAD-SPECIFIC INFO ====================
+  /**
+   * Information about the Lead (only present when sourceModule === "Leads")
+   */
+  leadInfo?: LeadInfo | null;
 }
 
 // ==================== HELPER TYPE FOR CUSTOMER CONVERSION ====================

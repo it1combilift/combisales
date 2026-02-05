@@ -179,6 +179,90 @@ export interface ZohoContact {
   Tag?: Array<{ name: string }>;
 }
 
+// ==================== ZOHO LEAD INTERFACE ====================
+export interface ZohoLead {
+  // Identificación
+  id: string;
+  First_Name?: string;
+  Last_Name: string;
+  Full_Name?: string;
+  Company?: string; // Company name - primary identifier for leads
+
+  // Contact Info
+  Email?: string;
+  Phone?: string;
+  Mobile?: string;
+  Fax?: string;
+  Website?: string;
+  Title?: string; // Job title
+  Industry?: string;
+
+  // Lead Classification
+  Lead_Source?: string;
+  Lead_Status?: string;
+  Rating?: string;
+  Annual_Revenue?: number;
+  No_of_Employees?: number;
+
+  // Address
+  Street?: string;
+  City?: string;
+  State?: string;
+  Zip_Code?: string;
+  Country?: string;
+
+  // Propietario y creador
+  Owner?: {
+    name: string;
+    id: string;
+    email: string;
+  };
+  Created_By?: {
+    name: string;
+    id: string;
+    email?: string;
+  };
+  Modified_By?: {
+    name: string;
+    id: string;
+    email?: string;
+  };
+
+  // Fechas
+  Created_Time?: string;
+  Modified_Time?: string;
+  Last_Activity_Time?: string;
+
+  // Descripción
+  Description?: string;
+
+  // Lead conversion info
+  Converted_Account?: {
+    name: string;
+    id: string;
+  } | null;
+  Converted_Contact?: {
+    name: string;
+    id: string;
+  } | null;
+  Converted_Deal?: {
+    name: string;
+    id: string;
+  } | null;
+
+  // Campos de sistema ZOHO
+  $currency_symbol?: string;
+  $field_states?: string | null;
+  $state?: string;
+  $process_flow?: boolean;
+  $locked_for_me?: boolean;
+  $approved?: boolean;
+  $editable?: boolean;
+
+  // Tags
+  Tag?: Array<{ name: string }>;
+}
+
 // ==================== ZOHO TASK INTERFACE ====================
 export interface ZohoTask {
   // Identificación

@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { createZohoCRMService, ZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Role, VisitFormType, VisitStatus } from "@prisma/client";
-import { ZohoAccount } from "@/interfaces/zoho";
+import { ZohoAccount, ZohoLead } from "@/interfaces/zoho";
 
 import {
   VISIT_INCLUDE,
@@ -88,7 +88,18 @@ async function syncCustomerFromZoho(
       return customer.id;
     }
   } catch (dealError) {
-    console.log(`Entity ${entityId} not found as Deal either`);
+    console.log(`Entity ${entityId} not found as Deal either, trying Lead...`);
+  }
+
+  // 3. Try fetching as Lead
+  try {
+    const lead = await zohoService.getLeadById(entityId);
+    if (lead) {
+      const customer = await createCustomerFromLead(lead);
+      return customer.id;
+    }
+  } catch (leadError) {
+    console.log(`Entity ${entityId} not found as Lead either`);
   }
 
   return null;
@@ -258,6 +269,96 @@ async function createCustomerFromDeal(deal: any) {
       zohoModifiedAt: deal.Modified_Time ? new Date(deal.Modified_Time) : null,
       lastActivityTime: deal.Last_Activity_Time
         ? new Date(deal.Last_Activity_Time)
+        : null,
+    },
+  });
+}
+
+/**
+ * Create a Customer record from a ZohoLead
+ * Uses Lead ID with a prefix to distinguish from real Account IDs
+ */
+async function createCustomerFromLead(lead: ZohoLead) {
+  const leadAccountId = `LEAD_${lead.id}`; // Prefix to distinguish from real Account IDs
+
+  // Construct display name from Lead data
+  const displayName =
+    lead.Company ||
+    lead.Full_Name ||
+    [lead.First_Name, lead.Last_Name].filter(Boolean).join(" ") ||
+    "Lead";
+
+  return prisma.customer.upsert({
+    where: { zohoAccountId: leadAccountId },
+    create: {
+      zohoAccountId: leadAccountId,
+      accountName: displayName,
+      razonSocial: null,
+      accountNumber: null,
+      cif: null,
+      codigoCliente: null,
+      accountType: null,
+      industry: lead.Industry || null,
+      subSector: null,
+      phone: lead.Phone || null,
+      fax: lead.Fax || null,
+      email: lead.Email || null,
+      website: lead.Website || null,
+      billingStreet: lead.Street || null,
+      billingCity: lead.City || null,
+      billingState: lead.State || null,
+      billingCode: lead.Zip_Code || null,
+      billingCountry: lead.Country || null,
+      shippingStreet: null,
+      shippingCity: null,
+      shippingState: null,
+      shippingCode: null,
+      shippingCountry: null,
+      latitude: null,
+      longitude: null,
+      zohoOwnerId: lead.Owner?.id,
+      zohoOwnerName: lead.Owner?.name,
+      zohoOwnerEmail: lead.Owner?.email,
+      zohoCreatedById: lead.Created_By?.id,
+      zohoCreatedByName: lead.Created_By?.name,
+      zohoCreatedByEmail: lead.Created_By?.email,
+      parentAccountId: null,
+      parentAccountName: null,
+      clienteConEquipo: false,
+      cuentaNacional: false,
+      clienteBooks: false,
+      condicionesEspeciales: false,
+      proyectoAbierto: false,
+      revisado: false,
+      localizacionesMultiples: false,
+      description: lead.Description || `Lead: ${displayName}`,
+      comunidadAutonoma: null,
+      tipoPedido: null,
+      estadoCuenta: lead.Lead_Status || null,
+      zohoCreatedAt: lead.Created_Time ? new Date(lead.Created_Time) : null,
+      zohoModifiedAt: lead.Modified_Time ? new Date(lead.Modified_Time) : null,
+      lastActivityTime: lead.Last_Activity_Time
+        ? new Date(lead.Last_Activity_Time)
+        : null,
+    },
+    update: {
+      accountName: displayName,
+      industry: lead.Industry || null,
+      phone: lead.Phone || null,
+      email: lead.Email || null,
+      website: lead.Website || null,
+      billingStreet: lead.Street || null,
+      billingCity: lead.City || null,
+      billingState: lead.State || null,
+      billingCode: lead.Zip_Code || null,
+      billingCountry: lead.Country || null,
+      zohoOwnerId: lead.Owner?.id,
+      zohoOwnerName: lead.Owner?.name,
+      zohoOwnerEmail: lead.Owner?.email,
+      estadoCuenta: lead.Lead_Status || null,
+      zohoModifiedAt: lead.Modified_Time ? new Date(lead.Modified_Time) : null,
+      lastActivityTime: lead.Last_Activity_Time
+        ? new Date(lead.Last_Activity_Time)
         : null,
     },
   });

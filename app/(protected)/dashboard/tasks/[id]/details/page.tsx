@@ -9,7 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
 import { H1, MonoText } from "@/components/fonts/fonts";
 import { useState, useEffect, useCallback } from "react";
-import { ZohoAccount, ZohoDeal, ZohoTask } from "@/interfaces/zoho";
+import { ZohoAccount, ZohoDeal, ZohoLead, ZohoTask } from "@/interfaces/zoho";
 import { VisitCard } from "@/components/visits/visit-card";
 import { createColumns } from "@/components/visits/columns";
 import AnimatedTabsComponent from "@/components/accounts/tabs";
@@ -21,6 +21,7 @@ import { ClientContext } from "@/interfaces/client-context";
 import {
   accountToClientContext,
   dealToClientContext,
+  leadToClientContext,
   clientContextToCustomer,
   getTaskSourceModule,
   isModuleSupported,
@@ -161,6 +162,21 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
               sourceModule,
               true,
               `Deal only: ${context.name}`,
+            );
+            return context;
+          }
+        } else if (sourceModule === "Leads") {
+          // Fetch Lead
+          const leadRes = await fetch(`/api/zoho/leads/${whatId}`);
+          if (leadRes.ok) {
+            const leadData = await leadRes.json();
+            const lead: ZohoLead = leadData.lead;
+            const context = leadToClientContext(lead);
+            logClientContextResolution(
+              taskData.id,
+              sourceModule,
+              true,
+              `Lead: ${context.name}`,
             );
             return context;
           }

@@ -5,7 +5,7 @@
  * into a unified ClientContext structure.
  */
 
-import { ZohoAccount, ZohoDeal, ZohoTask } from "@/interfaces/zoho";
+import { ZohoAccount, ZohoDeal, ZohoLead, ZohoTask } from "@/interfaces/zoho";
 import {
   ClientContext,
   ClientSourceModule,
@@ -205,6 +205,107 @@ export function dealToClientContext(
   };
 }
 
+/**
+ * Normalize ZohoLead to ClientContext
+ *
+ * @param lead - The Lead data from Zoho
+ */
+export function leadToClientContext(lead: ZohoLead): ClientContext {
+  // Construct full name from First_Name and Last_Name
+  const fullName =
+    lead.Full_Name ||
+    [lead.First_Name, lead.Last_Name].filter(Boolean).join(" ") ||
+    lead.Company ||
+    "Lead";
+
+  return {
+    // Identification
+    id: lead.id,
+    sourceModule: "Leads",
+    sourceId: lead.id,
+    zohoAccountId: null, // Leads don't have Account ID until converted
+
+    // Basic Info - derive from Lead
+    name: lead.Company || fullName,
+    accountName: lead.Company || fullName,
+    razonSocial: null,
+    accountNumber: null,
+    cif: null,
+    codigoCliente: null,
+
+    // Classification
+    accountType: null,
+    industry: lead.Industry || null,
+    subSector: null,
+
+    // Contact Info
+    phone: lead.Phone || null,
+    fax: lead.Fax || null,
+    email: lead.Email || null,
+    website: lead.Website || null,
+
+    // Billing Address (using lead's primary address)
+    billingStreet: lead.Street || null,
+    billingCity: lead.City || null,
+    billingState: lead.State || null,
+    billingCode: lead.Zip_Code || null,
+    billingCountry: lead.Country || null,
+
+    // Shipping Address - not available from Lead
+    shippingStreet: null,
+    shippingCity: null,
+    shippingState: null,
+    shippingCode: null,
+    shippingCountry: null,
+
+    // Geolocation - not available from Lead
+    latitude: null,
+    longitude: null,
+
+    // Owner
+    zohoOwnerId: lead.Owner?.id || null,
+    zohoOwnerName: lead.Owner?.name || null,
+    zohoOwnerEmail: lead.Owner?.email || null,
+
+    // Creator
+    zohoCreatedById: lead.Created_By?.id || null,
+    zohoCreatedByName: lead.Created_By?.name || null,
+    zohoCreatedByEmail: lead.Created_By?.email || null,
+
+    // Flags - defaults for leads
+    clienteConEquipo: false,
+    cuentaNacional: false,
+    clienteBooks: false,
+    condicionesEspeciales: false,
+    proyectoAbierto: false,
+    revisado: false,
+    localizacionesMultiples: false,
+
+    // Metadata
+    description: lead.Description || null,
+    zohoCreatedAt: lead.Created_Time || null,
+    zohoModifiedAt: lead.Modified_Time || null,
+    lastActivityTime: lead.Last_Activity_Time || null,
+
+    // No deal info for Leads
+    dealInfo: null,
+
+    // Lead-specific info (stored in metadata since it's optional)
+    leadInfo: {
+      leadId: lead.id,
+      leadName: fullName,
+      company: lead.Company || null,
+      title: lead.Title || null,
+      leadSource: lead.Lead_Source || null,
+      leadStatus: lead.Lead_Status || null,
+      rating: lead.Rating || null,
+      convertedAccountId: lead.Converted_Account?.id || null,
+      convertedContactId: lead.Converted_Contact?.id || null,
+      convertedDealId: lead.Converted_Deal?.id || null,
+    },
+  };
+}
+
 // ==================== CONVERSION UTILITIES ====================
 
 /**
@@ -288,7 +389,7 @@ export function getTaskSourceModule(task: ZohoTask): ClientSourceModule | null {
  */
 export function isModuleSupported(module: ClientSourceModule | null): boolean {
   if (!module) return false;
-  return module === "Accounts" || module === "Deals";
+  return module === "Accounts" || module === "Deals" || module === "Leads";
 }
 
 /**

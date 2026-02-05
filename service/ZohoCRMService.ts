@@ -6,6 +6,7 @@ import {
   ZohoContact,
   ZohoCRMResponse,
   ZohoDeal,
+  ZohoLead,
   ZohoTask,
   ZohoTokens,
 } from "@/interfaces/zoho";
@@ -304,7 +305,7 @@ export class ZohoCRMService {
 
     return this.request<ZohoCRMResponse<ZohoTask>>("/Tasks/search", params);
   }
-  
+
   /**
    * Get list of deals (projects) from Zoho CRM
    */
@@ -379,6 +380,68 @@ export class ZohoCRMService {
     };
 
     return this.request<ZohoCRMResponse<ZohoDeal>>("/Deals/search", params);
+  }
+
+  // ==================== LEADS ====================
+
+  /**
+   * Get list of leads from Zoho CRM
+   */
+  async getLeads(options?: {
+    page?: number;
+    per_page?: number;
+    sort_order?: "asc" | "desc";
+    sort_by?: string;
+    fields?: string[];
+  }): Promise<ZohoCRMResponse<ZohoLead>> {
+    const params: Record<string, any> = {
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    if (options?.sort_order) params.sort_order = options.sort_order;
+    if (options?.sort_by) params.sort_by = options.sort_by;
+    if (options?.fields) params.fields = options.fields.join(",");
+
+    return this.request<ZohoCRMResponse<ZohoLead>>("/Leads", params);
+  }
+
+  /**
+   * Get a specific lead by ID
+   */
+  async getLeadById(leadId: string): Promise<ZohoLead> {
+    const response = await this.request<ZohoCRMResponse<ZohoLead>>(
+      `/Leads/${leadId}`,
+    );
+    if (!response.data || response.data.length === 0) {
+      throw new Error(`Lead with ID ${leadId} not found in Zoho CRM`);
+    }
+    return response.data[0];
+  }
+
+  /**
+   * Search leads by Company or Last_Name
+   */
+  async searchLeads(
+    searchText: string,
+    options?: {
+      page?: number;
+      per_page?: number;
+    },
+  ): Promise<ZohoCRMResponse<ZohoLead>> {
+    const escapedText = searchText.replace(/[()"']/g, "").trim();
+    const criteria = [
+      `(Company:starts_with:${escapedText})`,
+      `(Last_Name:starts_with:${escapedText})`,
+    ].join("or");
+
+    const params: Record<string, any> = {
+      criteria: `(${criteria})`,
+      page: options?.page || 1,
+      per_page: options?.per_page || 200,
+    };
+
+    return this.request<ZohoCRMResponse<ZohoLead>>("/Leads/search", params);
   }
 }
 
