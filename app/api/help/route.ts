@@ -63,10 +63,16 @@ export async function POST(req: NextRequest) {
     const htmlContent = generateSupportRequestEmailHTML(emailData);
     const textContent = generateSupportRequestEmailText(emailData);
 
+    // Get translated category label for subject
+    const categoryLabel = getCategoryLabel(
+      helpData.category,
+      body.locale || "es",
+    );
+
     // Send email
     const emailResult = await sendEmail({
       to: [...HELP_CONFIG.supportRecipients],
-      subject: `[${emailData.category.toUpperCase()}] ${emailData.subject}`,
+      subject: `[${categoryLabel}] ${emailData.subject}`,
       html: htmlContent,
       text: textContent,
       replyTo: session.user.email || undefined,
@@ -115,7 +121,7 @@ export async function POST(req: NextRequest) {
           );
 
           ticketResult = await createZohoDeskTicket(zohoAuth.tokens, {
-            subject: `[${helpData.category.toUpperCase()}] ${helpData.subject}`,
+            subject: `[${categoryLabel}] ${helpData.subject}`,
             description: ticketDescription,
             departmentId: departmentId,
             contact: {
@@ -126,7 +132,7 @@ export async function POST(req: NextRequest) {
             priority: HELP_CATEGORY_TO_PRIORITY[helpData.category] || "Medium",
             status: "Open",
             channel: "Web",
-            category: getCategoryLabel(helpData.category),
+            category: categoryLabel,
           });
 
           if (ticketResult.success) {
@@ -233,16 +239,26 @@ function buildTicketDescription(
 }
 
 /**
- * Get localized category label for Zoho Desk
+ * Get localized category label based on locale
  */
-function getCategoryLabel(category: string): string {
-  const labels: Record<string, string> = {
-    bug: "Error/Bug",
-    technical: "Problema Técnico",
-    feature: "Solicitud de Función",
-    question: "Pregunta",
-    other: "Otro",
+function getCategoryLabel(category: string, locale: string = "es"): string {
+  const labels: Record<string, Record<string, string>> = {
+    es: {
+      bug: "Reporte de Error",
+      technical: "Problema Técnico",
+      feature: "Solicitud de Función",
+      question: "Pregunta General",
+      other: "Otro",
+    },
+    en: {
+      bug: "Bug Report",
+      technical: "Technical Issue",
+      feature: "Feature Request",
+      question: "General Question",
+      other: "Other",
+    },
   };
 
-  return labels[category] || category;
+  const localeLabels = labels[locale] || labels.es;
+  return localeLabels[category] || category;
 }

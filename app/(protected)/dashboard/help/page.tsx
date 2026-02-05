@@ -358,12 +358,10 @@ export default function HelpPage() {
     <section className="mx-auto px-4 space-y-4 w-full">
       {/* ==================== HEADER SECTION ==================== */}
       <header className="flex flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-0">
-        <div>
-          <div className="flex items-center gap-3 justify-start">
-            <div className="min-w-0 flex-1">
-              <H1>{t("help.title")}</H1>
-              <Paragraph>{t("help.subtitle")}</Paragraph>
-            </div>
+        <div className="flex items-center gap-3 justify-start">
+          <div className="min-w-0 flex-1">
+            <H1>{t("help.title")}</H1>
+            <Paragraph className="text-pretty">{t("help.subtitle")}</Paragraph>
           </div>
         </div>
       </header>
