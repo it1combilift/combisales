@@ -105,24 +105,29 @@ export type EquiposElectricos = z.infer<typeof equiposElectricosSchema>;
 export const getFormularioLogisticaSchema = (t: any) =>
   z
     .object({
-      // ==================== DATOS DEL CLIENTE (pre-llenados, opcionales) ====================
-      razonSocial: z.string().optional().default(""),
+      // ==================== DATOS DEL CLIENTE ====================
+      // Required fields for customer step
+      razonSocial: z
+        .string()
+        .min(1, t("forms.logistica.validation.companyNameRequired")),
+      direccion: z
+        .string()
+        .min(1, t("forms.logistica.validation.addressRequired")),
+      website: z
+        .string()
+        .url(t("forms.logistica.validation.urlInvalid"))
+        .min(1, t("forms.logistica.validation.websiteRequired")),
+      // Optional customer fields
       personaContacto: z.string().optional().default(""),
       email: z
         .string()
         .email(t("forms.logistica.validation.emailInvalid"))
         .optional()
         .or(z.literal("")),
-      direccion: z.string().optional().default(""),
       localidad: z.string().optional().default(""),
       provinciaEstado: z.string().optional().default(""),
       pais: z.string().optional().default(""),
       codigoPostal: z.string().optional().default(""),
-      website: z
-        .string()
-        .url(t("forms.logistica.validation.urlInvalid"))
-        .optional()
-        .or(z.literal("")),
       numeroIdentificacionFiscal: z.string().optional().default(""),
       distribuidor: z.string().optional(),
       contactoDistribuidor: z.string().optional(),

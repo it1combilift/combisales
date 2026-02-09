@@ -95,24 +95,29 @@ export type EquiposElectricos = z.infer<typeof equiposElectricosSchema>;
 export const getFormularioIndustrialSchema = (t: any) =>
   z
     .object({
-      // ==================== DATOS DEL CLIENTE (pre-llenados, opcionales) ====================
-      razonSocial: z.string().optional().default(""),
+      // ==================== DATOS DEL CLIENTE ====================
+      // Required fields for customer step
+      razonSocial: z
+        .string()
+        .min(1, t("forms.industrial.validation.companyNameRequired")),
+      direccion: z
+        .string()
+        .min(1, t("forms.industrial.validation.addressRequired")),
+      website: z
+        .string()
+        .url(t("forms.industrial.validation.urlInvalid"))
+        .min(1, t("forms.industrial.validation.websiteRequired")),
+      // Optional customer fields
       personaContacto: z.string().optional().default(""),
       email: z
         .string()
         .email(t("forms.industrial.validation.emailInvalid"))
         .optional()
         .or(z.literal("")),
-      direccion: z.string().optional().default(""),
       localidad: z.string().optional().default(""),
       provinciaEstado: z.string().optional().default(""),
       pais: z.string().optional().default(""),
       codigoPostal: z.string().optional().default(""),
-      website: z
-        .string()
-        .url(t("forms.industrial.validation.urlInvalid"))
-        .optional()
-        .or(z.literal("")),
       numeroIdentificacionFiscal: z.string().optional().default(""),
       distribuidor: z.string().optional(),
       contactoDistribuidor: z.string().optional(),
@@ -170,8 +175,8 @@ export const getFormularioIndustrialSchema = (t: any) =>
         .array(getDimensionCargaSchema(t))
         .min(1, t("forms.industrial.validation.loadRequired")),
 
-      // ==================== ESPECIFICACIONES DEL PASILLO ====================
-      especificacionesPasillo: especificacionesPasilloSchema,
+      // ==================== ESPECIFICACIONES DEL PASILLO (OPTIONAL) ====================
+      especificacionesPasillo: especificacionesPasilloSchema.optional(),
 
       // ==================== ARCHIVOS ====================
       archivos: z.array(archivoSubidoSchema).default([]),

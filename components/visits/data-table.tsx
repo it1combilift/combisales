@@ -278,8 +278,8 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   return (
     <div className="w-full space-y-4">
       <div className="flex gap-2 flex-col lg:flex-row flex-wrap items-start justify-center lg:items-center lg:justify-between">
-        <div className="flex flex-1 items-center gap-2 w-fit">
-          <div className="relative flex-1 max-w-full lg:max-w-sm w-full">
+        <div className="flex flex-1 items-center gap-2 w-full md:max-w-sm">
+          <div className="relative w-full">
             <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t("visits.searchPlaceholder")}
@@ -289,12 +289,12 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                 setSearchQuery(value);
                 setPageIndex(1);
               }}
-              className="pl-9 h-10 text-xs sm:text-sm"
+              className="pl-9 h-10 text-xs sm:text-sm w-full max-w-full"
             />
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 justify-start w-full">
           {/* Date Filter */}
           <Popover>
             <PopoverTrigger asChild>
@@ -359,15 +359,11 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               {Object.keys(VISIT_STATUS_LABELS)
                 .filter((key) => {
                   if (isDealer) {
-                    // DEALER only sees BORRADOR and COMPLETADA options (EN_PROGRESO is mapped to COMPLETADA)
                     return key === "BORRADOR" || key === "COMPLETADA";
                   }
-                  // NORMAL FLOW (HistoryVisitsPage, TaskDetailPage): Hide EN_PROGRESO
-                  // EN_PROGRESO is exclusive to dealer flow
                   if (!isDealerFlow) {
                     return key === "BORRADOR" || key === "COMPLETADA";
                   }
-                  // DEALER FLOW (DealersPage): SELLER/ADMIN sees all including EN_PROGRESO
                   return true;
                 })
                 .map((key) => (
@@ -488,7 +484,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
           {!isMobile && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="hidden md:inline-flex">
                   <IconLayoutColumns className="size-4" />
                   <span className="hidden md:inline">
                     {t("table.hideColumn")}

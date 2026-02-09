@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
-import { FORM_STEPS, getFormSteps } from "../constants";
+import { getFormSteps } from "../constants";
 import { SaveVisitParams } from "../types";
 import { UseFormReturn } from "react-hook-form";
 import { FormularioIndustrialSchema } from "../schemas";
@@ -20,6 +20,8 @@ interface UseIndustrialAnalisisFormProps {
   assignedSellerId?: string;
   // Para flujo DEALER: habilita el paso de datos del cliente
   enableCustomerEntry?: boolean;
+  // Para flujo DEALER: posicionar paso cliente antes de archivos
+  customerStepBeforeFiles?: boolean;
 }
 
 export function useIndustrialAnalisisForm({
@@ -33,11 +35,12 @@ export function useIndustrialAnalisisForm({
   locale,
   assignedSellerId,
   enableCustomerEntry = false,
+  customerStepBeforeFiles = false,
 }: UseIndustrialAnalisisFormProps) {
-  // Get the appropriate steps based on enableCustomerEntry
+  // Get the appropriate steps based on enableCustomerEntry and position
   const formSteps = useMemo(
-    () => getFormSteps(enableCustomerEntry),
-    [enableCustomerEntry],
+    () => getFormSteps(enableCustomerEntry, customerStepBeforeFiles),
+    [enableCustomerEntry, customerStepBeforeFiles],
   );
 
   // ==================== STATE ====================
@@ -53,91 +56,105 @@ export function useIndustrialAnalisisForm({
 
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ==================== STEP VALIDATION LOGIC ====================
+  // ==================== STEP VALIDATION LOGIC (KEY-BASED) ====================
   const validateStepFields = useCallback(
     (step: number, values: FormularioIndustrialSchema): boolean => {
       const stepConfig = formSteps[step - 1];
-      if (!stepConfig || !stepConfig.fields) return true;
+      if (!stepConfig) return false;
 
+      const stepKey = stepConfig.key;
       const alimentacion = values.alimentacionDeseada;
 
-      // Step 3 (Equipos eléctricos) solo aplica si alimentación es ELECTRICO
-      if (step === 3 && alimentacion !== TipoAlimentacion.ELECTRICO) {
-        return true;
+      switch (stepKey) {
+        case "customerData":
+          // Required: razonSocial, direccion, website
+          if (!values.razonSocial || values.razonSocial.trim().length === 0)
+            return false;
+          if (!values.direccion || values.direccion.trim().length === 0)
+            return false;
+          if (!values.website || values.website.trim().length === 0)
+            return false;
+          return true;
+
+        case "operation":
+          // Required: notasOperacion (min 1 char)
+          if (
+            !values.notasOperacion ||
+            values.notasOperacion.trim().length === 0
+          )
+            return false;
+          return true;
+
+        case "application":
+          // Required: descripcionProducto, alimentacionDeseada, and key numeric fields
+          if (
+            !values.descripcionProducto ||
+            values.descripcionProducto.trim().length < 10
+          )
+            return false;
+          if (!values.alimentacionDeseada) return false;
+          if (
+            values.turnosTrabajo === null ||
+            values.turnosTrabajo === undefined
+          )
+            return false;
+          return true;
+
+        case "batteries":
+          // Conditional: only required if alimentacion is ELECTRICO
+          // When not ELECTRICO, return false (step is skipped, not completed)
+          if (alimentacion !== TipoAlimentacion.ELECTRICO) return false;
+          // If ELECTRICO, check if any meaningful data was entered in equiposElectricos
+          const equipos = values.equiposElectricos;
+          if (!equipos || typeof equipos !== "object") return false;
+          // Check if user entered any actual data (not just default values)
+          // noAplica=true counts as data, or any non-null field
+          const equiposHasData: boolean =
+            equipos.noAplica === true ||
+            equipos.tipoCorriente !== null ||
+            equipos.voltaje !== null ||
+            equipos.frecuencia !== null ||
+            equipos.amperaje !== null ||
+            equipos.temperaturaAmbiente !== null ||
+            equipos.horasTrabajoPorDia !== null ||
+            Boolean(equipos.notas && equipos.notas.trim().length > 0);
+          return equiposHasData;
+
+        case "loads":
+          // Required: dimensionesCargas with at least 1 valid entry and 100% total
+          const cargas = values.dimensionesCargas;
+          if (!Array.isArray(cargas) || cargas.length === 0) return false;
+          const totalPct = cargas.reduce(
+            (sum: number, c: any) => sum + (c.porcentaje || 0),
+            0,
+          );
+          if (Math.abs(totalPct - 100) > 0.01) return false;
+          for (const carga of cargas) {
+            if (!carga.producto || carga.producto.trim() === "") return false;
+          }
+          return true;
+
+        case "aisle":
+          // Aisle Specification step is OPTIONAL
+          // Only mark as completed if user entered any data
+          const pasillo = values.especificacionesPasillo;
+          if (!pasillo || typeof pasillo !== "object") return false;
+          // Check if any numeric field has a non-null value
+          const pasilloHasData = Object.values(pasillo).some(
+            (v) => v !== null && v !== undefined,
+          );
+          return pasilloHasData;
+
+        case "files":
+          // Files are OPTIONAL - only completed if files were uploaded
+          const archivos = values.archivos;
+          return Array.isArray(archivos) && archivos.length > 0;
+
+        default:
+          return false;
       }
-
-      for (const fieldName of stepConfig.fields) {
-        const value = (values as any)[fieldName];
-
-        switch (fieldName) {
-          case "archivos":
-            continue;
-
-          case "dimensionesCargas":
-            if (!Array.isArray(value) || value.length === 0) {
-              return false;
-            }
-            const totalPct = value.reduce(
-              (sum: number, c: any) => sum + (c.porcentaje || 0),
-              0,
-            );
-            if (Math.abs(totalPct - 100) > 0.01) {
-              return false;
-            }
-            for (const carga of value) {
-              if (!carga.producto || carga.producto.trim() === "") {
-                return false;
-              }
-            }
-            continue;
-
-          case "especificacionesPasillo":
-            if (!value || typeof value !== "object") {
-              return false;
-            }
-            continue;
-
-          case "equiposElectricos":
-            if (alimentacion === TipoAlimentacion.ELECTRICO) {
-              if (!value || typeof value !== "object") {
-                return false;
-              }
-            }
-            continue;
-
-          case "fechaCierre":
-          case "fechaEstimadaDefinicion":
-          case "website":
-          case "distribuidor":
-          case "contactoDistribuidor":
-            continue;
-
-          default:
-            if (typeof value === "string") {
-              if (!value || value.trim() === "") {
-                return false;
-              }
-            } else if (value === null || value === undefined) {
-              if (
-                [
-                  "alturaUltimoNivelEstanteria",
-                  "maximaAlturaElevacion",
-                  "pesoCargaMaximaAltura",
-                  "pesoCargaPrimerNivel",
-                  "dimensionesAreaTrabajoAncho",
-                  "dimensionesAreaTrabajoFondo",
-                  "turnosTrabajo",
-                ].includes(fieldName)
-              ) {
-                return false;
-              }
-            }
-        }
-      }
-
-      return true;
     },
-    [],
+    [formSteps],
   );
 
   // Function to recalculate all completed steps
@@ -159,7 +176,7 @@ export function useIndustrialAnalisisForm({
         return prev;
       });
     },
-    [validateStepFields],
+    [validateStepFields, formSteps],
   );
 
   // ==================== REACTIVE STEP VALIDATION ====================
@@ -199,23 +216,48 @@ export function useIndustrialAnalisisForm({
       : formSteps.length;
   }, [form, formSteps.length, enableCustomerEntry]);
 
+  // Calculate step numbers for optional steps (aisle, files)
+  const aisleStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "aisle") + 1;
+  }, [formSteps]);
+
+  const filesStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "files") + 1;
+  }, [formSteps]);
+
   const progress = useMemo(() => {
     const alimentacion = form.getValues("alimentacionDeseada");
     const skipElectricStep = alimentacion !== TipoAlimentacion.ELECTRICO;
     // Electric step is 4 when customer entry enabled, 3 otherwise
     const electricStep = enableCustomerEntry ? 4 : 3;
 
-    // Si debemos saltar el paso de equipos eléctricos, no contarlo en completados
-    let effectiveCompleted = completedSteps.size;
-    if (skipElectricStep && completedSteps.has(electricStep)) {
-      effectiveCompleted--;
-    }
+    // Count completed steps, excluding conditional (batteries when not ELECTRICO)
+    // and optional steps (aisle, files) from the count
+    let effectiveCompleted = 0;
+    completedSteps.forEach((step) => {
+      // Skip electric step if not ELECTRICO
+      if (step === electricStep && skipElectricStep) return;
+      // Skip optional steps from completed count (they don't affect progress)
+      if (step === aisleStepNumber || step === filesStepNumber) return;
+      effectiveCompleted++;
+    });
 
-    const totalSteps = skipElectricStep
-      ? formSteps.length - 1
-      : formSteps.length;
-    return Math.round((effectiveCompleted / totalSteps) * 100);
-  }, [completedSteps, form, formSteps.length, enableCustomerEntry]);
+    // Calculate total required steps (exclude batteries when not ELECTRICO, exclude optional steps)
+    let totalRequiredSteps = formSteps.length;
+    if (skipElectricStep) totalRequiredSteps--;
+    // Subtract optional steps (aisle, files) if they exist
+    if (aisleStepNumber > 0) totalRequiredSteps--;
+    if (filesStepNumber > 0) totalRequiredSteps--;
+
+    return Math.round((effectiveCompleted / totalRequiredSteps) * 100);
+  }, [
+    completedSteps,
+    form,
+    formSteps.length,
+    enableCustomerEntry,
+    aisleStepNumber,
+    filesStepNumber,
+  ]);
 
   const allStepsComplete = useMemo((): boolean => {
     const values = form.getValues();
@@ -226,8 +268,10 @@ export function useIndustrialAnalisisForm({
 
     // Verificar que todos los pasos requeridos estén completos usando validación en tiempo real
     for (let step = 1; step <= formSteps.length; step++) {
-      // Si debemos saltar el paso de equipos eléctricos, ignorarlo
+      // Skip electric step if not ELECTRICO
       if (step === electricStep && skipElectricStep) continue;
+      // Skip optional steps (aisle, files) - they don't block submission
+      if (step === aisleStepNumber || step === filesStepNumber) continue;
       if (!validateStepFields(step, values)) return false;
     }
     return true;
@@ -237,6 +281,8 @@ export function useIndustrialAnalisisForm({
     validateStepFields,
     formSteps.length,
     enableCustomerEntry,
+    aisleStepNumber,
+    filesStepNumber,
   ]);
 
   const currentStepConfig = formSteps[currentStep - 1];
@@ -264,9 +310,10 @@ export function useIndustrialAnalisisForm({
   /**
    * Determina si el paso de equipos eléctricos debe ser saltado
    * El paso de Equipos Eléctricos solo aplica cuando alimentación es ELECTRICO
-   * Note: Electric step is 4 when enableCustomerEntry=true, 3 otherwise
    */
-  const electricStepNumber = enableCustomerEntry ? 4 : 3;
+  const electricStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "batteries") + 1;
+  }, [formSteps]);
 
   const shouldSkipStep3 = useCallback(() => {
     const alimentacion = form.getValues("alimentacionDeseada");

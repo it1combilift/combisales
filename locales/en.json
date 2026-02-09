@@ -445,7 +445,7 @@
     "contact": "Contact",
     "na": "N/A",
     "identification": "Identification",
-    "legalName": "Legal Name",
+    "legalName": "Company Name",
     "clientCode": "Client Code",
     "cif": "CIF / NIF",
     "zohoId": "Zoho ID",
@@ -980,6 +980,9 @@
         }
       },
       "validation": {
+        "companyNameRequired": "Company name is required",
+        "addressRequired": "Address is required",
+        "websiteRequired": "Website is required",
         "operationNotesRequired": "Operation notes are required",
         "productDescriptionRequired": "Product description is required",
         "positiveValueRequired": "Must be a positive value",
@@ -1329,7 +1332,7 @@
       }
     },
     "fields": {
-      "legalName": "Legal name",
+      "legalName": "Company Name",
       "contactPerson": "Contact person",
       "email": "Email",
       "website": "Website",
@@ -1416,7 +1419,7 @@
       "fields": {
         "companyName": {
           "label": "Company Name",
-          "placeholder": "Company name"
+          "placeholder": "Legal company name"
         },
         "fiscalId": {
           "label": "Tax ID",
@@ -1581,8 +1584,8 @@
       },
       "fields": {
         "productDescription": {
-          "label": "Detailed project description",
-          "placeholder": "Describe the product in detail, including capacities, dimensions, frequency of use..."
+          "label": "The client wants a solution for...",
+          "placeholder": "Storing, order preparation, cross-docking, loading/unloading..."
         },
         "closingDate": {
           "label": "Approximate date of project development",
@@ -1613,6 +1616,9 @@
         }
       },
       "validation": {
+        "companyNameRequired": "Company name is required",
+        "addressRequired": "Address is required",
+        "websiteRequired": "Website is required",
         "descriptionRequired": "Must provide a detailed description",
         "typeRequired": "Select at least one type",
         "measuresRequired": "Select at least one measurement",
@@ -1670,8 +1676,8 @@
       },
       "fields": {
         "operationNotes": {
-          "label": "Operation Description",
-          "placeholder": "Please, specify if there are any ramps, doorways, other restrictions...",
+          "label": "The client wants a solution for...",
+          "placeholder": "Storing, order preparation, cross-docking, loading/unloading...",
           "required": "Operation description is required"
         },
         "closingDate": {
@@ -1681,8 +1687,8 @@
         },
         "productDescription": {
           "header": "Application Details",
-          "label": "Description of loads",
-          "placeholder": "Describe the loads to be handled...",
+          "label": "Detailed description of the product(s) to be handled",
+          "placeholder": "E.g.: 1200x800mm pallets with 40kg boxes, steel coils 1m in diameter and 500kg, etc.",
           "required": "Description of loads is required"
         },
         "dimensionsAndWeights": {
@@ -1776,6 +1782,9 @@
         }
       },
       "validation": {
+        "companyNameRequired": "Company name is required",
+        "addressRequired": "Address is required",
+        "websiteRequired": "Website is required",
         "descriptionRequired": "Operation description is required",
         "typeRequired": "Select at least one type",
         "measuresRequired": "Select at least one measurement",
@@ -1842,8 +1851,8 @@
       },
       "fields": {
         "operationNotes": {
-          "label": "Operation description",
-          "placeholder": "Specify ramps, doorways, restrictions..."
+          "label": "The client wants a solution for...",
+          "placeholder": "Storing, order preparation, cross-docking, loading/unloading..."
         },
         "operationType": "Operation type",
         "operation": {
@@ -1851,8 +1860,8 @@
             "label": "Approximate date of project development"
           },
           "notes": {
-            "label": "Operation description",
-            "placeholder": "Specify ramps, doorways, restrictions..."
+            "label": "The client wants a solution for...",
+            "placeholder": "Storing, order preparation, cross-docking, loading/unloading..."
           },
           "ramps": {
             "label": "Are there ramps?",
@@ -1890,8 +1899,8 @@
             "operationAndPower": "Operation and Power"
           },
           "productDescription": {
-            "label": "Description of loads",
-            "placeholder": "Describe the load or product to be handled..."
+            "label": "Detailed description of the product(s) to be handled",
+            "placeholder": "E.g.: 1200x800mm pallets with 40kg boxes, steel coils 1m in diameter and 500kg, etc."
           },
           "lastLevelHeight": {
             "label": "Max rack height"
@@ -2051,6 +2060,9 @@
         }
       },
       "validation": {
+        "companyNameRequired": "Company name is required",
+        "addressRequired": "Address is required",
+        "websiteRequired": "Website is required",
         "descriptionRequired": "Operation description is required",
         "typeRequired": "Select at least one type",
         "measuresRequired": "Select at least one measurement",
@@ -2219,6 +2231,9 @@
         "files": "Files"
       },
       "validation": {
+        "companyNameRequired": "Company name is required",
+        "addressRequired": "Address is required",
+        "websiteRequired": "Website is required",
         "emailInvalid": "Invalid email",
         "urlInvalid": "Invalid URL",
         "selectAtLeastOneOption": "You must select at least one option: containers or special load"

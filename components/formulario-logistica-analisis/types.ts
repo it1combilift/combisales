@@ -19,6 +19,8 @@ export interface FormularioLogisticaAnalisisProps {
   readOnly?: boolean;
   // Si es true, habilita el paso de datos del cliente (para flujo DEALER)
   enableCustomerEntry?: boolean;
+  // Si es true, el paso de cliente se muestra antes de archivos (casi al final)
+  customerStepBeforeFiles?: boolean;
   // Callback para notificar cambios no guardados al componente padre
   onDirtyChange?: (isDirty: boolean) => void;
 }

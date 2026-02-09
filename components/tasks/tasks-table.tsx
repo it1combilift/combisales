@@ -303,9 +303,9 @@ export function TasksTable({
     <div className="w-full space-y-4">
       {/* Search and Filter Bar */}
       <div className="flex flex-col gap-3">
-        <div className="flex flex-row items-center justify-between gap-3 flex-wrap">
-          <div className="flex flex-col items-start justify-center gap-2 flex-wrap">
-            <div className="relative flex-1 max-w-full sm:max-w-sm">
+        <div className="flex flex-row items-center justify-between flex-wrap gap-3">
+          <div className="flex flex-col items-start justify-center gap-2 flex-wrap w-full md:w-fit">
+            <div className="relative flex-1 w-full max-w-full md:max-w-sm">
               <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={t("common.searchPlaceholder")}
@@ -390,7 +390,7 @@ export function TasksTable({
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="hidden md:inline-flex">
                   <IconLayoutColumns className="size-4" />
                   <span className="hidden sm:inline">
                     {t("common.columns")}

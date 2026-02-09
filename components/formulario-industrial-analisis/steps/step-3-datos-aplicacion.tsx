@@ -102,7 +102,7 @@ export function Step3Content({ form }: StepContentProps) {
                       value={field.value ?? ""}
                     />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                      m
+                      mm
                     </span>
                   </div>
                 </FormControl>
@@ -136,7 +136,7 @@ export function Step3Content({ form }: StepContentProps) {
                       value={field.value ?? ""}
                     />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                      m
+                      mm
                     </span>
                   </div>
                 </FormControl>
@@ -238,7 +238,7 @@ export function Step3Content({ form }: StepContentProps) {
                       value={field.value ?? ""}
                     />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                      m
+                      mt
                     </span>
                   </div>
                 </FormControl>
@@ -272,7 +272,7 @@ export function Step3Content({ form }: StepContentProps) {
                       value={field.value ?? ""}
                     />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                      m
+                      mt
                     </span>
                   </div>
                 </FormControl>

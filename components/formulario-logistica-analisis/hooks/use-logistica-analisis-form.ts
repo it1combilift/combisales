@@ -20,6 +20,8 @@ interface UseLogisticaAnalisisFormProps {
   assignedSellerId?: string;
   // Si es true, habilita el paso de datos del cliente (para flujo DEALER)
   enableCustomerEntry?: boolean;
+  // Si es true, coloca el paso del cliente antes del de archivos (al final del formulario)
+  customerStepBeforeFiles?: boolean;
 }
 
 export function useLogisticaAnalisisForm({
@@ -33,16 +35,18 @@ export function useLogisticaAnalisisForm({
   locale,
   assignedSellerId,
   enableCustomerEntry = false,
+  customerStepBeforeFiles = false,
 }: UseLogisticaAnalisisFormProps) {
-  // Get form steps based on enableCustomerEntry
+  // Get form steps based on enableCustomerEntry and customerStepBeforeFiles
   const formSteps = useMemo(
-    () => getFormSteps(enableCustomerEntry),
-    [enableCustomerEntry],
+    () => getFormSteps(enableCustomerEntry, customerStepBeforeFiles),
+    [enableCustomerEntry, customerStepBeforeFiles],
   );
 
-  // Calculate the step number where electric equipment is shown
-  // Without customer entry: step 3, With customer entry: step 4
-  const electricStepNumber = enableCustomerEntry ? 4 : 3;
+  // Calculate step number for batteries step (for navigation)
+  const electricStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "batteries") + 1;
+  }, [formSteps]);
 
   // ==================== STATE ====================
   const [currentStep, setCurrentStep] = useState(1);
@@ -57,116 +61,106 @@ export function useLogisticaAnalisisForm({
 
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ==================== STEP VALIDATION LOGIC ====================
+  // ==================== STEP VALIDATION LOGIC (KEY-BASED) ====================
   const validateStepFields = useCallback(
     (step: number, values: FormularioLogisticaSchema): boolean => {
       const stepConfig = formSteps[step - 1];
-      if (!stepConfig || !stepConfig.fields) return true;
+      if (!stepConfig) return false;
 
+      const stepKey = stepConfig.key;
       const alimentacion = values.alimentacionDeseada;
 
-      // Electric equipment step is conditional (skip if not ELECTRICO)
-      if (
-        step === electricStepNumber &&
-        alimentacion !== TipoAlimentacion.ELECTRICO
-      ) {
-        return true;
+      switch (stepKey) {
+        case "customerData":
+          // Required: razonSocial, direccion, website
+          if (!values.razonSocial || values.razonSocial.trim().length === 0)
+            return false;
+          if (!values.direccion || values.direccion.trim().length === 0)
+            return false;
+          if (!values.website || values.website.trim().length === 0)
+            return false;
+          return true;
+
+        case "operation":
+          // Required: notasOperacion (min 1 char)
+          if (
+            !values.notasOperacion ||
+            values.notasOperacion.trim().length === 0
+          )
+            return false;
+          return true;
+
+        case "application":
+          // Required: descripcionProducto, alimentacionDeseada, and key numeric fields
+          if (
+            !values.descripcionProducto ||
+            values.descripcionProducto.trim().length < 10
+          )
+            return false;
+          if (!values.alimentacionDeseada) return false;
+          if (
+            values.turnosTrabajo === null ||
+            values.turnosTrabajo === undefined
+          )
+            return false;
+          return true;
+
+        case "batteries":
+          // Conditional: only required if alimentacion is ELECTRICO
+          // When not ELECTRICO, return false (step is skipped, not completed)
+          if (alimentacion !== TipoAlimentacion.ELECTRICO) return false;
+          // If ELECTRICO, check if any meaningful data was entered in equiposElectricos
+          const equipos = values.equiposElectricos;
+          if (!equipos || typeof equipos !== "object") return false;
+          // Check if user entered any actual data (not just default values)
+          // noAplica=true counts as data, or any non-null field
+          const equiposHasData: boolean =
+            equipos.noAplica === true ||
+            equipos.tipoCorriente !== null ||
+            equipos.voltaje !== null ||
+            equipos.frecuencia !== null ||
+            equipos.amperaje !== null ||
+            equipos.temperaturaAmbiente !== null ||
+            equipos.horasTrabajoPorDia !== null ||
+            Boolean(equipos.notas && equipos.notas.trim().length > 0);
+          return equiposHasData;
+
+        case "loads":
+          // Required: dimensionesCargas with at least 1 valid entry and 100% total
+          const cargas = values.dimensionesCargas;
+          if (!Array.isArray(cargas) || cargas.length === 0) return false;
+          const totalPct = cargas.reduce(
+            (sum: number, c: any) => sum + (c.porcentaje || 0),
+            0,
+          );
+          if (Math.abs(totalPct - 100) > 0.01) return false;
+          for (const carga of cargas) {
+            if (!carga.producto || carga.producto.trim() === "") return false;
+          }
+          return true;
+
+        case "aisle":
+          // Aisle step - check if any field in pasilloActual has actual data
+          const pasillo = values.pasilloActual;
+          if (!pasillo || typeof pasillo !== "object") return false;
+          // Check if any field has a non-null value (handles both numbers and strings)
+          const pasilloHasData = Object.values(pasillo).some((v) => {
+            if (v === null || v === undefined) return false;
+            if (typeof v === "string") return v.trim().length > 0;
+            return true;
+          });
+          return pasilloHasData;
+
+        case "files":
+          // Files are OPTIONAL - only completed if files were uploaded
+          const archivos = values.archivos;
+          return Array.isArray(archivos) && archivos.length > 0;
+
+        default:
+          return false;
       }
-
-      for (const fieldName of stepConfig.fields) {
-        const value = (values as any)[fieldName];
-
-        switch (fieldName) {
-          case "archivos":
-            continue;
-
-          case "dimensionesCargas":
-            if (!Array.isArray(value) || value.length === 0) {
-              return false;
-            }
-            const totalPct = value.reduce(
-              (sum: number, c: any) => sum + (c.porcentaje || 0),
-              0,
-            );
-            if (Math.abs(totalPct - 100) > 0.01) {
-              return false;
-            }
-            for (const carga of value) {
-              if (!carga.producto || carga.producto.trim() === "") {
-                return false;
-              }
-            }
-            continue;
-
-          case "pasilloActual":
-            if (!value || typeof value !== "object") {
-              return false;
-            }
-            continue;
-
-          case "equiposElectricos":
-            if (alimentacion === TipoAlimentacion.ELECTRICO) {
-              if (!value || typeof value !== "object") {
-                return false;
-              }
-            }
-            continue;
-
-          // Customer data fields (optional for now - DEALER will fill them)
-          case "customerName":
-          case "customerEmail":
-          case "customerPhone":
-          case "customerAddress":
-          case "customerCity":
-          case "customerCountry":
-          case "customerNotes":
-            continue;
-
-          // Optional fields - always valid
-          case "fechaCierre":
-          case "fechaEstimadaDefinicion":
-          case "website":
-          case "distribuidor":
-          case "contactoDistribuidor":
-          case "notasRampas":
-          case "notasPasosPuertas":
-          case "notasRestricciones":
-          case "tieneRampas":
-          case "tienePasosPuertas":
-          case "tieneRestricciones":
-          case "alturaMaximaNave":
-          case "anchoPasilloActual":
-          case "superficieTrabajo":
-          case "condicionesSuelo":
-          case "tipoOperacion":
-            continue;
-
-          default:
-            if (typeof value === "string") {
-              if (!value || value.trim() === "") {
-                return false;
-              }
-            } else if (value === null || value === undefined) {
-              if (
-                [
-                  "alturaUltimoNivelEstanteria",
-                  "maximaAlturaElevacion",
-                  "pesoCargaMaximaAltura",
-                  "pesoCargaPrimerNivel",
-                  "dimensionesAreaTrabajoAncho",
-                  "dimensionesAreaTrabajoFondo",
-                  "turnosTrabajo",
-                ].includes(fieldName)
-              ) {
-                return false;
-              }
-            }
-        }
-      }
-
-      return true;
     },
-    [],
+    [formSteps],
   );
 
   // Function to recalculate all completed steps
@@ -213,6 +207,11 @@ export function useLogisticaAnalisisForm({
     };
   }, [form, recalculateCompletedSteps]);
 
+  // Calculate step number for optional files step
+  const filesStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "files") + 1;
+  }, [formSteps]);
+
   // ==================== COMPUTED VALUES ====================
   const requiredStepsCount = useMemo(() => {
     const alimentacion = form.watch("alimentacionDeseada");
@@ -225,16 +224,24 @@ export function useLogisticaAnalisisForm({
     const alimentacion = form.getValues("alimentacionDeseada");
     const skipElectricStep = alimentacion !== TipoAlimentacion.ELECTRICO;
 
-    let effectiveCompleted = completedSteps.size;
-    if (skipElectricStep && completedSteps.has(electricStepNumber)) {
-      effectiveCompleted--;
-    }
+    // Count completed steps, excluding conditional (batteries when not ELECTRICO)
+    // and optional steps (files) from the count
+    let effectiveCompleted = 0;
+    completedSteps.forEach((step) => {
+      // Skip electric step if not ELECTRICO
+      if (step === electricStepNumber && skipElectricStep) return;
+      // Skip optional files step from completed count
+      if (step === filesStepNumber) return;
+      effectiveCompleted++;
+    });
 
-    const totalSteps = skipElectricStep
-      ? formSteps.length - 1
-      : formSteps.length;
-    return Math.round((effectiveCompleted / totalSteps) * 100);
-  }, [completedSteps, form, formSteps, electricStepNumber]);
+    // Calculate total required steps (exclude batteries when not ELECTRICO, exclude optional files)
+    let totalRequiredSteps = formSteps.length;
+    if (skipElectricStep) totalRequiredSteps--;
+    if (filesStepNumber > 0) totalRequiredSteps--;
+
+    return Math.round((effectiveCompleted / totalRequiredSteps) * 100);
+  }, [completedSteps, form, formSteps, electricStepNumber, filesStepNumber]);
 
   const allStepsComplete = useMemo((): boolean => {
     const values = form.getValues();
@@ -242,11 +249,21 @@ export function useLogisticaAnalisisForm({
     const skipElectricStep = alimentacion !== TipoAlimentacion.ELECTRICO;
 
     for (let step = 1; step <= formSteps.length; step++) {
+      // Skip electric step if not ELECTRICO
       if (step === electricStepNumber && skipElectricStep) continue;
+      // Skip optional files step - it doesn't block submission
+      if (step === filesStepNumber) continue;
       if (!validateStepFields(step, values)) return false;
     }
     return true;
-  }, [completedSteps, form, validateStepFields, formSteps, electricStepNumber]);
+  }, [
+    completedSteps,
+    form,
+    validateStepFields,
+    formSteps,
+    electricStepNumber,
+    filesStepNumber,
+  ]);
 
   const currentStepConfig = formSteps[currentStep - 1];
   const isFirstStep = currentStep === 1;

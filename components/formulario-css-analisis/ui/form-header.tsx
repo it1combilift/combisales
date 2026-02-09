@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
 import { FormHeaderProps } from "../types";
 import { useI18n } from "@/lib/i18n/context";
 import { getStepColorClasses } from "../constants";
@@ -64,10 +65,15 @@ export function FormHeader({
           </p>
         </div>
 
-        {/* Compact progress badge */}
-        <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded-md mr-6">
-          <Progress value={progress} className="h-1 w-16" />
-          <span className="text-xs font-medium text-primary">{progress}%</span>
+        {/* Compact progress badge - Visible on all screens */}
+        <div className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded-md md:mr-6">
+          <Progress
+            value={progress}
+            className="h-1.5 w-10 md:w-16 [&>div]:bg-[#60A82E]"
+          />
+          <span className="text-xs font-medium text-[#60A82E]">
+            {progress}%
+          </span>
         </div>
       </div>
 
@@ -86,21 +92,27 @@ export function FormHeader({
                 onClick={() => onGoToStep(step.number)}
                 className={cn(
                   "relative flex flex-col items-center justify-start transition-all duration-200 cursor-pointer group w-fit",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-0.5",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#60A82E] rounded-md p-0.5",
                 )}
                 title={t(step.title as any)}
               >
                 <div
                   className={cn(
-                    "size-7 sm:size-8 rounded-lg flex items-center justify-center transition-all duration-200 border shadow-sm",
+                    "relative size-7 sm:size-8 rounded-lg flex items-center justify-center transition-all duration-200 border shadow-sm",
                     isCurrent
                       ? "bg-primary border-primary text-primary-foreground shadow-md scale-105"
                       : isCompleted
-                        ? "bg-background border-primary/20 text-primary"
+                        ? "bg-[#60A82E]/10 border-[#60A82E]/30 text-[#60A82E]"
                         : "bg-muted/40 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground hover:border-border",
                   )}
                 >
-                  <Icon className="size-4.5" />
+                  <Icon className="size-4" />
+                  {/* Checkmark badge for completed steps */}
+                  {isCompleted && !isCurrent && (
+                    <div className="absolute -top-1 -right-1 size-3.5 rounded-full bg-[#60A82E] flex items-center justify-center shadow-sm">
+                      <Check className="size-2.5 text-white" strokeWidth={3} />
+                    </div>
+                  )}
                 </div>
                 <span
                   className={cn(
@@ -108,7 +120,7 @@ export function FormHeader({
                     isCurrent
                       ? "text-primary font-semibold"
                       : isCompleted
-                        ? "text-primary/70"
+                        ? "text-[#60A82E] font-medium"
                         : "text-muted-foreground group-hover:text-foreground",
                   )}
                 >
@@ -116,14 +128,14 @@ export function FormHeader({
                 </span>
               </button>
 
-              {/* Connector line - Only visible on very large screens */}
+              {/* Connector line - Only visible on larger screens */}
               {idx < formSteps.length - 1 && (
                 <div
                   className={cn(
                     "hidden sm:block sm:w-3 h-px mx-0.5 self-start mt-4 transition-colors duration-300",
                     completedSteps.has(step.number) &&
                       completedSteps.has(formSteps[idx + 1]?.number)
-                      ? "bg-primary"
+                      ? "bg-[#60A82E]"
                       : "bg-border",
                   )}
                 />

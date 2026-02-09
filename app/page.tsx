@@ -7,7 +7,7 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen w-full relative flex items-center justify-center p-4">
+    <div className="min-h-screen w-full relative flex items-center justify-center px-4 py-0 m-0">
       {/* Light Mode - Radial Gradient from Top */}
       <div
         className="absolute inset-0 z-0 pointer-events-none dark:hidden"

@@ -978,6 +978,9 @@
         }
       },
       "validation": {
+        "companyNameRequired": "El nombre de la empresa es requerido",
+        "addressRequired": "La dirección es requerida",
+        "websiteRequired": "El sitio web es requerido",
         "operationNotesRequired": "Notas de operación son requeridas",
         "productDescriptionRequired": "Descripción del producto es requerida",
         "positiveValueRequired": "Debe ser un valor positivo",
@@ -1414,7 +1417,7 @@
       "fields": {
         "companyName": {
           "label": "Razón Social",
-          "placeholder": "Nombre de la empresa"
+          "placeholder": "Razón Social"
         },
         "fiscalId": {
           "label": "NIF",
@@ -1579,8 +1582,8 @@
       },
       "fields": {
         "productDescription": {
-          "label": "Descripción detallada del proyecto",
-          "placeholder": "Describa detalladamente el producto, incluyendo capacidades, dimensiones, frecuencia de uso..."
+          "label": "El cliente quiere una solución para...",
+          "placeholder": "Almacenar, preparar pedidos, cross-docking, carga/descarga..."
         },
         "closingDate": {
           "label": "Fecha de cierre estimada",
@@ -1611,6 +1614,9 @@
         }
       },
       "validation": {
+        "companyNameRequired": "El nombre de la empresa es requerido",
+        "addressRequired": "La dirección es requerida",
+        "websiteRequired": "El sitio web es requerido",
         "descriptionRequired": "Debe proporcionar una descripción detallada",
         "typeRequired": "Selecciona al menos un tipo",
         "measuresRequired": "Selecciona al menos una medida",
@@ -1668,8 +1674,8 @@
       },
       "fields": {
         "operationNotes": {
-          "label": "Descripción de la operación",
-          "placeholder": "Indicar si hay rampas, pasos por puertas, otros restricciones...",
+          "label": "El cliente quiere una solución para...",
+          "placeholder": "Almacenar, preparar pedidos, cross-docking, carga/descarga...",
           "required": "La descripción de la operación es requerida"
         },
         "closingDate": {
@@ -1679,8 +1685,8 @@
         },
         "productDescription": {
           "header": "Datos de la aplicación",
-          "label": "Descripción del producto",
-          "placeholder": "Describa el producto a manipular...",
+          "label": "Descripción detallada del o los productos a manipular",
+          "placeholder": "Ej: Palets de 1200x800mm con cajas de 40kg, bobinas de acero de 1m de diámetro y 500kg, etc.",
           "required": "La descripción del producto es requerida"
         },
         "dimensionsAndWeights": {
@@ -1774,6 +1780,9 @@
         }
       },
       "validation": {
+        "companyNameRequired": "El nombre de la empresa es obligatorio",
+        "addressRequired": "La dirección es obligatoria",
+        "websiteRequired": "El sitio web es obligatorio",
         "descriptionRequired": "La descripción de la operación es requerida",
         "typeRequired": "Selecciona al menos un tipo",
         "measuresRequired": "Selecciona al menos una medida",
@@ -1844,8 +1853,8 @@
             "label": "Fecha aproximada en que se define el proyecto"
           },
           "notes": {
-            "label": "Descripción de la operación",
-            "placeholder": "Indicar rampas, pasos por puertas, restricciones..."
+            "label": "El cliente quiere una solución para...",
+            "placeholder": "Almacenar, preparar pedidos, cross-docking, carga/descarga..."
           },
           "ramps": {
             "label": "¿Existen rampas?",
@@ -1883,8 +1892,8 @@
             "operationAndPower": "Operación y Alimentación"
           },
           "productDescription": {
-            "label": "Descripción del producto",
-            "placeholder": "Describa el producto a manipular..."
+            "label": "Descripción detallada del o los productos a manipular",
+            "placeholder": "Ej: Palets de 1200x800mm con cajas de 40kg, bobinas de acero de 1m de diámetro y 500kg, etc."
           },
           "lastLevelHeight": {
             "label": "Altura del último nivel de estantería"
@@ -1916,8 +1925,8 @@
           }
         },
         "operationNotes": {
-          "label": "Descripción de la operación",
-          "placeholder": "Indicar rampas, pasos por puertas, restricciones..."
+          "label": "El cliente quiere una solución para...",
+          "placeholder": "Almacenar, preparar pedidos, cross-docking, carga/descarga..."
         },
         "operationType": "Tipo de operación",
         "hasRamps": {
@@ -2049,6 +2058,9 @@
         }
       },
       "validation": {
+        "companyNameRequired": "El nombre de la empresa es requerido",
+        "addressRequired": "La dirección es requerida",
+        "websiteRequired": "El sitio web es requerido",
         "descriptionRequired": "La descripción de la operación es requerida",
         "typeRequired": "Selecciona al menos un tipo",
         "measuresRequired": "Selecciona al menos una medida",
@@ -2217,6 +2229,9 @@
         "files": "Archivos"
       },
       "validation": {
+        "companyNameRequired": "El nombre de la empresa es requerido",
+        "addressRequired": "La dirección es requerida",
+        "websiteRequired": "El sitio web es requerido",
         "emailInvalid": "Email inválido",
         "urlInvalid": "URL inválida",
         "selectAtLeastOneOption": "Debe seleccionar al menos una opción: contenedores o carga especial"

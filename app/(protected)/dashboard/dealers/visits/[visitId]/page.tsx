@@ -256,6 +256,7 @@ export default function DealerVisitDetailPage({
       assignedSellerId: visit.assignedSellerId || undefined,
       originalArchivos: [], // Empty - clone owns its files independently
       enableCustomerEntry: true, // Enable customer data steps for DEALER clone editing
+      customerStepBeforeFiles: true, // Customer step appears near the end (before files)
     };
 
     switch (visit.formType) {

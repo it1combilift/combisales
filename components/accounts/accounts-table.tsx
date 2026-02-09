@@ -256,7 +256,7 @@ export function AccountsTable({
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="hidden md:inline-flex">
               <IconLayoutColumns className="size-4" />
               <span className="sm:hidden md:inline">{t("common.columns")}</span>
               <IconChevronDown className="size-4" />

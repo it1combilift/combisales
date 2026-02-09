@@ -16,8 +16,8 @@ import { createColumns } from "@/components/visits/columns";
 import { Plus, RefreshCw, ClipboardList } from "lucide-react";
 import { VisitsDataTable } from "@/components/visits/data-table";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
-import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
 import { DeleteVisitDialog } from "@/components/visits/delete-visit-dialog";
+import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
 
 import {
   AlertDialog,

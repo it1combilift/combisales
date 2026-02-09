@@ -1,7 +1,7 @@
 import { Route, Layers } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { StepContentProps, TIPO_ESTANTERIAS_OPTIONS } from "../types";
-import { useI18n } from "@/lib/i18n/context";
 
 import {
   FormField,

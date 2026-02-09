@@ -24,24 +24,26 @@ export type ArchivoSubido = z.infer<typeof archivoSubidoSchema>;
 
 export const getFormularioCSSSchema = (t: (key: string) => string) =>
   z.object({
-    // Campos pre-llenados desde customer (opcionales - pueden venir vacíos del CRM)
-    razonSocial: z.string().optional().default(""),
+    // Required customer fields
+    razonSocial: z
+      .string()
+      .min(1, t("forms.css.validation.companyNameRequired")),
+    direccion: z.string().min(1, t("forms.css.validation.addressRequired")),
+    website: z
+      .string()
+      .url(t("forms.css.validation.urlInvalid"))
+      .min(1, t("forms.css.validation.websiteRequired")),
+    // Optional customer fields
     personaContacto: z.string().optional().default(""),
     email: z
       .string()
       .email(t("forms.css.validation.emailInvalid"))
       .optional()
       .or(z.literal("")),
-    direccion: z.string().optional().default(""),
     localidad: z.string().optional().default(""),
     provinciaEstado: z.string().optional().default(""),
     pais: z.string().optional().default(""),
     codigoPostal: z.string().optional(),
-    website: z
-      .string()
-      .url(t("forms.css.validation.urlInvalid"))
-      .optional()
-      .or(z.literal("")),
     numeroIdentificacionFiscal: z.string().optional(),
     distribuidor: z.string().optional(),
     contactoDistribuidor: z.string().optional(),

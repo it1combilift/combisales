@@ -367,6 +367,7 @@ export default function DealerVisitFormDialog({
                         originalArchivos={originalArchivos}
                         readOnly={readOnly}
                         enableCustomerEntry={true}
+                        customerStepBeforeFiles={true}
                         onDirtyChange={handleDirtyChange}
                       />
                     )}
@@ -381,6 +382,7 @@ export default function DealerVisitFormDialog({
                         originalArchivos={originalArchivos}
                         readOnly={readOnly}
                         enableCustomerEntry={true}
+                        customerStepBeforeFiles={true}
                         onDirtyChange={handleDirtyChange}
                       />
                     )}
@@ -395,6 +397,7 @@ export default function DealerVisitFormDialog({
                         originalArchivos={originalArchivos}
                         readOnly={readOnly}
                         enableCustomerEntry={true}
+                        customerStepBeforeFiles={true}
                         onDirtyChange={handleDirtyChange}
                       />
                     )}
@@ -410,6 +413,7 @@ export default function DealerVisitFormDialog({
                         originalArchivos={originalArchivos}
                         readOnly={readOnly}
                         enableCustomerEntry={true}
+                        customerStepBeforeFiles={true}
                         onDirtyChange={handleDirtyChange}
                       />
                     )}

@@ -61,9 +61,9 @@ function CargaRow({
   };
 }) {
   const fields = [
-    { key: "largo", label: labels.length, unit: "m", placeholder: "0.00" },
-    { key: "fondo", label: labels.depth, unit: "m", placeholder: "0.00" },
-    { key: "alto", label: labels.height, unit: "m", placeholder: "0.00" },
+    { key: "largo", label: labels.length, unit: "mm", placeholder: "0.00" },
+    { key: "fondo", label: labels.depth, unit: "mm", placeholder: "0.00" },
+    { key: "alto", label: labels.height, unit: "mm", placeholder: "0.00" },
     { key: "peso", label: labels.weight, unit: "kg", placeholder: "0" },
     {
       key: "porcentaje",

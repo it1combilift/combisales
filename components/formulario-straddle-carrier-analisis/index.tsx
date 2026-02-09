@@ -40,6 +40,7 @@ export default function FormularioStraddleCarrierAnalisis({
   originalArchivos = [],
   readOnly = false,
   enableCustomerEntry = false,
+  customerStepBeforeFiles = false,
   onDirtyChange,
 }: FormularioStraddleCarrierAnalisisProps) {
   const isEditing = !!existingVisit;
@@ -47,11 +48,6 @@ export default function FormularioStraddleCarrierAnalisis({
   const { t, locale } = useI18n();
   const schema = useMemo(() => getFormularioStraddleCarrierSchema(t), [t]);
 
-  // Get form steps based on enableCustomerEntry prop
-  const formSteps = useMemo(
-    () => getFormSteps(enableCustomerEntry),
-    [enableCustomerEntry],
-  );
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioStraddleCarrierSchema>({
@@ -107,6 +103,7 @@ export default function FormularioStraddleCarrierAnalisis({
     locale,
     assignedSellerId,
     enableCustomerEntry,
+    customerStepBeforeFiles,
   });
 
   const {
@@ -130,56 +127,21 @@ export default function FormularioStraddleCarrierAnalisis({
   // ==================== RENDER STEP CONTENT ====================
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
+    const stepKey = currentStepConfig?.key;
 
-    // When enableCustomerEntry is true, we have 6 steps total
-    // Step 1 = Customer Data, Steps 2-6 = Regular steps
-    if (enableCustomerEntry) {
-      switch (currentStep) {
-        case 1:
-          return <CustomerDataStep {...stepProps} />;
-        case 2:
-          return <Step1Content {...stepProps} />;
-        case 3:
-          return <Step2Content {...stepProps} />;
-        case 4:
-          return <Step3Content {...stepProps} />;
-        case 5:
-          return <Step4Content {...stepProps} />;
-        case 6:
-          return (
-            <Step5Content
-              form={form}
-              customerId={customer?.id || ""}
-              isUploading={isUploading}
-              uploadProgress={uploadProgress}
-              uploadingFiles={uploadingFiles}
-              deletingFileId={deletingFileId}
-              onFileSelect={handleFileSelect}
-              onRemoveFile={handleRemoveFile}
-              onDrop={handleDrop}
-              fileInputRef={fileInputRef}
-              cameraPhotoRef={cameraPhotoRef}
-              cameraVideoRef={cameraVideoRef}
-              originalArchivos={originalArchivos}
-              readOnly={readOnly}
-            />
-          );
-        default:
-          return null;
-      }
-    }
-
-    // Original 5-step flow (without customer entry)
-    switch (currentStep) {
-      case 1:
+    // Render based on step key for flexible step ordering
+    switch (stepKey) {
+      case "customerData":
+        return <CustomerDataStep {...stepProps} />;
+      case "instructions":
         return <Step1Content {...stepProps} />;
-      case 2:
+      case "containers":
         return <Step2Content {...stepProps} />;
-      case 3:
+      case "specialLoad":
         return <Step3Content {...stepProps} />;
-      case 4:
+      case "others":
         return <Step4Content {...stepProps} />;
-      case 5:
+      case "files":
         return (
           <Step5Content
             form={form}

@@ -20,6 +20,8 @@ interface UseStraddleCarrierAnalisisFormProps {
   assignedSellerId?: string;
   // Si es true, habilita el paso de datos del cliente (para flujo DEALER)
   enableCustomerEntry?: boolean;
+  // Si es true, coloca el paso del cliente antes del de archivos (al final del formulario)
+  customerStepBeforeFiles?: boolean;
 }
 
 export function useStraddleCarrierAnalisisForm({
@@ -33,18 +35,22 @@ export function useStraddleCarrierAnalisisForm({
   locale,
   assignedSellerId,
   enableCustomerEntry = false,
+  customerStepBeforeFiles = false,
 }: UseStraddleCarrierAnalisisFormProps) {
-  // Get form steps based on enableCustomerEntry
+  // Get form steps based on enableCustomerEntry and customerStepBeforeFiles
   const formSteps = useMemo(
-    () => getFormSteps(enableCustomerEntry),
-    [enableCustomerEntry],
+    () => getFormSteps(enableCustomerEntry, customerStepBeforeFiles),
+    [enableCustomerEntry, customerStepBeforeFiles],
   );
 
-  // Calculate the step numbers where containers and special load are shown
-  // Without customer entry: step 2 (containers), step 3 (special load)
-  // With customer entry: step 3 (containers), step 4 (special load)
-  const containersStepNumber = enableCustomerEntry ? 3 : 2;
-  const specialLoadStepNumber = enableCustomerEntry ? 4 : 3;
+  // Calculate step numbers for navigation (based on step keys)
+  const containersStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "containers") + 1;
+  }, [formSteps]);
+
+  const specialLoadStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "specialLoad") + 1;
+  }, [formSteps]);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,88 +64,85 @@ export function useStraddleCarrierAnalisisForm({
 
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // ==================== STEP VALIDATION LOGIC (KEY-BASED) ====================
   const validateStepFields = useCallback(
     (step: number, values: FormularioStraddleCarrierSchema): boolean => {
       const stepConfig = formSteps[step - 1];
-      if (!stepConfig || !stepConfig.fields) return true;
+      if (!stepConfig) return false;
 
+      const stepKey = stepConfig.key;
       const manejaContenedores = values.manejaContenedores;
       const manejaCargaEspecial = values.manejaCargaEspecial;
 
-      // Skip containers step if manejaContenedores is false
-      if (step === containersStepNumber && !manejaContenedores) {
-        return true;
+      switch (stepKey) {
+        case "customerData":
+          // Required: razonSocial, direccion, website
+          if (!values.razonSocial || values.razonSocial.trim().length === 0)
+            return false;
+          if (!values.direccion || values.direccion.trim().length === 0)
+            return false;
+          if (!values.website || values.website.trim().length === 0)
+            return false;
+          return true;
+
+        case "instructions":
+          // Required: at least one of manejaContenedores or manejaCargaEspecial must be true
+          if (!manejaContenedores && !manejaCargaEspecial) return false;
+          return true;
+
+        case "containers":
+          // Conditional: skip if manejaContenedores is false
+          // When condition doesn't apply, return false (step is skipped, not completed)
+          if (!manejaContenedores) return false;
+          // If manejaContenedores, at least one container size must be selected
+          const tamanios = values.contenedoresTamanios;
+          if (!tamanios || typeof tamanios !== "object") return false;
+          const hasSelectedSize = Object.values(tamanios).some(
+            (size: any) => size?.selected === true,
+          );
+          if (!hasSelectedSize) return false;
+          return true;
+
+        case "specialLoad":
+          // Conditional: skip if manejaCargaEspecial is false
+          // When condition doesn't apply, return false (step is skipped, not completed)
+          if (!manejaCargaEspecial) return false;
+          // If manejaCargaEspecial, require at least some product dimensions
+          if (
+            values.productoMasLargo === null &&
+            values.productoMasCorto === null &&
+            values.productoMasAncho === null
+          )
+            return false;
+          return true;
+
+        case "others":
+          // Others step is OPTIONAL - only completed if user entered any data
+          const othersHasData =
+            (values.zonasPasoAncho !== null &&
+              values.zonasPasoAncho !== undefined) ||
+            (values.zonasPasoAlto !== null &&
+              values.zonasPasoAlto !== undefined) ||
+            (values.condicionesPiso &&
+              values.condicionesPiso.trim().length > 0) ||
+            (values.restriccionesAltura !== null &&
+              values.restriccionesAltura !== undefined) ||
+            (values.restriccionesAnchura !== null &&
+              values.restriccionesAnchura !== undefined) ||
+            (values.notasAdicionales &&
+              values.notasAdicionales.trim().length > 0);
+          return othersHasData;
+
+        case "files":
+          // Files are OPTIONAL - only completed if files were uploaded
+          const archivos = values.archivos;
+          return Array.isArray(archivos) && archivos.length > 0;
+
+        default:
+          return false;
       }
-
-      // Skip special load step if manejaCargaEspecial is false
-      if (step === specialLoadStepNumber && !manejaCargaEspecial) {
-        return true;
-      }
-
-      for (const fieldName of stepConfig.fields) {
-        const value = (values as any)[fieldName];
-
-        switch (fieldName) {
-          case "archivos":
-            continue;
-
-          case "manejaContenedores":
-          case "manejaCargaEspecial":
-            // In instructions step: at least one must be selected
-            const instructionsStep = enableCustomerEntry ? 2 : 1;
-            if (step === instructionsStep) {
-              if (!manejaContenedores && !manejaCargaEspecial) {
-                return false;
-              }
-            }
-            continue;
-
-          case "contenedoresTamanios":
-            if (manejaContenedores && value) {
-              const hasSelected = Object.values(value).some(
-                (size: any) => size.selected,
-              );
-              if (!hasSelected) {
-                return false;
-              }
-            }
-            continue;
-
-          // Customer data fields (optional for now - DEALER will fill them)
-          case "customerName":
-          case "customerEmail":
-          case "customerPhone":
-          case "customerAddress":
-          case "customerCity":
-          case "customerCountry":
-          case "customerNotes":
-            continue;
-
-          case "fechaCierre":
-          case "website":
-          case "distribuidor":
-          case "contactoDistribuidor":
-          case "infoAdicionalContenedores":
-          case "condicionesPiso":
-          case "notasAdicionales":
-            continue;
-
-          default:
-            if (typeof value === "string") {
-              if (!value || value.trim() === "") {
-              }
-            }
-        }
-      }
-
-      return true;
     },
-    [
-      formSteps,
-      containersStepNumber,
-      specialLoadStepNumber,
-      enableCustomerEntry,
-    ],
+    [formSteps],
   );
 
   // Function to recalculate all completed steps
@@ -185,6 +188,15 @@ export function useStraddleCarrierAnalisisForm({
     };
   }, [form, recalculateCompletedSteps]);
 
+  // Calculate step numbers for optional steps (others, files)
+  const othersStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "others") + 1;
+  }, [formSteps]);
+
+  const filesStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "files") + 1;
+  }, [formSteps]);
+
   const shouldSkipContainersStep = useCallback(() => {
     return !form.getValues("manejaContenedores");
   }, [form]);
@@ -197,16 +209,23 @@ export function useStraddleCarrierAnalisisForm({
     const skipContainers = shouldSkipContainersStep();
     const skipSpecialLoad = shouldSkipSpecialLoadStep();
 
+    // Count completed steps, excluding conditional and optional steps
     let effectiveCompleted = 0;
     completedSteps.forEach((step) => {
+      // Skip conditional steps when they don't apply
       if (step === containersStepNumber && skipContainers) return;
       if (step === specialLoadStepNumber && skipSpecialLoad) return;
+      // Skip optional steps from completed count
+      if (step === othersStepNumber || step === filesStepNumber) return;
       effectiveCompleted++;
     });
 
+    // Calculate total required steps (exclude conditional and optional steps)
     let totalSteps = formSteps.length;
     if (skipContainers) totalSteps--;
     if (skipSpecialLoad) totalSteps--;
+    if (othersStepNumber > 0) totalSteps--;
+    if (filesStepNumber > 0) totalSteps--;
 
     return Math.round((effectiveCompleted / totalSteps) * 100);
   }, [
@@ -216,6 +235,8 @@ export function useStraddleCarrierAnalisisForm({
     formSteps,
     containersStepNumber,
     specialLoadStepNumber,
+    othersStepNumber,
+    filesStepNumber,
   ]);
 
   const allStepsComplete = useMemo((): boolean => {
@@ -224,13 +245,15 @@ export function useStraddleCarrierAnalisisForm({
     const skipSpecialLoad = shouldSkipSpecialLoadStep();
 
     for (let step = 1; step <= formSteps.length; step++) {
+      // Skip conditional steps when they don't apply
       if (step === containersStepNumber && skipContainers) continue;
       if (step === specialLoadStepNumber && skipSpecialLoad) continue;
+      // Skip optional steps - they don't block submission
+      if (step === othersStepNumber || step === filesStepNumber) continue;
       if (!validateStepFields(step, values)) return false;
     }
     return true;
   }, [
-    completedSteps,
     shouldSkipContainersStep,
     shouldSkipSpecialLoadStep,
     form,
@@ -238,6 +261,8 @@ export function useStraddleCarrierAnalisisForm({
     formSteps,
     containersStepNumber,
     specialLoadStepNumber,
+    othersStepNumber,
+    filesStepNumber,
   ]);
 
   const currentStepConfig = formSteps[currentStep - 1];

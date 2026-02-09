@@ -40,6 +40,7 @@ export default function FormularioIndustrialAnalisis({
   originalArchivos = [],
   readOnly = false,
   enableCustomerEntry = false,
+  customerStepBeforeFiles = false,
   onDirtyChange,
 }: FormularioIndustrialAnalisisProps) {
   const isEditing = !!existingVisit;
@@ -100,6 +101,7 @@ export default function FormularioIndustrialAnalisis({
     locale,
     assignedSellerId,
     enableCustomerEntry,
+    customerStepBeforeFiles,
   });
 
   const {
@@ -123,61 +125,23 @@ export default function FormularioIndustrialAnalisis({
   // ==================== RENDER STEP CONTENT ====================
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
+    const stepKey = currentStepConfig?.key;
 
-    // When enableCustomerEntry is true, step 1 is customer data
-    // Otherwise, the numbering starts from the regular steps
-    if (enableCustomerEntry) {
-      // DEALER flow: 7 steps total (Customer + 6 regular)
-      switch (currentStep) {
-        case 1:
-          return <CustomerDataStep {...stepProps} />;
-        case 2:
-          return <Step1Content {...stepProps} />;
-        case 3:
-          return <Step2Content {...stepProps} />;
-        case 4:
-          return <Step3Content {...stepProps} />;
-        case 5:
-          return <Step4Content {...stepProps} />;
-        case 6:
-          return <Step5Content {...stepProps} />;
-        case 7:
-          return (
-            <Step6Content
-              form={form}
-              customerId={customer?.id || ""}
-              isUploading={isUploading}
-              uploadProgress={uploadProgress}
-              uploadingFiles={uploadingFiles}
-              deletingFileId={deletingFileId}
-              onFileSelect={handleFileSelect}
-              onRemoveFile={handleRemoveFile}
-              onDrop={handleDrop}
-              fileInputRef={fileInputRef}
-              cameraPhotoRef={cameraPhotoRef}
-              cameraVideoRef={cameraVideoRef}
-              originalArchivos={originalArchivos}
-              readOnly={readOnly}
-            />
-          );
-        default:
-          return null;
-      }
-    }
-
-    // Normal flow (ADMIN/SELLER from clients/tasks): 6 steps
-    switch (currentStep) {
-      case 1:
+    // Render based on step key for flexible step ordering
+    switch (stepKey) {
+      case "customerData":
+        return <CustomerDataStep {...stepProps} />;
+      case "operation":
         return <Step1Content {...stepProps} />;
-      case 2:
+      case "application":
         return <Step2Content {...stepProps} />;
-      case 3:
+      case "batteries":
         return <Step3Content {...stepProps} />;
-      case 4:
+      case "loads":
         return <Step4Content {...stepProps} />;
-      case 5:
+      case "aisle":
         return <Step5Content {...stepProps} />;
-      case 6:
+      case "files":
         return (
           <Step6Content
             form={form}

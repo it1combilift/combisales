@@ -60,7 +60,6 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-sm font-medium flex items-center gap-1">
                     {t("forms.clientData.fields.contactName.label")}{" "}
-                    <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -88,7 +87,6 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-sm font-medium flex items-center gap-1">
                     {t("forms.clientData.fields.fiscalId.label")}{" "}
-                    <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -115,7 +113,6 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-sm font-medium flex items-center gap-1">
                     {t("forms.clientData.fields.email.label")}{" "}
-                    <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -144,6 +141,7 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
                     {t("forms.clientData.fields.website.label")}
+                    <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -205,7 +203,6 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-sm font-medium flex items-center gap-1">
                     {t("forms.clientData.fields.city.label")}{" "}
-                    <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -231,7 +228,6 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-sm font-medium flex items-center gap-1">
                     {t("forms.clientData.fields.postalCode.label")}{" "}
-                    <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -257,7 +253,6 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-sm font-medium flex items-center gap-1">
                     {t("forms.clientData.fields.province.label")}{" "}
-                    <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -283,7 +278,6 @@ export function Step1Content({ form }: StepContentProps) {
                 <FormItem>
                   <FormLabel className="text-sm font-medium flex items-center gap-1">
                     {t("forms.clientData.fields.country.label")}{" "}
-                    <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
                     <div className="relative">

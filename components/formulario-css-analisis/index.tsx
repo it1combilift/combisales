@@ -34,6 +34,7 @@ export default function FormularioCSSAnalisis({
   originalArchivos = [],
   readOnly = false,
   enableCustomerEntry = false,
+  customerStepBeforeFiles = false,
   onDirtyChange,
 }: FormularioCSSAnalisisProps) {
   const isEditing = !!existingVisit;
@@ -95,6 +96,7 @@ export default function FormularioCSSAnalisis({
     locale,
     assignedSellerId,
     enableCustomerEntry,
+    customerStepBeforeFiles,
   });
 
   const {
@@ -118,53 +120,19 @@ export default function FormularioCSSAnalisis({
   // ==================== RENDER STEP CONTENT ====================
   const renderStepContent = () => {
     const stepProps = { form, isEditing };
+    const stepKey = currentStepConfig?.key;
 
-    // When enableCustomerEntry is true, first 3 steps are customer data
-    // Otherwise, the numbering starts from the regular steps
-    if (enableCustomerEntry) {
-      // DEALER flow: 5 steps total (1 Customer + 4 regular)
-      switch (currentStep) {
-        case 1:
-          return <CompanyStep {...stepProps} />;
-        case 2:
-          return <Step1Content {...stepProps} />;
-        case 3:
-          return <Step2Content {...stepProps} />;
-        case 4:
-          return <Step3Content {...stepProps} />;
-        case 5:
-          return (
-            <Step4Content
-              form={form}
-              customerId={customer?.id || ""}
-              isUploading={isUploading}
-              uploadProgress={uploadProgress}
-              uploadingFiles={uploadingFiles}
-              deletingFileId={deletingFileId}
-              onFileSelect={handleFileSelect}
-              onRemoveFile={handleRemoveFile}
-              onDrop={handleDrop}
-              fileInputRef={fileInputRef}
-              cameraPhotoRef={cameraPhotoRef}
-              cameraVideoRef={cameraVideoRef}
-              originalArchivos={originalArchivos}
-              readOnly={readOnly}
-            />
-          );
-        default:
-          return null;
-      }
-    }
-
-    // Normal flow (ADMIN/SELLER from clients/tasks): 4 steps
-    switch (currentStep) {
-      case 1:
+    // Render based on step key for flexible step ordering
+    switch (stepKey) {
+      case "customerData":
+        return <CompanyStep {...stepProps} />;
+      case "product":
         return <Step1Content {...stepProps} />;
-      case 2:
+      case "container":
         return <Step2Content {...stepProps} />;
-      case 3:
+      case "measurements":
         return <Step3Content {...stepProps} />;
-      case 4:
+      case "files":
         return (
           <Step4Content
             form={form}

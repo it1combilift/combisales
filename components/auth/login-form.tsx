@@ -142,7 +142,9 @@ export function LoginForm({
                   </div>
                 </div>
                 <H1>{t("loginForm.title")}</H1>
-                <Paragraph>{t("loginForm.description")}</Paragraph>
+                <p className="text-muted-foreground text-sm leading-relaxed text-pretty max-w-xs sm:max-w-sm text-center">
+                  {t("loginForm.description")}
+                </p>
               </div>
 
               <form
@@ -159,7 +161,7 @@ export function LoginForm({
                       {t("loginForm.email_label")}
                     </Label>
                     <div className="relative group">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Mail className="absolute hidden md:block md:left-3 md:top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="email"
                         type="email"
@@ -168,7 +170,7 @@ export function LoginForm({
                         {...register("email")}
                         disabled={isLoading}
                         className={cn(
-                          "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all text-sm",
+                          "md:pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all text-sm",
                           errors.email && "border-destructive",
                         )}
                       />
@@ -188,15 +190,15 @@ export function LoginForm({
                       >
                         {t("loginForm.password_label")}
                       </Label>
-                      <Link
+                      {/* <Link
                         href="#"
                         className="text-xs font-medium text-primary hover:text-primary/80 hover:underline underline-offset-4 transition-colors"
                       >
                         {t("loginForm.forgotPassword")}
-                      </Link>
+                      </Link> */}
                     </div>
                     <div className="relative group">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Lock className="absolute hidden md:block md:left-3 md:top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="password"
                         placeholder={t("loginForm.password_placeholder")}
@@ -205,7 +207,7 @@ export function LoginForm({
                         {...register("password")}
                         disabled={isLoading}
                         className={cn(
-                          "pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all text-sm",
+                          "md:pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/30 focus-visible:border-primary/30 transition-all text-sm",
                           errors.password && "border-destructive",
                         )}
                       />
@@ -301,8 +303,8 @@ export function LoginForm({
               className="absolute inset-0 group"
             >
               <Image
-                src="https://cdn-ilecokb.nitrocdn.com/hnMkqPskCLTYmYthFPcpNZClCZrSTwWV/assets/images/optimized/rev-42bc04a/combilift.com/wp-content/uploads/2024/10/Aisle-Master-OP-1.jpg"
-                alt="Logística y Almacenamiento"
+                src="https://cdn-ilecokb.nitrocdn.com/hnMkqPskCLTYmYthFPcpNZClCZrSTwWV/assets/images/optimized/rev-80aa0d4/combilift.com/wp-content/uploads/2024/10/Aisle-Master-OP-1.jpg"
+                alt="CombiSales Login Background"
                 fill
                 className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 priority

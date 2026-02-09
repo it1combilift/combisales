@@ -5,7 +5,7 @@ import { getFormSteps } from "../constants";
 import { UseFormReturn } from "react-hook-form";
 import { FormularioCSSSchema } from "../schemas";
 import { VisitStatus, VisitFormType } from "@prisma/client";
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 
 interface UseCSSAnalisisFormProps {
   form: UseFormReturn<FormularioCSSSchema>;
@@ -20,6 +20,8 @@ interface UseCSSAnalisisFormProps {
   assignedSellerId?: string;
   // Para flujo DEALER: habilita los pasos de datos del cliente
   enableCustomerEntry?: boolean;
+  // Para flujo DEALER: posicionar paso cliente antes de archivos
+  customerStepBeforeFiles?: boolean;
 }
 
 export function useCSSAnalisisForm({
@@ -33,11 +35,12 @@ export function useCSSAnalisisForm({
   locale,
   assignedSellerId,
   enableCustomerEntry = false,
+  customerStepBeforeFiles = false,
 }: UseCSSAnalisisFormProps) {
-  // Get the appropriate steps based on enableCustomerEntry
+  // Get the appropriate steps based on enableCustomerEntry and position
   const formSteps = useMemo(
-    () => getFormSteps(enableCustomerEntry),
-    [enableCustomerEntry],
+    () => getFormSteps(enableCustomerEntry, customerStepBeforeFiles),
+    [enableCustomerEntry, customerStepBeforeFiles],
   );
 
   // ==================== STATE ====================
@@ -51,105 +54,140 @@ export function useCSSAnalisisForm({
 
   const VisitIsCompleted = existingVisit?.status === VisitStatus.COMPLETADA;
 
-  // ==================== COMPUTED VALUES ====================
-  const progress = useMemo(
-    () => Math.round((currentStep / formSteps.length) * 100),
-    [currentStep, formSteps.length],
+  const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // ==================== STEP VALIDATION LOGIC (KEY-BASED) ====================
+  const validateStepFields = useCallback(
+    (step: number, values: FormularioCSSSchema): boolean => {
+      const stepConfig = formSteps[step - 1];
+      if (!stepConfig) return false;
+
+      const stepKey = stepConfig.key;
+
+      switch (stepKey) {
+        case "customerData":
+          // Required: razonSocial, direccion, website
+          if (!values.razonSocial || values.razonSocial.trim().length === 0)
+            return false;
+          if (!values.direccion || values.direccion.trim().length === 0)
+            return false;
+          if (!values.website || values.website.trim().length === 0)
+            return false;
+          return true;
+
+        case "product":
+          // Required: descripcionProducto (min 10 chars)
+          if (
+            !values.descripcionProducto ||
+            values.descripcionProducto.trim().length < 10
+          )
+            return false;
+          return true;
+
+        case "container":
+          // Required: contenedorTipos (at least 1)
+          if (!values.contenedorTipos || values.contenedorTipos.length < 1)
+            return false;
+          return true;
+
+        case "measurements":
+          // Required: contenedorMedidas (at least 1)
+          if (!values.contenedorMedidas || values.contenedorMedidas.length < 1)
+            return false;
+          return true;
+
+        case "files":
+          // Files are OPTIONAL - only completed if files were uploaded
+          const archivos = values.archivos;
+          return Array.isArray(archivos) && archivos.length > 0;
+
+        default:
+          return false;
+      }
+    },
+    [formSteps],
   );
 
-  // Watch required fields for real-time validation
-  const descripcionProducto = form.watch("descripcionProducto");
-  const contenedorTipos = form.watch("contenedorTipos");
-  const contenedorMedidas = form.watch("contenedorMedidas");
-  // Customer fields (for DEALER flow)
-  const razonSocial = form.watch("razonSocial");
-  const email = form.watch("email");
-  const direccion = form.watch("direccion");
+  // Function to recalculate all completed steps
+  const recalculateCompletedSteps = useCallback(
+    (values: FormularioCSSSchema) => {
+      const newCompleted = new Set<number>();
+
+      for (let step = 1; step <= formSteps.length; step++) {
+        if (validateStepFields(step, values)) {
+          newCompleted.add(step);
+        }
+      }
+
+      setCompletedSteps((prev) => {
+        if (prev.size !== newCompleted.size) return newCompleted;
+        for (const s of newCompleted) {
+          if (!prev.has(s)) return newCompleted;
+        }
+        return prev;
+      });
+    },
+    [validateStepFields, formSteps],
+  );
+
+  // ==================== REACTIVE STEP VALIDATION ====================
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      if (validationTimeoutRef.current) {
+        clearTimeout(validationTimeoutRef.current);
+      }
+
+      validationTimeoutRef.current = setTimeout(() => {
+        recalculateCompletedSteps(values as FormularioCSSSchema);
+      }, 150);
+    });
+
+    recalculateCompletedSteps(form.getValues());
+
+    return () => {
+      subscription.unsubscribe();
+      if (validationTimeoutRef.current) {
+        clearTimeout(validationTimeoutRef.current);
+      }
+    };
+  }, [form, recalculateCompletedSteps]);
+
+  // Calculate step number for optional files step
+  const filesStepNumber = useMemo(() => {
+    return formSteps.findIndex((s) => s.key === "files") + 1;
+  }, [formSteps]);
+
+  // ==================== COMPUTED VALUES ====================
+  const progress = useMemo(() => {
+    // Count completed steps, excluding optional files step
+    let effectiveCompleted = 0;
+    completedSteps.forEach((step) => {
+      if (step === filesStepNumber) return;
+      effectiveCompleted++;
+    });
+
+    // Calculate total required steps (exclude optional files step)
+    let totalRequiredSteps = formSteps.length;
+    if (filesStepNumber > 0) totalRequiredSteps--;
+
+    return Math.round((effectiveCompleted / totalRequiredSteps) * 100);
+  }, [completedSteps, formSteps.length, filesStepNumber]);
 
   // Real-time validation: check if all required fields are filled
   const allStepsComplete = useMemo((): boolean => {
-    // Base validation for product/technical steps
-    const productStepValid = Boolean(
-      descripcionProducto && descripcionProducto.trim().length >= 10,
-    );
-    const containerStepValid = Boolean(
-      contenedorTipos && contenedorTipos.length >= 1,
-    );
-    const measurementsStepValid = Boolean(
-      contenedorMedidas && contenedorMedidas.length >= 1,
-    );
-    const filesStepValid = true;
-
-    if (!enableCustomerEntry) {
-      return (
-        productStepValid &&
-        containerStepValid &&
-        measurementsStepValid &&
-        filesStepValid
-      );
+    const values = form.getValues();
+    // Check all steps except optional files step
+    for (let step = 1; step <= formSteps.length; step++) {
+      if (step === filesStepNumber) continue;
+      if (!validateStepFields(step, values)) return false;
     }
-
-    // Additional validation for customer steps in DEALER flow
-    const companyStepValid = Boolean(
-      razonSocial && razonSocial.trim().length > 0,
-    );
-    const locationStepValid = Boolean(direccion && direccion.trim().length > 0);
-    const commercialStepValid = true; // Optional fields
-
-    return (
-      companyStepValid &&
-      locationStepValid &&
-      commercialStepValid &&
-      productStepValid &&
-      containerStepValid &&
-      measurementsStepValid &&
-      filesStepValid
-    );
+    return true;
   }, [
-    descripcionProducto,
-    contenedorTipos,
-    contenedorMedidas,
-    razonSocial,
-    direccion,
-    enableCustomerEntry,
-  ]);
-
-  // Update completedSteps based on real-time validation for visual feedback
-  useEffect(() => {
-    const newCompletedSteps = new Set<number>();
-
-    if (enableCustomerEntry) {
-      // DEALER flow: 7 steps (3 customer + 4 product)
-      if (razonSocial && razonSocial.trim().length > 0)
-        newCompletedSteps.add(1);
-      if (direccion && direccion.trim().length > 0) newCompletedSteps.add(2);
-      newCompletedSteps.add(3); // Commercial is optional
-      if (descripcionProducto && descripcionProducto.trim().length >= 10)
-        newCompletedSteps.add(4);
-      if (contenedorTipos && contenedorTipos.length >= 1)
-        newCompletedSteps.add(5);
-      if (contenedorMedidas && contenedorMedidas.length >= 1)
-        newCompletedSteps.add(6);
-      newCompletedSteps.add(7); // Files are optional
-    } else {
-      // Normal flow: 4 steps
-      if (descripcionProducto && descripcionProducto.trim().length >= 10)
-        newCompletedSteps.add(1);
-      if (contenedorTipos && contenedorTipos.length >= 1)
-        newCompletedSteps.add(2);
-      if (contenedorMedidas && contenedorMedidas.length >= 1)
-        newCompletedSteps.add(3);
-      newCompletedSteps.add(4); // Files are optional
-    }
-
-    setCompletedSteps(newCompletedSteps);
-  }, [
-    descripcionProducto,
-    contenedorTipos,
-    contenedorMedidas,
-    razonSocial,
-    direccion,
-    enableCustomerEntry,
+    completedSteps,
+    form,
+    validateStepFields,
+    formSteps.length,
+    filesStepNumber,
   ]);
 
   const currentStepConfig = formSteps[currentStep - 1];

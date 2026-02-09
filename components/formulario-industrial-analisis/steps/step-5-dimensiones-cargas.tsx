@@ -1,12 +1,13 @@
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form";
 import { Progress } from "@/components/ui/progress";
-import { StepContentProps, DimensionCarga } from "../types";
 import { Plus, Trash2, Package, Ruler } from "lucide-react";
-import { useI18n } from "@/lib/i18n/context";
-import { useState } from "react";
+import { StepContentProps, DimensionCarga } from "../types";
+
 import {
   CollapsibleImageTrigger,
   CollapsibleImageContent,
@@ -56,19 +57,19 @@ function CargaRow({
     {
       key: "largo",
       label: t("forms.industrial.fields.loads.length"),
-      unit: "m",
+      unit: "mm",
       placeholder: "0.00",
     },
     {
       key: "fondo",
       label: t("forms.industrial.fields.loads.depth"),
-      unit: "m",
+      unit: "mm",
       placeholder: "0.00",
     },
     {
       key: "alto",
       label: t("forms.industrial.fields.loads.height"),
-      unit: "m",
+      unit: "mm",
       placeholder: "0.00",
     },
     {

@@ -54,6 +54,7 @@ export const STEP_COLOR_MAP: Record<StepColor, StepColorClasses> = {
 };
 
 export interface StepConfig {
+  key: string;
   number: number;
   title: string;
   shortTitle: string;
@@ -66,6 +67,7 @@ export interface StepConfig {
 // Customer data steps (only for DEALER flow with enableCustomerEntry=true)
 const CUSTOMER_STEPS: StepConfig[] = [
   {
+    key: "customerData",
     number: 1,
     title: "forms.css.steps.company.title",
     shortTitle: "forms.css.steps.company.shortTitle",
@@ -94,6 +96,7 @@ const CUSTOMER_STEPS: StepConfig[] = [
 // Regular steps (product/technical steps)
 const REGULAR_STEPS: StepConfig[] = [
   {
+    key: "product",
     number: 1,
     title: "forms.css.steps.product.title",
     shortTitle: "forms.css.steps.product.shortTitle",
@@ -103,6 +106,7 @@ const REGULAR_STEPS: StepConfig[] = [
     fields: ["descripcionProducto", "fechaCierre"],
   },
   {
+    key: "container",
     number: 2,
     title: "forms.css.steps.container.title",
     shortTitle: "forms.css.steps.container.shortTitle",
@@ -112,6 +116,7 @@ const REGULAR_STEPS: StepConfig[] = [
     fields: ["contenedorTipos", "contenedoresPorSemana", "condicionesSuelo"],
   },
   {
+    key: "measurements",
     number: 3,
     title: "forms.css.steps.measurements.title",
     shortTitle: "forms.css.steps.measurements.shortTitle",
@@ -121,6 +126,7 @@ const REGULAR_STEPS: StepConfig[] = [
     fields: ["contenedorMedidas", "contenedorMedidaOtro"],
   },
   {
+    key: "files",
     number: 4,
     title: "forms.css.steps.files.title",
     shortTitle: "forms.css.steps.files.shortTitle",
@@ -135,18 +141,45 @@ const REGULAR_STEPS: StepConfig[] = [
 export const FORM_STEPS: StepConfig[] = REGULAR_STEPS;
 
 /**
- * Get form steps based on enableCustomerEntry flag
- * When enableCustomerEntry is true (DEALER flow), customer data steps are prepended
- * When false (normal ADMIN/SELLER flow), only regular steps are returned
+ * Get form steps based on enableCustomerEntry flag and position options
+ * @param enableCustomerEntry - Whether to include customer data step (DEALER flow)
+ * @param customerStepBeforeFiles - When true, places customer step before files (end of form)
+ * @returns Array of step configurations with correct numbering
  */
 export function getFormSteps(
   enableCustomerEntry: boolean = false,
+  customerStepBeforeFiles: boolean = false,
 ): StepConfig[] {
   if (!enableCustomerEntry) {
     return REGULAR_STEPS;
   }
 
-  // For DEALER flow: prepend customer data steps and renumber all steps
+  if (customerStepBeforeFiles) {
+    // DEALER flow with customer step before files:
+    // Regular steps 1..N-1, Customer step, Files step (last)
+    const filesStep = REGULAR_STEPS[REGULAR_STEPS.length - 1]; // Last step is files
+    const otherSteps = REGULAR_STEPS.slice(0, -1); // All except files
+
+    const numberedOtherSteps = otherSteps.map((step, idx) => ({
+      ...step,
+      number: idx + 1,
+    }));
+
+    const customerStepNumber = numberedOtherSteps.length + 1;
+    const customerStepWithNumber = {
+      ...CUSTOMER_STEPS[0],
+      number: customerStepNumber,
+    };
+
+    const filesStepWithNumber = {
+      ...filesStep,
+      number: customerStepNumber + 1,
+    };
+
+    return [...numberedOtherSteps, customerStepWithNumber, filesStepWithNumber];
+  }
+
+  // Default DEALER flow: prepend customer data steps and renumber all steps
   const customerStepsWithCorrectNumbers = CUSTOMER_STEPS.map((step, index) => ({
     ...step,
     number: index + 1,
