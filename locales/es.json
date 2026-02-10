@@ -35,6 +35,8 @@
     "errors": {
       "fetchVisits": "Error al cargar las visitas",
       "fetchSellers": "Error al cargar los P. Managers asignados",
+      "fetchSeller": "Error al cargar el P. Manager asignado",
+      "noSellerAssigned": "No tienes un P. Manager asignado. Contacta a tu administrador.",
       "deleteVisit": "Error al eliminar la visita",
       "cloneVisit": "Error al clonar la visita"
     },
@@ -271,6 +273,7 @@
     "passwordMinLength8": "La contraseña debe tener al menos 8 caracteres",
     "minOneId": "Debe proporcionar al menos un ID",
     "dealerRequiresSellers": "El rol Dealer requiere al menos un P. Manager asignado",
+    "dealerRequiresSeller": "Debe asignar un P. Manager",
     "minOneSeller": "Debe asignar al menos un P. Manager"
   },
   "messages": {
@@ -1119,7 +1122,8 @@
         "errorLoading": "Error al cargar P. Managers",
         "assigned": "P. Managers asignados",
         "assignedDescription": "P. Managers que reportan a este dealer",
-        "noAssigned": "No hay P. Managers asignados",
+        "noAssigned": "No hay P. Manager asignado",
+        "selectOneBelow": "Selecciona uno de la lista de abajo",
         "available": "P. Managers disponibles",
         "availableDescription": "Selecciona P. Managers para asignar",
         "noAvailable": "Todos los P. Managers activos ya están asignados",

@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     if (!currentUser || currentUser.role !== Role.ADMIN) {
       return NextResponse.json(
         { error: "No tienes permisos para crear usuarios" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
           error: "Datos inválidos",
           details: validation.error.flatten().fieldErrors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       country,
       isActive,
       image,
-      assignedSellerIds,
+      assignedSellerId,
     } = validation.data;
 
     const existingUser = await prisma.user.findUnique({
@@ -57,34 +57,30 @@ export async function POST(request: Request) {
     if (existingUser) {
       return NextResponse.json(
         { error: "El email ya está registrado" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
-    // Si es DEALER, validar que los sellers existan y sean realmente SELLER
-    if (
-      role === Role.DEALER &&
-      assignedSellerIds &&
-      assignedSellerIds.length > 0
-    ) {
-      const sellers = await prisma.user.findMany({
+    // Si es DEALER, validar que el seller exista y sea realmente SELLER
+    if (role === Role.DEALER && assignedSellerId) {
+      const seller = await prisma.user.findUnique({
         where: {
-          id: { in: assignedSellerIds },
+          id: assignedSellerId,
           role: Role.SELLER,
         },
       });
 
-      if (sellers.length !== assignedSellerIds.length) {
+      if (!seller) {
         return NextResponse.json(
-          { error: "Uno o más vendedores seleccionados no son válidos" },
-          { status: 400 }
+          { error: "El P. Manager seleccionado no es válido" },
+          { status: 400 },
         );
       }
     }
 
     const hashedPassword = await hash(password, 12);
 
-    // Crear usuario con relaciones DEALER-SELLER
+    // Crear usuario con relación DEALER-SELLER (un solo seller)
     const user = await prisma.user.create({
       data: {
         name,
@@ -94,14 +90,10 @@ export async function POST(request: Request) {
         country: country || null,
         isActive: isActive ?? true,
         image: image || null,
-        ...(role === Role.DEALER &&
-        assignedSellerIds &&
-        assignedSellerIds.length > 0
+        ...(role === Role.DEALER && assignedSellerId
           ? {
               assignedSellers: {
-                create: assignedSellerIds.map((sellerId) => ({
-                  sellerId,
-                })),
+                create: [{ sellerId: assignedSellerId }],
               },
             }
           : {}),
@@ -134,7 +126,7 @@ export async function POST(request: Request) {
         message: "Usuario creado exitosamente",
         user,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error al crear usuario:", error);
@@ -143,7 +135,7 @@ export async function POST(request: Request) {
         error: "Error al crear el usuario",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

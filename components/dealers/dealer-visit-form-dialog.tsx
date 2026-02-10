@@ -3,14 +3,13 @@
 import axios from "axios";
 import { Visit } from "@/interfaces/visits";
 import { useI18n } from "@/lib/i18n/context";
-import { Badge } from "@/components/ui/badge";
 import { VisitFormType } from "@prisma/client";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { FORM_OPTIONS } from "@/interfaces/visits";
 import { useEffect, useState, useCallback } from "react";
-import { DealerSellerSelector } from "./dealer-seller-selector";
 import { useFormProtection } from "@/hooks/use-form-protection";
-import { ArrowRight, ChevronLeft, UserCheck } from "lucide-react";
+import { ArrowRight, UserCheck, AlertCircle } from "lucide-react";
 import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
 import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
 import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
@@ -24,6 +23,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { cn, getInitials } from "@/lib/utils";
 
 export interface DealerVisitFormDialogProps {
   open: boolean;
@@ -40,6 +41,7 @@ interface SellerInfo {
   id: string;
   name: string | null;
   email: string;
+  image?: string | null;
 }
 
 export default function DealerVisitFormDialog({
@@ -52,21 +54,22 @@ export default function DealerVisitFormDialog({
 }: DealerVisitFormDialogProps) {
   const { t } = useI18n();
 
-  // Step management: 1 = seller selection, 2 = form type selection, 3 = form filling
-  const [currentStep, setCurrentStep] = useState<
-    "seller" | "formType" | "form"
-  >("seller");
+  // Step management: "formType" = form type selection, "form" = form filling
+  // Seller selection step removed - DEALER has exactly ONE assigned seller
+  const [currentStep, setCurrentStep] = useState<"formType" | "form">(
+    "formType",
+  );
   const [selectedSeller, setSelectedSeller] = useState<SellerInfo | null>(null);
   const [selectedFormType, setSelectedFormType] =
     useState<VisitFormType | null>(null);
-  const [sellers, setSellers] = useState<SellerInfo[]>([]);
-  const [isLoadingSellers, setIsLoadingSellers] = useState(true);
+  const [isLoadingSeller, setIsLoadingSeller] = useState(true);
+  const [sellerError, setSellerError] = useState<string | null>(null);
 
   // ==================== FORM PROTECTION ====================
   const handleClose = useCallback(() => {
     setSelectedFormType(null);
     setSelectedSeller(null);
-    setCurrentStep("seller");
+    setCurrentStep("formType");
     onOpenChange(false);
   }, [onOpenChange]);
 
@@ -86,34 +89,42 @@ export default function DealerVisitFormDialog({
     [setIsDirty],
   );
 
-  // Fetch assigned sellers for the current DEALER
-  // Only fetch if NOT editing and NOT a SELLER editing their clone
-  const fetchAssignedSellers = useCallback(async () => {
-    // Skip fetching if SELLER is editing - they don't need seller selection
+  // Auto-fetch the single assigned seller for the current DEALER
+  // DEALER now has exactly ONE seller assigned
+  const fetchAssignedSeller = useCallback(async () => {
+    // Skip fetching if SELLER is editing - they don't need seller
     if (isSellerEditing) {
-      setIsLoadingSellers(false);
+      setIsLoadingSeller(false);
       return;
     }
 
-    setIsLoadingSellers(true);
+    setIsLoadingSeller(true);
+    setSellerError(null);
     try {
       const response = await axios.get("/api/users/assigned-sellers");
       if (response.status === 200) {
-        setSellers(response.data.sellers);
+        const sellers = response.data.sellers;
+        if (sellers && sellers.length > 0) {
+          // Auto-select the first (and only) seller
+          setSelectedSeller(sellers[0]);
+        } else {
+          setSellerError(t("dealerPage.errors.noSellerAssigned"));
+        }
       }
     } catch (error) {
-      console.error("Error fetching assigned sellers:", error);
+      console.error("Error fetching assigned seller:", error);
+      setSellerError(t("dealerPage.errors.fetchSeller"));
     } finally {
-      setIsLoadingSellers(false);
+      setIsLoadingSeller(false);
     }
-  }, [isSellerEditing]);
+  }, [isSellerEditing, t]);
 
   useEffect(() => {
     if (open && !existingVisit && !isSellerEditing) {
-      // Only fetch sellers when creating a new visit (DEALER flow)
-      fetchAssignedSellers();
+      // Fetch the assigned seller when creating a new visit (DEALER flow)
+      fetchAssignedSeller();
     }
-  }, [open, existingVisit, isSellerEditing, fetchAssignedSellers]);
+  }, [open, existingVisit, isSellerEditing, fetchAssignedSeller]);
 
   // Reset state when dialog closes or when editing
   useEffect(() => {
@@ -128,7 +139,7 @@ export default function DealerVisitFormDialog({
     } else if (!open) {
       setSelectedFormType(null);
       setSelectedSeller(null);
-      setCurrentStep("seller");
+      setCurrentStep("formType");
       setIsDirty(false);
     }
   }, [existingVisit, open, setIsDirty]);
@@ -143,13 +154,9 @@ export default function DealerVisitFormDialog({
         setIsDirty(false);
       }
     } else if (currentStep === "formType") {
-      setCurrentStep("seller");
+      // Close dialog - no more seller selection step
+      handleOpenChange(false);
     }
-  };
-
-  const handleSellerSelected = (seller: SellerInfo) => {
-    setSelectedSeller(seller);
-    setCurrentStep("formType");
   };
 
   const handleFormTypeSelected = (formType: VisitFormType) => {
@@ -160,7 +167,7 @@ export default function DealerVisitFormDialog({
   const handleSuccess = () => {
     setSelectedFormType(null);
     setSelectedSeller(null);
-    setCurrentStep("seller");
+    setCurrentStep("formType");
     setIsDirty(false);
     onSuccess();
     onOpenChange(false);
@@ -179,83 +186,85 @@ export default function DealerVisitFormDialog({
             bg-background p-0 overflow-hidden flex flex-col
           "
         >
-          {/* Step 1: Seller Selection */}
-          {currentStep === "seller" && !isEditing && (
-            <div className="flex flex-col h-full">
-              <div className="px-2 md:px-3 py-3 border-b border-border">
-                <DialogHeader className="text-left">
-                  <DialogTitle className="text-sm font-semibold leading-tight tracking-tight text-balance">
-                    {t("dealerPage.dialog.selectSeller")}
-                  </DialogTitle>
-                  <DialogDescription className="text-sm text-muted-foreground leading-snug text-balance">
-                    {t("dealerPage.dialog.selectSellerDescription")}
-                  </DialogDescription>
-                </DialogHeader>
-              </div>
-
-              <div className="flex-1 overflow-y-auto px-2 md:px-3 py-2">
-                <DealerSellerSelector
-                  sellers={sellers}
-                  isLoading={isLoadingSellers}
-                  onSelect={handleSellerSelected}
-                  selectedSellerId={selectedSeller?.id}
-                />
-              </div>
+          {/* Loading seller state */}
+          {isLoadingSeller && !isEditing && (
+            <div className="flex flex-col h-full items-center justify-center gap-4">
+              <Spinner className="size-4" variant="bars" />
+              <p className="animate-pulse">{t("common.loading")}</p>
             </div>
           )}
 
-          {/* Step 2: Form Type Selection */}
-          {currentStep === "formType" && !isEditing && (
-            <div className="flex flex-col h-full">
-              <div className="px-2 md:px-3 py-3 border-b border-border">
-                <div className="flex items-center gap-2 mb-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setCurrentStep("seller")}
-                    className="h-7 px-2"
-                  >
-                    <ChevronLeft className="size-4" />
-                    {t("common.back")}
-                  </Button>
+          {/* Error: No seller assigned */}
+          {sellerError && !isLoadingSeller && !isEditing && (
+            <div className="flex flex-col h-full items-center justify-center gap-4 p-6">
+              <AlertCircle className="size-12 text-destructive" />
+              <p className="text-center text-muted-foreground">{sellerError}</p>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                {t("common.close")}
+              </Button>
+            </div>
+          )}
+
+          {/* Form Type Selection - now the first step */}
+          {currentStep === "formType" &&
+            !isEditing &&
+            !isLoadingSeller &&
+            !sellerError && (
+              <div className="flex flex-col h-full">
+                <div className="px-2 md:px-3 py-3 border-b border-border">
+                  <DialogHeader className="text-left">
+                    <DialogTitle className="text-sm font-semibold leading-tight tracking-tight text-balance">
+                      {t("visits.registerVisit")}
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground leading-snug text-balance">
+                      {t("visits.selectFormTypeDescription")}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  {/* Selected seller indicator - auto-assigned */}
+                  {selectedSeller && (
+                    <div className="mt-2 flex flex-col gap-2 text-muted-foreground">
+                      <span className="flex items-center gap-1 text-xs sm:text-sm">
+                        <UserCheck className="size-3 sm:size-4" />
+                        {t("dealerPage.dialog.assignedTo")}:
+                      </span>
+                      <div className="text-xs sm:text-sm flex items-center gap-2 flex-wrap">
+                        <Avatar className="size-8 sm:size-10 shrink-0">
+                          {selectedSeller.image ? (
+                            <AvatarImage
+                              src={selectedSeller.image}
+                              alt={selectedSeller.name || "Seller"}
+                              className="object-center object-cover"
+                            />
+                          ) : null}
+                          <AvatarFallback
+                            className={cn("text-xs sm:text-sm font-medium")}
+                          >
+                            {getInitials(selectedSeller.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <strong className="line-clamp-1">
+                          {selectedSeller.name || selectedSeller.email}
+                        </strong>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <DialogHeader className="text-left">
-                  <DialogTitle className="text-sm font-semibold leading-tight tracking-tight text-balance">
-                    {t("visits.registerVisit")}
-                  </DialogTitle>
-                  <DialogDescription className="text-sm text-muted-foreground leading-snug text-balance">
-                    {t("visits.selectFormTypeDescription")}
-                  </DialogDescription>
-                </DialogHeader>
 
-                {/* Selected seller indicator */}
-                {selectedSeller && (
-                  <div className="mt-2 flex items-center gap-2 text-muted-foreground">
-                    <UserCheck className="size-3" />
-                    <span className="text-sm">
-                      {t("dealerPage.dialog.assignedTo")}:{" "}
-                      <strong>
-                        {selectedSeller.name || selectedSeller.email}
-                      </strong>
-                    </span>
-                  </div>
-                )}
-              </div>
+                <div className="p-3 w-full">
+                  <div className="flex flex-col gap-3 justify-center items-center flex-wrap">
+                    {FORM_OPTIONS.map((option) => {
+                      const Icon = option.icon;
+                      const isAvailable = option.available;
 
-              <div className="p-3 w-full">
-                <div className="flex flex-col gap-3 justify-center items-center flex-wrap">
-                  {FORM_OPTIONS.map((option) => {
-                    const Icon = option.icon;
-                    const isAvailable = option.available;
-
-                    return (
-                      <button
-                        key={option.type}
-                        disabled={!isAvailable}
-                        onClick={() =>
-                          isAvailable && handleFormTypeSelected(option.type)
-                        }
-                        className={`
+                      return (
+                        <button
+                          key={option.type}
+                          disabled={!isAvailable}
+                          onClick={() =>
+                            isAvailable && handleFormTypeSelected(option.type)
+                          }
+                          className={`
                             group overflow-hidden rounded-lg px-3 pb-2 pt-3 text-left
                                               transition-all duration-300
                                               cursor-pointer border border-border
@@ -267,11 +276,11 @@ export default function DealerVisitFormDialog({
                               : "bg-muted/30 border-border/30 cursor-not-allowed opacity-50"
                           }
                         `}
-                        style={{ height: "100%" }}
-                      >
-                        <div className="h-full flex justify-between items-center gap-3 w-full">
-                          <div
-                            className={`
+                          style={{ height: "100%" }}
+                        >
+                          <div className="h-full flex justify-between items-center gap-3 w-full">
+                            <div
+                              className={`
                               size-8 flex items-center justify-center rounded-md
                               transition-all duration-300
                               ${
@@ -280,71 +289,71 @@ export default function DealerVisitFormDialog({
                                   : "bg-muted text-muted-foreground"
                               }
                             `}
-                          >
-                            <Icon className="size-4" />
-                          </div>
-                          <div className="w-full flex flex-col gap-1 justify-center items-start">
-                            <h3 className="text-xs leading-tight line-clamp-2 text-balance font-balance font-semibold">
-                              {t(
-                                `visits.formTypes.${
-                                  option.type === VisitFormType.ANALISIS_CSS
-                                    ? "css"
-                                    : option.type ===
-                                        VisitFormType.ANALISIS_INDUSTRIAL
-                                      ? "industrial"
-                                      : option.type ===
-                                          VisitFormType.ANALISIS_LOGISTICA
-                                        ? "logistica"
-                                        : "straddleCarrier"
-                                }` as any,
-                              )}
-                            </h3>
-                            <p
-                              className="text-xs text-muted-foreground text-pretty"
-                              title={t(
-                                `visits.formTypes.descriptions.${
-                                  option.type === VisitFormType.ANALISIS_CSS
-                                    ? "css"
-                                    : option.type ===
-                                        VisitFormType.ANALISIS_INDUSTRIAL
-                                      ? "industrial"
-                                      : option.type ===
-                                          VisitFormType.ANALISIS_LOGISTICA
-                                        ? "logistica"
-                                        : "straddleCarrier"
-                                }` as any,
-                              )}
                             >
-                              {t(
-                                `visits.formTypes.descriptions.${
-                                  option.type === VisitFormType.ANALISIS_CSS
-                                    ? "css"
-                                    : option.type ===
-                                        VisitFormType.ANALISIS_INDUSTRIAL
-                                      ? "industrial"
+                              <Icon className="size-4" />
+                            </div>
+                            <div className="w-full flex flex-col gap-1 justify-center items-start">
+                              <h3 className="text-xs leading-tight line-clamp-2 text-balance font-balance font-semibold">
+                                {t(
+                                  `visits.formTypes.${
+                                    option.type === VisitFormType.ANALISIS_CSS
+                                      ? "css"
                                       : option.type ===
-                                          VisitFormType.ANALISIS_LOGISTICA
-                                        ? "logistica"
-                                        : "straddleCarrier"
-                                }` as any,
-                              )}
-                            </p>
+                                          VisitFormType.ANALISIS_INDUSTRIAL
+                                        ? "industrial"
+                                        : option.type ===
+                                            VisitFormType.ANALISIS_LOGISTICA
+                                          ? "logistica"
+                                          : "straddleCarrier"
+                                  }` as any,
+                                )}
+                              </h3>
+                              <p
+                                className="text-xs text-muted-foreground text-pretty"
+                                title={t(
+                                  `visits.formTypes.descriptions.${
+                                    option.type === VisitFormType.ANALISIS_CSS
+                                      ? "css"
+                                      : option.type ===
+                                          VisitFormType.ANALISIS_INDUSTRIAL
+                                        ? "industrial"
+                                        : option.type ===
+                                            VisitFormType.ANALISIS_LOGISTICA
+                                          ? "logistica"
+                                          : "straddleCarrier"
+                                  }` as any,
+                                )}
+                              >
+                                {t(
+                                  `visits.formTypes.descriptions.${
+                                    option.type === VisitFormType.ANALISIS_CSS
+                                      ? "css"
+                                      : option.type ===
+                                          VisitFormType.ANALISIS_INDUSTRIAL
+                                        ? "industrial"
+                                        : option.type ===
+                                            VisitFormType.ANALISIS_LOGISTICA
+                                          ? "logistica"
+                                          : "straddleCarrier"
+                                  }` as any,
+                                )}
+                              </p>
+                            </div>
                           </div>
-                        </div>
 
-                        {isAvailable && (
-                          <div className="mt-2 flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                            {t("visits.select")}
-                            <ArrowRight className="size-3 group-hover:translate-x-1 transition-transform" />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
+                          {isAvailable && (
+                            <div className="mt-2 flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                              {t("visits.select")}
+                              <ArrowRight className="size-3 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Step 3: Form filling */}
           {currentStep === "form" && selectedFormType && (

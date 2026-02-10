@@ -10,7 +10,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 // Get user by ID (Admin only)
 export async function GET(
   request: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -25,7 +25,7 @@ export async function GET(
     if (!currentUser || currentUser.role !== Role.ADMIN) {
       return NextResponse.json(
         { error: "No tienes permisos para ver usuarios" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -59,7 +59,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -71,7 +71,7 @@ export async function GET(
         error: "Error al obtener el usuario",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -79,7 +79,7 @@ export async function GET(
 // Update user by ID (Admin only)
 export async function PATCH(
   request: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -96,7 +96,7 @@ export async function PATCH(
     if (!currentUser || currentUser.role !== Role.ADMIN) {
       return NextResponse.json(
         { error: "No tienes permisos para actualizar usuarios" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -113,7 +113,7 @@ export async function PATCH(
           error: "Datos inválidos",
           details: validation.error.flatten().fieldErrors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -126,7 +126,7 @@ export async function PATCH(
       isActive,
       password,
       image,
-      assignedSellerIds,
+      assignedSellerId,
     } = validation.data;
 
     const userToUpdate = await prisma.user.findUnique({
@@ -136,7 +136,7 @@ export async function PATCH(
     if (!userToUpdate) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -148,43 +148,43 @@ export async function PATCH(
       if (existingUser) {
         return NextResponse.json(
           { error: "El email ya está en uso" },
-          { status: 409 }
+          { status: 409 },
         );
       }
     }
 
-    // Si es DEALER y se proporcionan sellers, validar
+    // Si es DEALER y se proporciona seller, validar
     if (
       (role === Role.DEALER || userToUpdate.role === Role.DEALER) &&
-      assignedSellerIds !== undefined
+      assignedSellerId !== undefined
     ) {
-      if (assignedSellerIds.length > 0) {
-        const sellers = await prisma.user.findMany({
+      if (assignedSellerId) {
+        const seller = await prisma.user.findUnique({
           where: {
-            id: { in: assignedSellerIds },
+            id: assignedSellerId,
             role: Role.SELLER,
           },
         });
 
-        if (sellers.length !== assignedSellerIds.length) {
+        if (!seller) {
           return NextResponse.json(
-            { error: "Uno o más vendedores seleccionados no son válidos" },
-            { status: 400 }
+            { error: "El P. Manager seleccionado no es válido" },
+            { status: 400 },
           );
         }
       }
 
-      // Actualizar relaciones DEALER-SELLER
+      // Actualizar relación DEALER-SELLER (un solo seller)
       await prisma.dealerSeller.deleteMany({
         where: { dealerId: id },
       });
 
-      if (assignedSellerIds.length > 0) {
-        await prisma.dealerSeller.createMany({
-          data: assignedSellerIds.map((sellerId) => ({
+      if (assignedSellerId) {
+        await prisma.dealerSeller.create({
+          data: {
             dealerId: id,
-            sellerId,
-          })),
+            sellerId: assignedSellerId,
+          },
         });
       }
     }
@@ -245,7 +245,7 @@ export async function PATCH(
         error: "Error al actualizar el usuario",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -253,7 +253,7 @@ export async function PATCH(
 // Delete user by ID (Admin only)
 export async function DELETE(
   request: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -270,7 +270,7 @@ export async function DELETE(
     if (!currentUser || currentUser.role !== Role.ADMIN) {
       return NextResponse.json(
         { error: "No tienes permisos para eliminar usuarios" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -283,7 +283,7 @@ export async function DELETE(
           error: "ID de usuario inválido",
           details: validation.error.flatten().fieldErrors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -292,7 +292,7 @@ export async function DELETE(
     if (id === currentUser.id) {
       return NextResponse.json(
         { error: "No puedes eliminarte a ti mismo" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -303,7 +303,7 @@ export async function DELETE(
     if (!userToDelete) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -326,7 +326,7 @@ export async function DELETE(
         error: "Error al eliminar el usuario",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

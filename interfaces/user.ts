@@ -30,7 +30,8 @@ export interface CreateUserInput {
   role: Role;
   country?: string;
   isActive?: boolean;
-  assignedSellerIds?: string[];
+  /** For DEALER users: the single assigned seller ID */
+  assignedSellerId?: string | null;
 }
 
 export interface UserListItem {
@@ -55,11 +56,11 @@ export interface UserListItem {
   }[];
 }
 
-export interface UpdateUserInput
-  extends Partial<
-    Omit<User, "id" | "createdAt" | "updatedAt" | "emailVerified">
-  > {
-  assignedSellerIds?: string[];
+export interface UpdateUserInput extends Partial<
+  Omit<User, "id" | "createdAt" | "updatedAt" | "emailVerified">
+> {
+  /** For DEALER users: the single assigned seller ID */
+  assignedSellerId?: string | null;
 }
 
 export interface SellerInfo {

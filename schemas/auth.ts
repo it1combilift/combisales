@@ -6,7 +6,7 @@ import { Role } from "@prisma/client";
 // Type for translation function (matches useI18n hook)
 type TranslationFn = (
   key: string,
-  values?: Record<string, string | number>
+  values?: Record<string, string | number>,
 ) => string;
 
 // Login schema factory
@@ -51,8 +51,8 @@ export const createUserSchemaFactory = (t: TranslationFn) =>
         .nullable()
         .or(z.literal(""))
         .transform((val) => (val === "" ? null : val)),
-      // Para usuarios DEALER: IDs de sellers asignados
-      assignedSellerIds: z.array(z.string().cuid()).optional().default([]),
+      // Para usuarios DEALER: ID del seller asignado (solo uno)
+      assignedSellerId: z.string().cuid().optional().nullable(),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: t("validation.passwordMatch"),
@@ -60,16 +60,16 @@ export const createUserSchemaFactory = (t: TranslationFn) =>
     })
     .refine(
       (data) => {
-        // DEALER role requires at least one seller
+        // DEALER role requires exactly one seller
         if (data.role === Role.DEALER) {
-          return data.assignedSellerIds && data.assignedSellerIds.length > 0;
+          return !!data.assignedSellerId;
         }
         return true;
       },
       {
-        message: t("validation.dealerRequiresSellers"),
-        path: ["assignedSellerIds"],
-      }
+        message: t("validation.dealerRequiresSeller"),
+        path: ["assignedSellerId"],
+      },
     );
 
 // Create user schema (default - for backward compatibility)
@@ -100,13 +100,26 @@ export const createUserSchema = z
       .nullable()
       .or(z.literal(""))
       .transform((val) => (val === "" ? null : val)),
-    // Para usuarios DEALER: IDs de sellers asignados
-    assignedSellerIds: z.array(z.string().cuid()).optional().default([]),
+    // Para usuarios DEALER: ID del seller asignado (solo uno)
+    assignedSellerId: z.string().cuid().optional().nullable(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Las contraseñas no coinciden",
     path: ["confirmPassword"],
-  });
+  })
+  .refine(
+    (data) => {
+      // DEALER role requires exactly one seller
+      if (data.role === Role.DEALER) {
+        return !!data.assignedSellerId;
+      }
+      return true;
+    },
+    {
+      message: "Debe asignar un P. Manager",
+      path: ["assignedSellerId"],
+    },
+  );
 
 // Update user schema factory (Admin only)
 export const createUpdateUserSchemaFactory = (t: TranslationFn) =>
@@ -140,59 +153,73 @@ export const createUpdateUserSchemaFactory = (t: TranslationFn) =>
         .nullable()
         .or(z.literal(""))
         .transform((val) => (val === "" ? null : val)),
-      // Para usuarios DEALER: IDs de sellers asignados
-      assignedSellerIds: z.array(z.string().cuid()).optional(),
+      // Para usuarios DEALER: ID del seller asignado (solo uno)
+      assignedSellerId: z.string().cuid().optional().nullable(),
     })
     .refine(
       (data) => {
-        // DEALER role requires at least one seller
+        // DEALER role requires exactly one seller
         if (data.role === Role.DEALER) {
-          return data.assignedSellerIds && data.assignedSellerIds.length > 0;
+          return !!data.assignedSellerId;
         }
         return true;
       },
       {
-        message: t("validation.dealerRequiresSellers"),
-        path: ["assignedSellerIds"],
-      }
+        message: t("validation.dealerRequiresSeller"),
+        path: ["assignedSellerId"],
+      },
     );
 
 // Update user schema (default - for backward compatibility)
-export const updateUserSchema = z.object({
-  id: z.string().cuid("ID de usuario inválido"),
-  name: z
-    .string()
-    .min(2, "El nombre debe tener al menos 2 caracteres")
-    .optional(),
-  email: z.string().email("Por favor ingresa un correo válido.").optional(),
-  role: z
-    .nativeEnum(Role, {
-      errorMap: () => ({ message: "Rol inválido" }),
-    })
-    .optional(),
-  country: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .transform((val) => (val === "" ? undefined : val)),
-  isActive: z.boolean().optional(),
-  password: z
-    .string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres.")
-    .optional()
-    .or(z.literal(""))
-    .transform((val) => (val === "" ? undefined : val)),
-  // Profile image URL from Cloudinary (null to remove)
-  image: z
-    .string()
-    .url("URL de imagen inválida")
-    .optional()
-    .nullable()
-    .or(z.literal(""))
-    .transform((val) => (val === "" ? null : val)),
-  // Para usuarios DEALER: IDs de sellers asignados
-  assignedSellerIds: z.array(z.string().cuid()).optional(),
-});
+export const updateUserSchema = z
+  .object({
+    id: z.string().cuid("ID de usuario inválido"),
+    name: z
+      .string()
+      .min(2, "El nombre debe tener al menos 2 caracteres")
+      .optional(),
+    email: z.string().email("Por favor ingresa un correo válido.").optional(),
+    role: z
+      .nativeEnum(Role, {
+        errorMap: () => ({ message: "Rol inválido" }),
+      })
+      .optional(),
+    country: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val)),
+    isActive: z.boolean().optional(),
+    password: z
+      .string()
+      .min(8, "La contraseña debe tener al menos 8 caracteres.")
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val)),
+    // Profile image URL from Cloudinary (null to remove)
+    image: z
+      .string()
+      .url("URL de imagen inválida")
+      .optional()
+      .nullable()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? null : val)),
+    // Para usuarios DEALER: ID del seller asignado (solo uno)
+    assignedSellerId: z.string().cuid().optional().nullable(),
+  })
+  .refine(
+    (data) => {
+      // DEALER role requires exactly one seller
+      if (data.role === Role.DEALER) {
+        return !!data.assignedSellerId;
+      }
+      return true;
+    },
+    {
+      message: "Debe asignar un P. Manager",
+      path: ["assignedSellerId"],
+    },
+  );
 
 // Delete user schema
 export const deleteUserSchema = z.object({

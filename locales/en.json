@@ -35,6 +35,8 @@
     "errors": {
       "fetchVisits": "Error loading visits",
       "fetchSellers": "Error loading assigned P. Managers",
+      "fetchSeller": "Error loading assigned P. Manager",
+      "noSellerAssigned": "You don't have an assigned P. Manager. Contact your administrator.",
       "deleteVisit": "Error deleting visit",
       "cloneVisit": "Error cloning visit"
     },
@@ -271,6 +273,7 @@
     "passwordMinLength8": "Password must be at least 8 characters",
     "minOneId": "Must provide at least one ID",
     "dealerRequiresSellers": "Dealer role requires at least one assigned P. Manager",
+    "dealerRequiresSeller": "A P. Manager must be assigned",
     "minOneSeller": "At least one P. Manager must be assigned"
   },
   "messages": {
@@ -1121,7 +1124,8 @@
         "errorLoading": "Error loading P. Managers",
         "assigned": "Assigned P. Managers",
         "assignedDescription": "P. Managers reporting to this dealer",
-        "noAssigned": "No P. Managers assigned",
+        "noAssigned": "No P. Manager assigned",
+        "selectOneBelow": "Select one from the list below",
         "available": "Available P. Managers",
         "availableDescription": "Select P. Managers to assign",
         "noAvailable": "All active P. Managers are already assigned",

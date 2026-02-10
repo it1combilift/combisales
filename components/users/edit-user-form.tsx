@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditUserFormProps } from "@/interfaces/user";
-import { SellersSelection } from "./sellers-selection";
+import { SellerSelection } from "./seller-selection";
 import { ProfileImageUpload } from "./profile-image-upload";
 import { useState, useCallback, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -79,25 +79,24 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         .nullable()
         .or(z.literal(""))
         .transform((val) => (val === "" ? null : val)),
-      assignedSellerIds: z.array(z.string().cuid()).optional().default([]),
+      assignedSellerId: z.string().cuid().optional().nullable(),
     })
     .refine(
       (data) => {
-        // DEALER role requires at least one seller
+        // DEALER role requires exactly one seller
         if (data.role === Role.DEALER) {
-          return data.assignedSellerIds && data.assignedSellerIds.length > 0;
+          return !!data.assignedSellerId;
         }
         return true;
       },
       {
-        message: t("validation.dealerRequiresSellers"),
-        path: ["assignedSellerIds"],
-      }
+        message: t("validation.dealerRequiresSeller"),
+        path: ["assignedSellerId"],
+      },
     );
 
-  // Extract assigned seller IDs
-  const assignedSellerIds = (user.assignedSellers?.map((as) => as.seller.id) ||
-    []) as string[];
+  // Extract assigned seller ID (first one, since now only one is allowed)
+  const assignedSellerId = user.assignedSellers?.[0]?.seller?.id || null;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -110,16 +109,16 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       isActive: user.isActive,
       password: "",
       image: user.image || null,
-      assignedSellerIds: assignedSellerIds,
+      assignedSellerId: assignedSellerId,
     },
   });
 
   // Watch form values using useWatch for proper reactivity
   const selectedRole = useWatch({ control: form.control, name: "role" });
   const isDealerRole = selectedRole === Role.DEALER;
-  const watchedAssignedSellerIds = useWatch({
+  const watchedAssignedSellerId = useWatch({
     control: form.control,
-    name: "assignedSellerIds",
+    name: "assignedSellerId",
   });
   const watchedName = useWatch({ control: form.control, name: "name" });
   const watchedEmail = useWatch({ control: form.control, name: "email" });
@@ -131,14 +130,11 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     !!watchedName &&
     !!watchedEmail &&
     !hasErrors &&
-    (selectedRole !== Role.DEALER ||
-      (watchedAssignedSellerIds && watchedAssignedSellerIds.length > 0));
+    (selectedRole !== Role.DEALER || !!watchedAssignedSellerId);
 
-  // Reset form when user changes (fixes assigned sellers not showing)
+  // Reset form when user changes (fixes assigned seller not showing)
   useEffect(() => {
-    const newAssignedSellerIds = (user.assignedSellers?.map(
-      (as) => as.seller.id
-    ) || []) as string[];
+    const newAssignedSellerId = user.assignedSellers?.[0]?.seller?.id || null;
 
     form.reset({
       name: user.name || "",
@@ -148,11 +144,11 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       isActive: user.isActive,
       password: "",
       image: user.image || null,
-      assignedSellerIds: newAssignedSellerIds,
+      assignedSellerId: newAssignedSellerId,
     });
   }, [user.id]); // Only reset when user ID changes, not on every user object reference change
 
-  // Clear seller IDs when role changes FROM DEALER to another role
+  // Clear seller ID when role changes FROM DEALER to another role
   const handleRoleChange = useCallback(
     (newRole: Role) => {
       form.setValue("role", newRole, {
@@ -160,33 +156,33 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         shouldDirty: true,
       });
       if (newRole !== Role.DEALER) {
-        form.setValue("assignedSellerIds", [], {
+        form.setValue("assignedSellerId", null, {
           shouldValidate: true,
           shouldDirty: true,
         });
       }
     },
-    [form]
+    [form],
   );
 
   // Trigger validation when role changes
   useEffect(() => {
     if (selectedRole) {
-      form.trigger("assignedSellerIds");
+      form.trigger("assignedSellerId");
     }
   }, [selectedRole, form]);
 
   const handleSellerSelectionChange = useCallback(
-    (ids: string[]) => {
-      console.log("🔄 Seller selection changed (Edit):", ids);
-      form.setValue("assignedSellerIds", ids, {
+    (id: string | null) => {
+      console.log("🔄 Seller selection changed (Edit):", id);
+      form.setValue("assignedSellerId", id, {
         shouldValidate: true,
         shouldDirty: true,
       });
       // Force trigger validation to ensure form state updates
-      form.trigger("assignedSellerIds");
+      form.trigger("assignedSellerId");
     },
-    [form]
+    [form],
   );
 
   // Debug logging
@@ -194,8 +190,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     console.log("📊 EditUserForm State:", {
       selectedRole,
       isDealerRole,
-      watchedAssignedSellerIds,
-      assignedSellersCount: watchedAssignedSellerIds?.length ?? 0,
+      watchedAssignedSellerId,
       watchedName,
       watchedEmail,
       hasErrors,
@@ -205,7 +200,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   }, [
     selectedRole,
     isDealerRole,
-    watchedAssignedSellerIds,
+    watchedAssignedSellerId,
     watchedName,
     watchedEmail,
     hasErrors,
@@ -220,7 +215,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         shouldDirty: true,
       });
     },
-    [form]
+    [form],
   );
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -255,15 +250,13 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         updateData.image = values.image;
       }
 
-      // Handle DEALER sellers assignment
-      if (values.assignedSellerIds !== undefined) {
-        const currentSellerIds =
-          user.assignedSellers?.map((as) => as.seller.id).sort() || [];
-        const newSellerIds = [...values.assignedSellerIds].sort();
+      // Handle DEALER seller assignment (single seller)
+      if (values.assignedSellerId !== undefined) {
+        const currentSellerId = user.assignedSellers?.[0]?.seller?.id || null;
 
         // Only update if there's a change
-        if (JSON.stringify(currentSellerIds) !== JSON.stringify(newSellerIds)) {
-          updateData.assignedSellerIds = values.assignedSellerIds;
+        if (currentSellerId !== values.assignedSellerId) {
+          updateData.assignedSellerId = values.assignedSellerId;
         }
       }
 
@@ -283,7 +276,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         toast.error(error.response?.data?.error || t("users.form.updateError"));
       } else {
         toast.error(
-          error instanceof Error ? error.message : t("users.form.updateError")
+          error instanceof Error ? error.message : t("users.form.updateError"),
         );
       }
     } finally {
@@ -573,13 +566,13 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
             <TabsContent value="sellers" className="mt-0">
               <FormField
                 control={form.control}
-                name="assignedSellerIds"
+                name="assignedSellerId"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <SellersSelection
-                        key={`sellers-${user.id}`}
-                        selectedSellerIds={field.value ?? []}
+                      <SellerSelection
+                        key={`seller-${user.id}`}
+                        selectedSellerId={field.value}
                         onSelectionChange={handleSellerSelectionChange}
                       />
                     </FormControl>

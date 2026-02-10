@@ -4,13 +4,13 @@ import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { Role } from "@prisma/client";
-import { useForm, useWatch } from "react-hook-form";
 import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SellersSelection } from "./sellers-selection";
+import { SellerSelection } from "./seller-selection";
 import { CreateUserFormProps } from "@/interfaces/user";
 import { createUserSchemaFactory } from "@/schemas/auth";
 import { ProfileImageUpload } from "./profile-image-upload";
@@ -66,16 +66,16 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       country: "",
       isActive: true,
       image: null,
-      assignedSellerIds: [],
+      assignedSellerId: null,
     },
   });
 
   // Watch form values using useWatch for proper reactivity
   const selectedRole = useWatch({ control: form.control, name: "role" });
   const isDealerRole = selectedRole === Role.DEALER;
-  const assignedSellerIds = useWatch({
+  const assignedSellerId = useWatch({
     control: form.control,
-    name: "assignedSellerIds",
+    name: "assignedSellerId",
   });
   const name = useWatch({ control: form.control, name: "name" });
   const email = useWatch({ control: form.control, name: "email" });
@@ -94,21 +94,20 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
     !!password &&
     !!confirmPassword &&
     !hasErrors &&
-    (selectedRole !== Role.DEALER ||
-      (assignedSellerIds && assignedSellerIds.length > 0));
+    (selectedRole !== Role.DEALER || !!assignedSellerId);
 
   const handleSellerSelectionChange = useCallback(
-    (ids: string[]) => {
-      console.log("🔄 Seller selection changed:", ids);
-      form.setValue("assignedSellerIds", ids, {
+    (id: string | null) => {
+      console.log("🔄 Seller selection changed:", id);
+      form.setValue("assignedSellerId", id, {
         shouldValidate: true,
         shouldDirty: true,
         shouldTouch: true,
       });
       // Force trigger validation to ensure form state updates
-      form.trigger("assignedSellerIds");
+      form.trigger("assignedSellerId");
     },
-    [form]
+    [form],
   );
 
   // Debug logging
@@ -116,8 +115,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
     console.log("📊 CreateUserForm State:", {
       selectedRole,
       isDealerRole,
-      assignedSellerIds,
-      assignedSellersCount: assignedSellerIds?.length ?? 0,
+      assignedSellerId,
       name,
       email,
       password: password ? "***" : "",
@@ -128,7 +126,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   }, [
     selectedRole,
     isDealerRole,
-    assignedSellerIds,
+    assignedSellerId,
     name,
     email,
     password,
@@ -144,13 +142,13 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
         shouldDirty: true,
       });
     },
-    [form]
+    [form],
   );
 
   // Trigger validation when role changes
   useEffect(() => {
     if (selectedRole) {
-      form.trigger("assignedSellerIds");
+      form.trigger("assignedSellerId");
     }
   }, [selectedRole, form]);
 
@@ -168,7 +166,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
         toast.error(error.response?.data?.error || t("users.form.createError"));
       } else {
         toast.error(
-          error instanceof Error ? error.message : t("users.form.createError")
+          error instanceof Error ? error.message : t("users.form.createError"),
         );
       }
     } finally {
@@ -492,12 +490,12 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
             <TabsContent value="sellers" className="mt-0">
               <FormField
                 control={form.control}
-                name="assignedSellerIds"
+                name="assignedSellerId"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <SellersSelection
-                        selectedSellerIds={field.value ?? []}
+                      <SellerSelection
+                        selectedSellerId={field.value}
                         onSelectionChange={handleSellerSelectionChange}
                       />
                     </FormControl>
