@@ -24,18 +24,20 @@ export function FormHeader({
   const StepIcon = currentStepConfig.icon;
 
   // Build dynamic step key map based on enableCustomerEntry
-  // When enableCustomerEntry is true: steps 1-3 are customer, steps 4-7 are product
-  // When enableCustomerEntry is false: steps 1-4 are product only
+  // When enableCustomerEntry is true: steps 1-5 are: product, container, measurements, company, files
+  // When enableCustomerEntry is false: steps 1-4 are: product, container, measurements, files
   const getStepTranslationKey = (stepNumber: number): string => {
     if (enableCustomerEntry) {
-      // DEALER flow: 5 steps (1  customer + 4 product)
-      const customerKeys = ["company"];
-      const productKeys = ["product", "container", "measurements", "files"];
-      if (stepNumber <= 1) {
-        return customerKeys[stepNumber - 1];
-      }
-      return productKeys[stepNumber - 2];
+      // DEALER flow: 5 steps with customer BEFORE files
+      // Step 1: product
+      // Step 2: container
+      // Step 3: measurements
+      // Step 4: company (customer data)
+      // Step 5: files
+      const stepKeys = ["product", "container", "measurements", "company", "files"];
+      return stepKeys[stepNumber - 1] || "product";
     }
+    
     // Normal flow: 4 product steps
     const productKeys = ["product", "container", "measurements", "files"];
     return productKeys[stepNumber - 1] || "product";

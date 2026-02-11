@@ -3,6 +3,7 @@
 import axios from "axios";
 import { Visit } from "@/interfaces/visits";
 import { useI18n } from "@/lib/i18n/context";
+import { cn, getInitials } from "@/lib/utils";
 import { VisitFormType } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -10,6 +11,7 @@ import { FORM_OPTIONS } from "@/interfaces/visits";
 import { useEffect, useState, useCallback } from "react";
 import { useFormProtection } from "@/hooks/use-form-protection";
 import { ArrowRight, UserCheck, AlertCircle } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
 import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
 import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
@@ -23,8 +25,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { cn, getInitials } from "@/lib/utils";
 
 export interface DealerVisitFormDialogProps {
   open: boolean;
