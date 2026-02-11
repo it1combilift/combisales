@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDateShort, getInitials } from "@/lib/utils";
+import { hasRole } from "@/lib/roles";
 import { VisitStatus, VisitFormType, Role } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -25,7 +26,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {
-  Calendar,
   MoreVertical,
   Trash2,
   ArrowUpRight,
@@ -62,7 +62,7 @@ interface VisitCardProps {
   onClone?: (visit: Visit) => void;
   onViewForm?: (visit: Visit) => void;
   onCreateVisit?: () => void;
-  userRole?: Role | null;
+  userRoles?: Role[];
   // Phase 4: Clone-specific handlers for unified row logic
   onViewClone?: (visit: Visit) => void;
   onEditClone?: (visit: Visit) => void;
@@ -79,7 +79,7 @@ export const VisitCard = ({
   onClone,
   onViewForm,
   // onCreateVisit,
-  userRole,
+  userRoles,
   onViewClone,
   onEditClone,
   onDeleteClone,
@@ -89,9 +89,10 @@ export const VisitCard = ({
   const rawStatus = visit.status as VisitStatus;
   const formType = visit.formType as VisitFormType;
 
-  const isSeller = userRole === Role.SELLER;
-  const isDealer = userRole === Role.DEALER;
-  const isAdmin = userRole === Role.ADMIN;
+  const roles = userRoles || [];
+  const isSeller = hasRole(roles, Role.SELLER);
+  const isDealer = hasRole(roles, Role.DEALER);
+  const isAdmin = hasRole(roles, Role.ADMIN);
 
   // Phase 4: Unified row logic - check if original has a clone
   const hasClone = visit.clones && visit.clones.length > 0;
@@ -638,21 +639,6 @@ export const VisitCard = ({
               <ArrowUpRight className="size-3.5" />
             </Button>
           )}
-          {/* 
-          {onCreateVisit && (
-            <Button
-              variant="default"
-              size="sm"
-              className="flex-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCreateVisit();
-              }}
-            >
-              <Plus className="size-3.5" />
-              {t("visits.createVisit")}
-            </Button>
-          )} */}
         </div>
       </div>
     </Card>

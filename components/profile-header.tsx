@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { H1, Paragraph } from "./fonts/fonts";
 import { Button } from "@/components/ui/button";
 import { getInitials, getRoleBadge } from "@/lib/utils";
-import { getPrimaryRole } from "@/lib/roles";
+import { getAllRoles, getPrimaryRole } from "@/lib/roles";
 import { ProfileUser } from "@/components/profile/profile-edit-dialog";
 import { Camera, LogOut, Mail, PencilLine, ShieldCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,7 +42,7 @@ export default function ProfileHeader({
   return (
     <div className="w-full pt-0 mt-0 bg-transparent border-none">
       {/* Desktop & Tablet Layout (md and up) */}
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         <div className="border-none shadow-none overflow-hidden">
           {/* Content Container */}
           <div className="px-4 pb-2">
@@ -76,7 +76,11 @@ export default function ProfileHeader({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <H1>{user.name || t("profile.notAvailable")}</H1>
-                  {getRoleBadge(getPrimaryRole(user.roles))}
+                  {getAllRoles(user.roles).map((role) => (
+                    <span key={role} className="shrink-0">
+                      {getRoleBadge(role)}
+                    </span>
+                  ))}
                 </div>
 
                 <Paragraph>{t("profile.header.company")}</Paragraph>
@@ -119,7 +123,7 @@ export default function ProfileHeader({
       </div>
 
       {/* Mobile Layout (sm and below) */}
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <div className="border-none shadow-none overflow-hidden">
           {/* Content */}
           <div className="px-4 pb-2">
@@ -152,7 +156,11 @@ export default function ProfileHeader({
             <div className="text-center space-y-2">
               <div className="space-y-2 flex flex-col items-center">
                 <H1>{user.name || t("profile.notAvailable")}</H1>
-                {getRoleBadge(getPrimaryRole(user.roles))}
+                {getAllRoles(user.roles).map((role) => (
+                  <span key={role} className="shrink-0">
+                    {getRoleBadge(role)}
+                  </span>
+                ))}
                 <Paragraph>{t("profile.header.company")}</Paragraph>
               </div>
 

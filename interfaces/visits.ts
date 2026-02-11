@@ -829,7 +829,7 @@ export interface DataTableProps<TData, TValue> {
   onDelete?: (visit: Visit) => void;
   onCreateVisit?: () => void;
   customerName?: string;
-  userRole?: Role | null;
+  userRoles?: Role[];
   /**
    * Indicates if the data table is used in the Dealers flow (/dashboard/dealers).
    * When true: Shows EN_PROGRESO status filter for SELLER/ADMIN and clone-specific actions.

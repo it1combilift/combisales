@@ -18,6 +18,7 @@ import { VisitsDataTable } from "@/components/visits/data-table";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { DeleteVisitDialog } from "@/components/visits/delete-visit-dialog";
 import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
+import { hasRole } from "@/lib/roles";
 
 import {
   AlertDialog,
@@ -43,14 +44,14 @@ const DealersPage = () => {
   const [visitToDelete, setVisitToDelete] = useState<Visit | null>(null);
   const [visitToEdit, setVisitToEdit] = useState<Visit | null>(null);
   const [isFormReadOnly, setIsFormReadOnly] = useState(false);
-  const [userRole, setUserRole] = useState<Role | null>(null);
+  const [userRoles, setUserRoles] = useState<Role[]>([]);
   const [isCloning, setIsCloning] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Check user roles
-  const isAdmin = userRole === Role.ADMIN;
-  const isDealer = userRole === Role.DEALER;
-  const isSeller = userRole === Role.SELLER;
+  const isAdmin = hasRole(userRoles, Role.ADMIN);
+  const isDealer = hasRole(userRoles, Role.DEALER);
+  const isSeller = hasRole(userRoles, Role.SELLER);
 
   // Fetch visits based on role
   // ADMIN: sees all visits created by DEALER users + all clones
@@ -61,8 +62,8 @@ const DealersPage = () => {
       const response = await axios.get("/api/visits?dealerVisits=true");
       if (response.status === 200) {
         setVisits(response.data.visits);
-        if (response.data.userRole) {
-          setUserRole(response.data.userRole as Role);
+        if (response.data.userRoles) {
+          setUserRoles(response.data.userRoles as Role[]);
         }
       }
     } catch (error) {
@@ -234,7 +235,7 @@ const DealersPage = () => {
     onDeleteClone: handleDeleteClone,
     t,
     locale,
-    userRole,
+    userRoles,
     isDealerFlow: true, // This is the DealersPage - uses clone/EN_PROGRESO workflow
   });
 
@@ -341,7 +342,7 @@ const DealersPage = () => {
           onView={handleViewVisit}
           onEdit={handleEditVisit}
           onDelete={(v) => setVisitToDelete(v)}
-          userRole={userRole}
+          userRoles={userRoles}
           onClone={isSeller || isAdmin ? handleCloneVisit : undefined}
           onViewClone={isSeller || isAdmin ? handleViewClone : undefined}
           onEditClone={isSeller || isAdmin ? handleEditClone : undefined}

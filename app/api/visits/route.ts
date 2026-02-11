@@ -413,9 +413,7 @@ export async function GET(req: NextRequest) {
         });
         return createSuccessResponse({
           visits,
-          userRole: hasRole(currentUser.roles, Role.ADMIN)
-            ? Role.ADMIN
-            : currentUser.roles[0],
+          userRoles: currentUser.roles,
         });
       }
 
@@ -430,9 +428,7 @@ export async function GET(req: NextRequest) {
         });
         return createSuccessResponse({
           visits,
-          userRole: hasRole(currentUser.roles, Role.DEALER)
-            ? Role.DEALER
-            : currentUser.roles[0],
+          userRoles: currentUser.roles,
         });
       }
 
@@ -456,9 +452,7 @@ export async function GET(req: NextRequest) {
         });
         return createSuccessResponse({
           visits,
-          userRole: hasRole(currentUser.roles, Role.SELLER)
-            ? Role.SELLER
-            : currentUser.roles[0],
+          userRoles: currentUser.roles,
         });
       }
 

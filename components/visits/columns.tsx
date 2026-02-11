@@ -7,6 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatDateShort, getInitials } from "@/lib/utils";
 import { VisitStatus, VisitFormType, Role } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { hasRole } from "@/lib/roles";
 
 import {
   ColumnsConfig,
@@ -40,7 +41,7 @@ import {
 interface ColumnsConfigWithI18n extends ColumnsConfig {
   t: (key: string) => string;
   locale: string;
-  userRole?: Role | null;
+  userRoles?: Role[];
   onClone?: (visit: Visit) => void;
   onViewForm?: (visit: Visit) => void;
   onViewClone?: (visit: Visit) => void;
@@ -68,13 +69,14 @@ export function createColumns(
     onDeleteClone,
     t,
     locale,
-    userRole,
+    userRoles,
     isDealerFlow = false,
   } = config;
 
-  const isSeller = userRole === Role.SELLER;
-  const isDealer = userRole === Role.DEALER;
-  const isAdmin = userRole === Role.ADMIN;
+  const roles = userRoles || [];
+  const isSeller = hasRole(roles, Role.SELLER);
+  const isDealer = hasRole(roles, Role.DEALER);
+  const isAdmin = hasRole(roles, Role.ADMIN);
 
   const formTypeKeys: Record<VisitFormType, string> = {
     ANALISIS_CSS: "css",
@@ -676,7 +678,7 @@ export function createColumns(
                       </DropdownMenuItem>
                     )}
                     {/* SELLER: Delete clone only */}
-                    {isSeller && onDeleteClone && clone && (
+                    {isSeller && onDeleteClone ? (
                       <>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem

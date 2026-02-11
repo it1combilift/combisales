@@ -15,6 +15,7 @@ import { VisitCard } from "@/components/visits/visit-card";
 import { Role, VisitStatus, VisitFormType } from "@prisma/client";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { Visit, DataTableProps, VISIT_STATUS_ICONS } from "@/interfaces/visits";
+import { hasRole } from "@/lib/roles";
 
 import {
   VISIT_STATUS_LABELS,
@@ -107,7 +108,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
   onEdit,
   onDelete,
   onCreateVisit,
-  userRole,
+  userRoles,
   isDealerFlow = false,
   onClone,
   onViewClone,
@@ -117,9 +118,10 @@ export function VisitsDataTable<TData extends Visit, TValue>({
 }: DataTableProps<TData, TValue>) {
   const { t } = useI18n();
   const isMobile = useIsMobile();
-  const isDealer = userRole === Role.DEALER;
-  const isSeller = userRole === Role.SELLER;
-  const isAdmin = userRole === Role.ADMIN;
+  const roles = userRoles || [];
+  const isDealer = hasRole(roles, Role.DEALER);
+  const isSeller = hasRole(roles, Role.SELLER);
+  const isAdmin = hasRole(roles, Role.ADMIN);
 
   const [searchQuery, setSearchQuery] = useQueryState(
     "search",
@@ -277,8 +279,8 @@ export function VisitsDataTable<TData extends Visit, TValue>({
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex gap-2 flex-col lg:flex-row flex-wrap items-start justify-center lg:items-center lg:justify-between">
-        <div className="flex flex-1 items-center gap-2 w-full md:max-w-sm">
+      <div className="flex gap-3 flex-col lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
+        <div className="flex flex-1 items-center gap-2 w-full md:max-w-xs">
           <div className="relative w-full">
             <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -294,7 +296,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 justify-start w-full">
+        <div className="flex flex-wrap items-center gap-2 justify-start w-fit">
           {/* Date Filter */}
           <Popover>
             <PopoverTrigger asChild>
@@ -613,7 +615,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                   onEditClone={onEditClone}
                   onDeleteClone={onDeleteClone}
                   onViewForm={onViewForm}
-                  userRole={userRole}
+                  userRoles={userRoles}
                 />
               ))
           ) : (
