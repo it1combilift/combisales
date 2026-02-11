@@ -6,7 +6,7 @@ const resendApiKey = process.env.RESEND_API_KEY;
 
 if (!resendApiKey) {
   console.warn(
-    "RESEND_API_KEY no está configurada en las variables de entorno"
+    "RESEND_API_KEY no está configurada en las variables de entorno",
   );
 }
 
