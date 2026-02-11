@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { useI18n } from "@/lib/i18n/context";
 import { useCallback, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Role } from "@prisma/client";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -39,7 +40,7 @@ export interface ProfileUser {
   name: string | null;
   email: string;
   image: string | null;
-  role: string;
+  roles: Role[];
   country: string | null;
   isActive: boolean;
   emailVerified: Date | null;
@@ -75,7 +76,7 @@ const createProfileEditSchema = (t: (key: string) => string) =>
       {
         message: t("profile.edit.currentPasswordRequired"),
         path: ["currentPassword"],
-      }
+      },
     )
     .refine(
       (data) => {
@@ -87,7 +88,7 @@ const createProfileEditSchema = (t: (key: string) => string) =>
       {
         message: t("profile.edit.passwordMinLength"),
         path: ["newPassword"],
-      }
+      },
     );
 
 type ProfileEditFormData = z.infer<ReturnType<typeof createProfileEditSchema>>;
@@ -122,7 +123,7 @@ export function ProfileEditDialog({
         shouldDirty: true,
       });
     },
-    [form]
+    [form],
   );
 
   // Handle form submission
@@ -206,7 +207,9 @@ export function ProfileEditDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs md:text-sm">{t("profile.edit.name")}</FormLabel>
+                  <FormLabel className="text-xs md:text-sm">
+                    {t("profile.edit.name")}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -222,8 +225,14 @@ export function ProfileEditDialog({
 
             {/* Email (read-only) */}
             <div className="space-y-2">
-              <FormLabel className="text-xs md:text-sm">{t("profile.email")}</FormLabel>
-              <Input value={user.email} disabled className="bg-muted text-xs md:text-sm"  />
+              <FormLabel className="text-xs md:text-sm">
+                {t("profile.email")}
+              </FormLabel>
+              <Input
+                value={user.email}
+                disabled
+                className="bg-muted text-xs md:text-sm"
+              />
               <p className="text-xs text-muted-foreground">
                 {t("profile.info.authMethods")}:{" "}
                 {user.accounts.length > 0
@@ -265,7 +274,7 @@ export function ProfileEditDialog({
                             {...field}
                             type="password"
                             placeholder={t(
-                              "profile.edit.currentPasswordPlaceholder"
+                              "profile.edit.currentPasswordPlaceholder",
                             )}
                             disabled={isLoading}
                             className="text-xs md:text-sm"
@@ -282,13 +291,15 @@ export function ProfileEditDialog({
                     name="newPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs md:text-sm">{t("profile.edit.newPassword")}</FormLabel>
+                        <FormLabel className="text-xs md:text-sm">
+                          {t("profile.edit.newPassword")}
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             type="password"
                             placeholder={t(
-                              "profile.edit.newPasswordPlaceholder"
+                              "profile.edit.newPasswordPlaceholder",
                             )}
                             disabled={isLoading}
                             className="text-xs md:text-sm"

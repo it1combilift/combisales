@@ -3,6 +3,7 @@ import { Role } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole } from "@/lib/roles";
 
 /**
  * POST /api/users/revoke-session
@@ -17,19 +18,19 @@ export async function POST(request: Request) {
     if (!session || !session.user?.email) {
       return NextResponse.json(
         { error: "Usuario no autenticado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true, id: true },
+      select: { roles: true, id: true },
     });
 
-    if (!currentUser || currentUser.role !== Role.ADMIN) {
+    if (!currentUser || !hasRole(currentUser.roles, Role.ADMIN)) {
       return NextResponse.json(
         { error: "No tienes permisos para revocar sesiones" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
     if (!userId) {
       return NextResponse.json(
         { error: "userId es requerido" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
         {
           error: "No puedes revocar tu propia sesión. Usa logout en su lugar.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
     if (!targetUser) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -110,7 +111,7 @@ export async function POST(request: Request) {
         error: "Error al revocar sesión",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

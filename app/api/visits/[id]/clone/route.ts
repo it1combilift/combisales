@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
+import { VISIT_INCLUDE } from "@/lib/visits";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 import { VisitStatus, Role } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { VISIT_INCLUDE } from "@/lib/visits";
 
 import {
   HTTP_STATUS,
@@ -43,26 +44,26 @@ export async function POST(
     // 1. Verificar que el usuario es SELLER o ADMIN
     const currentUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { role: true },
+      select: { roles: true },
     });
 
     if (
       !currentUser ||
-      (currentUser.role !== Role.SELLER && currentUser.role !== Role.ADMIN)
+      !hasAnyRole(currentUser.roles, [Role.SELLER, Role.ADMIN])
     ) {
       return badRequestResponse(
         "Solo los usuarios SELLER o ADMIN pueden clonar visitas",
       );
     }
 
-    const isSeller = currentUser.role === Role.SELLER;
-    const isAdmin = currentUser.role === Role.ADMIN;
+    const isSeller = hasRole(currentUser.roles, Role.SELLER);
+    const isAdmin = hasRole(currentUser.roles, Role.ADMIN);
 
     // 2. Obtener la visita original con todos sus datos
     const originalVisit = await prisma.visit.findUnique({
       where: { id },
       include: {
-        user: { select: { role: true } },
+        user: { select: { roles: true } },
         formularioCSSAnalisis: { include: { archivos: true } },
         formularioIndustrialAnalisis: { include: { archivos: true } },
         formularioLogisticaAnalisis: { include: { archivos: true } },
@@ -75,7 +76,7 @@ export async function POST(
     }
 
     // 3. Verificar que la visita original es de un DEALER
-    if (originalVisit.user?.role !== Role.DEALER) {
+    if (!originalVisit.user?.roles?.includes(Role.DEALER)) {
       return badRequestResponse("CANNOT_CLONE_NON_DEALER_VISIT");
     }
 

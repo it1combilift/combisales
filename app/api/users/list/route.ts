@@ -3,6 +3,7 @@ import { Role } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole } from "@/lib/roles";
 
 // Get list of users (Admin only)
 export async function GET() {
@@ -12,19 +13,19 @@ export async function GET() {
     if (!session || !session.user?.email) {
       return NextResponse.json(
         { error: "Usuario no autenticado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true },
+      select: { roles: true },
     });
 
-    if (!currentUser || currentUser.role !== Role.ADMIN) {
+    if (!currentUser || !hasRole(currentUser.roles, Role.ADMIN)) {
       return NextResponse.json(
         { error: "No tienes permisos para ver la lista de usuarios" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -33,7 +34,7 @@ export async function GET() {
         id: true,
         name: true,
         email: true,
-        role: true,
+        roles: true,
         image: true,
         country: true,
         isActive: true,
@@ -89,14 +90,14 @@ export async function GET() {
         // Extraer información de autenticación
         const authMethods = user.accounts.map((acc) => acc.provider);
         const zohoAccount = user.accounts.find(
-          (acc) => acc.provider === "zoho"
+          (acc) => acc.provider === "zoho",
         );
 
         return {
           id: user.id,
           name: user.name,
           email: user.email,
-          role: user.role,
+          roles: user.roles,
           image: user.image,
           country: user.country,
           isActive: user.isActive,
@@ -107,7 +108,7 @@ export async function GET() {
           hasActiveSession: user.sessions.length > 0,
           assignedSellers: user.assignedSellers, // Include assigned sellers for DEALER users
         };
-      })
+      }),
     );
 
     return NextResponse.json({ users: usersWithAuth });
@@ -118,7 +119,7 @@ export async function GET() {
         error: "Error al obtener la lista de usuarios",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

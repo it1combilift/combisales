@@ -21,7 +21,7 @@ export function getInitials(name: string | null): string {
 
 export function formatDate(
   date: string | Date,
-  locale: string = "es-PA"
+  locale: string = "es-PA",
 ): string {
   const d = new Date(date);
   return d.toLocaleDateString(locale, {
@@ -36,7 +36,7 @@ export function formatDate(
 
 export function formatDateShort(
   date: string | Date,
-  locale: string = "es-PA"
+  locale: string = "es-PA",
 ): string {
   const d = new Date(date);
   return d.toLocaleDateString(locale, {
@@ -48,7 +48,7 @@ export function formatDateShort(
 
 export function formatDateTime(
   date: string | Date,
-  locale: string = "es-PA"
+  locale: string = "es-PA",
 ): string {
   const d = new Date(date);
   return d.toLocaleString(locale, {
@@ -64,7 +64,10 @@ export function formatDateTime(
 export function getRoleBadge(role: Role, label?: string) {
   if (role === Role.ADMIN) {
     return (
-      <Badge variant="outline-info">
+      <Badge
+        variant="outline-info"
+        key={`role-badge-admin-${label || "Admin"}`}
+      >
         <ShieldCheck className="size-3.5" />
         {label || "Admin"}
       </Badge>
@@ -72,7 +75,10 @@ export function getRoleBadge(role: Role, label?: string) {
   }
   if (role === Role.DEALER) {
     return (
-      <Badge variant="outline-warning">
+      <Badge
+        variant="outline-warning"
+        key={`role-badge-dealer-${label || "Dealer"}`}
+      >
         <IconTruckDelivery className="size-3.5" />
         {label || "Dealer"}
       </Badge>
@@ -80,7 +86,10 @@ export function getRoleBadge(role: Role, label?: string) {
   }
 
   return (
-    <Badge variant="outline-success">
+    <Badge
+      variant="outline-success"
+      key={`role-badge-manager-${label || "P. Manager"}`}
+    >
       <PackageCheck className="size-3.5" />
       {label || "P. Manager"}
     </Badge>

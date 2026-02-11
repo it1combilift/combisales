@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAnyValidZohoTokens } from "@/lib/zoho-tokens";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { createZohoDeskTicket } from "@/service/ZohoDeskService";
+import { getPrimaryRole } from "@/lib/roles";
 
 import {
   HELP_CATEGORY_TO_PRIORITY,
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
       ...helpData,
       userName: session.user.name || "Usuario desconocido",
       userEmail: session.user.email || "",
-      userRole: session.user.role,
+      userRole: getPrimaryRole(session.user.roles),
       locale: body.locale || "es",
       submittedAt: new Date(),
     };
@@ -117,7 +118,7 @@ export async function POST(req: NextRequest) {
             helpData.images || [],
             session.user.name || "Usuario",
             session.user.email || "",
-            session.user.role || "DEALER",
+            getPrimaryRole(session.user.roles) || "DEALER",
           );
 
           ticketResult = await createZohoDeskTicket(zohoAuth.tokens, {

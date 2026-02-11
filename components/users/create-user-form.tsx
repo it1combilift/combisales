@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SellerSelection } from "./seller-selection";
+import { RolesSelection } from "./roles-selection";
 import { CreateUserFormProps } from "@/interfaces/user";
 import { createUserSchemaFactory } from "@/schemas/auth";
 import { ProfileImageUpload } from "./profile-image-upload";
@@ -21,7 +22,6 @@ import {
   Loader2,
   Mail,
   User,
-  Shield,
   Globe,
   CheckCircle2,
   Lock,
@@ -39,14 +39,6 @@ import {
   FormMessage,
 } from "../ui/form";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +54,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       email: "",
       password: "",
       confirmPassword: "",
-      role: Role.SELLER,
+      roles: [Role.SELLER],
       country: "",
       isActive: true,
       image: null,
@@ -71,8 +63,8 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   });
 
   // Watch form values using useWatch for proper reactivity
-  const selectedRole = useWatch({ control: form.control, name: "role" });
-  const isDealerRole = selectedRole === Role.DEALER;
+  const selectedRoles = useWatch({ control: form.control, name: "roles" });
+  const isDealerRole = selectedRoles?.includes(Role.DEALER) ?? false;
   const assignedSellerId = useWatch({
     control: form.control,
     name: "assignedSellerId",
@@ -94,7 +86,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
     !!password &&
     !!confirmPassword &&
     !hasErrors &&
-    (selectedRole !== Role.DEALER || !!assignedSellerId);
+    (!isDealerRole || !!assignedSellerId);
 
   const handleSellerSelectionChange = useCallback(
     (id: string | null) => {
@@ -113,7 +105,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   // Debug logging
   useEffect(() => {
     console.log("📊 CreateUserForm State:", {
-      selectedRole,
+      selectedRoles,
       isDealerRole,
       assignedSellerId,
       name,
@@ -124,7 +116,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       isFormValid,
     });
   }, [
-    selectedRole,
+    selectedRoles,
     isDealerRole,
     assignedSellerId,
     name,
@@ -145,12 +137,12 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
     [form],
   );
 
-  // Trigger validation when role changes
+  // Trigger validation when roles change
   useEffect(() => {
-    if (selectedRole) {
+    if (selectedRoles) {
       form.trigger("assignedSellerId");
     }
-  }, [selectedRole, form]);
+  }, [selectedRoles, form]);
 
   async function onSubmit(values: z.infer<typeof createUserSchema>) {
     setIsLoading(true);
@@ -356,71 +348,32 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
 
           {/* Configuration Tab */}
           <TabsContent value="config" className="space-y-3 mt-0">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <FormField
                 control={form.control}
-                name="role"
+                name="roles"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-sm font-semibold">
                       {t("users.form.roleLabel")}
                     </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={isLoading}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="min-h-full transition-all focus:ring-2 text-xs sm:text-sm w-full">
-                          <div className="flex items-center gap-2">
-                            <Shield className="size-4 text-muted-foreground" />
-                            <SelectValue
-                              placeholder={t("users.form.rolePlaceholder")}
-                            />
-                          </div>
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem
-                          value={Role.ADMIN}
-                          className="cursor-pointer text-xs sm:text-sm"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="size-2 rounded-full bg-blue-500" />
-                            <span className="font-medium">
-                              {t("users.roles.admin")}
-                            </span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem
-                          value={Role.SELLER}
-                          className="cursor-pointer text-xs sm:text-sm"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="size-2 rounded-full bg-emerald-500" />
-                            <span className="font-medium">
-                              {t("users.roles.seller")}
-                            </span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem
-                          value={Role.DEALER}
-                          className="cursor-pointer text-xs sm:text-sm"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="size-2 rounded-full bg-amber-500" />
-                            <span className="font-medium">
-                              {t("users.roles.dealer")}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormDescription className="text-xs text-muted-foreground">
+                      {t("users.form.rolesDescription")}
+                    </FormDescription>
+                    <FormControl>
+                      <RolesSelection
+                        selectedRoles={field.value}
+                        onSelectionChange={field.onChange}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
+            </div>
 
+            <div className="grid gap-4">
               <FormField
                 control={form.control}
                 name="country"

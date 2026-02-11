@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { Role } from "@prisma/client";
+import { hasRole } from "@/lib/roles";
 import {
   unauthorizedResponse,
   createSuccessResponse,
@@ -25,7 +27,7 @@ export async function GET() {
       where: { id: session.user.id },
       select: {
         id: true,
-        role: true,
+        roles: true,
         assignedSellers: {
           select: {
             seller: {
@@ -46,7 +48,7 @@ export async function GET() {
       return unauthorizedResponse();
     }
 
-    if (currentUser.role !== "DEALER") {
+    if (!hasRole(currentUser.roles, Role.DEALER)) {
       return badRequestResponse("NOT_A_DEALER");
     }
 
@@ -66,7 +68,7 @@ export async function GET() {
     console.error("Error fetching assigned sellers:", error);
     return createErrorResponse(
       "Error al obtener los vendedores asignados",
-      HTTP_STATUS.INTERNAL_SERVER_ERROR
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
     );
   }
 }

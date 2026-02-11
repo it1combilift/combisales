@@ -26,6 +26,7 @@ import {
   type TranslationKeys,
 } from "./translations";
 import { Role } from "@prisma/client";
+import { hasAnyRole } from "@/lib/roles";
 
 interface I18nContextType {
   locale: Locale;
@@ -56,8 +57,10 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
   const { data: session, status } = useSession();
 
   // Determine if the user is a SELLER or ADMIN (should default to English)
-  const isSellerOrAdmin =
-    session?.user?.role === Role.ADMIN || session?.user?.role === Role.SELLER;
+  const isSellerOrAdmin = hasAnyRole(session?.user?.roles, [
+    Role.ADMIN,
+    Role.SELLER,
+  ]);
 
   // Load saved locale from localStorage on mount
   useEffect(() => {

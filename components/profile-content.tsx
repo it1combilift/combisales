@@ -1,6 +1,7 @@
 "use client";
 
 import { formatDate } from "@/lib/utils";
+import { getPrimaryRole } from "@/lib/roles";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { ProfileUser } from "@/components/profile/profile-edit-dialog";
@@ -104,7 +105,9 @@ export default function ProfileContent({ user }: ProfileContentProps) {
             <InfoItem
               icon={Shield}
               label={t("profile.role")}
-              value={t(`users.roles.${user.role.toLowerCase()}`)}
+              value={t(
+                `users.roles.${getPrimaryRole(user.roles).toLowerCase()}`,
+              )}
             />
           </div>
         </CardContent>

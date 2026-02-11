@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 /**
  * GET /api/zoho/accounts/[id]
@@ -13,7 +14,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -21,7 +22,7 @@ export async function GET(
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    if (session.user.role !== Role.ADMIN && session.user.role !== Role.SELLER) {
+    if (!hasAnyRole(session.user.roles, [Role.ADMIN, Role.SELLER])) {
       return NextResponse.json({ error: "No autorizado." }, { status: 403 });
     }
 
@@ -34,20 +35,20 @@ export async function GET(
           error:
             "No se pudo conectar con Zoho CRM. Verifica tu conexión con Zoho.",
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
     const account = await zohoService.getAccountById(accountId);
 
-    if (session.user.role === Role.SELLER) {
+    if (hasRole(session.user.roles, Role.SELLER)) {
       const userEmail = session.user.email?.toLowerCase();
       const ownerEmail = account.Owner?.email?.toLowerCase();
 
       if (ownerEmail !== userEmail) {
         return NextResponse.json(
           { error: "No tienes permiso para ver esta cuenta." },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -67,7 +68,7 @@ export async function GET(
           helpUrl:
             "https://help.zoho.com/portal/en/kb/crm/developer-guide/api/articles/api-access-control",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -76,7 +77,7 @@ export async function GET(
         error: "Error al obtener cuenta de Zoho CRM",
         details: errorMessage,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

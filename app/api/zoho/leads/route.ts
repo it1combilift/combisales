@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { Role } from "@prisma/client";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 /**
  * GET /api/zoho/leads
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    if (session.user.role !== Role.ADMIN && session.user.role !== Role.SELLER) {
+    if (!hasAnyRole(session.user.roles, [Role.ADMIN, Role.SELLER])) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
@@ -61,7 +62,7 @@ export async function GET(request: NextRequest) {
 
     // For SELLER users, filter leads by owner email
     let leads = response.data || [];
-    if (session.user.role === Role.SELLER && session.user.email) {
+    if (hasRole(session.user.roles, Role.SELLER) && session.user.email) {
       leads = leads.filter((lead) => lead.Owner?.email === session.user.email);
     }
 
@@ -70,10 +71,9 @@ export async function GET(request: NextRequest) {
       info: {
         ...response.info,
         // Update count after filtering for SELLER
-        count:
-          session.user.role === Role.SELLER
-            ? leads.length
-            : response.info.count,
+        count: hasRole(session.user.roles, Role.SELLER)
+          ? leads.length
+          : response.info.count,
       },
     });
   } catch (error) {

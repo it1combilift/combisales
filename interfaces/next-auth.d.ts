@@ -12,7 +12,7 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
-      role?: Role;
+      roles?: Role[];
       isActive?: boolean;
     };
   }
@@ -22,7 +22,7 @@ declare module "next-auth" {
     name?: string | null;
     email?: string | null;
     image?: string | null;
-    role?: Role;
+    roles?: Role[];
     isActive?: boolean;
   }
 
@@ -42,7 +42,7 @@ declare module "next-auth/jwt" {
     expiresAt?: number;
     apiDomain?: string;
     provider?: string;
-    role?: Role;
+    roles?: Role[];
     isActive?: boolean;
   }
 }

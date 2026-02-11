@@ -359,10 +359,16 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               {Object.keys(VISIT_STATUS_LABELS)
                 .filter((key) => {
                   if (isDealer) {
-                    return key === "BORRADOR" || key === "COMPLETADA";
+                    return (
+                      key === VisitStatus.BORRADOR ||
+                      key === VisitStatus.COMPLETADA
+                    );
                   }
                   if (!isDealerFlow) {
-                    return key === "BORRADOR" || key === "COMPLETADA";
+                    return (
+                      key === VisitStatus.BORRADOR ||
+                      key === VisitStatus.COMPLETADA
+                    );
                   }
                   return true;
                 })
@@ -390,19 +396,18 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                     {isDealerFlow && (isSeller || isAdmin) ? (
                       // DEALER FLOW: Show clone-specific labels for SELLER/ADMIN
                       <span>
-                        {key === "EN_PROGRESO"
+                        {key === VisitStatus.EN_PROGRESO
                           ? t("visits.statuses.inProgressOriginal")
-                          : key === "BORRADOR"
+                          : key === VisitStatus.BORRADOR
                             ? t("visits.statuses.draftClone")
                             : t("visits.statuses.completed")}
                       </span>
                     ) : (
-                      // NORMAL FLOW or DEALER: Show standard labels
                       t(
                         `visits.statuses.${
-                          key === "BORRADOR"
+                          key === VisitStatus.BORRADOR
                             ? "draft"
-                            : key === "EN_PROGRESO"
+                            : key === VisitStatus.EN_PROGRESO
                               ? "inProgress"
                               : "completed"
                         }`,
@@ -484,7 +489,11 @@ export function VisitsDataTable<TData extends Visit, TValue>({
           {!isMobile && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="hidden md:inline-flex">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hidden md:inline-flex"
+                >
                   <IconLayoutColumns className="size-4" />
                   <span className="hidden md:inline">
                     {t("table.hideColumn")}
@@ -533,12 +542,14 @@ export function VisitsDataTable<TData extends Visit, TValue>({
               {isSeller || isAdmin
                 ? statusFilter === "EN_PROGRESO"
                   ? t("visits.statuses.inProgressOriginal")
-                  : statusFilter === "BORRADOR"
+                  : statusFilter === VisitStatus.BORRADOR
                     ? t("visits.statuses.draftClone")
                     : t("visits.statuses.completed")
                 : t(
                     `visits.statuses.${
-                      statusFilter === "BORRADOR" ? "draft" : "completed"
+                      statusFilter === VisitStatus.BORRADOR
+                        ? "draft"
+                        : "completed"
                     }`,
                   )}
             </Badge>

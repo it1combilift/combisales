@@ -21,6 +21,7 @@ import FormularioCSSAnalisis from "@/components/formulario-css-analisis";
 import FormularioLogisticaAnalisis from "@/components/formulario-logistica-analisis";
 import FormularioIndustrialAnalisis from "@/components/formulario-industrial-analisis";
 import FormularioStraddleCarrierAnalisis from "@/components/formulario-straddle-carrier-analisis";
+import { getPrimaryRole } from "@/lib/roles";
 
 import {
   CSSDetail,
@@ -142,8 +143,11 @@ export default function DealerVisitDetailPage({
 
   // Get user role from session
   useEffect(() => {
-    if (session?.user?.role) {
-      setUserRole(session.user.role as Role);
+    if (session?.user?.roles) {
+      const primaryRole = getPrimaryRole(session.user.roles);
+      if (primaryRole) {
+        setUserRole(primaryRole);
+      }
     }
   }, [session]);
 

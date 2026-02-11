@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { H1, Paragraph } from "./fonts/fonts";
 import { Button } from "@/components/ui/button";
 import { getInitials, getRoleBadge } from "@/lib/utils";
+import { getPrimaryRole } from "@/lib/roles";
 import { ProfileUser } from "@/components/profile/profile-edit-dialog";
 import { Camera, LogOut, Mail, PencilLine, ShieldCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -75,7 +76,7 @@ export default function ProfileHeader({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <H1>{user.name || t("profile.notAvailable")}</H1>
-                  {getRoleBadge(user.role as Role)}
+                  {getRoleBadge(getPrimaryRole(user.roles))}
                 </div>
 
                 <Paragraph>{t("profile.header.company")}</Paragraph>
@@ -151,7 +152,7 @@ export default function ProfileHeader({
             <div className="text-center space-y-2">
               <div className="space-y-2 flex flex-col items-center">
                 <H1>{user.name || t("profile.notAvailable")}</H1>
-                {getRoleBadge(user.role as Role)}
+                {getRoleBadge(getPrimaryRole(user.roles))}
                 <Paragraph>{t("profile.header.company")}</Paragraph>
               </div>
 

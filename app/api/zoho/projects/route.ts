@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 /**
  * GET /api/zoho/projects
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    if (session.user.role !== Role.ADMIN && session.user.role !== Role.SELLER) {
+    if (!hasAnyRole(session.user.roles, [Role.ADMIN, Role.SELLER])) {
       return NextResponse.json({ error: "No autorizado." }, { status: 403 });
     }
 
@@ -70,7 +71,10 @@ export async function GET(request: NextRequest) {
     let filteredDeals = dealsResponse.data;
 
     // SELLER users can only see deals they own
-    if (session.user.role === Role.SELLER) {
+    if (
+      hasRole(session.user.roles, Role.SELLER) &&
+      !hasRole(session.user.roles, Role.ADMIN)
+    ) {
       filteredDeals = filteredDeals.filter(
         (deal) => deal.Owner?.email === session.user.email,
       );

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 /**
  * GET /api/zoho/contacts
@@ -13,12 +14,12 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    if (session.user.role !== Role.ADMIN && session.user.role !== Role.SELLER) {
+    if (!hasAnyRole(session.user.roles, [Role.ADMIN, Role.SELLER])) {
       return NextResponse.json({ error: "No autorizado." }, { status: 403 });
     }
 
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
           error:
             "No se pudo conectar con Zoho CRM. Verifica tu conexión con Zoho.",
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
@@ -62,10 +63,13 @@ export async function GET(request: NextRequest) {
 
     let filteredContacts = contactsResponse.data;
 
-    if (session.user.role === Role.SELLER) {
+    if (
+      hasRole(session.user.roles, Role.SELLER) &&
+      !hasRole(session.user.roles, Role.ADMIN)
+    ) {
       const userEmail = session.user.email?.toLowerCase();
       filteredContacts = contactsResponse.data.filter(
-        (contact) => contact.Owner?.email?.toLowerCase() === userEmail
+        (contact) => contact.Owner?.email?.toLowerCase() === userEmail,
       );
     }
 
@@ -92,7 +96,7 @@ export async function GET(request: NextRequest) {
           helpUrl:
             "https://help.zoho.com/portal/en/kb/crm/developer-guide/api/articles/api-access-control",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -101,7 +105,7 @@ export async function GET(request: NextRequest) {
         error: "Error al obtener contactos de Zoho CRM",
         details: errorMessage,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

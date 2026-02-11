@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 /**
  * GET /api/zoho/contacts/[id]
@@ -13,19 +14,18 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id: contactId } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    if (session.user.role !== Role.ADMIN && session.user.role !== Role.SELLER) {
+    if (!hasAnyRole(session.user.roles, [Role.ADMIN, Role.SELLER])) {
       return NextResponse.json({ error: "No autorizado." }, { status: 403 });
     }
-
-    const contactId = params.id;
 
     const zohoService = await createZohoCRMService(session.user.id);
     if (!zohoService) {
@@ -34,20 +34,23 @@ export async function GET(
           error:
             "No se pudo conectar con Zoho CRM. Verifica tu conexión con Zoho.",
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
     const contact = await zohoService.getContactById(contactId);
 
-    if (session.user.role === Role.SELLER) {
+    if (
+      hasRole(session.user.roles, Role.SELLER) &&
+      !hasRole(session.user.roles, Role.ADMIN)
+    ) {
       const userEmail = session.user.email?.toLowerCase();
       const ownerEmail = contact.Owner?.email?.toLowerCase();
 
       if (ownerEmail !== userEmail) {
         return NextResponse.json(
           { error: "No tienes permiso para ver este contacto." },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -67,7 +70,7 @@ export async function GET(
           helpUrl:
             "https://help.zoho.com/portal/en/kb/crm/developer-guide/api/articles/api-access-control",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -76,7 +79,7 @@ export async function GET(
         error: "Error al obtener contacto de Zoho CRM",
         details: errorMessage,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

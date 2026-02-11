@@ -2,6 +2,7 @@ import { Role } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole } from "@/lib/roles";
 
 import {
   getAuthLogs,
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
 
-    const isAdmin = session.user.role === Role.ADMIN;
+    const isAdmin = hasRole(session.user.roles, Role.ADMIN);
     const requestedUserId = searchParams.get("userId");
 
     if (!isAdmin && requestedUserId && requestedUserId !== session.user.id) {
@@ -61,14 +62,14 @@ export async function GET(request: NextRequest) {
       default:
         return NextResponse.json(
           { error: "Invalid type parameter" },
-          { status: 400 }
+          { status: 400 },
         );
     }
   } catch (error) {
     console.error("Error fetching auth logs:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

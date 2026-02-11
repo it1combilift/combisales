@@ -30,7 +30,7 @@ model User {
 
   // Metadatos de usuario
   image    String?
-  role     Role    @default(SELLER)
+  roles    Role[]  @default([SELLER]) // Un usuario puede tener múltiples roles
   country  String?
   isActive Boolean @default(true)
 
@@ -54,7 +54,6 @@ model User {
 
   @@index([email])
   @@index([isActive])
-  @@index([role])
 }
 
 // ==================== DEALER-SELLER RELATIONSHIP ====================

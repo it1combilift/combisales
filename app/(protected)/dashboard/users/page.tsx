@@ -78,7 +78,7 @@ export default function UsersPage() {
       }
 
       const filteredUsers = (data.users || []).filter(
-        (user: UserListItem) => user.email !== session?.user?.email
+        (user: UserListItem) => user.email !== session?.user?.email,
       );
       setUsers(filteredUsers);
       setError(null);
@@ -132,14 +132,14 @@ export default function UsersPage() {
         toast.error(
           error.response?.data?.error ||
             t("users.deleteError") ||
-            "An error occurred while deleting the user."
+            "An error occurred while deleting the user.",
         );
       } else {
         toast.error(
           error instanceof Error
             ? error.message
             : t("users.deleteError") ||
-                "An error occurred while deleting the user."
+                "An error occurred while deleting the user.",
         );
       }
     } finally {
@@ -151,7 +151,7 @@ export default function UsersPage() {
   const handleDeleteMultiple = async () => {
     try {
       const userIdsToDelete = selectedUserIds.map(
-        (index) => users[parseInt(index)].id
+        (index) => users[parseInt(index)].id,
       );
 
       await axios.post("/api/users/delete-multiple", {
@@ -167,14 +167,14 @@ export default function UsersPage() {
         toast.error(
           error.response?.data?.error ||
             t("users.deleteError") ||
-            "An error occurred while deleting the users."
+            "An error occurred while deleting the users.",
         );
       } else {
         toast.error(
           error instanceof Error
             ? error.message
             : t("users.deleteError") ||
-                "An error occurred while deleting the users."
+                "An error occurred while deleting the users.",
         );
       }
     }
@@ -215,7 +215,7 @@ export default function UsersPage() {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Error al revocar la sesión del usuario"
+          : "Error al revocar la sesión del usuario",
       );
     }
   };
@@ -229,7 +229,7 @@ export default function UsersPage() {
   });
 
   const selectedUserIds = Object.keys(rowSelection).filter(
-    (key) => rowSelection[key as keyof typeof rowSelection]
+    (key) => rowSelection[key as keyof typeof rowSelection],
   );
 
   const filteredUsers = useMemo(() => {
@@ -240,7 +240,7 @@ export default function UsersPage() {
       filtered = filtered.filter(
         (user) =>
           user.name?.toLowerCase().includes(searchLower) ||
-          user.email.toLowerCase().includes(searchLower)
+          user.email.toLowerCase().includes(searchLower),
       );
     }
 
@@ -252,7 +252,9 @@ export default function UsersPage() {
       roleFilter.value.length > 0
     ) {
       filtered = filtered.filter((user) =>
-        (roleFilter.value as string[]).includes(user.role)
+        user.roles.some((role) =>
+          (roleFilter.value as string[]).includes(role),
+        ),
       );
     }
 
@@ -264,7 +266,7 @@ export default function UsersPage() {
       statusFilter.value.length > 0
     ) {
       filtered = filtered.filter((user) =>
-        (statusFilter.value as boolean[]).includes(user.isActive)
+        (statusFilter.value as boolean[]).includes(user.isActive),
       );
     }
 
@@ -344,7 +346,7 @@ export default function UsersPage() {
                     {t("users.createUser")}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[95vw] xs:max-w-3xl max-h-[85vh] p-0 gap-0">
+                <DialogContent className="max-w-[95vw] xs:max-w-3xl p-0 gap-0">
                   <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
                     <DialogTitle className="text-left text-base sm:text-lg">
                       {t("users.createUser")}
@@ -403,7 +405,7 @@ export default function UsersPage() {
               ) : (
                 filteredUsers.map((user) => {
                   const originalIndex = users.findIndex(
-                    (u) => u.id === user.id
+                    (u) => u.id === user.id,
                   );
                   return (
                     <UserCard
@@ -492,7 +494,7 @@ export default function UsersPage() {
 
           {/* Edit User Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="max-w-[95vw] xs:max-w-3xl max-h-[85vh] p-0 gap-0">
+            <DialogContent className="max-w-[95vw] xs:max-w-3xl p-0 gap-0">
               <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
                 <DialogTitle className="text-left text-base sm:text-lg">
                   {t("users.editUser")}

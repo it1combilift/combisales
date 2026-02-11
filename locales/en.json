@@ -1040,7 +1040,10 @@
     "roles": {
       "admin": "Admin",
       "seller": "P. Manager",
-      "dealer": "Dealer"
+      "dealer": "Dealer",
+      "adminDescription": "Full access to all system features",
+      "sellerDescription": "Manages clients, visits and commercial projects",
+      "dealerDescription": "Documents visits and assigns them to a P. Manager"
     },
     "providers": {
       "credentials": "Credentials",
@@ -1098,7 +1101,8 @@
       "changePassword": "Change password",
       "newPassword": "New password",
       "leaveEmpty": "Leave empty to keep current",
-      "roleLabel": "User Role",
+      "roleLabel": "User Roles",
+      "rolesDescription": "Select one or more roles for this user",
       "rolePlaceholder": "Select a role",
       "countryLabel": "Country",
       "countryPlaceholder": "Ex: Spain",

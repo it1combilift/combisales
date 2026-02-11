@@ -3,10 +3,12 @@ import { Role } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole } from "@/lib/roles";
 
 /**
  * GET /api/users/sellers
  * Get all users with SELLER role (for DEALER assignment)
+ * Includes users with multiple roles (e.g., ADMIN + SELLER)
  */
 export async function GET() {
   try {
@@ -18,19 +20,21 @@ export async function GET() {
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true },
+      select: { roles: true },
     });
 
-    if (!currentUser || currentUser.role !== Role.ADMIN) {
+    if (!currentUser || !hasRole(currentUser.roles, Role.ADMIN)) {
       return NextResponse.json(
         { error: "No tienes permisos para ver vendedores" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
+    // Find users who have SELLER in their roles array
+    // This includes users with ADMIN + SELLER roles
     const sellers = await prisma.user.findMany({
       where: {
-        role: Role.SELLER,
+        roles: { has: Role.SELLER },
         isActive: true,
       },
       select: {
@@ -39,6 +43,7 @@ export async function GET() {
         email: true,
         country: true,
         image: true,
+        roles: true,
       },
       orderBy: {
         name: "asc",
@@ -53,7 +58,7 @@ export async function GET() {
         error: "Error al obtener vendedores",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

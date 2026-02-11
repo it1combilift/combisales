@@ -1,6 +1,7 @@
 import { sendEmail } from "@/lib/resend";
-import { VisitStatus, VisitFormType } from "@prisma/client";
+import { VisitStatus, VisitFormType, Role } from "@prisma/client";
 import { EMAIL_CONFIG, NOTIFICATION_CONFIG } from "@/constants/constants";
+import { getPrimaryRole } from "@/lib/roles";
 
 import {
   SendVisitNotificationParams,
@@ -235,7 +236,7 @@ export interface BuildVisitEmailDataParams {
   // Visit identification
   visitId?: string;
   // User who owns the visit (creator)
-  owner?: { name: string | null; email: string; role?: string };
+  owner?: { name: string | null; email: string; roles?: Role[] };
   // Seller/P.Manager info
   vendedor?: { name: string | null; email: string };
   // Dealer info (when creator is DEALER)
@@ -362,7 +363,7 @@ export function buildVisitEmailDataExtended(
       ? {
           name: safeString(owner.name, t("email.common.notSpecified", locale)),
           email: owner.email,
-          role: owner.role,
+          role: getPrimaryRole(owner.roles),
         }
       : undefined,
     vendedor: vendedor

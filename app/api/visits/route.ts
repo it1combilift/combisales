@@ -5,6 +5,7 @@ import { createZohoCRMService, ZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Role, VisitFormType, VisitStatus } from "@prisma/client";
 import { ZohoAccount, ZohoLead } from "@/interfaces/zoho";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 import {
   VISIT_INCLUDE,
@@ -390,7 +391,7 @@ export async function GET(req: NextRequest) {
     if (dealerVisits === "true" || myVisits === "true") {
       const currentUser = await prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { role: true },
+        select: { roles: true },
       });
 
       if (!currentUser) {
@@ -400,21 +401,26 @@ export async function GET(req: NextRequest) {
       // ADMIN: puede ver TODAS las visitas creadas por usuarios DEALER (incluyendo BORRADOR)
       // Los clones se acceden vía la relación `clones` en VISIT_INCLUDE (misma lógica que SELLER)
       // Esto permite mostrar UNA fila unificada por visita original con vista dual cuando existe clon
-      if (currentUser.role === Role.ADMIN) {
+      if (hasRole(currentUser.roles, Role.ADMIN)) {
         const visits = await prisma.visit.findMany({
           where: {
             // Solo visitas originales creadas por DEALERs
-            user: { role: Role.DEALER },
+            user: { roles: { has: Role.DEALER } },
             clonedFromId: null, // Solo originales - los clones vienen vía VISIT_INCLUDE.clones
           },
           include: VISIT_INCLUDE,
           orderBy: { visitDate: "desc" },
         });
-        return createSuccessResponse({ visits, userRole: currentUser.role });
+        return createSuccessResponse({
+          visits,
+          userRole: hasRole(currentUser.roles, Role.ADMIN)
+            ? Role.ADMIN
+            : currentUser.roles[0],
+        });
       }
 
       // DEALER: solo puede ver sus propias visitas
-      if (currentUser.role === Role.DEALER) {
+      if (hasRole(currentUser.roles, Role.DEALER)) {
         const visits = await prisma.visit.findMany({
           where: {
             userId: session.user.id,
@@ -422,19 +428,24 @@ export async function GET(req: NextRequest) {
           include: VISIT_INCLUDE,
           orderBy: { visitDate: "desc" },
         });
-        return createSuccessResponse({ visits, userRole: currentUser.role });
+        return createSuccessResponse({
+          visits,
+          userRole: hasRole(currentUser.roles, Role.DEALER)
+            ? Role.DEALER
+            : currentUser.roles[0],
+        });
       }
 
       // SELLER: sees ONLY original visits assigned to them by DEALERs that are NOT in BORRADOR
       // IMPORTANTE: NO mostrar visitas en BORRADOR del DEALER (solo el DEALER ve sus borradores)
       // Phase 4: Unified row logic - clones are accessed via the `clones` relation
       // The UI will show ONE row per dealer visit with dropdown options based on clone status
-      if (currentUser.role === Role.SELLER) {
+      if (hasRole(currentUser.roles, Role.SELLER)) {
         const visits = await prisma.visit.findMany({
           where: {
             // Only original visits assigned to this SELLER by DEALERs
             assignedSellerId: session.user.id,
-            user: { role: Role.DEALER },
+            user: { roles: { has: Role.DEALER } },
             clonedFromId: null, // Only originals - clones are NOT shown as separate rows
             // FILTRO CRÍTICO: Solo visitas que NO están en BORRADOR
             // El DEALER debe haber enviado (COMPLETADA o EN_PROGRESO) para que el SELLER la vea
@@ -443,7 +454,12 @@ export async function GET(req: NextRequest) {
           include: VISIT_INCLUDE,
           orderBy: { visitDate: "desc" },
         });
-        return createSuccessResponse({ visits, userRole: currentUser.role });
+        return createSuccessResponse({
+          visits,
+          userRole: hasRole(currentUser.roles, Role.SELLER)
+            ? Role.SELLER
+            : currentUser.roles[0],
+        });
       }
 
       // Otros roles: sin acceso a esta funcionalidad
@@ -498,10 +514,10 @@ export async function POST(req: NextRequest) {
     // Obtener el usuario actual para verificar su rol
     const currentUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { role: true },
+      select: { roles: true },
     });
 
-    const isDealer = currentUser?.role === "DEALER";
+    const isDealer = hasRole(currentUser?.roles, Role.DEALER);
 
     // Para DEALERS: pueden crear visitas sin customerId ni zohoTaskId (documentación propia)
     // Para otros usuarios: deben proporcionar customerId O zohoTaskId
@@ -583,7 +599,7 @@ export async function POST(req: NextRequest) {
       const sellerExists = await prisma.user.findFirst({
         where: {
           id: visitData.assignedSellerId,
-          role: "SELLER",
+          roles: { has: Role.SELLER },
           isActive: true,
         },
       });
@@ -664,8 +680,14 @@ export async function POST(req: NextRequest) {
 
     const finalStatus = visitData.status || VisitStatus.COMPLETADA;
 
-    // Get user role for email notifications
-    const userRole = currentUser?.role;
+    // Get user role for email notifications - derive from roles array
+    const userRole = hasRole(currentUser?.roles, Role.ADMIN)
+      ? Role.ADMIN
+      : hasRole(currentUser?.roles, Role.DEALER)
+        ? Role.DEALER
+        : hasRole(currentUser?.roles, Role.SELLER)
+          ? Role.SELLER
+          : undefined;
 
     if (shouldSendVisitNotification(finalStatus, userRole) && formularioData) {
       // Determine context name (customer or task)
@@ -689,12 +711,12 @@ export async function POST(req: NextRequest) {
           ? {
               name: visit.user.name,
               email: visit.user.email,
-              role: visit.user.role,
+              roles: visit.user.roles,
             }
           : undefined,
         // For DEALER: the dealer is the owner
         dealer:
-          userRole === Role.DEALER && visit.user
+          hasRole(currentUser?.roles, Role.DEALER) && visit.user
             ? {
                 name: visit.user.name,
                 email: visit.user.email,
@@ -702,7 +724,7 @@ export async function POST(req: NextRequest) {
             : undefined,
         // Seller is either the owner (if SELLER) or the assigned seller (if DEALER created)
         vendedor:
-          userRole === Role.SELLER && visit.user
+          hasRole(currentUser?.roles, Role.SELLER) && visit.user
             ? {
                 name: visit.user.name,
                 email: visit.user.email,

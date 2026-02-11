@@ -5,6 +5,7 @@ import { signOut } from "next-auth/react";
 import { getRoleBadge } from "@/lib/utils";
 import { Role, User } from "@prisma/client";
 import { useI18n } from "@/lib/i18n/context";
+import { getPrimaryRole } from "@/lib/roles";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
@@ -51,7 +52,7 @@ export function NavUser({ user }: { user: User }) {
   const userImage = user.image || null;
   const userName = user.name || "Usuario";
   const userEmail = user.email || "email@example.com";
-  const userRole = user.role || Role.SELLER;
+  const userRole = getPrimaryRole(user.roles) || Role.SELLER;
   const userCountry = user.country || "";
 
   return (

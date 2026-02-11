@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { VisitFormType, VisitStatus, Role } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 import {
   sendVisitCompletedNotification,
@@ -114,7 +115,7 @@ export async function PUT(
     // ==================== PERMISSION VALIDATION ====================
     const currentUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { role: true },
+      select: { roles: true },
     });
 
     if (!currentUser) {
@@ -122,7 +123,7 @@ export async function PUT(
     }
 
     // SELLER: puede editar sus propias visitas (creadas por él) O sus propios clones
-    if (currentUser.role === Role.SELLER) {
+    if (hasRole(currentUser.roles, Role.SELLER)) {
       // El SELLER debe ser el propietario de la visita (ya sea original o clon)
       if (existingVisit.userId !== session.user.id) {
         // Si no es el propietario, verificar si es una visita asignada a él por un DEALER
@@ -137,7 +138,7 @@ export async function PUT(
       // Si llegamos aquí, el SELLER es el propietario de la visita - puede editarla
     }
     // DEALER: solo puede editar sus propias visitas
-    else if (currentUser.role === Role.DEALER) {
+    else if (hasRole(currentUser.roles, Role.DEALER)) {
       if (existingVisit.userId !== session.user.id) {
         return badRequestResponse("Solo puedes editar tus propias visitas");
       }
@@ -253,8 +254,10 @@ export async function PUT(
     // This ensures both records show consistent status in the UI
     const newStatus = visitData?.status;
     const isClone = !!existingVisit.clonedFromId;
-    const isSellerOrAdmin =
-      currentUser.role === Role.SELLER || currentUser.role === Role.ADMIN;
+    const isSellerOrAdmin = hasAnyRole(currentUser.roles, [
+      Role.SELLER,
+      Role.ADMIN,
+    ]);
 
     if (
       isClone &&
@@ -275,7 +278,14 @@ export async function PUT(
     // Enviar notificacion de email según el rol del usuario
     // DEALER: solo en COMPLETADA | SELLER/ADMIN: en BORRADOR y COMPLETADA
     const currentStatus = visitData?.status || existingVisit.status;
-    const userRole = currentUser.role as "DEALER" | "SELLER" | "ADMIN";
+    // Derive userRole from roles array
+    const userRole = hasRole(currentUser.roles, Role.ADMIN)
+      ? "ADMIN"
+      : hasRole(currentUser.roles, Role.DEALER)
+        ? "DEALER"
+        : hasRole(currentUser.roles, Role.SELLER)
+          ? "SELLER"
+          : undefined;
 
     if (
       shouldSendVisitNotification(currentStatus, userRole) &&
@@ -295,11 +305,15 @@ export async function PUT(
       };
 
       const customerName = visitWithCustomer.customer?.accountName || "";
-      const userRole = visit.user?.role as
-        | "ADMIN"
-        | "DEALER"
-        | "SELLER"
-        | undefined;
+      // Get primary role for email context
+      const userRoles = visit.user?.roles || [];
+      const userRole = userRoles.includes(Role.ADMIN)
+        ? "ADMIN"
+        : userRoles.includes(Role.SELLER)
+          ? "SELLER"
+          : userRoles.includes(Role.DEALER)
+            ? "DEALER"
+            : undefined;
 
       // Check if this is a cloned visit
       const isClone = !!visit.clonedFromId;
@@ -328,7 +342,7 @@ export async function PUT(
           ? {
               name: visit.user.name,
               email: visit.user.email,
-              role: visit.user.role,
+              roles: visit.user.roles,
             }
           : undefined,
         // For DEALER: the dealer is the owner (only if not a clone)
@@ -433,7 +447,7 @@ export async function DELETE(
     // ==================== PERMISSION VALIDATION ====================
     const currentUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { role: true },
+      select: { roles: true },
     });
 
     if (!currentUser) {
@@ -441,7 +455,7 @@ export async function DELETE(
     }
 
     // SELLER: solo puede eliminar sus propios clones
-    if (currentUser.role === Role.SELLER) {
+    if (hasRole(currentUser.roles, Role.SELLER)) {
       if (!visit.clonedFromId) {
         return badRequestResponse(
           "Los SELLER solo pueden eliminar clones, no visitas originales",
@@ -452,7 +466,7 @@ export async function DELETE(
       }
     }
     // DEALER: solo puede eliminar sus propias visitas
-    else if (currentUser.role === Role.DEALER) {
+    else if (hasRole(currentUser.roles, Role.DEALER)) {
       if (visit.userId !== session.user.id) {
         return badRequestResponse("Solo puedes eliminar tus propias visitas");
       }
@@ -461,7 +475,11 @@ export async function DELETE(
 
     // ==================== CASCADE DELETE (ADMIN only) ====================
     // If cascade=true and visit has clones, delete clones first
-    if (cascade && currentUser.role === Role.ADMIN && visit.clones.length > 0) {
+    if (
+      cascade &&
+      hasRole(currentUser.roles, Role.ADMIN) &&
+      visit.clones.length > 0
+    ) {
       // Delete all clones first
       await prisma.visit.deleteMany({
         where: {

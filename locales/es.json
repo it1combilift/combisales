@@ -1038,7 +1038,10 @@
     "roles": {
       "admin": "Admin",
       "seller": "P. Manager",
-      "dealer": "Distribuidor"
+      "dealer": "Distribuidor",
+      "adminDescription": "Acceso total a todas las funciones del sistema",
+      "sellerDescription": "Gestiona clientes, visitas y proyectos comerciales",
+      "dealerDescription": "Documenta visitas y las asigna a un P. Manager"
     },
     "providers": {
       "credentials": "Credenciales",
@@ -1096,7 +1099,8 @@
       "changePassword": "Cambiar contraseña",
       "newPassword": "Nueva contraseña",
       "leaveEmpty": "Dejar vacío para no cambiar",
-      "roleLabel": "Rol del usuario",
+      "roleLabel": "Roles del usuario",
+      "rolesDescription": "Selecciona uno o más roles para este usuario",
       "rolePlaceholder": "Selecciona un rol",
       "countryLabel": "País",
       "countryPlaceholder": "Ej: España",

@@ -1,4 +1,5 @@
 import { Role } from "@prisma/client";
+import { hasRole } from "@/lib/roles";
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
@@ -30,13 +31,14 @@ export async function proxy(request: NextRequest) {
 
     // Only redirect if user has a valid, active token
     if (token && token.isActive !== false) {
-      const userRole = token.role as Role;
+      const userRoles = token.roles as Role[] | undefined;
 
-      console.log("=== LOGIN PAGE REDIRECT ===");
-      console.log("User is authenticated, role:", userRole);
-
-      // Redirect based on role
-      if (userRole === Role.DEALER) {
+      // Redirect based on role - DEALER-only users go to dealers
+      if (
+        hasRole(userRoles, Role.DEALER) &&
+        !hasRole(userRoles, Role.SELLER) &&
+        !hasRole(userRoles, Role.ADMIN)
+      ) {
         return NextResponse.redirect(
           new URL("/dashboard/dealers", request.url),
         );
@@ -61,39 +63,30 @@ export async function proxy(request: NextRequest) {
       secret: process.env.NEXTAUTH_SECRET,
     });
 
-    console.log("=== MIDDLEWARE CHECK ===");
-    console.log("Path:", request.nextUrl.pathname);
-    console.log("Token exists:", !!token);
-    console.log("Token isActive:", token?.isActive);
-    console.log("Token role:", token?.role);
-
     if (!token) {
       const loginUrl = new URL("/", request.url);
-      console.log("Redirecting to login: no token");
       return NextResponse.redirect(loginUrl);
     }
 
     if (token.isActive === false) {
       const loginUrl = new URL("/", request.url);
       loginUrl.searchParams.set("error", "AccountBlocked");
-      console.log("Redirecting to login: account blocked");
       return NextResponse.redirect(loginUrl);
     }
 
-    const userRole = token.role as Role;
+    const userRoles = token.roles as Role[] | undefined;
 
     // ADMIN can access everything
-    if (userRole === Role.ADMIN) {
+    if (hasRole(userRoles, Role.ADMIN)) {
       return NextResponse.next();
     }
 
-    // DEALER can only access /dashboard/dealers
-    if (userRole === Role.DEALER) {
+    // DEALER can only access /dashboard/dealers (unless also SELLER)
+    if (hasRole(userRoles, Role.DEALER) && !hasRole(userRoles, Role.SELLER)) {
       const isDealerPath = dealerAndSellerPaths.some((path) =>
         currentPath.startsWith(path),
       );
       if (!isDealerPath) {
-        console.log("Access denied: DEALER can only access /dashboard/dealers");
         return NextResponse.redirect(
           new URL("/dashboard/dealers", request.url),
         );
@@ -102,13 +95,12 @@ export async function proxy(request: NextRequest) {
     }
 
     // SELLER can access tasks, clients, equipment, and dealers (for assigned visits)
-    if (userRole === Role.SELLER) {
+    if (hasRole(userRoles, Role.SELLER)) {
       const isAdminOnlyPath = adminOnlyPaths.some((path) =>
         currentPath.startsWith(path),
       );
 
       if (isAdminOnlyPath) {
-        console.log("Access denied: ADMIN role required");
         return NextResponse.redirect(new URL("/dashboard/tasks", request.url));
       }
 
@@ -117,7 +109,6 @@ export async function proxy(request: NextRequest) {
     }
 
     // Unknown role - deny access
-    console.log("Access denied: Unknown role");
     return NextResponse.redirect(new URL("/", request.url));
   }
 

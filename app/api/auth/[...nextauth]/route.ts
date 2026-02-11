@@ -151,7 +151,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           image: user.image,
-          role: user.role,
+          roles: user.roles,
           isActive: user.isActive,
         };
       },
@@ -211,6 +211,17 @@ export const authOptions: NextAuthOptions = {
     },
 
     async jwt({ token, account, user, trigger }) {
+      console.log("=== JWT CALLBACK START ===");
+      console.log("Token email:", token.email);
+      console.log("User provided:", !!user);
+      if (user) {
+        console.log("User object:", {
+          id: user.id,
+          email: user.email,
+          roles: (user as any).roles,
+        });
+      }
+
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
@@ -226,21 +237,27 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.name = user.name;
         token.image = user.image;
-        token.role = (user as any).role;
-        token.isActive = (user as any).isActive;
+        token.roles = (user as any).roles || ["SELLER"];
+        token.isActive = (user as any).isActive ?? true;
       }
 
       if (token.email) {
+        console.log("Fetching user from database for email:", token.email);
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email as string },
           select: {
             isActive: true,
-            role: true,
+            roles: true,
             image: true,
             name: true,
             id: true,
           },
         });
+
+        console.log("DB User found:", !!dbUser);
+        if (dbUser) {
+          console.log("DB User roles:", dbUser.roles);
+        }
 
         if (!dbUser || !dbUser.isActive) {
           console.error(
@@ -260,7 +277,7 @@ export const authOptions: NextAuthOptions = {
           return {};
         }
 
-        token.role = dbUser.role;
+        token.roles = dbUser.roles;
         token.isActive = dbUser.isActive;
         token.image = dbUser.image;
         token.name = dbUser.name;
@@ -270,7 +287,7 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email as string },
           select: {
-            role: true,
+            roles: true,
             isActive: true,
             image: true,
             name: true,
@@ -278,12 +295,15 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (dbUser) {
-          token.role = dbUser.role;
+          token.roles = dbUser.roles;
           token.isActive = dbUser.isActive;
           token.image = dbUser.image;
           token.name = dbUser.name;
         }
       }
+
+      console.log("JWT Token final roles:", token.roles);
+      console.log("=== JWT CALLBACK END ===");
 
       if (token.provider === "zoho" && token.expiresAt && token.refreshToken) {
         const now = Math.floor(Date.now() / 1000);
@@ -372,7 +392,7 @@ export const authOptions: NextAuthOptions = {
           email: token.email as string,
           name: token.name as string,
           image: (token.picture as string) || (token.image as string),
-          role: token.role,
+          roles: token.roles,
           isActive: token.isActive as boolean,
         };
       }

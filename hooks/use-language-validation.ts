@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Role } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import { hasRole, getPrimaryRole } from "@/lib/roles";
 
 interface UseLanguageValidationProps {
   locale: string;
@@ -21,7 +22,7 @@ interface UseLanguageValidationReturn {
   canSubmit: boolean;
   /** Whether to show the language warning alert */
   showLanguageWarning: boolean;
-  /** User role */
+  /** User primary role */
   userRole: Role | undefined;
 }
 
@@ -35,9 +36,10 @@ export function useLanguageValidation({
 }: UseLanguageValidationProps): UseLanguageValidationReturn {
   const { data: session } = useSession();
 
-  const userRole = session?.user?.role;
-  const isSeller = userRole === Role.SELLER;
-  const isDealer = userRole === Role.DEALER;
+  const userRoles = session?.user?.roles;
+  const userRole = getPrimaryRole(userRoles);
+  const isSeller = hasRole(userRoles, Role.SELLER);
+  const isDealer = hasRole(userRoles, Role.DEALER);
   const isEnglish = locale === "en";
 
   const result = useMemo(() => {

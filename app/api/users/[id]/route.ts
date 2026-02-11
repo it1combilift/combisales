@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { UpdateUserInput } from "@/interfaces/user";
 import { updateUserSchema, deleteUserSchema } from "@/schemas/auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole } from "@/lib/roles";
 
 // Get user by ID (Admin only)
 export async function GET(
@@ -19,10 +20,10 @@ export async function GET(
     }
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true },
+      select: { roles: true },
     });
 
-    if (!currentUser || currentUser.role !== Role.ADMIN) {
+    if (!currentUser || !hasRole(currentUser.roles, Role.ADMIN)) {
       return NextResponse.json(
         { error: "No tienes permisos para ver usuarios" },
         { status: 403 },
@@ -36,7 +37,7 @@ export async function GET(
         id: true,
         name: true,
         email: true,
-        role: true,
+        roles: true,
         image: true,
         country: true,
         isActive: true,
@@ -90,10 +91,10 @@ export async function PATCH(
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true },
+      select: { roles: true },
     });
 
-    if (!currentUser || currentUser.role !== Role.ADMIN) {
+    if (!currentUser || !hasRole(currentUser.roles, Role.ADMIN)) {
       return NextResponse.json(
         { error: "No tienes permisos para actualizar usuarios" },
         { status: 403 },
@@ -121,7 +122,7 @@ export async function PATCH(
       id,
       name,
       email,
-      role,
+      roles,
       country,
       isActive,
       password,
@@ -153,16 +154,17 @@ export async function PATCH(
       }
     }
 
-    // Si es DEALER y se proporciona seller, validar
-    if (
-      (role === Role.DEALER || userToUpdate.role === Role.DEALER) &&
-      assignedSellerId !== undefined
-    ) {
+    // Determinar si el usuario tiene/tendrá rol DEALER
+    const hadDealer = userToUpdate.roles.includes(Role.DEALER);
+    const hasDealer = roles?.includes(Role.DEALER) ?? hadDealer;
+
+    // Si tiene rol DEALER y se proporciona seller, validar
+    if ((hasDealer || hadDealer) && assignedSellerId !== undefined) {
       if (assignedSellerId) {
         const seller = await prisma.user.findUnique({
           where: {
             id: assignedSellerId,
-            role: Role.SELLER,
+            roles: { has: Role.SELLER },
           },
         });
 
@@ -189,8 +191,8 @@ export async function PATCH(
       }
     }
 
-    // Si cambia de DEALER a otro rol, eliminar todas las relaciones
-    if (role && role !== Role.DEALER && userToUpdate.role === Role.DEALER) {
+    // Si ya no tiene rol DEALER, eliminar todas las relaciones
+    if (roles && !roles.includes(Role.DEALER) && hadDealer) {
       await prisma.dealerSeller.deleteMany({
         where: { dealerId: id },
       });
@@ -199,7 +201,7 @@ export async function PATCH(
     const updateData: UpdateUserInput = {};
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;
-    if (role !== undefined) updateData.role = role;
+    if (roles !== undefined) updateData.roles = roles;
     if (country !== undefined) updateData.country = country;
     if (isActive !== undefined) updateData.isActive = isActive;
     if (image !== undefined) updateData.image = image;
@@ -214,7 +216,7 @@ export async function PATCH(
         id: true,
         name: true,
         email: true,
-        role: true,
+        roles: true,
         image: true,
         country: true,
         isActive: true,
@@ -264,10 +266,10 @@ export async function DELETE(
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true, id: true },
+      select: { roles: true, id: true },
     });
 
-    if (!currentUser || currentUser.role !== Role.ADMIN) {
+    if (!currentUser || !hasRole(currentUser.roles, Role.ADMIN)) {
       return NextResponse.json(
         { error: "No tienes permisos para eliminar usuarios" },
         { status: 403 },

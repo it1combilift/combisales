@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { COMMERCIAL_TASK_TYPES } from "@/constants/constants";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 /**
  * GET /api/zoho/tasks
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    if (session.user.role !== Role.ADMIN && session.user.role !== Role.SELLER) {
+    if (!hasAnyRole(session.user.roles, [Role.ADMIN, Role.SELLER])) {
       return NextResponse.json({ error: "No autorizado." }, { status: 403 });
     }
 
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
           details:
             "No se encontraron credenciales válidas de Zoho para este usuario",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -83,9 +84,12 @@ export async function GET(request: NextRequest) {
     });
 
     // SELLER users can only see tasks they own
-    if (session.user.role === Role.SELLER) {
+    if (
+      hasRole(session.user.roles, Role.SELLER) &&
+      !hasRole(session.user.roles, Role.ADMIN)
+    ) {
       filteredTasks = filteredTasks.filter(
-        (task) => task.Owner?.email === session.user.email
+        (task) => task.Owner?.email === session.user.email,
       );
     }
 
@@ -110,7 +114,7 @@ export async function GET(request: NextRequest) {
           helpUrl:
             "https://help.zoho.com/portal/en/kb/crm/developer-guide/api/articles/api-access-control",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -119,7 +123,7 @@ export async function GET(request: NextRequest) {
         error: "Error al obtener tareas de Zoho CRM",
         details: errorMessage,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { createUserSchema } from "@/schemas/auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole } from "@/lib/roles";
 
 export async function POST(request: Request) {
   try {
@@ -16,10 +17,10 @@ export async function POST(request: Request) {
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true },
+      select: { roles: true },
     });
 
-    if (!currentUser || currentUser.role !== Role.ADMIN) {
+    if (!currentUser || !hasRole(currentUser.roles, Role.ADMIN)) {
       return NextResponse.json(
         { error: "No tienes permisos para crear usuarios" },
         { status: 403 },
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
       name,
       email,
       password,
-      role,
+      roles,
       country,
       isActive,
       image,
@@ -61,12 +62,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Si es DEALER, validar que el seller exista y sea realmente SELLER
-    if (role === Role.DEALER && assignedSellerId) {
+    // Si tiene rol DEALER, validar que el seller exista y tenga rol SELLER
+    const hasDealer = roles.includes(Role.DEALER);
+    if (hasDealer && assignedSellerId) {
       const seller = await prisma.user.findUnique({
         where: {
           id: assignedSellerId,
-          role: Role.SELLER,
+          roles: { has: Role.SELLER },
         },
       });
 
@@ -80,17 +82,17 @@ export async function POST(request: Request) {
 
     const hashedPassword = await hash(password, 12);
 
-    // Crear usuario con relación DEALER-SELLER (un solo seller)
+    // Crear usuario con roles múltiples y relación DEALER-SELLER
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role,
+        roles,
         country: country || null,
         isActive: isActive ?? true,
         image: image || null,
-        ...(role === Role.DEALER && assignedSellerId
+        ...(hasDealer && assignedSellerId
           ? {
               assignedSellers: {
                 create: [{ sellerId: assignedSellerId }],
@@ -102,7 +104,7 @@ export async function POST(request: Request) {
         id: true,
         name: true,
         email: true,
-        role: true,
+        roles: true,
         country: true,
         isActive: true,
         image: true,

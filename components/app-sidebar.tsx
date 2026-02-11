@@ -4,6 +4,7 @@ import Image from "next/image";
 import * as React from "react";
 import { Session } from "next-auth";
 import { Role, User } from "@prisma/client";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { Forklift, ListTodo } from "lucide-react";
@@ -76,7 +77,7 @@ export function AppSidebar({
   };
 
   const userData = session?.user || data.user;
-  const userRole = session?.user?.role || Role.SELLER;
+  const userRoles = session?.user?.roles || [Role.SELLER];
 
   // Filter navigation items based on user role
   // ADMIN: All routes
@@ -84,23 +85,23 @@ export function AppSidebar({
   // DEALER: Only Dealers
   const filteredNavMain = data.navMain.filter((item) => {
     // ADMIN can access everything
-    if (userRole === Role.ADMIN) {
+    if (hasRole(userRoles, Role.ADMIN)) {
       return true;
     }
 
-    // DEALER can only access /dashboard/dealers
-    if (userRole === Role.DEALER) {
+    // DEALER can only access /dashboard/dealers (unless also has SELLER role)
+    if (hasRole(userRoles, Role.DEALER) && !hasRole(userRoles, Role.SELLER)) {
       return item.url === "/dashboard/dealers";
     }
 
     // SELLER can access Tasks, Clients, Equipment, and Dealers (for assigned visits)
-    if (userRole === Role.SELLER) {
+    if (hasRole(userRoles, Role.SELLER)) {
       return (
         item.url === "/dashboard/tasks" ||
         item.url === "/dashboard/clients" ||
         item.url === "/dashboard/equipment" ||
         item.url === "/dashboard/dealers"
-    );
+      );
     }
 
     return false;
@@ -121,9 +122,7 @@ export function AppSidebar({
               size="lg"
               className="data-[slot=sidebar-menu-button]:px-0 data-[slot=sidebar-menu-button]:py-0 hover:bg-transparent"
             >
-              <div
-                className="flex items-center gap-2 group outline-none"
-              >
+              <div className="flex items-center gap-2 group outline-none">
                 <div className="flex items-center justify-center dark:invert">
                   <Image
                     src="https://res.cloudinary.com/dwjxcpfrf/image/upload/v1768957949/Untitled_design__1_-removebg-preview_t8oji9.png"

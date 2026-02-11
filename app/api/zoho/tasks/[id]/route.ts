@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 /**
  * GET /api/zoho/tasks/[id]
@@ -13,7 +14,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -21,7 +22,7 @@ export async function GET(
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    if (session.user.role !== Role.ADMIN && session.user.role !== Role.SELLER) {
+    if (!hasAnyRole(session.user.roles, [Role.ADMIN, Role.SELLER])) {
       return NextResponse.json({ error: "No autorizado." }, { status: 403 });
     }
 
@@ -35,18 +36,21 @@ export async function GET(
           details:
             "No se encontraron credenciales válidas de Zoho para este usuario",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const task = await zohoService.getTaskById(taskId);
 
-    // SELLER users can only see their own tasks
-    if (session.user.role === Role.SELLER) {
+    // SELLER users can only see their own tasks (unless they're also ADMIN)
+    if (
+      hasRole(session.user.roles, Role.SELLER) &&
+      !hasRole(session.user.roles, Role.ADMIN)
+    ) {
       if (task.Owner?.email !== session.user.email) {
         return NextResponse.json(
           { error: "No tienes permisos para ver esta tarea" },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -66,7 +70,7 @@ export async function GET(
           helpUrl:
             "https://help.zoho.com/portal/en/kb/crm/developer-guide/api/articles/api-access-control",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -75,7 +79,7 @@ export async function GET(
         error: "Error al obtener tarea de Zoho CRM",
         details: errorMessage,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

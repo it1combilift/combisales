@@ -9,6 +9,10 @@ type TranslationFn = (
   values?: Record<string, string | number>,
 ) => string;
 
+// Helper to check if roles array includes DEALER
+const includesDealer = (roles?: Role[]) =>
+  roles?.includes(Role.DEALER) ?? false;
+
 // Login schema factory
 export const createLoginSchema = (t: TranslationFn) =>
   z.object({
@@ -34,9 +38,13 @@ export const createUserSchemaFactory = (t: TranslationFn) =>
       email: z.string().email(t("validation.invalidEmail")),
       password: z.string().min(8, t("validation.passwordMinLength8")),
       confirmPassword: z.string().min(8, t("validation.passwordMinLength8")),
-      role: z.nativeEnum(Role, {
-        errorMap: () => ({ message: t("validation.invalidRole") }),
-      }),
+      roles: z
+        .array(
+          z.nativeEnum(Role, {
+            errorMap: () => ({ message: t("validation.invalidRole") }),
+          }),
+        )
+        .min(1, t("validation.atLeastOneRole")),
       country: z
         .string()
         .optional()
@@ -61,7 +69,7 @@ export const createUserSchemaFactory = (t: TranslationFn) =>
     .refine(
       (data) => {
         // DEALER role requires exactly one seller
-        if (data.role === Role.DEALER) {
+        if (includesDealer(data.roles)) {
           return !!data.assignedSellerId;
         }
         return true;
@@ -83,9 +91,13 @@ export const createUserSchema = z
     confirmPassword: z
       .string()
       .min(8, "La contraseña debe tener al menos 8 caracteres."),
-    role: z.nativeEnum(Role, {
-      errorMap: () => ({ message: "Rol inválido" }),
-    }),
+    roles: z
+      .array(
+        z.nativeEnum(Role, {
+          errorMap: () => ({ message: "Rol inválido" }),
+        }),
+      )
+      .min(1, "Debe seleccionar al menos un rol"),
     country: z
       .string()
       .optional()
@@ -110,7 +122,7 @@ export const createUserSchema = z
   .refine(
     (data) => {
       // DEALER role requires exactly one seller
-      if (data.role === Role.DEALER) {
+      if (includesDealer(data.roles)) {
         return !!data.assignedSellerId;
       }
       return true;
@@ -128,10 +140,13 @@ export const createUpdateUserSchemaFactory = (t: TranslationFn) =>
       id: z.string().cuid(t("validation.invalidUserId")),
       name: z.string().min(2, t("validation.nameMinLength")).optional(),
       email: z.string().email(t("validation.invalidEmail")).optional(),
-      role: z
-        .nativeEnum(Role, {
-          errorMap: () => ({ message: t("validation.invalidRole") }),
-        })
+      roles: z
+        .array(
+          z.nativeEnum(Role, {
+            errorMap: () => ({ message: t("validation.invalidRole") }),
+          }),
+        )
+        .min(1, t("validation.atLeastOneRole"))
         .optional(),
       country: z
         .string()
@@ -159,7 +174,7 @@ export const createUpdateUserSchemaFactory = (t: TranslationFn) =>
     .refine(
       (data) => {
         // DEALER role requires exactly one seller
-        if (data.role === Role.DEALER) {
+        if (includesDealer(data.roles)) {
           return !!data.assignedSellerId;
         }
         return true;
@@ -179,10 +194,13 @@ export const updateUserSchema = z
       .min(2, "El nombre debe tener al menos 2 caracteres")
       .optional(),
     email: z.string().email("Por favor ingresa un correo válido.").optional(),
-    role: z
-      .nativeEnum(Role, {
-        errorMap: () => ({ message: "Rol inválido" }),
-      })
+    roles: z
+      .array(
+        z.nativeEnum(Role, {
+          errorMap: () => ({ message: "Rol inválido" }),
+        }),
+      )
+      .min(1, "Debe seleccionar al menos un rol")
       .optional(),
     country: z
       .string()
@@ -210,7 +228,7 @@ export const updateUserSchema = z
   .refine(
     (data) => {
       // DEALER role requires exactly one seller
-      if (data.role === Role.DEALER) {
+      if (includesDealer(data.roles)) {
         return !!data.assignedSellerId;
       }
       return true;

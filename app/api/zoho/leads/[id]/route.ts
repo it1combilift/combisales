@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { createZohoCRMService } from "@/service/ZohoCRMService";
 import { Role } from "@prisma/client";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 /**
  * GET /api/zoho/leads/[id]
@@ -21,7 +22,7 @@ export async function GET(
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    if (session.user.role !== Role.ADMIN && session.user.role !== Role.SELLER) {
+    if (!hasAnyRole(session.user.roles, [Role.ADMIN, Role.SELLER])) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
@@ -42,7 +43,7 @@ export async function GET(
     const lead = await zohoService.getLeadById(leadId);
 
     // SELLER users can only see their own leads
-    if (session.user.role === Role.SELLER) {
+    if (hasRole(session.user.roles, Role.SELLER)) {
       if (lead.Owner?.email !== session.user.email) {
         return NextResponse.json(
           { error: "No tiene permisos para ver este lead" },

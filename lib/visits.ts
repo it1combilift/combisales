@@ -22,7 +22,7 @@ export const VISIT_INCLUDE = {
       id: true,
       name: true,
       email: true,
-      role: true,
+      roles: true,
       image: true,
     },
   },

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { deleteMultipleUsersSchema } from "@/schemas/auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hasRole } from "@/lib/roles";
 
 // Delete multiple users (Admin only)
 export async function POST(request: Request) {
@@ -16,13 +17,13 @@ export async function POST(request: Request) {
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true, id: true },
+      select: { roles: true, id: true },
     });
 
-    if (!currentUser || currentUser.role !== Role.ADMIN) {
+    if (!currentUser || !hasRole(currentUser.roles, Role.ADMIN)) {
       return NextResponse.json(
         { error: "No tienes permisos para eliminar usuarios" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
           error: "Datos inválidos",
           details: validation.error.flatten().fieldErrors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
     if (ids.includes(currentUser.id)) {
       return NextResponse.json(
         { error: "No puedes eliminarte a ti mismo" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
         error: "Error al eliminar los usuarios",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

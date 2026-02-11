@@ -8,19 +8,19 @@ import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { RolesSelection } from "./roles-selection";
 import { useForm, useWatch } from "react-hook-form";
+import { SellerSelection } from "./seller-selection";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditUserFormProps } from "@/interfaces/user";
-import { SellerSelection } from "./seller-selection";
-import { ProfileImageUpload } from "./profile-image-upload";
 import { useState, useCallback, useEffect } from "react";
+import { ProfileImageUpload } from "./profile-image-upload";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
   Loader2,
   Mail,
   User,
-  Shield,
   Lock,
   Globe,
   CheckCircle2,
@@ -38,27 +38,26 @@ import {
   FormMessage,
 } from "../ui/form";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useI18n();
+
+  // Helper function to check if roles include DEALER
+  const includesDealer = (roles: Role[]) =>
+    roles?.includes(Role.DEALER) ?? false;
 
   // Create form schema
   const formSchema = z
     .object({
       name: z.string().min(2, t("validation.nameMinLength")).optional(),
       email: z.string().email(t("validation.invalidEmail")).optional(),
-      role: z
-        .nativeEnum(Role, {
-          errorMap: () => ({ message: t("validation.invalidRole") }),
-        })
+      roles: z
+        .array(
+          z.nativeEnum(Role, {
+            errorMap: () => ({ message: t("validation.invalidRole") }),
+          }),
+        )
+        .min(1, t("validation.atLeastOneRole"))
         .optional(),
       country: z
         .string()
@@ -84,7 +83,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     .refine(
       (data) => {
         // DEALER role requires exactly one seller
-        if (data.role === Role.DEALER) {
+        if (data.roles && includesDealer(data.roles)) {
           return !!data.assignedSellerId;
         }
         return true;
@@ -104,7 +103,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     defaultValues: {
       name: user.name || "",
       email: user.email,
-      role: user.role,
+      roles: user.roles || [Role.SELLER],
       country: user.country || "",
       isActive: user.isActive,
       password: "",
@@ -114,8 +113,8 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   });
 
   // Watch form values using useWatch for proper reactivity
-  const selectedRole = useWatch({ control: form.control, name: "role" });
-  const isDealerRole = selectedRole === Role.DEALER;
+  const selectedRoles = useWatch({ control: form.control, name: "roles" });
+  const isDealerRole = selectedRoles?.includes(Role.DEALER) ?? false;
   const watchedAssignedSellerId = useWatch({
     control: form.control,
     name: "assignedSellerId",
@@ -130,7 +129,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     !!watchedName &&
     !!watchedEmail &&
     !hasErrors &&
-    (selectedRole !== Role.DEALER || !!watchedAssignedSellerId);
+    (!isDealerRole || !!watchedAssignedSellerId);
 
   // Reset form when user changes (fixes assigned seller not showing)
   useEffect(() => {
@@ -139,7 +138,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     form.reset({
       name: user.name || "",
       email: user.email,
-      role: user.role,
+      roles: user.roles || [Role.SELLER],
       country: user.country || "",
       isActive: user.isActive,
       password: "",
@@ -148,14 +147,14 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     });
   }, [user.id]); // Only reset when user ID changes, not on every user object reference change
 
-  // Clear seller ID when role changes FROM DEALER to another role
-  const handleRoleChange = useCallback(
-    (newRole: Role) => {
-      form.setValue("role", newRole, {
+  // Handle roles change - clear seller ID when DEALER is removed from roles
+  const handleRolesChange = useCallback(
+    (newRoles: Role[]) => {
+      form.setValue("roles", newRoles, {
         shouldValidate: true,
         shouldDirty: true,
       });
-      if (newRole !== Role.DEALER) {
+      if (!newRoles.includes(Role.DEALER)) {
         form.setValue("assignedSellerId", null, {
           shouldValidate: true,
           shouldDirty: true,
@@ -165,12 +164,12 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     [form],
   );
 
-  // Trigger validation when role changes
+  // Trigger validation when roles change
   useEffect(() => {
-    if (selectedRole) {
+    if (selectedRoles) {
       form.trigger("assignedSellerId");
     }
-  }, [selectedRole, form]);
+  }, [selectedRoles, form]);
 
   const handleSellerSelectionChange = useCallback(
     (id: string | null) => {
@@ -188,7 +187,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   // Debug logging
   useEffect(() => {
     console.log("📊 EditUserForm State:", {
-      selectedRole,
+      selectedRoles,
       isDealerRole,
       watchedAssignedSellerId,
       watchedName,
@@ -198,7 +197,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       isDirty: form.formState.isDirty,
     });
   }, [
-    selectedRole,
+    selectedRoles,
     isDealerRole,
     watchedAssignedSellerId,
     watchedName,
@@ -232,8 +231,14 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       if (values.email && values.email !== user.email) {
         updateData.email = values.email;
       }
-      if (values.role && values.role !== user.role) {
-        updateData.role = values.role;
+      // Compare roles arrays
+      const userRoles = user.roles || [];
+      const newRoles = values.roles || [];
+      const rolesChanged =
+        userRoles.length !== newRoles.length ||
+        !userRoles.every((r) => newRoles.includes(r));
+      if (rolesChanged) {
+        updateData.roles = newRoles;
       }
       if (values.country !== undefined && values.country !== user.country) {
         updateData.country = values.country;
@@ -434,71 +439,32 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
 
           {/* Configuration Tab */}
           <TabsContent value="config" className="space-y-3 mt-0">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <FormField
                 control={form.control}
-                name="role"
+                name="roles"
                 render={({ field }) => (
-                  <FormItem className="space-y-2 ">
+                  <FormItem className="space-y-2">
                     <FormLabel className="text-sm font-semibold">
                       {t("users.form.roleLabel")}
                     </FormLabel>
-                    <Select
-                      onValueChange={(value) => handleRoleChange(value as Role)}
-                      value={field.value}
-                      disabled={isLoading}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="min-h-full transition-all focus:ring-2 text-xs sm:text-sm w-full">
-                          <div className="flex items-center gap-2">
-                            <Shield className="size-4 text-muted-foreground" />
-                            <SelectValue
-                              placeholder={t("users.form.rolePlaceholder")}
-                            />
-                          </div>
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem
-                          value={Role.ADMIN}
-                          className="cursor-pointer text-xs sm:text-sm"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="size-2 rounded-full bg-blue-500" />
-                            <span className="font-medium">
-                              {t("users.roles.admin")}
-                            </span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem
-                          value={Role.DEALER}
-                          className="cursor-pointer text-xs sm:text-sm"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="size-2 rounded-full bg-amber-500" />
-                            <span className="font-medium">
-                              {t("users.roles.dealer")}
-                            </span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem
-                          value={Role.SELLER}
-                          className="cursor-pointer text-xs sm:text-sm"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="size-2 rounded-full bg-emerald-500" />
-                            <span className="font-medium">
-                              {t("users.roles.seller")}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormDescription className="text-xs text-muted-foreground">
+                      {t("users.form.rolesDescription")}
+                    </FormDescription>
+                    <FormControl>
+                      <RolesSelection
+                        selectedRoles={field.value || []}
+                        onSelectionChange={handleRolesChange}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
+            </div>
 
+            <div className="grid gap-3">
               <FormField
                 control={form.control}
                 name="country"

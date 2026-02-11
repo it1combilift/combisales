@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserListItem } from "@/interfaces/user";
 import { Checkbox } from "@/components/ui/checkbox";
+import { getAllRoles, getPrimaryRole } from "@/lib/roles";
 import { getInitials, getRoleBadge, formatDateShort } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -127,10 +128,14 @@ export function UserCard({
             <p className="text-xs text-muted-foreground">
               {t("users.card.role")}
             </p>
-            {getRoleBadge(
-              user.role,
-              t(`users.roles.${user.role.toLowerCase()}` as any)
-            )}
+            {(() => {
+              const allRoles = getAllRoles(user.roles) || "Unknown";
+              return (
+                <div className="flex flex-wrap gap-1">
+                  {allRoles.map((role) => getRoleBadge(role))}
+                </div>
+              );
+            })()}
           </div>
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">

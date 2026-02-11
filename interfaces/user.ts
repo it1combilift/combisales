@@ -9,7 +9,7 @@ export interface User {
   emailVerified: Date | null;
   password: string | null;
   image: string | null;
-  role: Role;
+  roles: Role[]; // Multiple roles supported
   country: string | null;
   isActive: boolean;
   createdAt: Date;
@@ -27,7 +27,7 @@ export interface CreateUserInput {
   name: string;
   email: string;
   password: string;
-  role: Role;
+  roles: Role[]; // Multiple roles supported
   country?: string;
   isActive?: boolean;
   /** For DEALER users: the single assigned seller ID */
@@ -38,7 +38,7 @@ export interface UserListItem {
   id: string;
   name: string | null;
   email: string;
-  role: Role;
+  roles: Role[]; // Multiple roles supported
   country: string | null;
   isActive: boolean;
   createdAt: Date;

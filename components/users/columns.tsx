@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Role, UserListItem } from "@/interfaces/user";
 import { getInitials, getRoleBadge, formatDateShort } from "@/lib/utils";
+import { getPrimaryRole, hasRole } from "@/lib/roles";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
@@ -84,8 +85,10 @@ export const createColumns = ({
       return (
         <div className="flex items-center gap-3">
           <Avatar className="size-10 rounded-lg">
-            <AvatarImage src={user.image || undefined} alt={user.name || ""}
-            className="object-cover object-center"
+            <AvatarImage
+              src={user.image || undefined}
+              alt={user.name || ""}
+              className="object-cover object-center"
             />
             <AvatarFallback className="text-sm font-semibold rounded-lg bg-linear-to-br from-primary/20 to-primary/5">
               {getInitials(user.name)}
@@ -104,7 +107,7 @@ export const createColumns = ({
     },
   },
   {
-    accessorKey: "role",
+    accessorKey: "roles",
     header: ({ column }) => {
       return (
         <Button
@@ -118,11 +121,43 @@ export const createColumns = ({
       );
     },
     cell: ({ row }) => {
-      const role = row.getValue("role") as Role;
-      return getRoleBadge(role, t(`users.roles.${role.toLowerCase()}`));
+      const roles = row.getValue("roles") as Role[];
+      if (!roles || roles.length === 0) {
+        return <span className="text-xs text-muted-foreground">-</span>;
+      }
+
+      // Show primary role badge
+      const primaryRole = getPrimaryRole(roles);
+      const badge = getRoleBadge(
+        primaryRole,
+        t(`users.roles.${primaryRole.toLowerCase()}`),
+      );
+
+      // If user has multiple roles, show a count indicator
+      if (roles.length > 1) {
+        return (
+          <div className="flex items-center gap-1.5">
+            {badge}
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              +{roles.length - 1}
+            </Badge>
+          </div>
+        );
+      }
+
+      return badge;
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+      const roles = row.getValue(id) as Role[];
+      // Check if any of the user's roles matches any of the filter values
+      return value.some((filterRole: Role) => hasRole(roles, filterRole));
+    },
+    sortingFn: (rowA, rowB) => {
+      const rolesA = rowA.getValue("roles") as Role[];
+      const rolesB = rowB.getValue("roles") as Role[];
+      const primaryA = getPrimaryRole(rolesA);
+      const primaryB = getPrimaryRole(rolesB);
+      return primaryA.localeCompare(primaryB);
     },
   },
   {
