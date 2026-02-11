@@ -199,20 +199,48 @@ export const VisitCard = ({
               {isDealerFlow && (isSeller || isAdmin) && (
                 <>
                   {!hasClone ? (
-                    // NOT CLONED: Show "View form" and "Clone visit"
+                    // NOT CLONED: Show view details, edit (read-only for SELLER), clone, delete (ADMIN only)
                     <>
-                      {onViewForm && (
+                      {/* View details - navigate to visit detail page */}
+                      {onView && (
                         <DropdownMenuItem
                           className="cursor-pointer"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onViewForm(visit);
+                            onView(visit);
                           }}
                         >
-                          <Eye className="size-4" />
-                          {t("visits.viewForm")}
+                          <ArrowUpRight className="size-4" />
+                          {t("visits.viewDetails")}
                         </DropdownMenuItem>
                       )}
+                      {/* Edit - ADMIN can edit, SELLER sees read-only form */}
+                      {isAdmin && onEdit ? (
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(visit);
+                          }}
+                        >
+                          <PencilLine className="size-4" />
+                          {t("visits.editVisit")}
+                        </DropdownMenuItem>
+                      ) : (
+                        onViewForm && (
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onViewForm(visit);
+                            }}
+                          >
+                            <Eye className="size-4" />
+                            {t("visits.viewForm")}
+                          </DropdownMenuItem>
+                        )
+                      )}
+                      {/* Clone visit */}
                       {canClone && (
                         <DropdownMenuItem
                           className="cursor-pointer"
@@ -281,8 +309,8 @@ export const VisitCard = ({
                           {t("dealerPage.seller.editClonedForm")}
                         </DropdownMenuItem>
                       )}
-                      {/* SELLER: Delete clone only */}
-                      {isSeller && onDeleteClone && clone && (
+                      {/* ADMIN/SELLER: Delete clone only */}
+                      {(isSeller || isAdmin) && onDeleteClone && clone && (
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem

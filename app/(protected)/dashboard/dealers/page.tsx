@@ -95,8 +95,9 @@ const DealersPage = () => {
 
   // Edit visit
   const handleEditVisit = (visit: Visit) => {
-    // SELLER: can only edit their own clones
-    if (isSeller && !visit.clonedFromId) {
+    // SELLER-only (without ADMIN): can only edit their own clones
+    // ADMIN users can edit anything
+    if (isSeller && !isAdmin && !visit.clonedFromId) {
       toast.error(t("dealerPage.seller.cannotEditOriginal"));
       return;
     }
@@ -168,14 +169,17 @@ const DealersPage = () => {
     }
   };
 
-  // Phase 4: Delete clone
+  // Phase 4: Delete clone only (not cascade)
   const handleDeleteClone = (visit: Visit) => {
     if (visit.clones && visit.clones.length > 0) {
-      // Create a "fake" visit object with the clone's ID for the delete dialog
+      // Create a visit object with the clone's ID for the delete dialog
+      // IMPORTANT: Set clones to empty array so DeleteVisitDialog shows simple delete message
+      // instead of cascade warning (cascade is only for deleting original + clone together)
       setVisitToDelete({
         ...visit,
         id: visit.clones[0].id,
         clonedFromId: visit.id, // Mark it as a clone so delete validation passes
+        clones: [], // Clear clones so simple delete dialog is shown, not cascade warning
       } as Visit);
     }
   };
@@ -184,8 +188,9 @@ const DealersPage = () => {
   const handleDeleteVisit = async () => {
     if (!visitToDelete) return;
 
-    // SELLER: can only delete clones (either their own clone or from the unified row)
-    if (isSeller && !visitToDelete.clonedFromId) {
+    // SELLER-only (without ADMIN role): can only delete clones (either their own clone or from the unified row)
+    // ADMIN users (with or without SELLER role) can delete anything
+    if (isSeller && !isAdmin && !visitToDelete.clonedFromId) {
       toast.error(t("dealerPage.seller.cannotDeleteOriginal"));
       setVisitToDelete(null);
       return;
@@ -346,7 +351,7 @@ const DealersPage = () => {
           onClone={isSeller || isAdmin ? handleCloneVisit : undefined}
           onViewClone={isSeller || isAdmin ? handleViewClone : undefined}
           onEditClone={isSeller || isAdmin ? handleEditClone : undefined}
-          onDeleteClone={isSeller ? handleDeleteClone : undefined}
+          onDeleteClone={isSeller || isAdmin ? handleDeleteClone : undefined}
           onViewForm={isSeller || isAdmin ? handleViewForm : undefined}
           isDealerFlow={true}
         />

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { hasRole } from "@/lib/roles";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -15,7 +16,6 @@ import { VisitCard } from "@/components/visits/visit-card";
 import { Role, VisitStatus, VisitFormType } from "@prisma/client";
 import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
 import { Visit, DataTableProps, VISIT_STATUS_ICONS } from "@/interfaces/visits";
-import { hasRole } from "@/lib/roles";
 
 import {
   VISIT_STATUS_LABELS,
@@ -616,6 +616,7 @@ export function VisitsDataTable<TData extends Visit, TValue>({
                   onDeleteClone={onDeleteClone}
                   onViewForm={onViewForm}
                   userRoles={userRoles}
+                  isDealerFlow={isDealerFlow}
                 />
               ))
           ) : (

@@ -122,8 +122,17 @@ export async function PUT(
       return unauthorizedResponse();
     }
 
-    // SELLER: puede editar sus propias visitas (creadas por él) O sus propios clones
-    if (hasRole(currentUser.roles, Role.SELLER)) {
+    const isAdminUser = hasRole(currentUser.roles, Role.ADMIN);
+    const isSellerUser = hasRole(currentUser.roles, Role.SELLER);
+    const isDealerUser = hasRole(currentUser.roles, Role.DEALER);
+
+    // ADMIN: puede editar cualquier visita (no requiere validación adicional)
+    // Priority: Check ADMIN first
+    if (isAdminUser) {
+      // ADMIN can edit anything - continue to update logic
+    }
+    // SELLER-only (without ADMIN): puede editar sus propias visitas (creadas por él) O sus propios clones
+    else if (isSellerUser) {
       // El SELLER debe ser el propietario de la visita (ya sea original o clon)
       if (existingVisit.userId !== session.user.id) {
         // Si no es el propietario, verificar si es una visita asignada a él por un DEALER
@@ -138,12 +147,11 @@ export async function PUT(
       // Si llegamos aquí, el SELLER es el propietario de la visita - puede editarla
     }
     // DEALER: solo puede editar sus propias visitas
-    else if (hasRole(currentUser.roles, Role.DEALER)) {
+    else if (isDealerUser) {
       if (existingVisit.userId !== session.user.id) {
         return badRequestResponse("Solo puedes editar tus propias visitas");
       }
     }
-    // ADMIN: puede editar cualquier visita (no requiere validación adicional)
 
     // ==================== SYNC FILES BEFORE UPDATE ====================
     // This ensures files deleted in the form are also deleted from DB and Cloudinary
@@ -454,8 +462,17 @@ export async function DELETE(
       return unauthorizedResponse();
     }
 
-    // SELLER: solo puede eliminar sus propios clones
-    if (hasRole(currentUser.roles, Role.SELLER)) {
+    const isAdminUser = hasRole(currentUser.roles, Role.ADMIN);
+    const isSellerUser = hasRole(currentUser.roles, Role.SELLER);
+    const isDealerUser = hasRole(currentUser.roles, Role.DEALER);
+
+    // ADMIN: puede eliminar cualquier visita (con cascade opcional)
+    // Priority: Check ADMIN first, as ADMIN can do anything
+    if (isAdminUser) {
+      // ADMIN can delete anything - continue to deletion logic
+    }
+    // SELLER-only (without ADMIN): solo puede eliminar sus propios clones
+    else if (isSellerUser) {
       if (!visit.clonedFromId) {
         return badRequestResponse(
           "Los SELLER solo pueden eliminar clones, no visitas originales",
@@ -466,20 +483,15 @@ export async function DELETE(
       }
     }
     // DEALER: solo puede eliminar sus propias visitas
-    else if (hasRole(currentUser.roles, Role.DEALER)) {
+    else if (isDealerUser) {
       if (visit.userId !== session.user.id) {
         return badRequestResponse("Solo puedes eliminar tus propias visitas");
       }
     }
-    // ADMIN: puede eliminar cualquier visita (con cascade opcional)
 
     // ==================== CASCADE DELETE (ADMIN only) ====================
     // If cascade=true and visit has clones, delete clones first
-    if (
-      cascade &&
-      hasRole(currentUser.roles, Role.ADMIN) &&
-      visit.clones.length > 0
-    ) {
+    if (cascade && isAdminUser && visit.clones.length > 0) {
       // Delete all clones first
       await prisma.visit.deleteMany({
         where: {

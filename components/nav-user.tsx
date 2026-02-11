@@ -5,7 +5,7 @@ import { signOut } from "next-auth/react";
 import { getRoleBadge } from "@/lib/utils";
 import { Role, User } from "@prisma/client";
 import { useI18n } from "@/lib/i18n/context";
-import { getPrimaryRole } from "@/lib/roles";
+import { getAllRoles, getPrimaryRole } from "@/lib/roles";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
@@ -83,8 +83,8 @@ export function NavUser({ user }: { user: User }) {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            className={`${isMobile ? "w-full ml-2 mb-2" : "w-auto"} bg-popover p-0 rounded-lg shadow-lg`}
+            side={isMobile ? "top" : "right"}
             align="end"
             sideOffset={4}
           >
@@ -110,11 +110,8 @@ export function NavUser({ user }: { user: User }) {
                       {userCountry}
                     </span>
                   )}
-                  <div className="mt-1.5">
-                    {getRoleBadge(
-                      userRole,
-                      t(`users.roles.${userRole.toLowerCase()}`),
-                    )}
+                  <div className="mt-1.5 flex items-center gap-1">
+                    {getAllRoles(user.roles).map((role) => getRoleBadge(role))}
                   </div>
                 </div>
               </div>

@@ -1,9 +1,9 @@
 "use client";
 
+import { Trash2 } from "lucide-react";
 import { Spinner } from "../ui/spinner";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Trash2 } from "lucide-react";
 import { Visit, VisitStatus } from "@/interfaces/visits";
 
 import {
@@ -52,11 +52,13 @@ export function DeleteVisitDialog({
               ? t("dealerPage.admin.deleteCascadeTitle")
               : t("messages.confirmDelete")}
           </AlertDialogTitle>
-          <AlertDialogDescription asChild>
+          <AlertDialogDescription asChild className="text-left">
             <div className="space-y-4">
               {hasClone ? (
                 <>
-                  <p className="text-left text-pretty">{t("dealerPage.admin.deleteCascadeDescription")}</p>
+                  <p className="text-left text-pretty">
+                    {t("dealerPage.admin.deleteCascadeDescription")}
+                  </p>
                   <div className="flex flex-col gap-2 p-3 rounded-lg bg-muted/50 border">
                     {/* Original visit info */}
                     <div className="flex items-center justify-between">
@@ -71,12 +73,14 @@ export function DeleteVisitDialog({
                       <Badge
                         variant={
                           visit.status === VisitStatus.COMPLETADA
-                            ? "success"
-                            : "info"
+                            ? "outline-success"
+                            : "outline-warning"
                         }
                         className="text-xs"
                       >
-                        {t(`visits.statuses.${visit.status.toLowerCase()}`)}
+                        {t(
+                          `visits.visitStatuses.${visit.status.toLowerCase()}`,
+                        )}
                       </Badge>
                     </div>
                     {/* Clone info */}
@@ -93,12 +97,14 @@ export function DeleteVisitDialog({
                         <Badge
                           variant={
                             clone.status === VisitStatus.COMPLETADA
-                              ? "success"
-                              : "info"
+                              ? "outline-success"
+                              : "outline-warning"
                           }
                           className="text-xs"
                         >
-                          {t(`visits.statuses.${clone.status.toLowerCase()}`)}
+                          {t(
+                            `visits.visitStatuses.${clone.status.toLowerCase()}`,
+                          )}
                         </Badge>
                       </div>
                     )}

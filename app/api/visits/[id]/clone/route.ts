@@ -81,9 +81,13 @@ export async function POST(
     }
 
     // 4. Verificar permisos específicos
-    // - SELLER: solo puede clonar visitas asignadas a él
-    // - ADMIN: puede clonar cualquier visita de DEALER
-    if (isSeller && originalVisit.assignedSellerId !== session.user.id) {
+    // - ADMIN: puede clonar cualquier visita de DEALER (priority check)
+    // - SELLER-only: solo puede clonar visitas asignadas a él
+    if (
+      !isAdmin &&
+      isSeller &&
+      originalVisit.assignedSellerId !== session.user.id
+    ) {
       return badRequestResponse("Esta visita no está asignada a ti");
     }
 

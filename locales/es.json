@@ -532,6 +532,11 @@
         "straddleCarrier": "Revisión técnica y operativa en profundidad de las aplicaciones e infraestructura de straddle carriers."
       }
     },
+    "visitStatuses": {
+      "borrador": "Borrador",
+      "en_progreso": "En Progreso",
+      "completada": "Completada"
+    },
     "statuses": {
       "draft": "Borrador",
       "draftClone": "Borrador (Clon)",

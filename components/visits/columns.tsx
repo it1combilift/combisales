@@ -613,17 +613,39 @@ export function createColumns(
             {isDealerFlow && (isSeller || isAdmin) && (
               <>
                 {!hasClone ? (
-                  // NOT CLONED: Show "View form" and "Clone visit"
+                  // NOT CLONED: Show view details, edit (read-only for SELLER), clone, delete (ADMIN only)
                   <>
-                    {onViewForm && (
+                    {/* View details - navigate to visit detail page */}
+                    {onView && (
                       <DropdownMenuItem
-                        onClick={() => onViewForm(visit)}
+                        onClick={() => onView(visit)}
                         className="cursor-pointer"
                       >
-                        <Eye className="size-4" />
-                        {t("visits.viewForm")}
+                        <ArrowUpRight className="size-4" />
+                        {t("visits.viewDetails")}
                       </DropdownMenuItem>
                     )}
+                    {/* Edit - ADMIN can edit, SELLER sees read-only form */}
+                    {isAdmin && onEdit ? (
+                      <DropdownMenuItem
+                        onClick={() => onEdit(visit)}
+                        className="cursor-pointer"
+                      >
+                        <PencilLine className="size-4" />
+                        {t("visits.editVisit")}
+                      </DropdownMenuItem>
+                    ) : (
+                      onViewForm && (
+                        <DropdownMenuItem
+                          onClick={() => onViewForm(visit)}
+                          className="cursor-pointer"
+                        >
+                          <Eye className="size-4" />
+                          {t("visits.viewForm")}
+                        </DropdownMenuItem>
+                      )
+                    )}
+                    {/* Clone visit */}
                     {canClone && (
                       <DropdownMenuItem
                         onClick={() => onClone(visit)}
@@ -677,8 +699,8 @@ export function createColumns(
                         {t("dealerPage.seller.editClonedForm")}
                       </DropdownMenuItem>
                     )}
-                    {/* SELLER: Delete clone only */}
-                    {isSeller && onDeleteClone ? (
+                    {/* ADMIN/SELLER: Delete clone only */}
+                    {(isSeller || isAdmin) && onDeleteClone && clone && (
                       <>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
