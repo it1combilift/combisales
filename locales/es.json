@@ -64,7 +64,7 @@
       "viewOriginalForm": "Ver original",
       "viewClonedForm": "Ver clonado",
       "editClonedForm": "Editar clonado",
-      "deleteClonedVisit": "Eliminar visita clonada",
+      "deleteClonedVisit": "Eliminar clon",
       "inProgress": "En Progreso",
       "visitAlreadyCloned": "Esta visita ya ha sido clonada"
     },

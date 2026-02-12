@@ -64,7 +64,7 @@
       "viewOriginalForm": "View original",
       "viewClonedForm": "View cloned",
       "editClonedForm": "Edit cloned",
-      "deleteClonedVisit": "Delete cloned visit",
+      "deleteClonedVisit": "Delete clone form",
       "inProgress": "In Progress",
       "visitAlreadyCloned": "This visit has already been cloned"
     },
@@ -74,7 +74,7 @@
       "company": "Client"
     },
     "admin": {
-      "deleteWithClone": "Delete with clone",
+      "deleteWithClone": "Delete visit",
       "deleteCascadeTitle": "Delete visit and clone",
       "deleteCascadeDescription": "This visit has an associated clone. Deleting it will also delete the clone permanently.",
       "deleteCascadeWarning": "Both the original visit and its clone will be permanently deleted.",

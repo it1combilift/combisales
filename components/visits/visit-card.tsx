@@ -202,7 +202,7 @@ export const VisitCard = ({
                     // NOT CLONED: Show view details, edit (read-only for SELLER), clone, delete (ADMIN only)
                     <>
                       {/* View details - navigate to visit detail page */}
-                      {onView && (
+                      {/* {onView && (
                         <DropdownMenuItem
                           className="cursor-pointer"
                           onClick={(e) => {
@@ -213,7 +213,7 @@ export const VisitCard = ({
                           <ArrowUpRight className="size-4" />
                           {t("visits.viewDetails")}
                         </DropdownMenuItem>
-                      )}
+                      )} */}
                       {/* Edit - ADMIN can edit, SELLER sees read-only form */}
                       {isAdmin && onEdit ? (
                         <DropdownMenuItem
@@ -223,8 +223,8 @@ export const VisitCard = ({
                             onEdit(visit);
                           }}
                         >
-                          <PencilLine className="size-4" />
-                          {t("visits.editVisit")}
+                          <BookmarkCheck className="size-4" />
+                          {t("dealerPage.seller.viewOriginalForm")}
                         </DropdownMenuItem>
                       ) : (
                         onViewForm && (

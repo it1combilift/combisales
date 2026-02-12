@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 import { FORM_STEPS } from "../constants";
 import { FormHeaderProps } from "../types";
 import { Progress } from "@/components/ui/progress";
@@ -72,7 +71,7 @@ export function FormHeader({
         </div>
 
         {/* Compact progress badge - Visible on all screens */}
-        <div className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded-md md:mr-6">
+        <div className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded-md mr-6">
           <Progress
             value={progress}
             className="h-1.5 w-10 md:w-16 [&>div]:bg-[#60A82E]"
@@ -106,26 +105,26 @@ export function FormHeader({
                     "relative size-7 sm:size-8 rounded-lg flex items-center justify-center transition-all duration-200 border shadow-sm",
                     isCurrent
                       ? "bg-primary border-primary text-primary-foreground shadow-md scale-105"
-                      : isCompleted
-                        ? "bg-[#60A82E]/10 border-[#60A82E]/30 text-[#60A82E]"
+                      // : isCompleted
+                      //   ? "bg-[#60A82E]/10 border-[#60A82E]/30 text-[#60A82E]"
                         : "bg-muted/40 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground hover:border-border",
                   )}
                 >
                   <Icon className="size-4" />
                   {/* Checkmark badge for completed steps */}
-                  {isCompleted && !isCurrent && (
+                  {/* {isCompleted && !isCurrent && (
                     <div className="absolute -top-1 -right-1 size-3.5 rounded-full bg-[#60A82E] flex items-center justify-center shadow-sm">
                       <Check className="size-2.5 text-white" strokeWidth={3} />
                     </div>
-                  )}
+                  )} */}
                 </div>
                 <span
                   className={cn(
                     "text-[10px] sm:text-[11px] mt-1 font-medium w-full text-center leading-none transition-colors line-clamp-1",
                     isCurrent
                       ? "text-primary font-semibold"
-                      : isCompleted
-                        ? "text-[#60A82E] font-medium"
+                      // : isCompleted
+                      //   ? "text-[#60A82E] font-medium"
                         : "text-muted-foreground group-hover:text-foreground",
                   )}
                 >
