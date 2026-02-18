@@ -3,13 +3,13 @@
 import Image from "next/image";
 import * as React from "react";
 import { Session } from "next-auth";
+import { hasRole } from "@/lib/roles";
 import { Role, User } from "@prisma/client";
-import { hasRole, hasAnyRole } from "@/lib/roles";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
-import { Forklift, ListTodo } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/context";
 import { NavSecondary } from "@/components/nav-secondary";
+import { Forklift, ListTodo, Wrench, ClipboardCheck } from "lucide-react";
 
 import {
   IconHelp,
@@ -66,6 +66,11 @@ export function AppSidebar({
         url: "/dashboard/users",
         icon: IconUsers,
       },
+      {
+        title: t("navigation.inspections"),
+        url: "/dashboard/inspections",
+        icon: ClipboardCheck,
+      },
     ],
     navSecondary: [
       {
@@ -82,6 +87,7 @@ export function AppSidebar({
   // Filter navigation items based on user role
   // ADMIN: All routes
   // SELLER: Tasks, Clients, Equipment, Dealers (for assigned visits)
+  // INSPECTOR: Tasks, Inspections
   // DEALER: Only Dealers
   const filteredNavMain = data.navMain.filter((item) => {
     // ADMIN can access everything
@@ -101,6 +107,13 @@ export function AppSidebar({
         item.url === "/dashboard/clients" ||
         item.url === "/dashboard/equipment" ||
         item.url === "/dashboard/dealers"
+      );
+    }
+
+    // INSPECTOR can access Tasks and Inspections
+    if (hasRole(userRoles, Role.INSPECTOR)) {
+      return (
+        item.url === "/dashboard/tasks" || item.url === "/dashboard/inspections"
       );
     }
 

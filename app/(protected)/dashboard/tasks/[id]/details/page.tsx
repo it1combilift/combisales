@@ -9,15 +9,16 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
 import { H1, MonoText } from "@/components/fonts/fonts";
 import { useState, useEffect, useCallback } from "react";
-import { ZohoAccount, ZohoDeal, ZohoLead, ZohoTask } from "@/interfaces/zoho";
 import { VisitCard } from "@/components/visits/visit-card";
+import { ClientContext } from "@/interfaces/client-context";
 import { createColumns } from "@/components/visits/columns";
 import AnimatedTabsComponent from "@/components/accounts/tabs";
 import { VisitsDataTable } from "@/components/visits/data-table";
+import { ZohoDeal, ZohoLead, ZohoTask } from "@/interfaces/zoho";
 import VisitFormDialog from "@/components/visits/visit-form-dialog";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { TaskDetailsCard } from "@/components/tasks/task-details-card";
-import { ClientContext } from "@/interfaces/client-context";
+
 import {
   accountToClientContext,
   dealToClientContext,

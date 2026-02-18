@@ -11,6 +11,7 @@ export async function proxy(request: NextRequest) {
     "/dashboard/equipment",
     "/dashboard/tasks",
     "/dashboard/dealers",
+    "/dashboard/inspections",
   ];
 
   // Role-based path restrictions
@@ -18,6 +19,9 @@ export async function proxy(request: NextRequest) {
 
   // Paths accessible by both DEALER and SELLER
   const dealerAndSellerPaths = ["/dashboard/dealers"];
+
+  // Paths accessible by INSPECTOR
+  const inspectorPaths = ["/dashboard/inspections"];
 
   const currentPath = request.nextUrl.pathname;
 
@@ -41,6 +45,17 @@ export async function proxy(request: NextRequest) {
       ) {
         return NextResponse.redirect(
           new URL("/dashboard/dealers", request.url),
+        );
+      }
+
+      // INSPECTOR-only users go to inspections
+      if (
+        hasRole(userRoles, Role.INSPECTOR) &&
+        !hasRole(userRoles, Role.SELLER) &&
+        !hasRole(userRoles, Role.ADMIN)
+      ) {
+        return NextResponse.redirect(
+          new URL("/dashboard/inspections", request.url),
         );
       }
 
@@ -89,6 +104,23 @@ export async function proxy(request: NextRequest) {
       if (!isDealerPath) {
         return NextResponse.redirect(
           new URL("/dashboard/dealers", request.url),
+        );
+      }
+      return NextResponse.next();
+    }
+
+    // INSPECTOR can only access tasks and inspections (unless also SELLER/ADMIN)
+    if (
+      hasRole(userRoles, Role.INSPECTOR) &&
+      !hasRole(userRoles, Role.SELLER) &&
+      !hasRole(userRoles, Role.ADMIN)
+    ) {
+      const isInspectorPath = inspectorPaths.some((path) =>
+        currentPath.startsWith(path),
+      );
+      if (!isInspectorPath) {
+        return NextResponse.redirect(
+          new URL("/dashboard/inspections", request.url),
         );
       }
       return NextResponse.next();

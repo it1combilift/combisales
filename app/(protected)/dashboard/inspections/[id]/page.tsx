@@ -1,0 +1,192 @@
+"use client";
+
+import useSWR from "swr";
+import { hasRole } from "@/lib/roles";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "@/lib/i18n/context";
+import { Inspection, InspectionStatus } from "@/interfaces/inspection";
+import { Role } from "@prisma/client";
+import { H1, Paragraph } from "@/components/fonts/fonts";
+import {
+  ArrowLeft,
+  ShieldCheck,
+  Trash2,
+  Clock,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import { ApprovalDialog } from "@/components/inspections/approval-dialog";
+import { DeleteInspectionDialog } from "@/components/inspections/delete-inspection-dialog";
+import { InspectionDetailCard } from "@/components/inspections/inspection-detail-card";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+export default function InspectionDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [approvalOpen, setApprovalOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [inspectionId, setInspectionId] = useState<string>("");
+
+  useEffect(() => {
+    params.then(({ id }) => setInspectionId(id));
+  }, [params]);
+
+  const {
+    data: inspection,
+    isLoading,
+    mutate,
+  } = useSWR<Inspection>(
+    inspectionId ? `/api/inspections/${inspectionId}` : null,
+    fetcher,
+  );
+
+  const userRoles = session?.user?.roles as Role[] | undefined;
+  const isAdmin = hasRole(userRoles, Role.ADMIN);
+  const canApprove = isAdmin && inspection?.status === InspectionStatus.PENDING;
+
+  const statusConfig: Record<
+    string,
+    { icon: typeof Clock; colorClass: string; label: string }
+  > = {
+    PENDING: {
+      icon: Clock,
+      colorClass:
+        "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800",
+      label: t("inspectionsPage.status.pending"),
+    },
+    APPROVED: {
+      icon: CheckCircle2,
+      colorClass:
+        "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
+      label: t("inspectionsPage.status.approved"),
+    },
+    REJECTED: {
+      icon: XCircle,
+      colorClass:
+        "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800",
+      label: t("inspectionsPage.status.rejected"),
+    },
+  };
+
+  return (
+    <section className="mx-auto px-4 pb-8 space-y-6 w-full max-w-5xl">
+      {/* ── Header ────────────────────────────── */}
+      <header className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-3 -mx-4 px-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <Button
+            variant="outline"
+            size="icon"
+            className="shrink-0 size-9 rounded-lg"
+            onClick={() => router.push("/dashboard/inspections")}
+          >
+            <ArrowLeft className="size-4" />
+          </Button>
+          <div className="min-w-0">
+            <H1 className="text-lg sm:text-xl">
+              {t("inspectionsPage.detail.title")}
+            </H1>
+            {inspection && (
+              <div className="flex items-center gap-2 mt-0.5">
+                <Paragraph className="text-left text-sm text-muted-foreground truncate">
+                  {inspection.vehicle.model} — {inspection.vehicle.plate}
+                </Paragraph>
+                {(() => {
+                  const cfg = statusConfig[inspection.status];
+                  if (!cfg) return null;
+                  const Icon = cfg.icon;
+                  return (
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] h-5 px-2 gap-1 border ${cfg.colorClass}`}
+                    >
+                      <Icon className="size-2.5" />
+                      {cfg.label}
+                    </Badge>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-2 items-center shrink-0">
+          {canApprove && (
+            <Button size="sm" onClick={() => setApprovalOpen(true)}>
+              <ShieldCheck className="size-4" />
+              <span className="hidden sm:inline">
+                {t("inspectionsPage.approval.review")}
+              </span>
+            </Button>
+          )}
+          {isAdmin && inspection && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => setDeleteOpen(true)}
+            >
+              <Trash2 className="size-4" />
+              <span className="hidden sm:inline">
+                {t("inspectionsPage.delete.title")}
+              </span>
+            </Button>
+          )}
+        </div>
+      </header>
+
+      {/* ── Content ───────────────────────────── */}
+      {isLoading ? (
+        <div className="space-y-5">
+          <Skeleton className="h-52 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-48 rounded-xl" />
+        </div>
+      ) : inspection ? (
+        <InspectionDetailCard inspection={inspection} />
+      ) : (
+        <div className="text-center py-20 space-y-3">
+          <div className="inline-flex items-center justify-center size-14 rounded-full bg-muted mb-2">
+            <XCircle className="size-6 text-muted-foreground" />
+          </div>
+          <p className="text-muted-foreground text-sm">
+            {t("inspectionsPage.errors.notFound")}
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push("/dashboard/inspections")}
+          >
+            <ArrowLeft className="size-4" />
+            {t("inspectionsPage.detail.backToList")}
+          </Button>
+        </div>
+      )}
+
+      {/* ── Dialogs ───────────────────────────── */}
+      <ApprovalDialog
+        inspection={inspection || null}
+        open={approvalOpen}
+        onOpenChange={setApprovalOpen}
+        onSuccess={() => mutate()}
+      />
+
+      <DeleteInspectionDialog
+        inspection={inspection || null}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onSuccess={() => router.push("/dashboard/inspections")}
+      />
+    </section>
+  );
+}

@@ -243,7 +243,8 @@
     "reports": "Reports",
     "documents": "Documents",
     "assistant": "Assistant",
-    "dealers": "Dealers"
+    "dealers": "Dealers",
+    "inspections": "Inspections"
   },
   "header": {
     "welcome": "Welcome",
@@ -364,6 +365,298 @@
       "unexpectedError": "Unexpected error during login.",
       "genericAuthError": "Authentication error. Please try again.",
       "zohoAuthError": "Zoho authentication error. Please try again."
+    }
+  },
+  "inspectionsPage": {
+    "title": "Vehicle Inspections",
+    "description": "Manage vehicle inspections, approvals, and fleet vehicles.",
+    "newInspection": "New Inspection",
+    "noImage": "No image",
+    "tabs": {
+      "inspections": "Inspections",
+      "vehicles": "Vehicles",
+      "inspectors": "Inspectors"
+    },
+    "badges": {
+      "inspections": "inspections",
+      "vehicles": "vehicles",
+      "inspectors": "inspectors"
+    },
+    "filters": {
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "searchPlaceholder": "Search by vehicle, plate, or inspector...",
+      "clearFilters": "Clear filters",
+      "advancedFilters": "Advanced Filters"
+    },
+    "vehicleFilters": {
+      "searchPlaceholder": "Search by model or plate...",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "assignment": "Assignment",
+      "allAssignments": "All vehicles",
+      "assigned": "Assigned",
+      "unassigned": "Unassigned"
+    },
+    "inspectorFilters": {
+      "searchPlaceholder": "Search by name or email...",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "vehicles": "Vehicles",
+      "allVehicles": "All inspectors",
+      "withVehicles": "With vehicles",
+      "withoutVehicles": "Without vehicles"
+    },
+    "results": {
+      "of": "of",
+      "inspections": "inspections",
+      "vehiclesRegistered": "vehicles registered",
+      "inspectorsRegistered": "inspectors registered"
+    },
+    "card": {
+      "checklistScore": "Checklist Score",
+      "viewDetails": "View Details"
+    },
+    "inspectors": {
+      "createTitle": "Create Inspector",
+      "createDescription": "Add a new inspector to the system. They will be able to perform vehicle inspections.",
+      "name": "Name",
+      "namePlaceholder": "Full name",
+      "email": "Email",
+      "emailPlaceholder": "inspector@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Minimum 8 characters",
+      "passwordHint": "Password must be at least 8 characters long",
+      "create": "Create Inspector",
+      "detailsSection": "Inspector Details",
+      "role": "Inspector",
+      "active": "Active",
+      "inactive": "Inactive",
+      "profileImage": "Profile Image",
+      "uploadImage": "Click to upload profile image",
+      "changeImage": "Change image",
+      "assignVehicles": "Assign Vehicles",
+      "searchVehicles": "Search vehicles...",
+      "noVehiclesAvailable": "No vehicles available",
+      "noVehiclesMatch": "No vehicles match your search",
+      "alreadyAssigned": "assigned",
+      "vehiclesCount": "vehicles",
+      "inspectionsCount": "inspections",
+      "assignedVehicles": "Assigned Vehicles",
+      "deleteTitle": "Delete Inspector",
+      "deleteDescription": "Are you sure you want to delete inspector {name}? This action cannot be undone.",
+      "validation": {
+        "nameRequired": "Name must be at least 2 characters",
+        "emailInvalid": "Please enter a valid email address",
+        "passwordMin": "Password must be at least 8 characters"
+      }
+    },
+    "empty": {
+      "inspections": "No inspections yet",
+      "inspectionsHint": "Create your first vehicle inspection to get started.",
+      "vehicles": "No vehicles registered",
+      "vehiclesHint": "Add a vehicle to start managing your fleet.",
+      "inspectors": "No inspectors registered",
+      "inspectorsHint": "Create an inspector account to start assigning vehicle inspections.",
+      "noResults": "No results found",
+      "noResultsHint": "Try adjusting your search or filters."
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "errors": {
+      "notFound": "Inspection not found",
+      "loadingError": "Error loading data",
+      "loadingErrorDescription": "Could not load inspections data. Please try again later."
+    },
+    "vehicles": {
+      "addVehicle": "Add Vehicle",
+      "saveChanges": "Save Changes",
+      "editVehicle": "Edit Vehicle",
+      "deleteVehicle": "Delete Vehicle",
+      "dialogDescription": "Enter the vehicle details and assign an inspector.",
+      "modelo": "Model",
+      "matricula": "License Plate",
+      "modelPlaceholder": "e.g. Toyota Hilux 2024",
+      "platePlaceholder": "e.g. 1234-ABC",
+      "assignedInspector": "Assigned Inspector",
+      "selectInspector": "Select an inspector",
+      "noInspector": "No inspector assigned",
+      "vehicleInfo": "Vehicle Information",
+      "vehicleImage": "Vehicle Image",
+      "status": "Status",
+      "uploadImage": "Click to upload image",
+      "removeImage": "Remove image",
+      "createNewInspector": "Create New Inspector",
+      "deleteTitle": "Delete Vehicle",
+      "deleteDescription": "Are you sure you want to delete {{model}} ({{plate}})? This action cannot be undone.",
+      "active": "Active",
+      "inactive": "Inactive",
+      "assignedTo": "Assigned to",
+      "inspectionCount": "Inspections",
+      "validation": {
+        "modelRequired": "Vehicle model is required",
+        "plateRequired": "License plate is required"
+      }
+    },
+    "vehicleTable": {
+      "image": "Image",
+      "model": "Model",
+      "plate": "Plate",
+      "status": "Status",
+      "inspector": "Inspector",
+      "inspections": "Inspections",
+      "created": "Created"
+    },
+    "inspectorTable": {
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "vehicles": "Vehicles",
+      "inspections": "Inspections",
+      "assignedPlates": "Assigned Plates",
+      "joined": "Joined"
+    },
+    "inspectionTable": {
+      "image": "Image",
+      "vehicle": "Vehicle",
+      "inspector": "Inspector",
+      "status": "Status",
+      "mileage": "Mileage",
+      "score": "Score",
+      "photos": "Photos",
+      "date": "Date"
+    },
+    "form": {
+      "title": "New Vehicle Inspection",
+      "description": "Complete all steps to submit the inspection.",
+      "noVehiclesTitle": "No vehicles available",
+      "noVehicles": "No vehicles available. Ask an administrator to add vehicles.",
+      "submit": "Submit Inspection",
+      "stepOf": "Step {current} of {total}",
+      "steps": {
+        "vehicle": {
+          "title": "Vehicle Data",
+          "shortTitle": "Vehicle",
+          "description": "Select the vehicle and enter the current mileage."
+        },
+        "checklist": {
+          "title": "Inspection Checklist",
+          "shortTitle": "Checklist",
+          "description": "Check each item that is in good condition."
+        },
+        "photos": {
+          "title": "Photographs",
+          "shortTitle": "Photos",
+          "description": "Take the 6 mandatory photographs of the vehicle."
+        },
+        "observations": {
+          "title": "Observations",
+          "shortTitle": "Notes",
+          "description": "Add any additional observations or notes."
+        },
+        "signature": {
+          "title": "Digital Signature",
+          "shortTitle": "Signature",
+          "description": "Sign to confirm the inspection."
+        }
+      },
+      "vehicle": {
+        "selectVehicle": "Vehicle",
+        "selectPlaceholder": "Select a vehicle",
+        "mileage": "Mileage (km)",
+        "mileagePlaceholder": "Enter current mileage",
+        "validation": {
+          "required": "Please select a vehicle",
+          "mileagePositive": "Mileage must be a positive number"
+        }
+      },
+      "checklist": {
+        "good": "OK",
+        "bad": "Fail",
+        "levels": {
+          "title": "Fluid Levels",
+          "oil": "Oil Level",
+          "coolant": "Coolant Level",
+          "brakeFluid": "Brake Fluid Level",
+          "hydraulic": "Hydraulic Fluid Level"
+        },
+        "pedals": {
+          "title": "Pedals",
+          "brake": "Brake Pedal",
+          "clutch": "Clutch Pedal",
+          "gas": "Gas Pedal"
+        },
+        "lights": {
+          "title": "Lights",
+          "headlights": "Headlights",
+          "tailLights": "Tail Lights",
+          "brakeLights": "Brake Lights",
+          "turnSignals": "Turn Signals",
+          "hazardLights": "Hazard Lights",
+          "reversingLights": "Reversing Lights",
+          "dashboardLights": "Dashboard Lights"
+        }
+      },
+      "photos": {
+        "description": "Take all 6 required photographs of the vehicle.",
+        "takePhoto": "Tap to take photo",
+        "uploaded": "photos uploaded",
+        "front": "Front",
+        "rear": "Rear",
+        "driverSide": "Driver Side",
+        "passengerSide": "Passenger Side",
+        "interior": "Interior",
+        "safetyDevices": "Safety Devices",
+        "validation": {
+          "allRequired": "All 6 photographs are required"
+        }
+      },
+      "observations": {
+        "label": "Observations",
+        "hint": "This field is optional. Add any relevant notes about the inspection.",
+        "placeholder": "Enter any observations, damages, or notes..."
+      },
+      "signature": {
+        "label": "Digital Signature",
+        "hint": "Draw your signature below and save it.",
+        "drawHere": "Draw your signature here",
+        "save": "Save Signature",
+        "clear": "Clear",
+        "validation": {
+          "required": "Digital signature is required"
+        }
+      }
+    },
+    "delete": {
+      "title": "Delete Inspection",
+      "description": "Are you sure you want to delete this inspection? This action cannot be undone."
+    },
+    "approval": {
+      "title": "Review Inspection",
+      "review": "Review",
+      "approve": "Approve",
+      "reject": "Reject",
+      "confirmReject": "Confirm Rejection",
+      "commentsLabel": "Rejection Comments",
+      "commentsPlaceholder": "Explain why this inspection is being rejected...",
+      "validation": {
+        "commentsRequired": "Comments are required when rejecting an inspection"
+      }
+    },
+    "detail": {
+      "title": "Inspection Details",
+      "checklistResults": "Checklist Results",
+      "photos": "Photographs",
+      "observations": "Observations",
+      "signature": "Digital Signature",
+      "approval": "Approval Information",
+      "approvedBy": "Reviewed by",
+      "backToList": "Back to inspections",
+      "failed": "failed",
+      "itemsPassed": "items passed"
     }
   },
   "taskPage": {
@@ -1046,9 +1339,11 @@
       "admin": "Admin",
       "seller": "P. Manager",
       "dealer": "Dealer",
+      "inspector": "Inspector",
       "adminDescription": "Full access to all system features",
       "sellerDescription": "Manages clients, visits and commercial projects",
-      "dealerDescription": "Documents visits and assigns them to a P. Manager"
+      "dealerDescription": "Documents visits and assigns them to a P. Manager",
+      "inspectorDescription": "Performs vehicle inspections and reports"
     },
     "providers": {
       "credentials": "Credentials",

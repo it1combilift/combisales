@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { getFormSteps } from "./constants";
 import { useMemo, useEffect } from "react";
 import { Form } from "@/components/ui/form";
 import { useI18n } from "@/lib/i18n/context";

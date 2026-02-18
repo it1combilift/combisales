@@ -131,7 +131,7 @@
     "filters": "Filtros",
     "results": "Resultados",
     "resultsFor": "Resultados para",
-    "status ": "Estado",
+    "status": "Estado",
     "loadMore": "Cargar más",
     "clearFilters": "Limpiar filtros",
     "actions": "Acciones",
@@ -243,7 +243,8 @@
     "reports": "Informes",
     "documents": "Documentos",
     "assistant": "Asistente",
-    "dealers": "Proveedores"
+    "dealers": "Proveedores",
+    "inspections": "Inspecciones"
   },
   "header": {
     "welcome": "Bienvenido",
@@ -363,6 +364,297 @@
       "unexpectedError": "Error inesperado al iniciar sesión.",
       "genericAuthError": "Error de autenticación. Intenta nuevamente.",
       "zohoAuthError": "Error de autenticación con Zoho. Intenta nuevamente."
+    }
+  },
+  "inspectionsPage": {
+    "title": "Inspecciones de Vehículos",
+    "description": "Gestiona las inspecciones de vehículos, aprobaciones y flota.",
+    "newInspection": "Nueva Inspección",
+    "tabs": {
+      "inspections": "Inspecciones",
+      "vehicles": "Vehículos",
+      "inspectors": "Inspectores"
+    },
+    "badges": {
+      "inspections": "inspecciones",
+      "vehicles": "vehículos",
+      "inspectors": "inspectores"
+    },
+    "filters": {
+      "status": "Estado",
+      "allStatuses": "Todos los estados",
+      "searchPlaceholder": "Buscar por vehículo, matrícula o inspector...",
+      "clearFilters": "Limpiar filtros",
+      "advancedFilters": "Filtros Avanzados"
+    },
+    "vehicleFilters": {
+      "searchPlaceholder": "Buscar por modelo o matrícula...",
+      "status": "Estado",
+      "allStatuses": "Todos los estados",
+      "assignment": "Asignación",
+      "allAssignments": "Todos los vehículos",
+      "assigned": "Asignados",
+      "unassigned": "Sin asignar"
+    },
+    "inspectorFilters": {
+      "searchPlaceholder": "Buscar por nombre o correo...",
+      "status": "Estado",
+      "allStatuses": "Todos los estados",
+      "vehicles": "Vehículos",
+      "allVehicles": "Todos los inspectores",
+      "withVehicles": "Con vehículos",
+      "withoutVehicles": "Sin vehículos"
+    },
+    "noImage": "Sin imagen",
+    "results": {
+      "of": "de",
+      "inspections": "inspecciones",
+      "vehiclesRegistered": "vehículos registrados",
+      "inspectorsRegistered": "inspectores registrados"
+    },
+    "card": {
+      "checklistScore": "Puntuación del Checklist",
+      "viewDetails": "Ver Detalles"
+    },
+    "inspectors": {
+      "createTitle": "Crear Inspector",
+      "createDescription": "Añade un nuevo inspector al sistema. Podrá realizar inspecciones de vehículos.",
+      "name": "Nombre",
+      "namePlaceholder": "Nombre completo",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "inspector@ejemplo.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Mínimo 8 caracteres",
+      "passwordHint": "La contraseña debe tener al menos 8 caracteres",
+      "create": "Crear Inspector",
+      "detailsSection": "Datos del Inspector",
+      "role": "Inspector",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "profileImage": "Imagen de Perfil",
+      "uploadImage": "Clic para subir imagen de perfil",
+      "changeImage": "Cambiar imagen",
+      "assignVehicles": "Asignar Vehículos",
+      "searchVehicles": "Buscar vehículos...",
+      "noVehiclesAvailable": "No hay vehículos disponibles",
+      "noVehiclesMatch": "Ningún vehículo coincide con tu búsqueda",
+      "alreadyAssigned": "asignado",
+      "vehiclesCount": "vehículos",
+      "inspectionsCount": "inspecciones",
+      "assignedVehicles": "Vehículos Asignados",
+      "deleteTitle": "Eliminar Inspector",
+      "deleteDescription": "¿Estás seguro de que quieres eliminar al inspector {name}? Esta acción no se puede deshacer.",
+      "validation": {
+        "nameRequired": "El nombre debe tener al menos 2 caracteres",
+        "emailInvalid": "Introduce un correo electrónico válido",
+        "passwordMin": "La contraseña debe tener al menos 8 caracteres"
+      }
+    },
+    "empty": {
+      "inspections": "No hay inspecciones aún",
+      "inspectionsHint": "Crea tu primera inspección de vehículo para empezar.",
+      "vehicles": "No hay vehículos registrados",
+      "vehiclesHint": "Añade un vehículo para empezar a gestionar tu flota.",
+      "inspectors": "No hay inspectores registrados",
+      "inspectorsHint": "Crea una cuenta de inspector para empezar a asignar inspecciones de vehículos.",
+      "noResults": "Sin resultados",
+      "noResultsHint": "Intenta ajustar tu búsqueda o filtros."
+    },
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "errors": {
+      "notFound": "Inspección no encontrada",
+      "loadingError": "Error al cargar datos",
+      "loadingErrorDescription": "No se pudieron cargar los datos de inspecciones. Inténtalo de nuevo más tarde."
+    },
+    "vehicles": {
+      "addVehicle": "Agregar Vehículo",
+      "saveChanges": "Guardar Cambios",
+      "editVehicle": "Editar Vehículo",
+      "deleteVehicle": "Eliminar Vehículo",
+      "dialogDescription": "Introduce los datos del vehículo y asigna un inspector.",
+      "modelo": "Modelo",
+      "matricula": "Matrícula",
+      "modelPlaceholder": "ej. Toyota Hilux 2024",
+      "platePlaceholder": "ej. 1234-ABC",
+      "assignedInspector": "Inspector Asignado",
+      "selectInspector": "Selecciona un inspector",
+      "noInspector": "Sin inspector asignado",
+      "vehicleInfo": "Información del Vehículo",
+      "vehicleImage": "Imagen del Vehículo",
+      "status": "Estado",
+      "uploadImage": "Clic para subir imagen",
+      "removeImage": "Eliminar imagen",
+      "createNewInspector": "Crear Nuevo Inspector",
+      "deleteTitle": "Eliminar Vehículo",
+      "deleteDescription": "¿Estás seguro de que quieres eliminar {{model}} ({{plate}})? Esta acción no se puede deshacer.",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "assignedTo": "Asignado a",
+      "inspectionCount": "Inspecciones",
+      "validation": {
+        "modelRequired": "El modelo del vehículo es obligatorio",
+        "plateRequired": "La matrícula es obligatoria"
+      }
+    },
+    "vehicleTable": {
+      "image": "Imagen",
+      "model": "Modelo",
+      "plate": "Matrícula",
+      "status": "Estado",
+      "inspector": "Inspector",
+      "inspections": "Inspecciones",
+      "created": "Creado"
+    },
+    "inspectorTable": {
+      "name": "Nombre",
+      "email": "Correo",
+      "status": "Estado",
+      "vehicles": "Vehículos",
+      "inspections": "Inspecciones",
+      "assignedPlates": "Matrículas asignadas",
+      "joined": "Registro"
+    },
+    "inspectionTable": {
+      "image": "Imagen",
+      "vehicle": "Vehículo",
+      "inspector": "Inspector",
+      "status": "Estado",
+      "mileage": "Kilometraje",
+      "score": "Puntuación",
+      "photos": "Fotos",
+      "date": "Fecha"
+    },
+    "form": {
+      "title": "Nueva Inspección de Vehículo",
+      "description": "Completa todos los pasos para enviar la inspección.",
+      "noVehicles": "No hay vehículos disponibles. Pide a un administrador que añada vehículos.",
+      "submit": "Enviar Inspección",
+      "stepOf": "Paso {current} de {total}",
+      "steps": {
+        "vehicle": {
+          "title": "Datos del Vehículo",
+          "shortTitle": "Vehículo",
+          "description": "Selecciona el vehículo e introduce el kilometraje actual."
+        },
+        "checklist": {
+          "title": "Lista de Verificación",
+          "shortTitle": "Checklist",
+          "description": "Marca cada elemento que esté en buen estado."
+        },
+        "photos": {
+          "title": "Fotografías",
+          "shortTitle": "Fotos",
+          "description": "Toma las 6 fotografías obligatorias del vehículo."
+        },
+        "observations": {
+          "title": "Observaciones",
+          "shortTitle": "Notas",
+          "description": "Añade observaciones o notas adicionales."
+        },
+        "signature": {
+          "title": "Firma Digital",
+          "shortTitle": "Firma",
+          "description": "Firma para confirmar la inspección."
+        }
+      },
+      "vehicle": {
+        "selectVehicle": "Vehículo",
+        "selectPlaceholder": "Selecciona un vehículo",
+        "mileage": "Kilometraje (km)",
+        "mileagePlaceholder": "Introduce el kilometraje actual",
+        "validation": {
+          "required": "Selecciona un vehículo",
+          "mileagePositive": "El kilometraje debe ser un número positivo"
+        }
+      },
+      "checklist": {
+        "good": "OK",
+        "bad": "Fallo",
+        "levels": {
+          "title": "Niveles de Fluidos",
+          "oil": "Nivel de Aceite",
+          "coolant": "Nivel de Refrigerante",
+          "brakeFluid": "Nivel de Líquido de Frenos",
+          "hydraulic": "Nivel de Fluido Hidráulico"
+        },
+        "pedals": {
+          "title": "Pedales",
+          "brake": "Pedal de Freno",
+          "clutch": "Pedal de Embrague",
+          "gas": "Pedal de Acelerador"
+        },
+        "lights": {
+          "title": "Luces",
+          "headlights": "Luces Delanteras",
+          "tailLights": "Luces Traseras",
+          "brakeLights": "Luces de Freno",
+          "turnSignals": "Intermitentes",
+          "hazardLights": "Luces de Emergencia",
+          "reversingLights": "Luces de Marcha Atrás",
+          "dashboardLights": "Luces del Tablero"
+        }
+      },
+      "photos": {
+        "description": "Toma las 6 fotografías obligatorias del vehículo.",
+        "takePhoto": "Toca para tomar foto",
+        "uploaded": "fotos subidas",
+        "front": "Frontal",
+        "rear": "Trasera",
+        "driverSide": "Lado del Conductor",
+        "passengerSide": "Lado del Copiloto",
+        "interior": "Interior",
+        "safetyDevices": "Dispositivos de Seguridad",
+        "validation": {
+          "allRequired": "Las 6 fotografías son obligatorias"
+        }
+      },
+      "observations": {
+        "label": "Observaciones",
+        "hint": "Este campo es opcional. Añade cualquier nota relevante sobre la inspección.",
+        "placeholder": "Introduce observaciones, daños o notas..."
+      },
+      "signature": {
+        "label": "Firma Digital",
+        "hint": "Dibuja tu firma debajo y guárdala.",
+        "drawHere": "Dibuja tu firma aquí",
+        "save": "Guardar Firma",
+        "clear": "Limpiar",
+        "validation": {
+          "required": "La firma digital es obligatoria"
+        }
+      }
+    },
+    "delete": {
+      "title": "Eliminar Inspección",
+      "description": "¿Estás seguro de que quieres eliminar esta inspección? Esta acción no se puede deshacer."
+    },
+    "approval": {
+      "title": "Revisar Inspección",
+      "review": "Revisar",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "confirmReject": "Confirmar Rechazo",
+      "commentsLabel": "Comentarios de Rechazo",
+      "commentsPlaceholder": "Explica por qué se rechaza esta inspección...",
+      "validation": {
+        "commentsRequired": "Los comentarios son obligatorios al rechazar una inspección"
+      }
+    },
+    "detail": {
+      "title": "Detalles de la Inspección",
+      "checklistResults": "Resultados del Checklist",
+      "photos": "Fotografías",
+      "observations": "Observaciones",
+      "signature": "Firma Digital",
+      "approval": "Información de Aprobación",
+      "approvedBy": "Revisado por",
+      "backToList": "Volver a inspecciones",
+      "failed": "fallidos",
+      "itemsPassed": "elementos aprobados"
     }
   },
   "taskPage": {
@@ -1044,9 +1336,11 @@
       "admin": "Admin",
       "seller": "P. Manager",
       "dealer": "Distribuidor",
+      "inspector": "Inspector",
       "adminDescription": "Acceso total a todas las funciones del sistema",
       "sellerDescription": "Gestiona clientes, visitas y proyectos comerciales",
-      "dealerDescription": "Documenta visitas y las asigna a un P. Manager"
+      "dealerDescription": "Documenta visitas y las asigna a un P. Manager",
+      "inspectorDescription": "Realiza inspecciones de vehículos e informes"
     },
     "providers": {
       "credentials": "Credenciales",

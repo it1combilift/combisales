@@ -10,7 +10,7 @@ export async function PATCH(request: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.email) {
-      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -19,7 +19,7 @@ export async function PATCH(request: Request) {
     if (!validation.success) {
       return NextResponse.json(
         {
-          error: "Datos inválidos",
+          error: "Invalid input data",
           details: validation.error.flatten().fieldErrors,
         },
         { status: 400 }

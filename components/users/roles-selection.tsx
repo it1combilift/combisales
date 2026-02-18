@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Role } from "@prisma/client";
 import { useI18n } from "@/lib/i18n/context";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Shield, Users, Store } from "lucide-react";
+import { Shield, Users, Store, ClipboardCheck } from "lucide-react";
 import { Label } from "../ui/label";
 
 interface RolesSelectionProps {
@@ -35,6 +35,12 @@ const ROLE_CONFIG = {
     color: "bg-amber-500",
     borderColor: "border-amber-500/50",
     bgColor: "bg-amber-500/10",
+  },
+  [Role.INSPECTOR]: {
+    icon: ClipboardCheck,
+    color: "bg-violet-500",
+    borderColor: "border-violet-500/50",
+    bgColor: "bg-violet-500/10",
   },
 };
 
@@ -67,12 +73,14 @@ export function RolesSelection({
     [Role.ADMIN]: t("users.roles.admin"),
     [Role.SELLER]: t("users.roles.seller"),
     [Role.DEALER]: t("users.roles.dealer"),
+    [Role.INSPECTOR]: t("users.roles.inspector"),
   };
 
   const roleDescriptions: Record<Role, string> = {
     [Role.ADMIN]: t("users.roles.adminDescription"),
     [Role.SELLER]: t("users.roles.sellerDescription"),
     [Role.DEALER]: t("users.roles.dealerDescription"),
+    [Role.INSPECTOR]: t("users.roles.inspectorDescription"),
   };
 
   return (

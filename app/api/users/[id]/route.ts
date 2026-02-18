@@ -111,7 +111,7 @@ export async function PATCH(
     if (!validation.success) {
       return NextResponse.json(
         {
-          error: "Datos inválidos",
+          error: "Invalid input data",
           details: validation.error.flatten().fieldErrors,
         },
         { status: 400 },

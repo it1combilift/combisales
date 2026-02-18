@@ -2,6 +2,7 @@ import type { z } from "zod";
 import { toast } from "sonner";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { H1 } from "../fonts/fonts";
 import { Label } from "../ui/label";
 import { motion } from "framer-motion";
 import { Spinner } from "../ui/spinner";
@@ -9,7 +10,6 @@ import { signIn } from "next-auth/react";
 import { Checkbox } from "../ui/checkbox";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { H1, Paragraph } from "../fonts/fonts";
 import { Button } from "@/components/ui/button";
 import { createLoginSchema } from "@/schemas/auth";
 import { useTranslation } from "@/lib/i18n/context";
@@ -61,7 +61,7 @@ export function LoginForm({
     } else if (error) {
       toast.error(
         t("loginForm.toasts.authError", {
-          error: decodeURIComponent(error), // Decode for cleaner message if needed, or pass raw
+          error: decodeURIComponent(error),
         }),
       );
       const url = new URL(window.location.href);

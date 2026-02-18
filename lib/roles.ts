@@ -72,6 +72,13 @@ export function isDealer(roles: Role[] | Role | undefined | null): boolean {
 }
 
 /**
+ * Check if user is an inspector (has INSPECTOR role)
+ */
+export function isInspector(roles: Role[] | Role | undefined | null): boolean {
+  return hasRole(roles, Role.INSPECTOR);
+}
+
+/**
  * Check if user can act as a seller (has SELLER role or is ADMIN with SELLER role)
  * This is used for filtering users that can be assigned to DEALERs
  */
@@ -83,7 +90,7 @@ export function canActAsSeller(
 
 /**
  * Get the primary role for display purposes.
- * Priority: ADMIN > SELLER > DEALER
+ * Priority: ADMIN > INSPECTOR > SELLER > DEALER
  */
 export function getPrimaryRole(roles: Role[] | Role | undefined | null): Role {
   if (!roles) return Role.SELLER;
@@ -91,6 +98,7 @@ export function getPrimaryRole(roles: Role[] | Role | undefined | null): Role {
     return roles;
   }
   if (roles.includes(Role.ADMIN)) return Role.ADMIN;
+  if (roles.includes(Role.INSPECTOR)) return Role.INSPECTOR;
   if (roles.includes(Role.SELLER)) return Role.SELLER;
   if (roles.includes(Role.DEALER)) return Role.DEALER;
   return Role.SELLER;

@@ -18,6 +18,8 @@ export const API_ERRORS = {
     CUSTOMER: "Cliente no encontrado",
     FILE: "Archivo no encontrado",
     ASSIGNED_SELLER: "Vendedor asignado no encontrado",
+    VEHICLE: "Vehículo no encontrado",
+    INSPECTION: "Inspección no encontrada",
   },
   REQUIRED: {
     CUSTOMER_ID: "customerId es requerido",
@@ -35,6 +37,15 @@ export const API_ERRORS = {
     DELETE_VISIT: "Error al eliminar la visita",
     UPLOAD_FILE: "Error al procesar la solicitud de subida",
     DELETE_FILE: "Error al eliminar el archivo",
+    FETCH_VEHICLES: "Error al obtener los vehículos",
+    CREATE_VEHICLE: "Error al crear el vehículo",
+    UPDATE_VEHICLE: "Error al actualizar el vehículo",
+    DELETE_VEHICLE: "Error al eliminar el vehículo",
+    FETCH_INSPECTIONS: "Error al obtener las inspecciones",
+    CREATE_INSPECTION: "Error al crear la inspección",
+    UPDATE_INSPECTION: "Error al actualizar la inspección",
+    DELETE_INSPECTION: "Error al eliminar la inspección",
+    APPROVE_INSPECTION: "Error al aprobar/rechazar la inspección",
   },
 } as const;
 
@@ -44,6 +55,14 @@ export const API_SUCCESS = {
   VISIT_UPDATED: "Visita actualizada exitosamente",
   VISIT_DELETED: "Visita eliminada exitosamente",
   FILE_DELETED: "Archivo eliminado correctamente",
+  VEHICLE_CREATED: "Vehículo creado exitosamente",
+  VEHICLE_UPDATED: "Vehículo actualizado exitosamente",
+  VEHICLE_DELETED: "Vehículo eliminado exitosamente",
+  INSPECTION_CREATED: "Inspección creada exitosamente",
+  INSPECTION_UPDATED: "Inspección actualizada exitosamente",
+  INSPECTION_DELETED: "Inspección eliminada exitosamente",
+  INSPECTION_APPROVED: "Inspección aprobada exitosamente",
+  INSPECTION_REJECTED: "Inspección rechazada exitosamente",
 } as const;
 
 // ==================== API RESPONSE HELPERS ====================
