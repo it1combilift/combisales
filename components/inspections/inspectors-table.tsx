@@ -31,11 +31,20 @@ import {
   ChevronUp,
   ChevronDown,
   ClipboardCheck,
-  Mail,
   CarFront,
-  Edit,
+  ArrowUpDown,
+  MoreHorizontal,
+  PencilLine,
   Trash2,
 } from "lucide-react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface InspectorData {
   id: string;
@@ -78,7 +87,7 @@ export function InspectorsTable({
   onEdit,
   onDelete,
 }: InspectorsTableProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
@@ -120,16 +129,20 @@ export function InspectorsTable({
     return sortDirection === "asc" ? comparison : -comparison;
   });
 
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) return null;
+  /* Sort icon helper */
+  function SortIcon({ field }: { field: SortField }) {
+    if (sortField !== field) {
+      return <ArrowUpDown className="size-3 ml-1 opacity-40" />;
+    }
     return sortDirection === "asc" ? (
-      <ChevronUp className="size-3 ml-0.5" />
+      <ChevronUp className="size-3 ml-1" />
     ) : (
-      <ChevronDown className="size-3 ml-0.5" />
+      <ChevronDown className="size-3 ml-1" />
     );
-  };
+  }
 
-  const SortableHeader = ({
+  /* Sortable header cell */
+  function SortableHeader({
     field,
     children,
     className,
@@ -137,54 +150,62 @@ export function InspectorsTable({
     field: SortField;
     children: React.ReactNode;
     className?: string;
-  }) => (
-    <TableHead
-      className={cn(
-        "font-medium text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors whitespace-nowrap",
-        className,
-      )}
-      onClick={() => handleSort(field)}
-    >
-      <span className="flex items-center">
-        {children}
-        <SortIcon field={field} />
-      </span>
-    </TableHead>
-  );
+  }) {
+    return (
+      <TableHead
+        className={cn(
+          "font-medium text-xs text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors whitespace-nowrap",
+          sortField === field && "text-foreground",
+          className,
+        )}
+        onClick={() => handleSort(field)}
+      >
+        <span className="inline-flex items-center">
+          {children}
+          <SortIcon field={field} />
+        </span>
+      </TableHead>
+    );
+  }
 
   return (
     <TooltipProvider>
-      <div className="rounded-lg border border-border bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
-                <SortableHeader field="name">
+              <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
+                <SortableHeader field="name" className="px-4 py-3">
                   {t("inspectionsPage.inspectorTable.name")}
                 </SortableHeader>
-                <SortableHeader field="status">
+                <SortableHeader field="status" className="px-3 py-3">
                   {t("inspectionsPage.inspectorTable.status")}
                 </SortableHeader>
-                <SortableHeader field="vehicles" className="text-left">
+                <SortableHeader
+                  field="vehicles"
+                  className="text-center px-3 py-3"
+                >
                   {t("inspectionsPage.inspectorTable.vehicles")}
                 </SortableHeader>
                 <SortableHeader
                   field="inspections"
-                  className="text-right hidden md:table-cell"
+                  className="text-center hidden md:table-cell px-3 py-3"
                 >
                   {t("inspectionsPage.inspectorTable.inspections")}
                 </SortableHeader>
-                <TableHead className="font-medium text-xs text-muted-foreground hidden lg:table-cell whitespace-nowrap">
+                <TableHead className="font-medium text-xs text-muted-foreground hidden lg:table-cell whitespace-nowrap px-3 py-3">
                   {t("inspectionsPage.inspectorTable.assignedPlates")}
                 </TableHead>
                 <SortableHeader
                   field="createdAt"
-                  className="hidden xl:table-cell"
+                  className="hidden xl:table-cell px-3 py-3"
                 >
                   {t("inspectionsPage.inspectorTable.joined")}
                 </SortableHeader>
                 {(onEdit || onDelete) && (
-                  <TableHead className="w-20 p-2"></TableHead>
+                  <TableHead className="w-14 px-3 py-3">
+                    <span className="sr-only">{t("common.actions")}</span>
+                  </TableHead>
                 )}
               </TableRow>
             </TableHeader>
@@ -199,51 +220,55 @@ export function InspectorsTable({
                 return (
                   <TableRow
                     key={inspector.id}
-                    className="hover:bg-muted/20 transition-colors group"
+                    className="hover:bg-muted/30 transition-colors group border-border/40"
                   >
                     {/* Name + Avatar */}
-                    <TableCell className="py-2">
-                      <div className="flex items-center gap-2.5">
+                    <TableCell className="px-4 py-3">
+                      <div className="flex items-center gap-3">
                         {inspector.image ? (
                           <Image
                             src={inspector.image}
                             alt={inspector.name || inspector.email}
-                            width={28}
-                            height={28}
-                            className="size-10 rounded-full object-cover object-center ring-1 ring-border shrink-0"
+                            width={36}
+                            height={36}
+                            className="size-9 rounded-full object-cover object-center ring-2 ring-border shrink-0"
                           />
                         ) : (
-                          <div className="size-10 flex items-center justify-center rounded-full bg-primary/10 text-primary text-[10px] font-bold shrink-0 ring-1 ring-primary/20">
+                          <div className="size-9 flex items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0 ring-2 ring-primary/20">
                             {getInitials(inspector.name || inspector.email)}
                           </div>
                         )}
-                        <div className="flex flex-col">
-                          <div className="font-medium text-sm text-foreground leading-tight">
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-semibold text-sm text-foreground leading-tight truncate">
                             {inspector.name || inspector.email}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                          </span>
+                          <span className="text-[11px] text-muted-foreground mt-0.5 truncate">
                             {inspector.email}
-                          </div>
+                          </span>
                         </div>
                       </div>
                     </TableCell>
 
                     {/* Status */}
-                    <TableCell className="py-2">
+                    <TableCell className="px-3 py-3">
                       <Badge
-                        variant={inspector.isActive ? "success" : "destructive"}
-                        className="text-[10px] px-1.5 py-0 h-5 flex items-center gap-0.5 font-medium w-fit"
+                        variant={
+                          inspector.isActive
+                            ? "outline-success"
+                            : "outline-destructive"
+                        }
+                        className="text-[11px] px-2 py-0.5 h-auto font-semibold shadow-xs"
                       >
                         {inspector.isActive ? (
                           <>
-                            <CheckCircle2 className="size-2.5" />
+                            <CheckCircle2 className="size-3" />
                             <span>
                               {t("inspectionsPage.inspectors.active")}
                             </span>
                           </>
                         ) : (
                           <>
-                            <XCircle className="size-2.5" />
+                            <XCircle className="size-3" />
                             <span>
                               {t("inspectionsPage.inspectors.inactive")}
                             </span>
@@ -253,17 +278,17 @@ export function InspectorsTable({
                     </TableCell>
 
                     {/* Vehicle count */}
-                    <TableCell className="text-left py-2">
+                    <TableCell className="text-center px-3 py-3">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="flex items-center justify-center gap-1 text-xs">
-                            <CarFront className="size-3 text-muted-foreground" />
-                            <span className="font-medium text-foreground">
+                          <div className="inline-flex items-center gap-1.5 text-xs bg-sky-50 dark:bg-sky-950/30 rounded-md px-2 py-1 border border-sky-200/60 dark:border-sky-800/50">
+                            <CarFront className="size-3 text-sky-600 dark:text-sky-400" />
+                            <span className="font-bold text-sky-700 dark:text-sky-300 tabular-nums">
                               {vehicleCount}
                             </span>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent side="left" className="text-xs">
+                        <TooltipContent side="bottom" className="text-xs">
                           {vehicleCount}{" "}
                           {t("inspectionsPage.inspectors.vehiclesCount")}
                         </TooltipContent>
@@ -271,17 +296,17 @@ export function InspectorsTable({
                     </TableCell>
 
                     {/* Inspection count */}
-                    <TableCell className="text-right hidden md:table-cell py-2">
+                    <TableCell className="text-center hidden md:table-cell px-3 py-3">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="flex items-center justify-end gap-1 text-xs">
-                            <ClipboardCheck className="size-3 text-muted-foreground" />
-                            <span className="font-medium text-foreground">
+                          <div className="inline-flex items-center gap-1.5 text-xs bg-violet-50 dark:bg-violet-950/30 rounded-md px-2 py-1 border border-violet-200/60 dark:border-violet-800/50">
+                            <ClipboardCheck className="size-3 text-violet-600 dark:text-violet-400" />
+                            <span className="font-bold text-violet-700 dark:text-violet-300 tabular-nums">
                               {inspectionCount}
                             </span>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent side="left" className="text-xs">
+                        <TooltipContent side="bottom" className="text-xs">
                           {inspectionCount}{" "}
                           {t("inspectionsPage.inspectors.inspectionsCount")}
                         </TooltipContent>
@@ -289,15 +314,15 @@ export function InspectorsTable({
                     </TableCell>
 
                     {/* Assigned plates */}
-                    <TableCell className="hidden lg:table-cell py-2">
+                    <TableCell className="hidden lg:table-cell px-3 py-3">
                       {inspector.assignedVehicles &&
                       inspector.assignedVehicles.length > 0 ? (
-                        <div className="flex gap-1 flex-wrap">
+                        <div className="flex gap-1.5 flex-wrap">
                           {inspector.assignedVehicles.slice(0, 2).map((v) => (
                             <Badge
                               key={v.id}
                               variant="outline"
-                              className="text-[10px] h-5 px-1.5 gap-0.5 font-mono"
+                              className="text-[10px] h-5 px-2 gap-1 font-mono bg-muted/30 border-border/50"
                             >
                               <Car className="size-2.5" />
                               {v.plate}
@@ -306,49 +331,62 @@ export function InspectorsTable({
                           {inspector.assignedVehicles.length > 2 && (
                             <Badge
                               variant="secondary"
-                              className="text-[10px] h-5 px-1.5"
+                              className="text-[10px] h-5 px-2"
                             >
                               +{inspector.assignedVehicles.length - 2}
                             </Badge>
                           )}
                         </div>
                       ) : (
-                        <span className="text-[10px] text-muted-foreground italic">
+                        <span className="text-[11px] text-muted-foreground italic">
                           —
                         </span>
                       )}
                     </TableCell>
 
                     {/* Joined */}
-                    <TableCell className="text-xs text-muted-foreground hidden xl:table-cell py-2">
-                      {formatDateShort(inspector.createdAt)}
+                    <TableCell className="text-xs text-muted-foreground hidden xl:table-cell px-3 py-3">
+                      {formatDateShort(inspector.createdAt, locale)}
                     </TableCell>
 
                     {/* Actions */}
                     {(onEdit || onDelete) && (
-                      <TableCell className="p-2">
-                        <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {onEdit && (
+                      <TableCell className="px-3 py-3">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
                             <Button
                               variant="ghost"
-                              size="icon"
-                              className="size-7"
-                              onClick={() => onEdit(inspector)}
+                              className="size-8 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity cursor-pointer"
                             >
-                              <Edit className="size-3.5" />
+                              <MoreHorizontal className="size-4" />
+                              <span className="sr-only">
+                                {t("common.actions")}
+                              </span>
                             </Button>
-                          )}
-                          {onDelete && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-7 text-destructive hover:text-destructive"
-                              onClick={() => onDelete(inspector)}
-                            >
-                              <Trash2 className="size-3.5" />
-                            </Button>
-                          )}
-                        </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-40">
+                            {onEdit && (
+                              <DropdownMenuItem
+                                onClick={() => onEdit(inspector)}
+                                className="cursor-pointer"
+                              >
+                                <PencilLine className="size-4" />
+                                {t("common.edit")}
+                              </DropdownMenuItem>
+                            )}
+                            {onEdit && onDelete && <DropdownMenuSeparator />}
+                            {onDelete && (
+                              <DropdownMenuItem
+                                variant="destructive"
+                                onClick={() => onDelete(inspector)}
+                                className="cursor-pointer"
+                              >
+                                <Trash2 className="size-4" />
+                                {t("common.delete")}
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     )}
                   </TableRow>

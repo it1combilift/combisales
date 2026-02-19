@@ -74,7 +74,7 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
               <Car className="size-6 text-muted-foreground/50" />
             </div>
             <span className="text-[10px] text-muted-foreground/50 font-medium uppercase tracking-widest">
-              No image
+              {t("inspectionsPage.vehicleCard.noImage")}
             </span>
           </div>
         )}
@@ -90,7 +90,9 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
             ) : (
               <XCircle className="size-3" />
             )}
-            {isActive ? "Active" : "Inactive"}
+            {isActive
+              ? t("inspectionsPage.vehicleCard.active")
+              : t("inspectionsPage.vehicleCard.inactive")}
           </Badge>
         </div>
 
@@ -109,17 +111,19 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
                   )}
                 >
                   <MoreHorizontal className="size-4" />
-                  <span className="sr-only">Vehicle actions</span>
+                  <span className="sr-only">
+                    {t("inspectionsPage.vehicleCard.actions")}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-40">
+              <DropdownMenuContent align="start" className="w-44">
                 {onEdit && (
                   <DropdownMenuItem
                     onClick={() => onEdit(vehicle)}
                     className="cursor-pointer"
                   >
                     <PencilLine className="size-4" />
-                    Edit vehicle
+                    {t("inspectionsPage.vehicleCard.editVehicle")}
                   </DropdownMenuItem>
                 )}
 
@@ -132,7 +136,7 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
                     className="cursor-pointer"
                   >
                     <Trash2 className="size-4" />
-                    Delete vehicle
+                    {t("inspectionsPage.vehicleCard.deleteVehicle")}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -161,7 +165,7 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
         <div className="flex items-center gap-2.5 min-w-0">
           {vehicle.assignedInspector ? (
             <>
-              <Avatar className="size-8 shrink-0 ring-1 ring-border">
+              <Avatar className="size-8 shrink-0 ring-2 ring-border/60 group-hover:ring-primary/20 transition-all duration-300">
                 <AvatarImage
                   className="object-cover object-center"
                   src={vehicle.assignedInspector.image || undefined}
@@ -194,7 +198,9 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
               <div className="size-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
                 <User className="size-3.5" />
               </div>
-              <span className="text-[11px] italic">No inspector assigned</span>
+              <span className="text-[11px] italic">
+                {t("inspectionsPage.vehicleCard.noInspector")}
+              </span>
             </div>
           )}
         </div>
@@ -208,8 +214,8 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-1.5 cursor-default">
-                  <div className="size-6 rounded-md bg-secondary flex items-center justify-center">
-                    <ClipboardCheck className="size-3 text-muted-foreground" />
+                  <div className="size-6 rounded-md bg-violet-500/10 flex items-center justify-center">
+                    <ClipboardCheck className="size-3 text-violet-500" />
                   </div>
                   <span className="text-xs font-semibold text-card-foreground tabular-nums">
                     {inspectionCount}
@@ -217,13 +223,19 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="text-xs">
-                {inspectionCount} inspection{inspectionCount !== 1 ? "s" : ""}
+                {inspectionCount === 1
+                  ? t("inspectionsPage.vehicleCard.inspectionCountSingular", {
+                      count: inspectionCount,
+                    })
+                  : t("inspectionsPage.vehicleCard.inspectionCount", {
+                      count: inspectionCount,
+                    })}
               </TooltipContent>
             </Tooltip>
 
             <div className="flex items-center gap-1.5">
-              <div className="size-6 rounded-md bg-secondary flex items-center justify-center">
-                <Calendar className="size-3 text-muted-foreground" />
+              <div className="size-6 rounded-md bg-amber-500/10 flex items-center justify-center">
+                <Calendar className="size-3 text-amber-500" />
               </div>
               <span className="text-[11px] text-muted-foreground">
                 {formatDate(vehicle.createdAt, locale)}

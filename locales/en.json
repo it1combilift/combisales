@@ -508,7 +508,19 @@
       "status": "Status",
       "inspector": "Inspector",
       "inspections": "Inspections",
-      "created": "Created"
+      "created": "Created",
+      "notAssigned": "Not assigned"
+    },
+    "vehicleCard": {
+      "noImage": "No image",
+      "active": "Active",
+      "inactive": "Inactive",
+      "actions": "Vehicle actions",
+      "editVehicle": "Edit vehicle",
+      "deleteVehicle": "Delete vehicle",
+      "noInspector": "No inspector assigned",
+      "inspectionCount": "{count} inspections",
+      "inspectionCountSingular": "{count} inspection"
     },
     "inspectorTable": {
       "name": "Name",

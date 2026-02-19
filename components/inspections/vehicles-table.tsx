@@ -32,7 +32,6 @@ import {
   XCircle,
   ChevronUp,
   ChevronDown,
-  Edit,
   Trash2,
   ClipboardCheck,
   ArrowUpDown,
@@ -70,6 +69,7 @@ export function VehiclesTable({
 }: VehiclesTableProps) {
   const [sortField, setSortField] = useState<SortField>("model");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const { t, locale } = useTranslation();
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -103,7 +103,7 @@ export function VehiclesTable({
         break;
       case "inspections":
         comparison =
-          (a.inspections?.length || 0) - (b.inspections?.length || 0);
+          (a._count?.inspections ?? 0) - (b._count?.inspections ?? 0);
         break;
       case "createdAt":
         comparison =
@@ -158,43 +158,43 @@ export function VehiclesTable({
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/60">
+              <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
                 <TableHead className="w-16 font-medium text-xs text-muted-foreground px-4 py-3">
-                  Image
+                  {t("inspectionsPage.vehicleTable.image")}
                 </TableHead>
                 <SortableHeader field="model" className="px-3 py-3">
-                  Model
+                  {t("inspectionsPage.vehicleTable.model")}
                 </SortableHeader>
                 <SortableHeader
                   field="plate"
                   className="hidden sm:table-cell px-3 py-3"
                 >
-                  Plate
+                  {t("inspectionsPage.vehicleTable.plate")}
                 </SortableHeader>
                 <SortableHeader field="status" className="px-3 py-3">
-                  Status
+                  {t("inspectionsPage.vehicleTable.status")}
                 </SortableHeader>
                 <SortableHeader
                   field="inspector"
                   className="hidden md:table-cell px-3 py-3"
                 >
-                  Inspector
+                  {t("inspectionsPage.vehicleTable.inspector")}
                 </SortableHeader>
                 <SortableHeader
                   field="inspections"
                   className="text-right hidden lg:table-cell px-3 py-3"
                 >
-                  Inspections
+                  {t("inspectionsPage.vehicleTable.inspections")}
                 </SortableHeader>
                 <SortableHeader
                   field="createdAt"
                   className="hidden xl:table-cell px-3 py-3"
                 >
-                  Created
+                  {t("inspectionsPage.vehicleTable.created")}
                 </SortableHeader>
                 {(onEdit || onDelete) && (
                   <TableHead className="w-14 px-3 py-3">
-                    <span className="sr-only">Actions</span>
+                    <span className="sr-only">{t("common.actions")}</span>
                   </TableHead>
                 )}
               </TableRow>
@@ -211,7 +211,7 @@ export function VehiclesTable({
                   >
                     {/* Thumbnail */}
                     <TableCell className="px-4 py-3">
-                      <div className="relative size-12 overflow-hidden bg-secondary/50 rounded-lg shrink-0">
+                      <div className="relative size-12 overflow-hidden bg-secondary/50 rounded-lg ring-1 ring-border/30 shrink-0">
                         {vehicle.imageUrl ? (
                           <Image
                             src={vehicle.imageUrl}
@@ -239,7 +239,9 @@ export function VehiclesTable({
 
                     {/* Plate */}
                     <TableCell className="hidden sm:table-cell px-3 py-3">
-                      <Badge variant="outline-info">{vehicle.plate}</Badge>
+                      <Badge variant="outline-info" className="shadow-xs">
+                        {vehicle.plate}
+                      </Badge>
                     </TableCell>
 
                     {/* Status */}
@@ -248,14 +250,16 @@ export function VehiclesTable({
                         variant={
                           isActive ? "outline-success" : "outline-destructive"
                         }
-                        className="text-[10px] px-1.5 py-0 h-5 font-semibold"
+                        className="text-[10px] px-1.5 py-0 h-5 font-semibold shadow-xs"
                       >
                         {isActive ? (
                           <CheckCircle2 className="size-2.5" />
                         ) : (
                           <XCircle className="size-2.5" />
                         )}
-                        {isActive ? "Active" : "Inactive"}
+                        {isActive
+                          ? t("inspectionsPage.vehicles.active")
+                          : t("inspectionsPage.vehicles.inactive")}
                       </Badge>
                     </TableCell>
 
@@ -263,7 +267,7 @@ export function VehiclesTable({
                     <TableCell className="hidden md:table-cell px-3 py-3">
                       {vehicle.assignedInspector ? (
                         <div className="flex items-center gap-2.5">
-                          <Avatar className="size-10 shrink-0 ring-1 ring-border">
+                          <Avatar className="size-9 shrink-0 ring-2 ring-border/60">
                             <AvatarImage
                               className="object-cover object-center"
                               src={vehicle.assignedInspector.image || undefined}
@@ -294,7 +298,7 @@ export function VehiclesTable({
                       ) : (
                         <span className="text-xs text-muted-foreground italic flex items-center gap-1.5">
                           <User className="size-3" />
-                          Not assigned
+                          {t("inspectionsPage.vehicleTable.notAssigned")}
                         </span>
                       )}
                     </TableCell>
@@ -303,23 +307,29 @@ export function VehiclesTable({
                     <TableCell className="text-right hidden lg:table-cell px-3 py-3">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="inline-flex items-center gap-1.5 text-xs cursor-default">
-                            <ClipboardCheck className="size-3 text-muted-foreground" />
-                            <span className="font-semibold text-foreground tabular-nums">
+                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-violet-500/10 cursor-default">
+                            <ClipboardCheck className="size-3 text-violet-500" />
+                            <span className="text-xs font-semibold text-violet-700 dark:text-violet-300 tabular-nums">
                               {inspectionCount}
                             </span>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side="left" className="text-xs">
-                          {inspectionCount} inspection
-                          {inspectionCount !== 1 ? "s" : ""}
+                          {inspectionCount === 1
+                            ? t(
+                                "inspectionsPage.vehicleCard.inspectionCountSingular",
+                                { count: inspectionCount },
+                              )
+                            : t("inspectionsPage.vehicleCard.inspectionCount", {
+                                count: inspectionCount,
+                              })}
                         </TooltipContent>
                       </Tooltip>
                     </TableCell>
 
                     {/* Created */}
                     <TableCell className="text-xs text-muted-foreground hidden xl:table-cell px-3 py-3">
-                      {formatDateShort(vehicle.createdAt)}
+                      {formatDateShort(vehicle.createdAt, locale)}
                     </TableCell>
 
                     {/* Actions */}
@@ -332,17 +342,19 @@ export function VehiclesTable({
                               className="size-8 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity cursor-pointer"
                             >
                               <MoreHorizontal className="size-4" />
-                              <span className="sr-only">Actions</span>
+                              <span className="sr-only">
+                                {t("common.actions")}
+                              </span>
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-40">
+                          <DropdownMenuContent align="end" className="w-44">
                             {onEdit && (
                               <DropdownMenuItem
                                 onClick={() => onEdit(vehicle)}
                                 className="cursor-pointer"
                               >
                                 <PencilLine className="size-4" />
-                                Edit
+                                {t("common.edit")}
                               </DropdownMenuItem>
                             )}
                             {onEdit && onDelete && <DropdownMenuSeparator />}
@@ -353,7 +365,7 @@ export function VehiclesTable({
                                 className="cursor-pointer"
                               >
                                 <Trash2 className="size-4" />
-                                Delete
+                                {t("common.delete")}
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>

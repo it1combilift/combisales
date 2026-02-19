@@ -46,7 +46,7 @@ export function VehicleFilters({
   return (
     <div className="space-y-2">
       <div className="flex justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full">
           {/* Search */}
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -56,13 +56,13 @@ export function VehicleFilters({
               )}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 bg-background h-9 text-xs"
+              className="pl-10 bg-background h-9 text-xs w-full"
             />
           </div>
 
           {/* Status filter */}
           <Select value={statusFilter} onValueChange={onStatusChange}>
-            <SelectTrigger className="w-32 h-9 bg-background">
+            <SelectTrigger className="w-fit h-9 bg-background">
               <SelectValue
                 placeholder={t("inspectionsPage.vehicleFilters.status")}
               />
@@ -82,7 +82,7 @@ export function VehicleFilters({
 
           {/* Assignment filter */}
           <Select value={assignmentFilter} onValueChange={onAssignmentChange}>
-            <SelectTrigger className="w-36 h-9 bg-background hidden sm:inline-flex">
+            <SelectTrigger className="w-fit h-9 bg-background hidden sm:inline-flex">
               <SelectValue
                 placeholder={t("inspectionsPage.vehicleFilters.assignment")}
               />

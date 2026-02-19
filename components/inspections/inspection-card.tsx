@@ -38,7 +38,7 @@ export function InspectionCard({
   onDelete,
   isAdmin,
 }: InspectionCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   const statusConfig: Record<
     string,
@@ -194,7 +194,7 @@ export function InspectionCard({
             },
             {
               icon: Calendar,
-              label: formatDateShort(inspection.createdAt),
+              label: formatDateShort(inspection.createdAt, locale),
               mono: true,
             },
             {

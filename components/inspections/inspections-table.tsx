@@ -37,6 +37,7 @@ import {
   Trash2,
   Gauge,
   ImageIcon,
+  ArrowUpDown,
 } from "lucide-react";
 
 interface InspectionsTableProps {
@@ -70,7 +71,7 @@ export function InspectionsTable({
   onDelete,
   isAdmin,
 }: InspectionsTableProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
@@ -139,16 +140,20 @@ export function InspectionsTable({
     return sortDirection === "asc" ? comparison : -comparison;
   });
 
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) return null;
+  /* Sort icon helper */
+  function SortIcon({ field }: { field: SortField }) {
+    if (sortField !== field) {
+      return <ArrowUpDown className="size-3 ml-1 opacity-40" />;
+    }
     return sortDirection === "asc" ? (
-      <ChevronUp className="size-3 ml-0.5" />
+      <ChevronUp className="size-3 ml-1" />
     ) : (
-      <ChevronDown className="size-3 ml-0.5" />
+      <ChevronDown className="size-3 ml-1" />
     );
-  };
+  }
 
-  const SortableHeader = ({
+  /* Sortable header cell */
+  function SortableHeader({
     field,
     children,
     className,
@@ -156,20 +161,23 @@ export function InspectionsTable({
     field: SortField;
     children: React.ReactNode;
     className?: string;
-  }) => (
-    <TableHead
-      className={cn(
-        "font-medium text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors whitespace-nowrap",
-        className,
-      )}
-      onClick={() => handleSort(field)}
-    >
-      <span className="flex items-center">
-        {children}
-        <SortIcon field={field} />
-      </span>
-    </TableHead>
-  );
+  }) {
+    return (
+      <TableHead
+        className={cn(
+          "font-medium text-xs text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors whitespace-nowrap",
+          sortField === field && "text-foreground",
+          className,
+        )}
+        onClick={() => handleSort(field)}
+      >
+        <span className="inline-flex items-center">
+          {children}
+          <SortIcon field={field} />
+        </span>
+      </TableHead>
+    );
+  }
 
   const StatusBadge = ({ status }: { status: string }) => {
     const config: Record<
@@ -179,19 +187,19 @@ export function InspectionsTable({
       PENDING: {
         icon: Clock,
         colorClass:
-          "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800",
+          "bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800/60",
         label: t("inspectionsPage.status.pending"),
       },
       APPROVED: {
         icon: CheckCircle2,
         colorClass:
-          "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
+          "bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800/60",
         label: t("inspectionsPage.status.approved"),
       },
       REJECTED: {
         icon: XCircle,
         colorClass:
-          "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800",
+          "bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800/60",
         label: t("inspectionsPage.status.rejected"),
       },
     };
@@ -203,11 +211,11 @@ export function InspectionsTable({
       <Badge
         variant="outline"
         className={cn(
-          "text-[10px] px-1.5 py-0 h-5 flex items-center gap-0.5 font-medium w-fit border",
+          "text-[11px] px-2 py-0.5 h-auto flex items-center gap-1 font-semibold w-fit border shadow-xs",
           c.colorClass,
         )}
       >
-        <Icon className="size-2.5" />
+        <Icon className="size-3" />
         <span>{c.label}</span>
       </Badge>
     );
@@ -215,51 +223,53 @@ export function InspectionsTable({
 
   return (
     <TooltipProvider>
-      <div className="rounded-lg border border-border bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
-                <TableHead className="w-14 font-medium text-xs text-muted-foreground p-2">
+              <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
+                <TableHead className="w-16 font-medium text-xs text-muted-foreground px-4 py-3">
                   {t("inspectionsPage.inspectionTable.image")}
                 </TableHead>
-                <SortableHeader field="vehicle">
+                <SortableHeader field="vehicle" className="px-3 py-3">
                   {t("inspectionsPage.inspectionTable.vehicle")}
                 </SortableHeader>
                 <SortableHeader
                   field="inspector"
-                  className="hidden sm:table-cell"
+                  className="hidden sm:table-cell px-3 py-3"
                 >
                   {t("inspectionsPage.inspectionTable.inspector")}
                 </SortableHeader>
-                <SortableHeader field="status">
+                <SortableHeader field="status" className="px-3 py-3">
                   {t("inspectionsPage.inspectionTable.status")}
                 </SortableHeader>
                 <SortableHeader
                   field="mileage"
-                  className="hidden md:table-cell text-right"
+                  className="hidden md:table-cell text-right px-3 py-3"
                 >
                   {t("inspectionsPage.inspectionTable.mileage")}
                 </SortableHeader>
                 <SortableHeader
                   field="score"
-                  className="hidden lg:table-cell text-right"
+                  className="hidden lg:table-cell text-right px-3 py-3"
                 >
                   {t("inspectionsPage.inspectionTable.score")}
                 </SortableHeader>
                 <SortableHeader
                   field="photos"
-                  className="hidden lg:table-cell text-right"
+                  className="hidden lg:table-cell text-right px-3 py-3"
                 >
                   {t("inspectionsPage.inspectionTable.photos")}
                 </SortableHeader>
                 <SortableHeader
                   field="createdAt"
-                  className="hidden xl:table-cell"
+                  className="hidden xl:table-cell px-3 py-3"
                 >
                   {t("inspectionsPage.inspectionTable.date")}
                 </SortableHeader>
-                <TableHead className="w-24 p-2"></TableHead>
+                <TableHead className="w-28 px-3 py-3">
+                  <span className="sr-only">{t("common.actions")}</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -270,12 +280,12 @@ export function InspectionsTable({
                 return (
                   <TableRow
                     key={inspection.id}
-                    className="hover:bg-muted/20 transition-colors group cursor-pointer"
+                    className="hover:bg-muted/30 transition-colors group cursor-pointer border-border/40"
                     onClick={() => onView(inspection)}
                   >
                     {/* Vehicle Image */}
-                    <TableCell className="p-2">
-                      <div className="relative size-12 overflow-hidden bg-muted/50 rounded-lg">
+                    <TableCell className="px-4 py-3">
+                      <div className="relative size-12 overflow-hidden bg-secondary/50 rounded-lg shrink-0 ring-1 ring-border/30">
                         {inspection.vehicle.imageUrl ? (
                           <Image
                             src={inspection.vehicle.imageUrl}
@@ -292,51 +302,51 @@ export function InspectionsTable({
                     </TableCell>
 
                     {/* Vehicle model + plate */}
-                    <TableCell className="py-2">
-                      <div className="font-medium text-sm text-foreground leading-tight">
+                    <TableCell className="px-3 py-3">
+                      <div className="font-semibold text-sm text-foreground leading-tight">
                         {inspection.vehicle.model}
                       </div>
-                      <div className="text-[10px] font-mono text-muted-foreground mt-0.5">
+                      <div className="text-[11px] font-mono text-muted-foreground mt-0.5 tracking-wide">
                         {inspection.vehicle.plate}
                       </div>
                     </TableCell>
 
                     {/* Inspector */}
-                    <TableCell className="hidden sm:table-cell py-2">
-                      <div className="flex items-center gap-1.5">
-                        <div className="size-6 rounded-full bg-primary/10 text-primary text-[9px] font-bold flex items-center justify-center shrink-0">
-                          <User className="size-3" />
+                    <TableCell className="hidden sm:table-cell px-3 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="size-7 rounded-full bg-primary/10 text-primary text-[10px] font-bold flex items-center justify-center shrink-0 ring-1 ring-primary/20">
+                          <User className="size-3.5" />
                         </div>
-                        <span className="text-xs text-foreground truncate max-w-[120px]">
+                        <span className="text-xs font-medium text-foreground truncate max-w-[130px]">
                           {inspection.user.name || inspection.user.email}
                         </span>
                       </div>
                     </TableCell>
 
                     {/* Status */}
-                    <TableCell className="py-2">
+                    <TableCell className="px-3 py-3">
                       <StatusBadge status={inspection.status} />
                     </TableCell>
 
                     {/* Mileage */}
-                    <TableCell className="text-right hidden md:table-cell py-2">
-                      <div className="flex items-center justify-end gap-1 text-xs">
+                    <TableCell className="text-right hidden md:table-cell px-3 py-3">
+                      <div className="inline-flex items-center gap-1.5 text-xs bg-muted/50 rounded-md px-2 py-1 border border-border/30">
                         <Gauge className="size-3 text-muted-foreground" />
-                        <span className="font-mono font-medium text-foreground">
+                        <span className="font-mono font-semibold text-foreground tabular-nums">
                           {inspection.mileage.toLocaleString()}
                         </span>
                       </div>
                     </TableCell>
 
                     {/* Score */}
-                    <TableCell className="hidden lg:table-cell py-2">
+                    <TableCell className="hidden lg:table-cell px-3 py-3">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex items-center justify-end gap-2.5">
                             <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
                               <div
                                 className={cn(
-                                  "h-full rounded-full transition-all",
+                                  "h-full rounded-full transition-all duration-500",
                                   scorePercent >= 80
                                     ? "bg-emerald-500"
                                     : scorePercent >= 50
@@ -348,7 +358,7 @@ export function InspectionsTable({
                             </div>
                             <span
                               className={cn(
-                                "text-xs font-semibold tabular-nums min-w-8 text-right",
+                                "text-xs font-bold tabular-nums min-w-8 text-right",
                                 scorePercent >= 80
                                   ? "text-emerald-600 dark:text-emerald-400"
                                   : scorePercent >= 50
@@ -374,24 +384,25 @@ export function InspectionsTable({
                     </TableCell>
 
                     {/* Photos */}
-                    <TableCell className="text-right hidden lg:table-cell py-2">
-                      <div className="flex items-center justify-end gap-1 text-xs">
+                    <TableCell className="text-right hidden lg:table-cell px-3 py-3">
+                      <div className="inline-flex items-center gap-1.5 text-xs">
                         <ImageIcon className="size-3 text-muted-foreground" />
-                        <span className="font-medium text-foreground">
-                          {photosCount}/6
+                        <span className="font-semibold text-foreground tabular-nums">
+                          {photosCount}
                         </span>
+                        <span className="text-muted-foreground">/6</span>
                       </div>
                     </TableCell>
 
                     {/* Date */}
-                    <TableCell className="text-xs text-muted-foreground hidden xl:table-cell py-2">
-                      {formatDateShort(inspection.createdAt)}
+                    <TableCell className="text-xs text-muted-foreground hidden xl:table-cell px-3 py-3">
+                      {formatDateShort(inspection.createdAt, locale)}
                     </TableCell>
 
                     {/* Actions */}
-                    <TableCell className="p-2">
+                    <TableCell className="px-3 py-3">
                       <div
-                        className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Tooltip>
@@ -399,7 +410,7 @@ export function InspectionsTable({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="size-7"
+                              className="size-8 rounded-lg hover:bg-primary/10 hover:text-primary"
                               onClick={() => onView(inspection)}
                             >
                               <ArrowUpRight className="size-3.5" />
@@ -418,7 +429,7 @@ export function InspectionsTable({
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="size-7 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
+                                  className="size-8 rounded-lg text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
                                   onClick={() => onApprove(inspection)}
                                 >
                                   <ShieldCheck className="size-3.5" />
@@ -436,7 +447,7 @@ export function InspectionsTable({
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                className="size-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                 onClick={() => onDelete(inspection)}
                               >
                                 <Trash2 className="size-3.5" />

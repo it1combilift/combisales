@@ -2,12 +2,11 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { cn, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { formatDateShort } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/context";
 import { DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn, formatDate, formatDateShort } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import {
@@ -66,7 +65,7 @@ function Section({
 export function InspectionDetailCard({
   inspection,
 }: InspectionDetailCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Checklist score
@@ -134,9 +133,9 @@ export function InspectionDetailCard({
                     ? t("inspectionsPage.status.approved")
                     : t("inspectionsPage.status.rejected")}
                 </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-sm text-muted-foreground mt-0.5">
                   {t("inspectionsPage.detail.approvedBy")}:{" "}
-                  <span className="font-medium text-foreground">
+                  <span className="font-medium text-foreground text-sm">
                     {inspection.approval.user?.name ||
                       inspection.approval.user?.email}
                   </span>
@@ -144,7 +143,7 @@ export function InspectionDetailCard({
 
                 {/* Timestamp */}
                 <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                  {formatDate(inspection.approval.createdAt)}
+                  {formatDate(inspection.approval.createdAt, locale)}
                 </p>
               </div>
             </div>
@@ -205,7 +204,7 @@ export function InspectionDetailCard({
                   </div>
                   <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/60 rounded-lg px-2.5 py-1.5 border border-border/30">
                     <Calendar className="size-3 shrink-0" />
-                    <span>{formatDateShort(inspection.createdAt)}</span>
+                    <span>{formatDateShort(inspection.createdAt, locale)}</span>
                   </div>
                   <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/60 rounded-lg px-2.5 py-1.5 border border-border/30">
                     <Gauge className="size-3 shrink-0" />

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
+import { Search, X, LayoutGrid, List } from "lucide-react";
 
 import {
   Select,
@@ -13,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Search, X, LayoutGrid, List } from "lucide-react";
 
 interface InspectorFiltersProps {
   searchQuery: string;
@@ -56,13 +56,13 @@ export function InspectorFilters({
               )}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 bg-background h-9"
+              className="pl-10 bg-background h-9 text-xs md:w-auto w-full"
             />
           </div>
 
           {/* Status filter */}
           <Select value={statusFilter} onValueChange={onStatusChange}>
-            <SelectTrigger className="w-32 h-9 bg-background">
+            <SelectTrigger className="w-fit h-9 bg-background">
               <SelectValue
                 placeholder={t("inspectionsPage.inspectorFilters.status")}
               />
@@ -82,7 +82,7 @@ export function InspectorFilters({
 
           {/* Vehicle assignment filter */}
           <Select value={vehicleFilter} onValueChange={onVehicleFilterChange}>
-            <SelectTrigger className="w-40 h-9 bg-background hidden sm:flex">
+            <SelectTrigger className="w-fit h-9 bg-background hidden sm:flex">
               <SelectValue
                 placeholder={t("inspectionsPage.inspectorFilters.vehicles")}
               />

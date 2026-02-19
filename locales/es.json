@@ -507,7 +507,19 @@
       "status": "Estado",
       "inspector": "Inspector",
       "inspections": "Inspecciones",
-      "created": "Creado"
+      "created": "Creado",
+      "notAssigned": "Sin asignar"
+    },
+    "vehicleCard": {
+      "noImage": "Sin imagen",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "actions": "Acciones del vehículo",
+      "editVehicle": "Editar vehículo",
+      "deleteVehicle": "Eliminar vehículo",
+      "noInspector": "Sin inspector asignado",
+      "inspectionCount": "{count} inspecciones",
+      "inspectionCountSingular": "{count} inspección"
     },
     "inspectorTable": {
       "name": "Nombre",
