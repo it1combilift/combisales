@@ -115,7 +115,7 @@ export function PhotosStep({ form }: PhotosStepProps) {
         {t("inspectionsPage.form.photos.description")}
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {INSPECTION_PHOTO_TYPES.map(({ type, labelKey }) => {
           const photo = getPhotoForType(type);
           const isUploading = uploadingType === type;
