@@ -27,6 +27,7 @@ import {
   PenLine,
   ShieldCheck,
   AlertTriangle,
+  MessagesSquare,
 } from "lucide-react";
 
 interface InspectionDetailCardProps {
@@ -112,11 +113,11 @@ export function InspectionDetailCard({
               )}
             >
               {inspection.approval.approved ? (
-                <div className="size-10 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+                <div className="size-10 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0 animate-pulse">
                   <CheckCircle2 className="size-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
               ) : (
-                <div className="size-10 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
+                <div className="size-10 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0 animate-pulse">
                   <XCircle className="size-5 text-rose-600 dark:text-rose-400" />
                 </div>
               )}
@@ -150,7 +151,8 @@ export function InspectionDetailCard({
 
             {/* Comments */}
             {inspection.approval.comments && (
-              <div className="rounded-lg bg-muted/40 border border-border/50 p-4">
+              <div className="rounded-lg bg-muted/40 border border-border/50 p-4 flex items-start gap-3">
+                <MessagesSquare className="size-4 text-muted-foreground mb-2" />
                 <p className="text-sm italic text-foreground/80 leading-relaxed">
                   &ldquo;{inspection.approval.comments}&rdquo;
                 </p>

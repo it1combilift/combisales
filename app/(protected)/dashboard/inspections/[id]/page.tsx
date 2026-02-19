@@ -118,7 +118,8 @@ export default function InspectionDetailPage({
           )}
           {isAdmin &&
             inspection &&
-            inspection.status !== InspectionStatus.APPROVED && (
+            inspection.status !== InspectionStatus.APPROVED &&
+            inspection.status !== InspectionStatus.REJECTED && (
               <Button
                 variant="outline"
                 size="sm"
@@ -136,6 +137,7 @@ export default function InspectionDetailPage({
             variant="outline"
             size="icon"
             className="shrink-0 size-9 rounded-lg"
+            title={t("inspectionsPage.detail.backToList")}
             onClick={() => router.push("/dashboard/inspections")}
           >
             <ArrowLeft className="size-4" />

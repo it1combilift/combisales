@@ -98,10 +98,12 @@ export function ApprovalDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-[95vw] md:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("inspectionsPage.approval.title")}</DialogTitle>
-          <DialogDescription className="text-left text-pretty">
+          <DialogTitle className="text-left text-sm text-balance md:text-base">
+            {t("inspectionsPage.approval.title")}
+          </DialogTitle>
+          <DialogDescription className="text-left text-pretty text-xs md:text-sm">
             {inspection && (
               <span>
                 {inspection.vehicle.model} — {inspection.vehicle.plate}
@@ -113,21 +115,21 @@ export function ApprovalDialog({
         <div className="space-y-4">
           {action === "reject" ? (
             <div className="space-y-3">
-              <Label htmlFor="comments">
+              <Label htmlFor="comments" className="text-xs md:text-sm">
                 {t("inspectionsPage.approval.commentsLabel")}
               </Label>
               <Textarea
                 id="comments"
-                rows={4}
                 placeholder={t("inspectionsPage.approval.commentsPlaceholder")}
                 {...form.register("comments")}
+                className="text-xs md:text-sm text-pretty h-40 overflow-y-auto"
               />
               {form.formState.errors.comments && (
                 <p className="text-sm text-destructive">
                   {form.formState.errors.comments.message}
                 </p>
               )}
-              <div className="flex gap-2 justify-end">
+              <div className="grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
                   size="sm"
@@ -150,9 +152,8 @@ export function ApprovalDialog({
               </div>
             </div>
           ) : (
-            <div className="flex gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <Button
-                className="flex-1"
                 variant="outline"
                 onClick={() => handleAction(true)}
                 disabled={isSubmitting}
@@ -165,7 +166,6 @@ export function ApprovalDialog({
                 {t("inspectionsPage.approval.approve")}
               </Button>
               <Button
-                className="flex-1"
                 variant="outline"
                 onClick={() => setAction("reject")}
                 disabled={isSubmitting}
