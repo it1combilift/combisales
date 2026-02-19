@@ -444,7 +444,7 @@
       "inspectionsCount": "inspections",
       "assignedVehicles": "Assigned Vehicles",
       "deleteTitle": "Delete Inspector",
-      "deleteDescription": "Are you sure you want to delete inspector {name}? This action cannot be undone.",
+      "deleteDescription": "Are you sure you want to delete inspector {{name}}? This action cannot be undone.",
       "validation": {
         "nameRequired": "Name must be at least 2 characters",
         "emailInvalid": "Please enter a valid email address",
@@ -648,6 +648,7 @@
     },
     "detail": {
       "title": "Inspection Details",
+      "description": "Review all the details of this vehicle inspection.",
       "checklistResults": "Checklist Results",
       "photos": "Photographs",
       "observations": "Observations",

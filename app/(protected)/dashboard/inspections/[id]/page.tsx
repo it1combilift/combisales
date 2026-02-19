@@ -1,6 +1,7 @@
 "use client";
 
 import useSWR from "swr";
+import { Role } from "@prisma/client";
 import { hasRole } from "@/lib/roles";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -9,9 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/lib/i18n/context";
-import { Inspection, InspectionStatus } from "@/interfaces/inspection";
-import { Role } from "@prisma/client";
 import { H1, Paragraph } from "@/components/fonts/fonts";
+import { Inspection, InspectionStatus } from "@/interfaces/inspection";
+import { ApprovalDialog } from "@/components/inspections/approval-dialog";
+import { InspectionDetailCard } from "@/components/inspections/inspection-detail-card";
+import { DeleteInspectionDialog } from "@/components/inspections/delete-inspection-dialog";
+
 import {
   ArrowLeft,
   ShieldCheck,
@@ -20,9 +24,6 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import { ApprovalDialog } from "@/components/inspections/approval-dialog";
-import { DeleteInspectionDialog } from "@/components/inspections/delete-inspection-dialog";
-import { InspectionDetailCard } from "@/components/inspections/inspection-detail-card";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -80,43 +81,29 @@ export default function InspectionDetailPage({
   };
 
   return (
-    <section className="mx-auto px-4 pb-8 space-y-6 w-full max-w-5xl">
+    <section className="mx-auto px-4 pb-8 space-y-3 w-full">
       {/* ── Header ────────────────────────────── */}
-      <header className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-3 -mx-4 px-4">
+      <header className="flex flex-row gap-2 md:gap-4 items-start sm:items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur -mx-4 px-4">
         <div className="flex items-center gap-3 min-w-0">
-          <Button
-            variant="outline"
-            size="icon"
-            className="shrink-0 size-9 rounded-lg"
-            onClick={() => router.push("/dashboard/inspections")}
-          >
-            <ArrowLeft className="size-4" />
-          </Button>
-          <div className="min-w-0">
-            <H1 className="text-lg sm:text-xl">
-              {t("inspectionsPage.detail.title")}
-            </H1>
-            {inspection && (
-              <div className="flex items-center gap-2 mt-0.5">
-                <Paragraph className="text-left text-sm text-muted-foreground truncate">
-                  {inspection.vehicle.model} — {inspection.vehicle.plate}
-                </Paragraph>
-                {(() => {
-                  const cfg = statusConfig[inspection.status];
-                  if (!cfg) return null;
-                  const Icon = cfg.icon;
-                  return (
-                    <Badge
-                      variant="outline"
-                      className={`text-[10px] h-5 px-2 gap-1 border ${cfg.colorClass}`}
-                    >
-                      <Icon className="size-2.5" />
-                      {cfg.label}
-                    </Badge>
-                  );
-                })()}
-              </div>
-            )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <H1>{t("inspectionsPage.detail.title")}</H1>
+              {(() => {
+                const cfg = statusConfig[inspection?.status as string];
+                if (!cfg) return null;
+                const Icon = cfg.icon;
+                return (
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] h-5 px-2 gap-1 border ${cfg.colorClass}`}
+                  >
+                    <Icon className="size-2.5" />
+                    {cfg.label}
+                  </Badge>
+                );
+              })()}
+            </div>
+            <Paragraph>{t("inspectionsPage.detail.description")}</Paragraph>
           </div>
         </div>
 
@@ -129,25 +116,36 @@ export default function InspectionDetailPage({
               </span>
             </Button>
           )}
-          {isAdmin && inspection && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => setDeleteOpen(true)}
-            >
-              <Trash2 className="size-4" />
-              <span className="hidden sm:inline">
-                {t("inspectionsPage.delete.title")}
-              </span>
-            </Button>
-          )}
+          {isAdmin &&
+            inspection &&
+            inspection.status !== InspectionStatus.APPROVED && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash2 className="size-4" />
+                <span className="hidden sm:inline">
+                  {t("inspectionsPage.delete.title")}
+                </span>
+              </Button>
+            )}
+
+          <Button
+            variant="outline"
+            size="icon"
+            className="shrink-0 size-9 rounded-lg"
+            onClick={() => router.push("/dashboard/inspections")}
+          >
+            <ArrowLeft className="size-4" />
+          </Button>
         </div>
       </header>
 
       {/* ── Content ───────────────────────────── */}
       {isLoading ? (
-        <div className="space-y-5">
+        <div className="space-y-3">
           <Skeleton className="h-52 rounded-xl" />
           <Skeleton className="h-64 rounded-xl" />
           <Skeleton className="h-48 rounded-xl" />

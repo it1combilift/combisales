@@ -56,7 +56,7 @@ export function VehicleFilters({
               )}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 bg-background h-9"
+              className="pl-10 bg-background h-9 text-xs"
             />
           </div>
 

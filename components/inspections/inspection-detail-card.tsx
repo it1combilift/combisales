@@ -1,19 +1,24 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
+import { cn, formatDate } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { formatDateShort } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/context";
+import { DialogTitle } from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
 import {
   Inspection,
-  InspectionStatus,
   CHECKLIST_GROUPS,
+  INSPECTION_PHOTO_TYPES,
 } from "@/interfaces/inspection";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { formatDateShort } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+
 import {
   CheckCircle2,
   XCircle,
-  Clock,
   Car,
   User,
   Calendar,
@@ -24,59 +29,9 @@ import {
   ShieldCheck,
   AlertTriangle,
 } from "lucide-react";
-import Image from "next/image";
 
 interface InspectionDetailCardProps {
   inspection: Inspection;
-}
-
-/* ── Status Badge ────────────────────────────────── */
-function StatusBadge({ status }: { status: InspectionStatus }) {
-  const { t } = useTranslation();
-
-  const config: Record<
-    string,
-    {
-      label: string;
-      icon: typeof CheckCircle2;
-      colorClass: string;
-    }
-  > = {
-    PENDING: {
-      label: t("inspectionsPage.status.pending"),
-      icon: Clock,
-      colorClass:
-        "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800",
-    },
-    APPROVED: {
-      label: t("inspectionsPage.status.approved"),
-      icon: CheckCircle2,
-      colorClass:
-        "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
-    },
-    REJECTED: {
-      label: t("inspectionsPage.status.rejected"),
-      icon: XCircle,
-      colorClass:
-        "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800",
-    },
-  };
-
-  const c = config[status] || config.PENDING;
-  const Icon = c.icon;
-
-  return (
-    <Badge
-      variant="outline"
-      className={cn(
-        "gap-1.5 px-3 py-1.5 text-xs font-semibold border",
-        c.colorClass,
-      )}
-    >
-      <Icon className="size-3.5" />
-      {c.label}
-    </Badge>
-  );
 }
 
 /* ── Section Wrapper ─────────────────────────────── */
@@ -92,8 +47,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="overflow-hidden rounded-xl border shadow-sm">
-      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b bg-muted/30">
+    <Card className="border-none p-0 m-0 shadow-none mb-2 md:mb-4">
+      <div className="flex items-center gap-2.5 py-3.5 border-b">
         <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
           <Icon className="size-4 text-primary" />
         </div>
@@ -102,7 +57,7 @@ function Section({
         </h3>
         {badge}
       </div>
-      <CardContent className="p-5">{children}</CardContent>
+      <CardContent className="p-0">{children}</CardContent>
     </Card>
   );
 }
@@ -112,6 +67,7 @@ export function InspectionDetailCard({
   inspection,
 }: InspectionDetailCardProps) {
   const { t } = useTranslation();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Checklist score
   const checklistKeys = [
@@ -139,10 +95,77 @@ export function InspectionDetailCard({
   const failedChecks = totalChecks - passedChecks;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3">
+      {/* ═══════════ Approval Information ═══════════ */}
+      {inspection.approval && (
+        <Section
+          icon={ShieldCheck}
+          title={t("inspectionsPage.detail.approval")}
+        >
+          <div className="space-y-4">
+            {/* Approval status banner */}
+            <div
+              className={cn(
+                "flex items-center gap-3 p-4 rounded-xl border",
+                inspection.approval.approved
+                  ? "bg-emerald-50/80 border-emerald-200/70 dark:bg-emerald-950/20 dark:border-emerald-800/50"
+                  : "bg-rose-50/80 border-rose-200/70 dark:bg-rose-950/20 dark:border-rose-800/50",
+              )}
+            >
+              {inspection.approval.approved ? (
+                <div className="size-10 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="size-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+              ) : (
+                <div className="size-10 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
+                  <XCircle className="size-5 text-rose-600 dark:text-rose-400" />
+                </div>
+              )}
+              <div className="min-w-0">
+                <p
+                  className={cn(
+                    "font-semibold text-sm",
+                    inspection.approval.approved
+                      ? "text-emerald-700 dark:text-emerald-300"
+                      : "text-rose-700 dark:text-rose-300",
+                  )}
+                >
+                  {inspection.approval.approved
+                    ? t("inspectionsPage.status.approved")
+                    : t("inspectionsPage.status.rejected")}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {t("inspectionsPage.detail.approvedBy")}:{" "}
+                  <span className="font-medium text-foreground">
+                    {inspection.approval.user?.name ||
+                      inspection.approval.user?.email}
+                  </span>
+                </p>
+
+                {/* Timestamp */}
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  {formatDate(inspection.approval.createdAt)}
+                </p>
+              </div>
+            </div>
+
+            {/* Comments */}
+            {inspection.approval.comments && (
+              <div className="rounded-lg bg-muted/40 border border-border/50 p-4">
+                <p className="text-sm italic text-foreground/80 leading-relaxed">
+                  &ldquo;{inspection.approval.comments}&rdquo;
+                </p>
+              </div>
+            )}
+          </div>
+        </Section>
+      )}
+
       {/* ═══════════ Hero Header ═══════════ */}
-      <Card className="overflow-hidden rounded-xl border shadow-sm">
-        <CardContent className="p-5">
+      <Card
+        className={`${inspection.approval ? "mt-6" : ""} border-none p-0 border shadow-none`}
+      >
+        <CardContent className="p-0">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             {/* Left: vehicle + inspector info */}
             <div className="flex items-start gap-4 min-w-0 flex-1">
@@ -193,9 +216,6 @@ export function InspectionDetailCard({
                 </div>
               </div>
             </div>
-
-            {/* Right: status badge */}
-            <StatusBadge status={inspection.status} />
           </div>
 
           {/* ── Score bar ──────────────────────── */}
@@ -228,7 +248,7 @@ export function InspectionDetailCard({
                 </span>
               </div>
             </div>
-            <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+            <div className="h-1.5 md:h-2 rounded-full bg-muted overflow-hidden">
               <div
                 className={cn(
                   "h-full rounded-full transition-all duration-700",
@@ -259,7 +279,7 @@ export function InspectionDetailCard({
           </Badge>
         }
       >
-        <div className="space-y-5">
+        <div className="space-y-3">
           {CHECKLIST_GROUPS.map((group) => (
             <div key={group.titleKey}>
               <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">
@@ -324,6 +344,7 @@ export function InspectionDetailCard({
               <div
                 key={photo.id}
                 className="group/photo relative aspect-video rounded-xl overflow-hidden border bg-muted transition-all hover:shadow-lg hover:scale-[1.02]"
+                onClick={() => setSelectedImage(photo.cloudinaryUrl)}
               >
                 <Image
                   src={photo.cloudinaryUrl}
@@ -335,14 +356,40 @@ export function InspectionDetailCard({
                 <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent opacity-80 group-hover/photo:opacity-90 transition-opacity" />
                 <div className="absolute bottom-0 inset-x-0 px-3 py-2">
                   <span className="text-white text-[11px] font-medium drop-shadow-sm">
-                    {t(
-                      `inspectionsPage.form.photos.${photo.photoType.toLowerCase().replace(/_/g, "")}`,
-                    )}
+                    {INSPECTION_PHOTO_TYPES.map(({ type, labelKey }) => {
+                      if (type === photo.photoType) {
+                        return t(labelKey);
+                      }
+                      return null;
+                    })}
                   </span>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Modal for displaying full image */}
+          {selectedImage && (
+            <Dialog
+              open={!!selectedImage}
+              onOpenChange={() => setSelectedImage(null)}
+            >
+              <DialogContent className="flex items-center justify-center z-50 border-none p-0 m-0 shadow-none">
+                <DialogTitle className="sr-only">
+                  {t("inspectionsPage.detail.photoDialogTitle")}
+                </DialogTitle>
+                <div className="relative max-w-4xl w-full">
+                  <Image
+                    src={selectedImage}
+                    alt="Selected"
+                    width={800}
+                    height={800}
+                    className="object-contain object-center w-full h-auto rounded-lg"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </Section>
       )}
 
@@ -363,82 +410,16 @@ export function InspectionDetailCard({
       {/* ═══════════ Signature ═══════════ */}
       {inspection.signatureUrl && (
         <Section icon={PenLine} title={t("inspectionsPage.detail.signature")}>
-          <div className="flex justify-center">
-            <div className="max-w-xs w-full rounded-xl border bg-white p-4 shadow-sm">
+          <div className="flex justify-center items-center max-w-md mx-auto">
+            <div className="w-full">
               <Image
                 src={inspection.signatureUrl}
                 alt="Signature"
                 width={300}
                 height={150}
-                className="object-contain w-full"
+                className="object-contain object-center w-full rounded-lg border bg-muted/50 border-border/50"
               />
             </div>
-          </div>
-        </Section>
-      )}
-
-      {/* ═══════════ Approval Information ═══════════ */}
-      {inspection.approval && (
-        <Section
-          icon={ShieldCheck}
-          title={t("inspectionsPage.detail.approval")}
-        >
-          <div className="space-y-4">
-            {/* Approval status banner */}
-            <div
-              className={cn(
-                "flex items-center gap-3 p-4 rounded-xl border",
-                inspection.approval.approved
-                  ? "bg-emerald-50/80 border-emerald-200/70 dark:bg-emerald-950/20 dark:border-emerald-800/50"
-                  : "bg-rose-50/80 border-rose-200/70 dark:bg-rose-950/20 dark:border-rose-800/50",
-              )}
-            >
-              {inspection.approval.approved ? (
-                <div className="size-10 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="size-5 text-emerald-600 dark:text-emerald-400" />
-                </div>
-              ) : (
-                <div className="size-10 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
-                  <XCircle className="size-5 text-rose-600 dark:text-rose-400" />
-                </div>
-              )}
-              <div className="min-w-0">
-                <p
-                  className={cn(
-                    "font-semibold text-sm",
-                    inspection.approval.approved
-                      ? "text-emerald-700 dark:text-emerald-300"
-                      : "text-rose-700 dark:text-rose-300",
-                  )}
-                >
-                  {inspection.approval.approved
-                    ? t("inspectionsPage.status.approved")
-                    : t("inspectionsPage.status.rejected")}
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {t("inspectionsPage.detail.approvedBy")}:{" "}
-                  <span className="font-medium text-foreground">
-                    {inspection.approval.user?.name ||
-                      inspection.approval.user?.email}
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            {/* Comments */}
-            {inspection.approval.comments && (
-              <div className="rounded-lg bg-muted/40 border border-border/50 p-4">
-                <p className="text-sm italic text-foreground/80 leading-relaxed">
-                  &ldquo;{inspection.approval.comments}&rdquo;
-                </p>
-              </div>
-            )}
-
-            {/* Timestamp */}
-            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-              <Calendar className="size-3" />
-              {new Date(inspection.approval.createdAt).toLocaleString()}
-            </p>
           </div>
         </Section>
       )}

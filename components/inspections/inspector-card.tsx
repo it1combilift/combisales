@@ -2,15 +2,14 @@
 
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { cn, formatDateShort, getInitials } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { cn, formatDateShort, getInitials } from "@/lib/utils";
+
 import {
-  Car,
   ClipboardCheck,
   Calendar,
-  Mail,
   CheckCircle2,
   XCircle,
   CarFront,
@@ -18,7 +17,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-interface InspectorData {
+export interface InspectorData {
   id: string;
   name: string | null;
   email: string;
@@ -36,6 +35,7 @@ interface InspectorData {
   _count?: {
     inspections: number;
     assignedVehicles: number;
+
   };
 }
 
@@ -50,7 +50,7 @@ export function InspectorCard({
   onEdit,
   onDelete,
 }: InspectorCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   const vehicleCount =
     inspector._count?.assignedVehicles ??
@@ -162,7 +162,7 @@ export function InspectorCard({
               <Calendar className="size-3.5 text-amber-500" />
             </div>
             <span className="text-[11px] font-bold text-foreground leading-none">
-              {formatDateShort(inspector.createdAt)}
+              {formatDateShort(inspector.createdAt, locale)}
             </span>
             <span className="text-[10px] text-muted-foreground text-center leading-tight">
               {t("profile.memberSince")}

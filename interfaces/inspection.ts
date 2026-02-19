@@ -21,6 +21,9 @@ export interface Vehicle {
   inspections?: InspectionSummary[];
   createdAt: string;
   updatedAt: string;
+  _count?: {
+    inspections: number;
+  };
 }
 
 export interface VehicleInspector {

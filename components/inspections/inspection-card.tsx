@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn, formatDateShort } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Inspection, InspectionStatus } from "@/interfaces/inspection";
 
 import {
@@ -119,7 +120,7 @@ export function InspectionCard({
         )}
       />
 
-      <CardContent className="pl-5 pr-4 py-4 flex flex-col gap-4">
+      <CardContent className="pl-5 pr-4 pb-4 pt-0 flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -143,7 +144,7 @@ export function InspectionCard({
               {/* Online-style status dot */}
               <span
                 className={cn(
-                  "absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-card",
+                  "absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-card animate-pulse",
                   inspection.status === InspectionStatus.PENDING
                     ? "bg-amber-400"
                     : inspection.status === InspectionStatus.APPROVED
@@ -184,7 +185,7 @@ export function InspectionCard({
             {
               icon: User,
               label: inspection.user.name || inspection.user.email,
-              mono: false,
+              mono: true,
             },
             {
               icon: Gauge,
@@ -194,12 +195,12 @@ export function InspectionCard({
             {
               icon: Calendar,
               label: formatDateShort(inspection.createdAt),
-              mono: false,
+              mono: true,
             },
             {
               icon: ImageIcon,
               label: `${photosCount}/6 ${t("inspectionsPage.form.photos.uploaded")}`,
-              mono: false,
+              mono: true,
             },
           ].map(({ icon: Icon, label, mono }, i) => (
             <div key={i} className="flex items-center gap-2 min-w-0">

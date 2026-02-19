@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { Role } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { hasRole } from "@/lib/roles";
+import { Role } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 /**
  * GET /api/users?role=INSPECTOR

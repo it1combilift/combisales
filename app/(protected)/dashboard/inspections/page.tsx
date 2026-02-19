@@ -7,27 +7,33 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { AlertMessage } from "@/components/alert";
 import { useTranslation } from "@/lib/i18n/context";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { H1, Paragraph } from "@/components/fonts/fonts";
 import { Inspection, Vehicle } from "@/interfaces/inspection";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { VehicleCard } from "@/components/inspections/vehicle-card";
+import { AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { VehiclesTable } from "@/components/inspections/vehicles-table";
 import { VehicleDialog } from "@/components/inspections/vehicle-dialog";
 import { VehicleFilters } from "@/components/inspections/vehicle-filters";
 import { ApprovalDialog } from "@/components/inspections/approval-dialog";
 import { InspectionCard } from "@/components/inspections/inspection-card";
-import { InspectorCard } from "@/components/inspections/inspector-card";
 import { InspectorDialog } from "@/components/inspections/inspector-dialog";
-import { InspectorFilters } from "@/components/inspections/inspector-filters";
-import { VehiclesTable } from "@/components/inspections/vehicles-table";
 import { InspectorsTable } from "@/components/inspections/inspectors-table";
+import { AlertDialog, AlertDialogFooter } from "@/components/ui/alert-dialog";
+import { InspectorFilters } from "@/components/inspections/inspector-filters";
 import { InspectionsTable } from "@/components/inspections/inspections-table";
 import { InspectionFilters } from "@/components/inspections/inspection-filters";
 import { InspectionFormDialog } from "@/components/inspections/inspection-form-dialog";
 import { DeleteInspectionDialog } from "@/components/inspections/delete-inspection-dialog";
+
+import {
+  InspectorCard,
+  InspectorData,
+} from "@/components/inspections/inspector-card";
 
 import {
   Tabs,
@@ -45,10 +51,7 @@ import {
   UserPlus,
   Users,
   CarFrontIcon,
-  TriangleAlert,
 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertDialog, AlertDialogFooter } from "@/components/ui/alert-dialog";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -110,9 +113,9 @@ const VehicleInspectionPage = () => {
     useState<Vehicle | null>(null);
   const [selectedInspection, setSelectedInspection] =
     useState<Inspection | null>(null);
-  const [editInspector, setEditInspector] = useState<any | null>(null);
+  const [editInspector, setEditInspector] = useState<InspectorData | null>(null);
   const [deleteInspectorTarget, setDeleteInspectorTarget] = useState<
-    any | null
+    InspectorData | null
   >(null);
 
   useEffect(() => {
@@ -170,7 +173,7 @@ const VehicleInspectionPage = () => {
   // Filtered inspectors
   const filteredInspectorsList = useMemo(() => {
     if (!inspectors) return [];
-    return inspectors.filter((inspector: any) => {
+    return inspectors.filter((inspector: InspectorData) => {
       const matchesSearch =
         inspSearch === "" ||
         (inspector.name || "")
@@ -691,17 +694,19 @@ const VehicleInspectionPage = () => {
                     />
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-                      {filteredInspectorsList.map((inspector: any) => (
-                        <InspectorCard
-                          key={inspector.id}
-                          inspector={inspector}
-                          onEdit={(insp) => {
-                            setEditInspector(insp);
-                            setInspectorDialogOpen(true);
-                          }}
-                          onDelete={(insp) => setDeleteInspectorTarget(insp)}
-                        />
-                      ))}
+                      {filteredInspectorsList.map(
+                        (inspector: InspectorData) => (
+                          <InspectorCard
+                            key={inspector.id}
+                            inspector={inspector}
+                            onEdit={(insp) => {
+                              setEditInspector(insp);
+                              setInspectorDialogOpen(true);
+                            }}
+                            onDelete={(insp) => setDeleteInspectorTarget(insp)}
+                          />
+                        ),
+                      )}
                     </div>
                   )}
                 </TabsContent>
@@ -794,14 +799,14 @@ function ConfirmDeleteVehicle({
           <AlertTitle className="font-semibold text-sm md:text-base">
             {t("inspectionsPage.vehicles.deleteTitle")}
           </AlertTitle>
-          <AlertDescription className="text-xs text-left text-pretty md:text-sm">
+          <AlertDescription className="text-xs text-left text-pretty md:text-sm mt-2">
             {t("inspectionsPage.vehicles.deleteDescription", {
               model: vehicle.model,
               plate: vehicle.plate,
             })}
           </AlertDescription>
 
-          <AlertDialogFooter className="flex justify-end gap-2 pt-4">
+          <AlertDialogFooter className="grid grid-cols-2 gap-2 pt-4">
             <Button variant="outline" size="sm" onClick={onCancel}>
               {t("common.cancel")}
             </Button>
@@ -834,13 +839,13 @@ function ConfirmDeleteInspector({
           <AlertTitle className="font-semibold text-sm md:text-base">
             {t("inspectionsPage.inspectors.deleteTitle")}
           </AlertTitle>
-          <AlertDescription className="text-xs text-left text-pretty md:text-sm">
+          <AlertDescription className="text-xs text-left text-pretty md:text-sm mt-2">
             {t("inspectionsPage.inspectors.deleteDescription", {
               name: inspector.name || inspector.email,
             })}
           </AlertDescription>
 
-          <AlertDialogFooter className="flex justify-end gap-2 pt-4">
+          <AlertDialogFooter className="grid grid-cols-2 gap-2 pt-4">
             <Button variant="outline" size="sm" onClick={onCancel}>
               {t("common.cancel")}
             </Button>

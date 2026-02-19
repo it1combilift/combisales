@@ -443,7 +443,7 @@
       "inspectionsCount": "inspecciones",
       "assignedVehicles": "Vehículos Asignados",
       "deleteTitle": "Eliminar Inspector",
-      "deleteDescription": "¿Estás seguro de que quieres eliminar al inspector {name}? Esta acción no se puede deshacer.",
+      "deleteDescription": "¿Estás seguro de que quieres eliminar al inspector {{name}}? Esta acción no se puede deshacer.",
       "validation": {
         "nameRequired": "El nombre debe tener al menos 2 caracteres",
         "emailInvalid": "Introduce un correo electrónico válido",
@@ -646,6 +646,7 @@
     },
     "detail": {
       "title": "Detalles de la Inspección",
+      "description": "Revisa todos los detalles de esta inspección del vehículo.",
       "checklistResults": "Resultados del Checklist",
       "photos": "Fotografías",
       "observations": "Observaciones",

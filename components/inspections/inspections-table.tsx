@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { cn, formatDateShort } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn, formatDateShort } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/context";
 import { Inspection, InspectionStatus } from "@/interfaces/inspection";
 
