@@ -113,10 +113,11 @@ const VehicleInspectionPage = () => {
     useState<Vehicle | null>(null);
   const [selectedInspection, setSelectedInspection] =
     useState<Inspection | null>(null);
-  const [editInspector, setEditInspector] = useState<InspectorData | null>(null);
-  const [deleteInspectorTarget, setDeleteInspectorTarget] = useState<
-    InspectorData | null
-  >(null);
+  const [editInspector, setEditInspector] = useState<InspectorData | null>(
+    null,
+  );
+  const [deleteInspectorTarget, setDeleteInspectorTarget] =
+    useState<InspectorData | null>(null);
 
   useEffect(() => {
     if (isMobile) setViewMode("grid");
@@ -293,7 +294,9 @@ const VehicleInspectionPage = () => {
                 <RefreshCw
                   className={`size-4 ${isLoading ? "animate-spin" : ""}`}
                 />
-                <span className="hidden md:inline">{t("common.refresh")}</span>
+                <span className="hidden md:inline">
+                  {isLoading ? t("common.refreshing") : t("common.refresh")}
+                </span>
               </Button>
               <Button size="sm" onClick={() => setFormDialogOpen(true)}>
                 <Plus className="size-4" />
@@ -759,6 +762,7 @@ const VehicleInspectionPage = () => {
               if (!open) setEditInspector(null);
             }}
             onSuccess={() => mutateInspectors()}
+            editInspector={editInspector}
           />
 
           <DeleteInspectionDialog

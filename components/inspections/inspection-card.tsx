@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { cn, formatDateShort } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn, formatDateShort, getInitials } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Inspection, InspectionStatus } from "@/interfaces/inspection";
 
@@ -14,7 +14,6 @@ import {
   XCircle,
   Clock,
   Car,
-  User,
   Calendar,
   Gauge,
   ArrowUpRight,
@@ -180,43 +179,55 @@ export function InspectionCard({
         <div className="h-px bg-border/50" />
 
         {/* Metadata */}
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            {
-              icon: User,
-              label: inspection.user.name || inspection.user.email,
-              mono: true,
-            },
-            {
-              icon: Gauge,
-              label: `${inspection.mileage.toLocaleString()} km`,
-              mono: true,
-            },
-            {
-              icon: Calendar,
-              label: formatDateShort(inspection.createdAt, locale),
-              mono: true,
-            },
-            {
-              icon: ImageIcon,
-              label: `${photosCount}/6 ${t("inspectionsPage.form.photos.uploaded")}`,
-              mono: true,
-            },
-          ].map(({ icon: Icon, label, mono }, i) => (
-            <div key={i} className="flex items-center gap-2 min-w-0">
-              <div className="size-6 rounded-md bg-muted/60 flex items-center justify-center shrink-0">
-                <Icon className="size-3 text-muted-foreground" />
-              </div>
-              <span
-                className={cn(
-                  "text-xs text-foreground/80 truncate",
-                  mono && "font-mono",
-                )}
-              >
-                {label}
+        <div className="space-y-2">
+          {/* Inspector row with avatar */}
+          <div className="flex items-center gap-2">
+            <Avatar className="size-8 shrink-0 ring-2 ring-border/60 group-hover:ring-primary/20 transition-all duration-300">
+              <AvatarImage
+                className="object-cover object-center"
+                src={inspection.user.image || undefined}
+                alt={inspection.user.name || inspection.user.email}
+              />
+              <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
+                {getInitials(inspection.user.name || inspection.user.email)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col leading-tight min-w-0">
+              <span className="text-sm font-medium text-foreground truncate max-w-[180px]">
+                {inspection.user.name || inspection.user.email}
+              </span>
+              <span className="text-xs font-medium truncate max-w-[180px] text-muted-foreground">
+                {inspection.user.email}
               </span>
             </div>
-          ))}
+          </div>
+
+          {/* Icon-based metadata */}
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              {
+                icon: Gauge,
+                label: `${inspection.mileage.toLocaleString()} km`,
+              },
+              {
+                icon: Calendar,
+                label: formatDateShort(inspection.createdAt, locale),
+              },
+              {
+                icon: ImageIcon,
+                label: `${photosCount}/6 ${t("inspectionsPage.form.photos.uploaded")}`,
+              },
+            ].map(({ icon: Icon, label }, i) => (
+              <div key={i} className="flex items-center gap-2 min-w-0">
+                <div className="size-6 rounded-md bg-muted/60 flex items-center justify-center shrink-0">
+                  <Icon className="size-3 text-muted-foreground" />
+                </div>
+                <span className="text-xs text-foreground/80 truncate font-mono">
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Score bar */}

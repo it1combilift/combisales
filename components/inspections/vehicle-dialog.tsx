@@ -11,13 +11,13 @@ import { useState, useEffect, useRef } from "react";
 import { InspectorDialog } from "./inspector-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, ImagePlus, X } from "lucide-react";
+import { VehicleStatus } from "@/interfaces/inspection";
 
 import {
   createVehicleSchema,
   CreateVehicleSchema,
 } from "@/schemas/inspections";
 
-import { VehicleStatus } from "@/interfaces/inspection";
 
 import {
   Dialog,

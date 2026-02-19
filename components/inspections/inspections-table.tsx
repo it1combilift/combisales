@@ -4,8 +4,9 @@ import Image from "next/image";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn, formatDateShort } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/context";
+import { cn, formatDateShort, getInitials } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Inspection, InspectionStatus } from "@/interfaces/inspection";
 
 import {
@@ -26,7 +27,6 @@ import {
 
 import {
   Car,
-  User,
   CheckCircle2,
   XCircle,
   Clock,
@@ -312,14 +312,31 @@ export function InspectionsTable({
                     </TableCell>
 
                     {/* Inspector */}
-                    <TableCell className="hidden sm:table-cell px-3 py-3">
+                    <TableCell
+                      className="hidden sm:table-cell px-3 py-3"
+                      title={inspection.user.name || inspection.user.email}
+                    >
                       <div className="flex items-center gap-2">
-                        <div className="size-7 rounded-full bg-primary/10 text-primary text-[10px] font-bold flex items-center justify-center shrink-0 ring-1 ring-primary/20">
-                          <User className="size-3.5" />
+                        <Avatar className="size-8 shrink-0 ring-2 ring-border/60 group-hover:ring-primary/20 transition-all duration-300">
+                          <AvatarImage
+                            className="object-cover object-center"
+                            src={inspection.user.image || undefined}
+                            alt={inspection.user.name || inspection.user.email}
+                          />
+                          <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
+                            {getInitials(
+                              inspection.user.name || inspection.user.email,
+                            )}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col leading-tight">
+                          <span className="text-sm font-medium text-foreground truncate max-w-[130px]">
+                            {inspection.user.name || inspection.user.email}
+                          </span>
+                          <span className="text-xs font-medium truncate max-w-[130px] text-muted-foreground">
+                            {inspection.user.email}
+                          </span>
                         </div>
-                        <span className="text-xs font-medium text-foreground truncate max-w-[130px]">
-                          {inspection.user.name || inspection.user.email}
-                        </span>
                       </div>
                     </TableCell>
 

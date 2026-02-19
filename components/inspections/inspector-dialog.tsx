@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useEffect, useRef } from "react";
@@ -32,13 +33,36 @@ interface SimpleVehicle {
   assignedInspectorId?: string | null;
 }
 
+export interface EditInspectorData {
+  id: string;
+  name: string | null;
+  email: string;
+  image: string | null;
+  roles: string[];
+  isActive: boolean;
+  createdAt: string;
+  assignedVehicles?: {
+    id: string;
+    model: string;
+    plate: string;
+    status: string;
+    imageUrl?: string | null;
+  }[];
+  _count?: {
+    inspections: number;
+    assignedVehicles: number;
+  };
+}
+
 interface InspectorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  editInspector?: EditInspectorData | null;
 }
 
-const getInspectorSchema = (t: (key: string) => string) =>
+/* Schema for CREATE mode — password required */
+const getCreateSchema = (t: (key: string) => string) =>
   z.object({
     name: z
       .string()
@@ -51,16 +75,40 @@ const getInspectorSchema = (t: (key: string) => string) =>
       .min(8, t("inspectionsPage.inspectors.validation.passwordMin")),
   });
 
-type InspectorFormValues = z.infer<ReturnType<typeof getInspectorSchema>>;
+/* Schema for EDIT mode — password optional */
+const getEditSchema = (t: (key: string) => string) =>
+  z.object({
+    name: z
+      .string()
+      .min(2, t("inspectionsPage.inspectors.validation.nameRequired")),
+    email: z
+      .string()
+      .email(t("inspectionsPage.inspectors.validation.emailInvalid")),
+    password: z
+      .string()
+      .min(8, t("inspectionsPage.inspectors.validation.passwordMin"))
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val)),
+  });
+
+type InspectorFormValues = {
+  name: string;
+  email: string;
+  password?: string;
+};
 
 export function InspectorDialog({
   open,
   onOpenChange,
   onSuccess,
+  editInspector,
 }: InspectorDialogProps) {
   const { t } = useTranslation();
+  const isEditing = !!editInspector;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isActive, setIsActive] = useState(true);
 
   // Image upload state
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -74,9 +122,10 @@ export function InspectorDialog({
   const [vehicles, setVehicles] = useState<SimpleVehicle[]>([]);
   const [loadingVehicles, setLoadingVehicles] = useState(false);
   const [selectedVehicleIds, setSelectedVehicleIds] = useState<string[]>([]);
+  const [initialVehicleIds, setInitialVehicleIds] = useState<string[]>([]);
   const [vehicleSearch, setVehicleSearch] = useState("");
 
-  const schema = getInspectorSchema(t);
+  const schema = isEditing ? getEditSchema(t) : getCreateSchema(t);
 
   const form = useForm<InspectorFormValues>({
     resolver: zodResolver(schema),
@@ -89,15 +138,36 @@ export function InspectorDialog({
 
   useEffect(() => {
     if (open) {
-      form.reset({ name: "", email: "", password: "" });
-      setImagePreview(null);
-      setImageCloudinaryId(null);
-      setSelectedVehicleIds([]);
       setVehicleSearch("");
       setShowPassword(false);
       fetchVehicles();
+
+      if (editInspector) {
+        // Populate form with existing inspector data
+        form.reset({
+          name: editInspector.name || "",
+          email: editInspector.email,
+          password: "",
+        });
+        setImagePreview(editInspector.image || null);
+        setImageCloudinaryId(null); // We don't have this from the API, but image URL is enough
+        setIsActive(editInspector.isActive);
+        const assignedIds =
+          editInspector.assignedVehicles?.map((v) => v.id) || [];
+        setSelectedVehicleIds(assignedIds);
+        setInitialVehicleIds(assignedIds);
+      } else {
+        // Reset form for create mode
+        form.reset({ name: "", email: "", password: "" });
+        setImagePreview(null);
+        setImageCloudinaryId(null);
+        setIsActive(true);
+        setSelectedVehicleIds([]);
+        setInitialVehicleIds([]);
+      }
     }
-  }, [open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, editInspector]);
 
   const fetchVehicles = async () => {
     setLoadingVehicles(true);
@@ -162,36 +232,85 @@ export function InspectorDialog({
   const handleSubmit = form.handleSubmit(async (data) => {
     setIsSubmitting(true);
     try {
-      // Create the inspector user
-      const createRes = await axios.post("/api/users/create", {
-        ...data,
-        confirmPassword: data.password,
-        roles: ["INSPECTOR"],
-        isActive: true,
-        image: imagePreview || undefined,
-      });
+      if (isEditing && editInspector) {
+        // ── EDIT MODE ──
+        const updatePayload: Record<string, unknown> = {
+          name: data.name,
+          email: data.email,
+          isActive,
+          roles: ["INSPECTOR"],
+          image: imagePreview || null,
+        };
+        if (data.password) {
+          updatePayload.password = data.password;
+        }
 
-      const newUserId = createRes.data?.user?.id || createRes.data?.id;
+        await axios.patch(`/api/users/${editInspector.id}`, updatePayload);
 
-      // Assign vehicles if any selected and we have the user ID
-      if (newUserId && selectedVehicleIds.length > 0) {
-        await Promise.all(
-          selectedVehicleIds.map((vehicleId) =>
+        // Handle vehicle reassignment
+        const toUnassign = initialVehicleIds.filter(
+          (id) => !selectedVehicleIds.includes(id),
+        );
+        const toAssign = selectedVehicleIds.filter(
+          (id) => !initialVehicleIds.includes(id),
+        );
+
+        const vehicleOps = [
+          ...toUnassign.map((vehicleId) =>
             axios
               .put(`/api/vehicles/${vehicleId}`, {
-                assignedInspectorId: newUserId,
+                assignedInspectorId: null,
+              })
+              .catch((err) =>
+                console.error(`Failed to unassign vehicle ${vehicleId}:`, err),
+              ),
+          ),
+          ...toAssign.map((vehicleId) =>
+            axios
+              .put(`/api/vehicles/${vehicleId}`, {
+                assignedInspectorId: editInspector.id,
               })
               .catch((err) =>
                 console.error(`Failed to assign vehicle ${vehicleId}:`, err),
               ),
           ),
-        );
+        ];
+
+        if (vehicleOps.length > 0) {
+          await Promise.all(vehicleOps);
+        }
+      } else {
+        // ── CREATE MODE ──
+        const createRes = await axios.post("/api/users/create", {
+          ...data,
+          confirmPassword: data.password,
+          roles: ["INSPECTOR"],
+          isActive: true,
+          image: imagePreview || undefined,
+        });
+
+        const newUserId = createRes.data?.user?.id || createRes.data?.id;
+
+        if (newUserId && selectedVehicleIds.length > 0) {
+          await Promise.all(
+            selectedVehicleIds.map((vehicleId) =>
+              axios
+                .put(`/api/vehicles/${vehicleId}`, {
+                  assignedInspectorId: newUserId,
+                })
+                .catch((err) =>
+                  console.error(`Failed to assign vehicle ${vehicleId}:`, err),
+                ),
+            ),
+          );
+        }
       }
 
       form.reset();
       setImagePreview(null);
       setImageCloudinaryId(null);
       setSelectedVehicleIds([]);
+      setInitialVehicleIds([]);
       onOpenChange(false);
       onSuccess();
     } catch (error: any) {
@@ -209,10 +328,14 @@ export function InspectorDialog({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {t("inspectionsPage.inspectors.createTitle")}
+            {isEditing
+              ? t("inspectionsPage.inspectors.editTitle")
+              : t("inspectionsPage.inspectors.createTitle")}
           </DialogTitle>
           <DialogDescription className="text-pretty text-left">
-            {t("inspectionsPage.inspectors.createDescription")}
+            {isEditing
+              ? t("inspectionsPage.inspectors.editDescription")
+              : t("inspectionsPage.inspectors.createDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -283,7 +406,7 @@ export function InspectorDialog({
               )}
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 grid grid-cols-2 gap-x-2">
               <div className="space-y-1.5">
                 <Label htmlFor="inspector-name" className="text-xs">
                   {t("inspectionsPage.inspectors.name")}
@@ -319,7 +442,7 @@ export function InspectorDialog({
                 )}
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 col-span-2">
                 <Label htmlFor="inspector-password" className="text-xs">
                   {t("inspectionsPage.inspectors.password")}
                 </Label>
@@ -353,9 +476,28 @@ export function InspectorDialog({
                   </p>
                 )}
                 <p className="text-[10px] text-muted-foreground">
-                  {t("inspectionsPage.inspectors.passwordHint")}
+                  {isEditing
+                    ? t("inspectionsPage.inspectors.passwordEditHint")
+                    : t("inspectionsPage.inspectors.passwordHint")}
                 </p>
               </div>
+
+              {/* Status toggle — only in edit mode */}
+              {isEditing && (
+                <div className="flex items-center justify-between rounded-lg border border-border/60 px-3 py-2.5 col-span-2">
+                  <div className="space-y-0.5">
+                    <Label className="text-xs font-medium">
+                      {t("inspectionsPage.inspectors.statusLabel")}
+                    </Label>
+                    <p className="text-[10px] text-muted-foreground">
+                      {isActive
+                        ? t("inspectionsPage.inspectors.active")
+                        : t("inspectionsPage.inspectors.inactive")}
+                    </p>
+                  </div>
+                  <Switch checked={isActive} onCheckedChange={setIsActive} />
+                </div>
+              )}
             </div>
           </div>
 
@@ -394,20 +536,24 @@ export function InspectorDialog({
                 <ScrollArea className="max-h-36">
                   <div className="p-1.5 space-y-0.5">
                     {filteredVehicles.map((vehicle) => {
-                      const isAssigned =
+                      const isSelected = selectedVehicleIds.includes(
+                        vehicle.id,
+                      );
+                      const isAssignedToOther =
                         vehicle.assignedInspectorId &&
-                        !selectedVehicleIds.includes(vehicle.id);
+                        vehicle.assignedInspectorId !== editInspector?.id &&
+                        !isSelected;
                       return (
                         <Label
                           key={vehicle.id}
                           className={`flex items-center gap-2.5 px-2.5 py-2 rounded-md cursor-pointer transition-colors ${
-                            selectedVehicleIds.includes(vehicle.id)
+                            isSelected
                               ? "bg-primary/10 border border-primary/20"
                               : "hover:bg-muted/50 border border-transparent"
-                          } ${isAssigned ? "opacity-50" : ""}`}
+                          } ${isAssignedToOther ? "opacity-50" : ""}`}
                         >
                           <Checkbox
-                            checked={selectedVehicleIds.includes(vehicle.id)}
+                            checked={isSelected}
                             onCheckedChange={() => toggleVehicle(vehicle.id)}
                           />
                           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -430,7 +576,7 @@ export function InspectorDialog({
                               </p>
                               <p className="text-[10px] text-muted-foreground font-mono">
                                 {vehicle.plate}
-                                {isAssigned && (
+                                {isAssignedToOther && (
                                   <span className="ml-1 text-amber-500">
                                     (
                                     {t(
@@ -467,7 +613,9 @@ export function InspectorDialog({
             </Button>
             <Button type="submit" disabled={isSubmitting || isUploading}>
               {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-              {t("inspectionsPage.inspectors.create")}
+              {isEditing
+                ? t("inspectionsPage.inspectors.saveChanges")
+                : t("inspectionsPage.inspectors.create")}
             </Button>
           </DialogFooter>
         </form>

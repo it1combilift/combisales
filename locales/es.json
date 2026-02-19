@@ -419,6 +419,11 @@
     "inspectors": {
       "createTitle": "Crear Inspector",
       "createDescription": "Añade un nuevo inspector al sistema. Podrá realizar inspecciones de vehículos.",
+      "editTitle": "Editar Inspector",
+      "editDescription": "Actualiza la información del inspector y sus vehículos asignados.",
+      "saveChanges": "Guardar Cambios",
+      "passwordEditHint": "Deja en blanco para mantener la contraseña actual",
+      "statusLabel": "Estado",
       "name": "Nombre",
       "namePlaceholder": "Nombre completo",
       "email": "Correo electrónico",

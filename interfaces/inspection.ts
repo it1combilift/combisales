@@ -121,6 +121,7 @@ export interface Inspection {
     name: string | null;
     email: string;
     roles: Role[];
+    image?: string | null;
   };
   photos: InspectionPhoto[];
   approval: InspectionApproval | null;

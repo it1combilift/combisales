@@ -420,6 +420,11 @@
     "inspectors": {
       "createTitle": "Create Inspector",
       "createDescription": "Add a new inspector to the system. They will be able to perform vehicle inspections.",
+      "editTitle": "Edit Inspector",
+      "editDescription": "Update the inspector's information and vehicle assignments.",
+      "saveChanges": "Save Changes",
+      "passwordEditHint": "Leave blank to keep the current password",
+      "statusLabel": "Status",
       "name": "Name",
       "namePlaceholder": "Full name",
       "email": "Email",

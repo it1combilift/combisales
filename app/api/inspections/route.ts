@@ -26,7 +26,7 @@ const INSPECTION_INCLUDE = {
     },
   },
   user: {
-    select: { id: true, name: true, email: true, roles: true },
+    select: { id: true, name: true, email: true, roles: true, image: true },
   },
   photos: true,
   approval: {
