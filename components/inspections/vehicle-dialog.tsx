@@ -38,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "../ui/switch";
+import { Spinner } from "../ui/spinner";
 
 interface Assignee {
   id: string;
@@ -323,18 +324,18 @@ export function VehicleDialog({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="w-full h-32 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/20 text-muted-foreground hover:border-muted-foreground/40 hover:bg-muted/30 transition-colors"
+                  className="w-full h-16 md:h-32 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/20 text-muted-foreground hover:border-muted-foreground/40 hover:bg-muted/30 transition-colors"
                 >
                   {isUploading ? (
                     <>
-                      <Loader2 className="size-6 animate-spin" />
+                      <Spinner variant="bars" className="size-4 md:size-6" />
                       <span className="text-xs">
                         {t("common.loading") || "Uploading..."}
                       </span>
                     </>
                   ) : (
                     <>
-                      <ImagePlus className="size-6" />
+                      <ImagePlus className="size-4 md:size-6" />
                       <span className="text-xs">
                         {t("inspectionsPage.vehicles.uploadImage") ||
                           "Click to upload image"}
@@ -452,7 +453,7 @@ export function VehicleDialog({
               </div>
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="grid grid-cols-2 gap-2">
               <Button
                 type="button"
                 variant="outline"

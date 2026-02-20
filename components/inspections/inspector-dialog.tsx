@@ -40,6 +40,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Spinner } from "../ui/spinner";
 
 interface SimpleVehicle {
   id: string;
@@ -675,8 +676,7 @@ export function InspectorDialog({
                                 {/* SELLER locked feedback */}
                                 {isSellerLocked && (
                                   <div className="flex items-center gap-1 mt-1">
-                                    <Lock className="size-2.5 text-amber-500 shrink-0" />
-                                    <span className="text-[10px] text-amber-600 dark:text-amber-400 leading-tight">
+                                    <span className="text-xs text-amber-600 dark:text-amber-400 leading-tight text-pretty">
                                       {t(
                                         "inspectionsPage.inspectors.sellerAlreadyAssigned",
                                       )}
@@ -721,14 +721,14 @@ export function InspectorDialog({
                         {selectedVehicleIds.length > 0 && (
                           <Badge
                             variant="secondary"
-                            className="text-[10px] h-4 px-1.5"
+                            className="text-xs h-4 px-1.5"
                           >
                             {selectedVehicleIds.length}
                           </Badge>
                         )}
                       </h4>
                       {!sellerAlreadyHasVehicle && (
-                        <span className="text-[10px] text-muted-foreground italic">
+                        <span className="text-xs text-muted-foreground italic text-pretty">
                           {t("inspectionsPage.inspectors.vehiclesOptional")}
                         </span>
                       )}
@@ -737,10 +737,10 @@ export function InspectorDialog({
                     {/* SELLER already has vehicle — LOCKED */}
                     {sellerAlreadyHasVehicle ? (
                       <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-3 space-y-1.5">
-                        <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                        <p className="text-xs font-medium text-amber-600 dark:text-amber-400 text-pretty">
                           {t("inspectionsPage.inspectors.sellerVehicleLocked")}
                         </p>
-                        <p className="text-[10px] text-amber-600/80 dark:text-amber-400/80">
+                        <p className="text-xs text-amber-600/80 dark:text-amber-400/80 text-pretty">
                           {t(
                             "inspectionsPage.inspectors.sellerVehicleLockedHint",
                           )}
@@ -750,7 +750,7 @@ export function InspectorDialog({
                       <>
                         {/* SELLER max 1 vehicle warning */}
                         {selectedExistingUserIsSeller && (
-                          <p className="text-xs text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md px-2.5 py-1.5">
+                          <p className="text-xs text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md px-2.5 py-1.5 text-pretty">
                             {t(
                               "inspectionsPage.inspectors.sellerMaxOneVehicle",
                             )}
@@ -762,7 +762,7 @@ export function InspectorDialog({
                             <Loader2 className="size-4 animate-spin text-muted-foreground" />
                           </div>
                         ) : vehicles.length === 0 ? (
-                          <p className="text-xs text-muted-foreground text-center py-4">
+                          <p className="text-xs text-muted-foreground text-center py-4 text-pretty">
                             {t(
                               "inspectionsPage.inspectors.noVehiclesAvailable",
                             )}
@@ -838,7 +838,7 @@ export function InspectorDialog({
                                           <p className="text-xs font-medium truncate">
                                             {vehicle.model}
                                           </p>
-                                          <p className="text-[10px] text-muted-foreground font-mono">
+                                          <p className="text-[10px text-muted-foreground font-mono">
                                             {vehicle.plate}
                                             {isInactive && (
                                               <span className="ml-1 text-rose-500">
@@ -891,8 +891,7 @@ export function InspectorDialog({
                   </div>
                 )}
               </div>
-              <div className="shrink-0 border-t px-6 py-4">
-                <DialogFooter>
+             <DialogFooter className="shrink-0 grid grid-cols-2 items-center px-6 py-5">
                   <Button
                     type="button"
                     variant="outline"
@@ -913,7 +912,6 @@ export function InspectorDialog({
                       : t("inspectionsPage.inspectors.confirmSelection")}
                   </Button>
                 </DialogFooter>
-              </div>
             </form>
           ) : (
             /* ── CREATE / EDIT MODE ── */
@@ -967,18 +965,21 @@ export function InspectorDialog({
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
-                        className="w-full h-24 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/20 text-muted-foreground hover:border-muted-foreground/40 hover:bg-muted/30 transition-colors"
+                        className="w-full h-16 md:h-24 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/20 text-muted-foreground hover:border-muted-foreground/40 hover:bg-muted/30 transition-colors"
                       >
                         {isUploading ? (
                           <>
-                            <Loader2 className="size-5 animate-spin" />
-                            <span className="text-xs">
+                            <Spinner
+                              variant="bars"
+                              className="size-4 md:size-6"
+                            />
+                            <span className="text-xs animate-pulse">
                               {t("common.loading") || "Uploading..."}
                             </span>
                           </>
                         ) : (
                           <>
-                            <ImagePlus className="size-5" />
+                            <ImagePlus className="size-4 md:size-6" />
                             <span className="text-xs">
                               {t("inspectionsPage.inspectors.uploadImage")}
                             </span>
@@ -988,7 +989,7 @@ export function InspectorDialog({
                     )}
                   </div>
 
-                  <div className="space-y-3 grid grid-cols-2 gap-x-2">
+                  <div className="space-y-3 grid grid-cols-1 md:grid-cols-2 gap-x-2">
                     <div className="space-y-1.5">
                       <Label htmlFor="inspector-name" className="text-xs">
                         {t("inspectionsPage.inspectors.name")}
@@ -999,7 +1000,7 @@ export function InspectorDialog({
                           "inspectionsPage.inspectors.namePlaceholder",
                         )}
                         {...form.register("name")}
-                        className="h-9"
+                        className="h-9 text-xs md:text-sm"
                       />
                       {form.formState.errors.name && (
                         <p className="text-xs text-destructive">
@@ -1019,7 +1020,7 @@ export function InspectorDialog({
                           "inspectionsPage.inspectors.emailPlaceholder",
                         )}
                         {...form.register("email")}
-                        className="h-9"
+                        className="h-9 text-xs md:text-sm"
                       />
                       {form.formState.errors.email && (
                         <p className="text-xs text-destructive">
@@ -1028,7 +1029,7 @@ export function InspectorDialog({
                       )}
                     </div>
 
-                    <div className="space-y-1.5 col-span-2">
+                    <div className="space-y-1.5 md:col-span-2">
                       <Label htmlFor="inspector-password" className="text-xs">
                         {t("inspectionsPage.inspectors.password")}
                       </Label>
@@ -1040,7 +1041,7 @@ export function InspectorDialog({
                             "inspectionsPage.inspectors.passwordPlaceholder",
                           )}
                           {...form.register("password")}
-                          className="pr-10 h-9"
+                          className="pr-10 h-9 text-xs md:text-sm"
                         />
                         <Button
                           type="button"
@@ -1061,7 +1062,7 @@ export function InspectorDialog({
                           {form.formState.errors.password.message}
                         </p>
                       )}
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-[10px text-muted-foreground">
                         {isEditing
                           ? t("inspectionsPage.inspectors.passwordEditHint")
                           : t("inspectionsPage.inspectors.passwordHint")}
@@ -1098,20 +1099,20 @@ export function InspectorDialog({
                       {selectedVehicleIds.length > 0 && (
                         <Badge
                           variant="secondary"
-                          className="text-[10px] h-4 px-1.5"
+                          className="text-[10px h-4 px-1.5"
                         >
                           {selectedVehicleIds.length}
                         </Badge>
                       )}
                     </h4>
-                    <span className="text-[10px] text-muted-foreground italic">
+                    <span className="text-[10px text-muted-foreground italic">
                       {t("inspectionsPage.inspectors.vehiclesOptional")}
                     </span>
                   </div>
 
                   {/* SELLER max 1 vehicle warning */}
                   {editingUserIsSeller && (
-                    <p className="text-[10px] text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md px-2.5 py-1.5">
+                    <p className="text-[10px text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md px-2.5 py-1.5">
                       {t("inspectionsPage.inspectors.sellerMaxOneVehicle")}
                     </p>
                   )}
@@ -1194,7 +1195,7 @@ export function InspectorDialog({
                                     <p className="text-xs font-medium truncate">
                                       {vehicle.model}
                                     </p>
-                                    <p className="text-[10px] text-muted-foreground font-mono">
+                                    <p className="text-[10px text-muted-foreground font-mono">
                                       {vehicle.plate}
                                       {isInactive && (
                                         <span className="ml-1 text-rose-500">

@@ -119,6 +119,7 @@ export function PhotosStep({ form }: PhotosStepProps) {
         {INSPECTION_PHOTO_TYPES.map(({ type, labelKey }) => {
           const photo = getPhotoForType(type);
           const isUploading = uploadingType === type;
+          const isAnyUploading = uploadingType !== null;
 
           return (
             <div
@@ -144,6 +145,7 @@ export function PhotosStep({ form }: PhotosStepProps) {
                       variant="destructive"
                       size="icon"
                       className="h-6 w-6"
+                      disabled={isAnyUploading}
                       onClick={() => handleRemovePhoto(type)}
                     >
                       <X className="size-3" />
@@ -154,8 +156,8 @@ export function PhotosStep({ form }: PhotosStepProps) {
                 <button
                   type="button"
                   onClick={() => handlePhotoCapture(type)}
-                  disabled={isUploading}
-                  className="w-full aspect-video flex flex-col items-center justify-center gap-2 bg-muted/50 hover:bg-muted transition-colors cursor-pointer rounded-lg border border-dashed border-muted text-center p-2"
+                  disabled={isAnyUploading || photos.length >= maxPhotos}
+                  className="w-full aspect-video flex flex-col items-center justify-center gap-2 bg-muted/50 hover:bg-muted transition-colors cursor-pointer rounded-lg border border-dashed border-muted text-center p-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-muted/50"
                 >
                   {isUploading ? (
                     <>

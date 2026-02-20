@@ -272,7 +272,7 @@ const VehicleInspectionPage = () => {
       ) : (
         <section className="mx-auto px-4 space-y-6 w-full h-full">
           {/* Sticky Header */}
-          <div className="flex gap-4 flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur">
+          <div className="flex gap-4 flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur flex-wrap">
             <div>
               <H1>{t("inspectionsPage.title")}</H1>
               <div className="flex flex-col justify-start">

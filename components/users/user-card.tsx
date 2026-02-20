@@ -65,7 +65,7 @@ export function UserCard({
               aria-label={t("users.selectUser", {
                 name: user.name || user.email,
               })}
-              className="mt-1"
+              className="mt-1 hidden md:inline-flex"
             />
             <Avatar className="size-16 rounded-lg shrink-0">
               <AvatarImage

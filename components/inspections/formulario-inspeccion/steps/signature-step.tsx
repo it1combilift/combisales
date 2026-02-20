@@ -166,6 +166,11 @@ export function SignatureStep({ form }: SignatureStepProps) {
         <p className="text-xs text-muted-foreground">
           {t("inspectionsPage.form.signature.hint")}
         </p>
+        {errors.signatureUrl && (
+          <p className="text-sm text-destructive">
+            {errors.signatureUrl.message}
+          </p>
+        )}
       </div>
 
       {signatureUrl ? (
@@ -196,8 +201,7 @@ export function SignatureStep({ form }: SignatureStepProps) {
           <div className="relative w-full max-w-full mx-auto rounded-lg border border-dashed overflow-hidden touch-none">
             <canvas
               ref={canvasRef}
-              className="w-full cursor-crosshair"
-              style={{ height: "400px" }}
+              className="w-full cursor-crosshair h-64 sm:h-74 md:h-80 lg:h-96"
               onMouseDown={startDrawing}
               onMouseMove={draw}
               onMouseUp={stopDrawing}
@@ -208,7 +212,7 @@ export function SignatureStep({ form }: SignatureStepProps) {
             />
             {!hasDrawn && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="flex items-center gap-2 text-muted-foreground/50">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <PenTool className="size-4" />
                   <span className="text-sm">
                     {t("inspectionsPage.form.signature.drawHere")}
@@ -244,12 +248,6 @@ export function SignatureStep({ form }: SignatureStepProps) {
             </Button>
           </div>
         </div>
-      )}
-
-      {errors.signatureUrl && (
-        <p className="text-sm text-destructive text-center">
-          {errors.signatureUrl.message}
-        </p>
       )}
     </div>
   );

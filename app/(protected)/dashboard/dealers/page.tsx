@@ -3,6 +3,7 @@
 import axios from "axios";
 import { toast } from "sonner";
 import { Role } from "@prisma/client";
+import { hasRole } from "@/lib/roles";
 import { useRouter } from "next/navigation";
 import { Visit } from "@/interfaces/visits";
 import { useSession } from "next-auth/react";
@@ -18,7 +19,6 @@ import { VisitsDataTable } from "@/components/visits/data-table";
 import { DashboardPageSkeleton } from "@/components/dashboard-skeleton";
 import { DeleteVisitDialog } from "@/components/visits/delete-visit-dialog";
 import DealerVisitFormDialog from "@/components/dealers/dealer-visit-form-dialog";
-import { hasRole } from "@/lib/roles";
 
 import {
   AlertDialog,
@@ -251,7 +251,7 @@ const DealersPage = () => {
   return (
     <section className="mx-auto px-4 space-y-3 w-full h-full">
       {/* Header */}
-      <div className="flex flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-0">
+      <div className="flex flex-row items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur py-0 flex-wrap">
         <div>
           <H1>
             {isAdmin

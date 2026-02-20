@@ -113,7 +113,7 @@ export function VehicleCard({
                   className={cn(
                     "size-8 rounded-lg backdrop-blur-sm bg-background/70 dark:bg-background/50",
                     "border-border/40 cursor-pointer",
-                    "opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+                    "md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200",
                     "focus-visible:opacity-100",
                   )}
                 >
