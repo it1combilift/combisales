@@ -8,7 +8,7 @@ import { useTranslation } from "@/lib/i18n/context";
 import { Loader2, ClipboardCheck } from "lucide-react";
 import { InspectionForm } from "./formulario-inspeccion";
 import { InspectionFormSchema } from "@/schemas/inspections";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 interface InspectionFormDialogProps {
   open: boolean;
@@ -62,6 +62,9 @@ export function InspectionFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="h-[90vh] max-w-[95vw] md:max-h-dvh p-0 flex flex-col overflow-hidden gap-0">
+        <DialogTitle className="sr-only">
+          {t("inspectionsPage.form.title")}
+        </DialogTitle>
         {loadingVehicles ? (
           <div className="flex flex-col items-center justify-center flex-1 gap-3">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />
