@@ -14,12 +14,14 @@ interface InspectionFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  preSelectedVehicleId?: string;
 }
 
 export function InspectionFormDialog({
   open,
   onOpenChange,
   onSuccess,
+  preSelectedVehicleId,
 }: InspectionFormDialogProps) {
   const { t } = useTranslation();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -79,6 +81,7 @@ export function InspectionFormDialog({
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             onClose={() => onOpenChange(false)}
+            preSelectedVehicleId={preSelectedVehicleId}
           />
         )}
       </DialogContent>

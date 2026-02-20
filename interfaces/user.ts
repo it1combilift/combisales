@@ -54,6 +54,12 @@ export interface UserListItem {
       email: string;
     };
   }[];
+  assignedVehicles?: {
+    id: string;
+    model: string;
+    plate: string;
+    status: string;
+  }[];
 }
 
 export interface UpdateUserInput extends Partial<

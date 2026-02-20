@@ -36,6 +36,8 @@ import {
   MoreHorizontal,
   PencilLine,
   Trash2,
+  Shield,
+  Briefcase,
 } from "lucide-react";
 
 import {
@@ -216,6 +218,9 @@ export function InspectorsTable({
                   inspector.assignedVehicles?.length ??
                   0;
                 const inspectionCount = inspector._count?.inspections ?? 0;
+                const roles = (inspector.roles || []) as string[];
+                const hasInspectorRole = roles.includes("INSPECTOR");
+                const hasSellerRole = roles.includes("SELLER");
 
                 return (
                   <TableRow
@@ -245,6 +250,26 @@ export function InspectorsTable({
                           <span className="text-[11px] text-muted-foreground mt-0.5 truncate">
                             {inspector.email}
                           </span>
+                          <div className="flex gap-1 mt-1">
+                            {hasInspectorRole && (
+                              <Badge
+                                variant="outline"
+                                className="text-[9px] h-4 px-1.5 gap-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
+                              >
+                                <Shield className="size-2" />
+                                {t("inspectionsPage.inspectors.roleInspector")}
+                              </Badge>
+                            )}
+                            {hasSellerRole && (
+                              <Badge
+                                variant="outline"
+                                className="text-[9px] h-4 px-1.5 gap-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                              >
+                                <Briefcase className="size-2" />
+                                {t("inspectionsPage.inspectors.roleSeller")}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </TableCell>

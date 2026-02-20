@@ -6,8 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 /**
- * GET /api/users?role=INSPECTOR
- * Returns users filtered by role.
+ * GET /api/users?role=INSPECTOR or ?roles=INSPECTOR,SELLER
+ * Returns users filtered by role(s).
  * Admin only.
  */
 export async function GET(request: NextRequest) {
@@ -28,10 +28,19 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const roleFilter = searchParams.get("role") as Role | null;
+    const rolesFilter = searchParams.get("roles"); // comma-separated: "INSPECTOR,SELLER"
 
     const where: any = {};
 
-    if (roleFilter && Object.values(Role).includes(roleFilter)) {
+    if (rolesFilter) {
+      // Support multiple roles filter: ?roles=INSPECTOR,SELLER
+      const roleList = rolesFilter
+        .split(",")
+        .filter((r) => Object.values(Role).includes(r as Role)) as Role[];
+      if (roleList.length > 0) {
+        where.OR = roleList.map((r) => ({ roles: { has: r } }));
+      }
+    } else if (roleFilter && Object.values(Role).includes(roleFilter)) {
       where.roles = { has: roleFilter };
     }
 

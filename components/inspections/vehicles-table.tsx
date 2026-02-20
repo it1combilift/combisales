@@ -4,10 +4,11 @@ import Image from "next/image";
 import { useState } from "react";
 import { cn, getInitials } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { formatDateShort } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
 import { Vehicle, VehicleStatus } from "@/interfaces/inspection";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 import {
   Table,
@@ -37,8 +38,9 @@ import {
   ArrowUpDown,
   MoreHorizontal,
   PencilLine,
+  Play,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,6 +53,7 @@ interface VehiclesTableProps {
   vehicles: Vehicle[];
   onEdit?: (vehicle: Vehicle) => void;
   onDelete?: (vehicle: Vehicle) => void;
+  onStartInspection?: (vehicle: Vehicle) => void;
 }
 
 type SortField =
@@ -66,6 +69,7 @@ export function VehiclesTable({
   vehicles,
   onEdit,
   onDelete,
+  onStartInspection,
 }: VehiclesTableProps) {
   const [sortField, setSortField] = useState<SortField>("model");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -192,7 +196,7 @@ export function VehiclesTable({
                 >
                   {t("inspectionsPage.vehicleTable.created")}
                 </SortableHeader>
-                {(onEdit || onDelete) && (
+                {(onEdit || onDelete || onStartInspection) && (
                   <TableHead className="w-14 px-3 py-3">
                     <span className="sr-only">{t("common.actions")}</span>
                   </TableHead>
@@ -202,7 +206,10 @@ export function VehiclesTable({
             <TableBody>
               {sortedVehicles.map((vehicle) => {
                 const isActive = vehicle.status === VehicleStatus.ACTIVE;
-                const inspectionCount = vehicle._count?.inspections ?? 0;
+                const inspectionCount =
+                  vehicle.inspections?.length ||
+                  vehicle._count?.inspections ||
+                  0;
 
                 return (
                   <TableRow
@@ -211,13 +218,13 @@ export function VehiclesTable({
                   >
                     {/* Thumbnail */}
                     <TableCell className="px-4 py-3">
-                      <div className="relative size-12 overflow-hidden bg-secondary/50 rounded-lg ring-1 ring-border/30 shrink-0">
+                      <div className="size-12 relative overflow-hidden bg-secondary/50 rounded-lg ring-1 ring-border/30 shrink-0">
                         {vehicle.imageUrl ? (
                           <Image
                             src={vehicle.imageUrl}
                             alt={vehicle.model}
                             fill
-                            className="object-contain object-center h-full w-full"
+                            className="object-cover object-center w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center">
@@ -333,7 +340,7 @@ export function VehiclesTable({
                     </TableCell>
 
                     {/* Actions */}
-                    {(onEdit || onDelete) && (
+                    {(onEdit || onDelete || onStartInspection) && (
                       <TableCell className="px-3 py-3">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -348,6 +355,20 @@ export function VehiclesTable({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-44">
+                            {onStartInspection && (
+                              <DropdownMenuItem
+                                onClick={() => onStartInspection(vehicle)}
+                                className="cursor-pointer"
+                              >
+                                <Play className="size-4" />
+                                {t(
+                                  "inspectionsPage.vehicleCard.startInspection",
+                                )}
+                              </DropdownMenuItem>
+                            )}
+                            {onStartInspection && (onEdit || onDelete) && (
+                              <DropdownMenuSeparator />
+                            )}
                             {onEdit && (
                               <DropdownMenuItem
                                 onClick={() => onEdit(vehicle)}

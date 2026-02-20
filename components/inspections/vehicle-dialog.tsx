@@ -10,6 +10,8 @@ import { useTranslation } from "@/lib/i18n/context";
 import { useState, useEffect, useRef } from "react";
 import { InspectorDialog } from "./inspector-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Role } from "@prisma/client";
+import { hasRole } from "@/lib/roles";
 import { Loader2, ImagePlus, X } from "lucide-react";
 import { VehicleStatus } from "@/interfaces/inspection";
 
@@ -17,7 +19,6 @@ import {
   createVehicleSchema,
   CreateVehicleSchema,
 } from "@/schemas/inspections";
-
 
 import {
   Dialog,
@@ -36,10 +37,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface Inspector {
+interface Assignee {
   id: string;
   name: string | null;
   email: string;
+  roles: Role[];
+  _count?: {
+    assignedVehicles: number;
+  };
 }
 
 interface VehicleDialogProps {
@@ -65,8 +70,8 @@ export function VehicleDialog({
 }: VehicleDialogProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [inspectors, setInspectors] = useState<Inspector[]>([]);
-  const [loadingInspectors, setLoadingInspectors] = useState(false);
+  const [assignees, setAssignees] = useState<Assignee[]>([]);
+  const [loadingAssignees, setLoadingAssignees] = useState(false);
   const [inspectorDialogOpen, setInspectorDialogOpen] = useState(false);
 
   // Image upload state
@@ -95,7 +100,7 @@ export function VehicleDialog({
 
   useEffect(() => {
     if (open) {
-      fetchInspectors();
+      fetchAssignees();
       if (editVehicle) {
         form.reset({
           model: editVehicle.model,
@@ -122,16 +127,16 @@ export function VehicleDialog({
     }
   }, [open, editVehicle]);
 
-  const fetchInspectors = async () => {
-    setLoadingInspectors(true);
+  const fetchAssignees = async () => {
+    setLoadingAssignees(true);
     try {
-      const response = await axios.get("/api/users?role=INSPECTOR");
-      setInspectors(response.data || []);
+      const response = await axios.get("/api/users?roles=INSPECTOR,SELLER");
+      setAssignees(response.data || []);
     } catch (error) {
-      console.error("Failed to fetch inspectors:", error);
-      setInspectors([]);
+      console.error("Failed to fetch assignees:", error);
+      setAssignees([]);
     } finally {
-      setLoadingInspectors(false);
+      setLoadingAssignees(false);
     }
   };
 
@@ -338,43 +343,123 @@ export function VehicleDialog({
               )}
             </div>
 
-            {/* Inspector Assignment Section */}
+            {/* Person Assignment Section */}
             <div className="space-y-3">
               <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                {t("inspectionsPage.vehicles.assignedInspector")}
+                {t("inspectionsPage.vehicles.assignedPerson") ||
+                  t("inspectionsPage.vehicles.assignedInspector")}
               </h4>
 
               <div className="space-y-2">
                 <Select
                   value={form.watch("assignedInspectorId") || "none"}
-                  onValueChange={(value) =>
-                    form.setValue(
-                      "assignedInspectorId",
-                      value === "none" ? undefined : value,
-                    )
-                  }
-                  disabled={loadingInspectors}
+                  onValueChange={(value) => {
+                    if (value === "none") {
+                      form.setValue("assignedInspectorId", undefined);
+                      return;
+                    }
+                    // Check SELLER 1-vehicle limit on client side
+                    const selected = assignees.find((a) => a.id === value);
+                    if (selected) {
+                      const isSELLEROnly =
+                        hasRole(selected.roles, Role.SELLER) &&
+                        !hasRole(selected.roles, Role.INSPECTOR);
+                      const alreadyHasVehicle =
+                        (selected._count?.assignedVehicles ?? 0) > 0;
+                      const isCurrentAssignee =
+                        editVehicle?.assignedInspectorId === value;
+                      if (
+                        isSELLEROnly &&
+                        alreadyHasVehicle &&
+                        !isCurrentAssignee
+                      ) {
+                        form.setError("assignedInspectorId", {
+                          message:
+                            t("inspectionsPage.vehicles.sellerLimitError") ||
+                            "This Seller already has a vehicle assigned",
+                        });
+                        return;
+                      }
+                    }
+                    form.clearErrors("assignedInspectorId");
+                    form.setValue("assignedInspectorId", value);
+                  }}
+                  disabled={loadingAssignees}
                 >
                   <SelectTrigger className="h-9 w-full">
                     <SelectValue
                       placeholder={
-                        loadingInspectors
+                        loadingAssignees
                           ? t("common.loading")
-                          : t("inspectionsPage.vehicles.selectInspector")
+                          : t("inspectionsPage.vehicles.selectAssignee") ||
+                            t("inspectionsPage.vehicles.selectInspector")
                       }
                     />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">
-                      {t("inspectionsPage.vehicles.noInspector")}
+                      {t("inspectionsPage.vehicles.noAssignee") ||
+                        t("inspectionsPage.vehicles.noInspector")}
                     </SelectItem>
-                    {inspectors.map((inspector) => (
-                      <SelectItem key={inspector.id} value={inspector.id}>
-                        {inspector.name || inspector.email}
-                      </SelectItem>
-                    ))}
+                    {assignees.map((assignee) => {
+                      const isInspectorRole = hasRole(
+                        assignee.roles,
+                        Role.INSPECTOR,
+                      );
+                      const isSellerRole = hasRole(assignee.roles, Role.SELLER);
+                      const isSELLEROnly = isSellerRole && !isInspectorRole;
+                      const alreadyHasVehicle =
+                        (assignee._count?.assignedVehicles ?? 0) > 0;
+                      const isCurrentAssignee =
+                        editVehicle?.assignedInspectorId === assignee.id;
+                      const isDisabled =
+                        isSELLEROnly && alreadyHasVehicle && !isCurrentAssignee;
+
+                      return (
+                        <SelectItem
+                          key={assignee.id}
+                          value={assignee.id}
+                          disabled={isDisabled}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span>{assignee.name || assignee.email}</span>
+                            {isInspectorRole && isSellerRole ? (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 font-medium">
+                                {t(
+                                  "inspectionsPage.vehicles.roleInspectorSeller",
+                                ) || "Insp + Seller"}
+                              </span>
+                            ) : isInspectorRole ? (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-medium">
+                                {t("inspectionsPage.vehicles.roleInspector") ||
+                                  "Inspector"}
+                              </span>
+                            ) : isSellerRole ? (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 font-medium">
+                                {t("inspectionsPage.vehicles.roleSeller") ||
+                                  "P. Manager"}
+                              </span>
+                            ) : null}
+                            {isDisabled && (
+                              <span className="text-[10px] text-muted-foreground">
+                                (
+                                {t(
+                                  "inspectionsPage.vehicles.vehicleAssigned",
+                                ) || "vehicle assigned"}
+                                )
+                              </span>
+                            )}
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
+                {form.formState.errors.assignedInspectorId && (
+                  <p className="text-xs text-destructive">
+                    {form.formState.errors.assignedInspectorId.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -402,7 +487,7 @@ export function VehicleDialog({
       <InspectorDialog
         open={inspectorDialogOpen}
         onOpenChange={setInspectorDialogOpen}
-        onSuccess={() => fetchInspectors()}
+        onSuccess={() => fetchAssignees()}
       />
     </>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useInspectionForm } from "./hooks/use-inspection-form";
 import { InspectionFormHeader } from "./ui/form-header";
 import { FormNavigation } from "./ui/form-navigation";
@@ -16,6 +17,7 @@ interface InspectionFormProps {
   onSubmit: (data: InspectionFormSchema) => Promise<void>;
   isSubmitting: boolean;
   onClose?: () => void;
+  preSelectedVehicleId?: string;
 }
 
 export function InspectionForm({
@@ -23,6 +25,7 @@ export function InspectionForm({
   onSubmit,
   isSubmitting,
   onClose,
+  preSelectedVehicleId,
 }: InspectionFormProps) {
   const {
     form,
@@ -38,6 +41,13 @@ export function InspectionForm({
     goToStep,
   } = useInspectionForm();
 
+  // Auto-select vehicle when preSelectedVehicleId is provided
+  useEffect(() => {
+    if (preSelectedVehicleId) {
+      form.setValue("vehicleId", preSelectedVehicleId);
+    }
+  }, [preSelectedVehicleId, form]);
+
   const handleSubmit = async () => {
     const isValid = await form.trigger();
     if (!isValid) return;
@@ -51,7 +61,13 @@ export function InspectionForm({
 
     switch (currentStepConfig.key) {
       case "vehicleData":
-        return <VehicleDataStep form={form} vehicles={vehicles} />;
+        return (
+          <VehicleDataStep
+            form={form}
+            vehicles={vehicles}
+            preSelectedVehicleId={preSelectedVehicleId}
+          />
+        );
       case "checklist":
         return <ChecklistStep form={form} />;
       case "photos":

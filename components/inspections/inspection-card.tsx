@@ -28,6 +28,7 @@ interface InspectionCardProps {
   onApprove?: (inspection: Inspection) => void;
   onDelete?: (inspection: Inspection) => void;
   isAdmin?: boolean;
+  currentUserId?: string;
 }
 
 export function InspectionCard({
@@ -36,6 +37,7 @@ export function InspectionCard({
   onApprove,
   onDelete,
   isAdmin,
+  currentUserId,
 }: InspectionCardProps) {
   const { t, locale } = useTranslation();
 
@@ -296,20 +298,24 @@ export function InspectionCard({
               </Button>
             )}
 
-          {isAdmin && onDelete && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(inspection);
-              }}
-              title={t("inspectionsPage.delete.title")}
-            >
-              <Trash2 className="size-4" />
-            </Button>
-          )}
+          {(isAdmin ||
+            (currentUserId &&
+              inspection.userId === currentUserId &&
+              inspection.status === InspectionStatus.PENDING)) &&
+            onDelete && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(inspection);
+                }}
+                title={t("inspectionsPage.delete.title")}
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            )}
         </div>
       </CardContent>
     </Card>

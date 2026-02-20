@@ -25,6 +25,7 @@ import {
   XCircle,
   MoreHorizontal,
   PencilLine,
+  Play,
 } from "lucide-react";
 
 import {
@@ -39,9 +40,15 @@ interface VehicleCardProps {
   vehicle: Vehicle;
   onEdit?: (vehicle: Vehicle) => void;
   onDelete?: (vehicle: Vehicle) => void;
+  onStartInspection?: (vehicle: Vehicle) => void;
 }
 
-export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
+export function VehicleCard({
+  vehicle,
+  onEdit,
+  onDelete,
+  onStartInspection,
+}: VehicleCardProps) {
   const { t, locale } = useTranslation();
   const inspectionCount = vehicle._count?.inspections ?? 0;
   const isActive = vehicle.status === VehicleStatus.ACTIVE;
@@ -97,7 +104,7 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
         </div>
 
         {/* Actions dropdown */}
-        {(onEdit || onDelete) && (
+        {(onEdit || onDelete || onStartInspection) && (
           <div className="absolute top-3 left-3 z-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -117,6 +124,20 @@ export function VehicleCard({ vehicle, onEdit, onDelete }: VehicleCardProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-44">
+                {onStartInspection && (
+                  <DropdownMenuItem
+                    onClick={() => onStartInspection(vehicle)}
+                    className="cursor-pointer"
+                  >
+                    <Play className="size-4" />
+                    {t("inspectionsPage.vehicleCard.startInspection")}
+                  </DropdownMenuItem>
+                )}
+
+                {onStartInspection && (onEdit || onDelete) && (
+                  <DropdownMenuSeparator />
+                )}
+
                 {onEdit && (
                   <DropdownMenuItem
                     onClick={() => onEdit(vehicle)}

@@ -61,6 +61,8 @@ export const createUserSchemaFactory = (t: TranslationFn) =>
         .transform((val) => (val === "" ? null : val)),
       // Para usuarios DEALER: ID del seller asignado (solo uno)
       assignedSellerId: z.string().cuid().optional().nullable(),
+      // Para usuarios INSPECTOR/SELLER: IDs de vehículos asignados
+      assignedVehicleIds: z.array(z.string().cuid()).optional(),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: t("validation.passwordMatch"),
@@ -114,6 +116,8 @@ export const createUserSchema = z
       .transform((val) => (val === "" ? null : val)),
     // Para usuarios DEALER: ID del seller asignado (solo uno)
     assignedSellerId: z.string().cuid().optional().nullable(),
+    // Para usuarios INSPECTOR/SELLER: IDs de vehículos asignados
+    assignedVehicleIds: z.array(z.string().cuid()).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Las contraseñas no coinciden",
@@ -170,6 +174,8 @@ export const createUpdateUserSchemaFactory = (t: TranslationFn) =>
         .transform((val) => (val === "" ? null : val)),
       // Para usuarios DEALER: ID del seller asignado (solo uno)
       assignedSellerId: z.string().cuid().optional().nullable(),
+      // Para usuarios INSPECTOR/SELLER: IDs de vehículos asignados
+      assignedVehicleIds: z.array(z.string().cuid()).optional(),
     })
     .refine(
       (data) => {
@@ -224,6 +230,8 @@ export const updateUserSchema = z
       .transform((val) => (val === "" ? null : val)),
     // Para usuarios DEALER: ID del seller asignado (solo uno)
     assignedSellerId: z.string().cuid().optional().nullable(),
+    // Para usuarios INSPECTOR/SELLER: IDs de vehículos asignados
+    assignedVehicleIds: z.array(z.string().cuid()).optional(),
   })
   .refine(
     (data) => {

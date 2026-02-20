@@ -46,6 +46,7 @@ interface InspectionsTableProps {
   onApprove?: (inspection: Inspection) => void;
   onDelete?: (inspection: Inspection) => void;
   isAdmin?: boolean;
+  currentUserId?: string;
 }
 
 type SortField =
@@ -70,6 +71,7 @@ export function InspectionsTable({
   onApprove,
   onDelete,
   isAdmin,
+  currentUserId,
 }: InspectionsTableProps) {
   const { t, locale } = useTranslation();
   const [sortField, setSortField] = useState<SortField>("createdAt");
@@ -458,23 +460,27 @@ export function InspectionsTable({
                             </Tooltip>
                           )}
 
-                        {isAdmin && onDelete && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="size-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                                onClick={() => onDelete(inspection)}
-                              >
-                                <Trash2 className="size-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="left" className="text-xs">
-                              {t("inspectionsPage.delete.title")}
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
+                        {(isAdmin ||
+                          (currentUserId &&
+                            inspection.userId === currentUserId &&
+                            inspection.status === InspectionStatus.PENDING)) &&
+                          onDelete && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="size-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => onDelete(inspection)}
+                                >
+                                  <Trash2 className="size-3.5" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="left" className="text-xs">
+                                {t("inspectionsPage.delete.title")}
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
                       </div>
                     </TableCell>
                   </TableRow>

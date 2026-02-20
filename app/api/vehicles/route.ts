@@ -1,13 +1,12 @@
 import { prisma } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Role } from "@prisma/client";
 import { hasRole, hasAnyRole } from "@/lib/roles";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import {
   HTTP_STATUS,
-  API_SUCCESS,
   unauthorizedResponse,
   badRequestResponse,
   serverErrorResponse,
@@ -21,10 +20,11 @@ export async function GET() {
     if (!session?.user) return unauthorizedResponse();
 
     const userRoles = session.user.roles as Role[];
-    if (!hasAnyRole(userRoles, [Role.ADMIN, Role.INSPECTOR])) {
+    if (!hasAnyRole(userRoles, [Role.ADMIN, Role.INSPECTOR, Role.SELLER])) {
       return unauthorizedResponse();
     }
 
+    // ADMIN sees all vehicles; INSPECTOR/SELLER see only their assigned vehicles
     const where = hasRole(userRoles, Role.ADMIN)
       ? {}
       : { assignedInspectorId: session.user.id };
@@ -79,14 +79,34 @@ export async function POST(request: NextRequest) {
       return badRequestResponse("A vehicle with this plate already exists");
     }
 
-    // Validate assigned inspector exists and has INSPECTOR role
+    // Validate assigned user exists and has INSPECTOR or SELLER role
     if (assignedInspectorId) {
-      const inspector = await prisma.user.findUnique({
+      const assignee = await prisma.user.findUnique({
         where: { id: assignedInspectorId },
         select: { roles: true },
       });
-      if (!inspector || !hasRole(inspector.roles, Role.INSPECTOR)) {
-        return badRequestResponse("Invalid inspector assignment");
+      if (
+        !assignee ||
+        !hasAnyRole(assignee.roles, [Role.INSPECTOR, Role.SELLER])
+      ) {
+        return badRequestResponse(
+          "Invalid assignment: user must be an Inspector or Seller",
+        );
+      }
+
+      // SELLER can only have 1 vehicle assigned
+      if (
+        hasRole(assignee.roles, Role.SELLER) &&
+        !hasRole(assignee.roles, Role.INSPECTOR)
+      ) {
+        const existingVehicle = await prisma.vehicle.findFirst({
+          where: { assignedInspectorId },
+        });
+        if (existingVehicle) {
+          return badRequestResponse(
+            "This Seller already has a vehicle assigned. Sellers can only have 1 vehicle.",
+          );
+        }
       }
     }
 

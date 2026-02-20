@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma";
+import { hasRole } from "@/lib/roles";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Role, InspectionStatus } from "@prisma/client";
-import { hasRole } from "@/lib/roles";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { sendInspectionApprovedEmail } from "@/lib/inspection-notifications";
 
 import {
   API_SUCCESS,
@@ -14,7 +15,6 @@ import {
   createSuccessResponse,
 } from "@/lib/api-response";
 
-import { sendInspectionApprovedEmail } from "@/lib/inspection-notifications";
 
 // ==================== POST /api/inspections/[id]/approve ====================
 export async function POST(

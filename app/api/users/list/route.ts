@@ -65,6 +65,14 @@ export async function GET() {
             },
           },
         },
+        assignedVehicles: {
+          select: {
+            id: true,
+            model: true,
+            plate: true,
+            status: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -107,6 +115,7 @@ export async function GET() {
           zohoId: zohoAccount?.providerAccountId || null, // ZUID
           hasActiveSession: user.sessions.length > 0,
           assignedSellers: user.assignedSellers, // Include assigned sellers for DEALER users
+          assignedVehicles: user.assignedVehicles, // Include assigned vehicles for INSPECTOR/SELLER users
         };
       }),
     );

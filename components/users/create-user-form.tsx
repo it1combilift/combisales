@@ -8,14 +8,15 @@ import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SellerSelection } from "./seller-selection";
 import { RolesSelection } from "./roles-selection";
+import { useForm, useWatch } from "react-hook-form";
+import { SellerSelection } from "./seller-selection";
+import { VehicleAssignment } from "./vehicle-assignment";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUserFormProps } from "@/interfaces/user";
+import { useState, useCallback, useEffect } from "react";
 import { createUserSchemaFactory } from "@/schemas/auth";
 import { ProfileImageUpload } from "./profile-image-upload";
-import { useState, useCallback, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
@@ -27,6 +28,7 @@ import {
   Lock,
   Settings,
   Users,
+  Car,
 } from "lucide-react";
 
 import {
@@ -59,12 +61,17 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       isActive: true,
       image: null,
       assignedSellerId: null,
+      assignedVehicleIds: [],
     },
   });
 
   // Watch form values using useWatch for proper reactivity
   const selectedRoles = useWatch({ control: form.control, name: "roles" });
   const isDealerRole = selectedRoles?.includes(Role.DEALER) ?? false;
+  const isVehicleRole =
+    (selectedRoles?.includes(Role.INSPECTOR) ||
+      selectedRoles?.includes(Role.SELLER)) ??
+    false;
   const assignedSellerId = useWatch({
     control: form.control,
     name: "assignedSellerId",
@@ -90,7 +97,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
 
   const handleSellerSelectionChange = useCallback(
     (id: string | null) => {
-      console.log("🔄 Seller selection changed:", id);
+      console.log("Seller selection changed:", id);
       form.setValue("assignedSellerId", id, {
         shouldValidate: true,
         shouldDirty: true,
@@ -104,10 +111,11 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
 
   // Debug logging
   useEffect(() => {
-    console.log("📊 CreateUserForm State:", {
+    console.log("CreateUserForm State:", {
       selectedRoles,
       isDealerRole,
       assignedSellerId,
+      assignedVehicleIds: form.getValues("assignedVehicleIds"),
       name,
       email,
       password: password ? "***" : "",
@@ -172,7 +180,11 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
         <Tabs defaultValue="personal" className="w-full">
           <TabsList
             className={`grid w-full ${
-              isDealerRole ? "grid-cols-4" : "grid-cols-3"
+              isDealerRole && isVehicleRole
+                ? "grid-cols-5"
+                : isDealerRole || isVehicleRole
+                  ? "grid-cols-4"
+                  : "grid-cols-3"
             } mb-4 h-auto bg-muted/30 dark:bg-muted/50 p-0.5 rounded-lg border border-border/40`}
           >
             <TabsTrigger
@@ -210,6 +222,17 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 <Users className="size-4" />
                 <span className="hidden xs:inline">
                   {t("users.form.tabs.sellers")}
+                </span>
+              </TabsTrigger>
+            )}
+            {isVehicleRole && (
+              <TabsTrigger
+                value="vehicles"
+                className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
+              >
+                <Car className="size-4" />
+                <span className="hidden xs:inline">
+                  {t("users.form.tabs.vehicles")}
                 </span>
               </TabsTrigger>
             )}
@@ -450,6 +473,30 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                       <SellerSelection
                         selectedSellerId={field.value}
                         onSelectionChange={handleSellerSelectionChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TabsContent>
+          )}
+
+          {/* Vehicles Tab (only for INSPECTOR/SELLER roles) */}
+          {isVehicleRole && (
+            <TabsContent value="vehicles" className="mt-0">
+              <FormField
+                control={form.control}
+                name="assignedVehicleIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <VehicleAssignment
+                        selectedVehicleIds={field.value || []}
+                        onSelectionChange={(ids) => {
+                          field.onChange(ids);
+                        }}
+                        userRoles={selectedRoles || []}
                       />
                     </FormControl>
                     <FormMessage />

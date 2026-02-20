@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Role } from "@prisma/client";
-import { hasRole } from "@/lib/roles";
+import { hasRole, hasAnyRole } from "@/lib/roles";
 
 import {
   HTTP_STATUS,
@@ -74,6 +74,7 @@ export async function PUT(
       assignedInspectorId,
       imageUrl,
       imageCloudinaryId,
+      force,
     } = body;
 
     const existing = await prisma.vehicle.findUnique({ where: { id } });
@@ -89,14 +90,48 @@ export async function PUT(
       }
     }
 
-    // Validate inspector if assigning
+    // Validate assignee if assigning
     if (assignedInspectorId) {
-      const inspector = await prisma.user.findUnique({
+      const assignee = await prisma.user.findUnique({
         where: { id: assignedInspectorId },
         select: { roles: true },
       });
-      if (!inspector || !hasRole(inspector.roles, Role.INSPECTOR)) {
-        return badRequestResponse("Invalid inspector assignment");
+      if (
+        !assignee ||
+        !hasAnyRole(assignee.roles, [Role.INSPECTOR, Role.SELLER])
+      ) {
+        return badRequestResponse(
+          "Invalid assignment: user must be an Inspector or Seller",
+        );
+      }
+
+      // Prevent reassigning a vehicle that is currently assigned to another user (unless force=true)
+      if (
+        !force &&
+        existing.assignedInspectorId &&
+        existing.assignedInspectorId !== assignedInspectorId
+      ) {
+        return badRequestResponse(
+          "This vehicle is already assigned to another user. Use force=true to override.",
+        );
+      }
+
+      // SELLER can only have 1 vehicle assigned (exclude current vehicle being edited)
+      if (
+        hasRole(assignee.roles, Role.SELLER) &&
+        !hasRole(assignee.roles, Role.INSPECTOR)
+      ) {
+        const existingVehicle = await prisma.vehicle.findFirst({
+          where: {
+            assignedInspectorId,
+            id: { not: id },
+          },
+        });
+        if (existingVehicle) {
+          return badRequestResponse(
+            "This Seller already has a vehicle assigned. Sellers can only have 1 vehicle.",
+          );
+        }
       }
     }
 

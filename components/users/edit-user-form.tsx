@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { RolesSelection } from "./roles-selection";
 import { useForm, useWatch } from "react-hook-form";
 import { SellerSelection } from "./seller-selection";
+import { VehicleAssignment } from "./vehicle-assignment";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditUserFormProps } from "@/interfaces/user";
 import { useState, useCallback, useEffect } from "react";
@@ -26,6 +27,7 @@ import {
   CheckCircle2,
   Settings,
   Users,
+  Car,
 } from "lucide-react";
 
 import {
@@ -79,6 +81,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         .or(z.literal(""))
         .transform((val) => (val === "" ? null : val)),
       assignedSellerId: z.string().cuid().optional().nullable(),
+      assignedVehicleIds: z.array(z.string().cuid()).optional(),
     })
     .refine(
       (data) => {
@@ -96,6 +99,8 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
 
   // Extract assigned seller ID (first one, since now only one is allowed)
   const assignedSellerId = user.assignedSellers?.[0]?.seller?.id || null;
+  // Extract assigned vehicle IDs
+  const initialVehicleIds = user.assignedVehicles?.map((v) => v.id) || [];
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -109,12 +114,17 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       password: "",
       image: user.image || null,
       assignedSellerId: assignedSellerId,
+      assignedVehicleIds: initialVehicleIds,
     },
   });
 
   // Watch form values using useWatch for proper reactivity
   const selectedRoles = useWatch({ control: form.control, name: "roles" });
   const isDealerRole = selectedRoles?.includes(Role.DEALER) ?? false;
+  const isVehicleRole =
+    (selectedRoles?.includes(Role.INSPECTOR) ||
+      selectedRoles?.includes(Role.SELLER)) ??
+    false;
   const watchedAssignedSellerId = useWatch({
     control: form.control,
     name: "assignedSellerId",
@@ -134,6 +144,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   // Reset form when user changes (fixes assigned seller not showing)
   useEffect(() => {
     const newAssignedSellerId = user.assignedSellers?.[0]?.seller?.id || null;
+    const newVehicleIds = user.assignedVehicles?.map((v) => v.id) || [];
 
     form.reset({
       name: user.name || "",
@@ -144,6 +155,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
       password: "",
       image: user.image || null,
       assignedSellerId: newAssignedSellerId,
+      assignedVehicleIds: newVehicleIds,
     });
   }, [user.id]); // Only reset when user ID changes, not on every user object reference change
 
@@ -265,6 +277,20 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         }
       }
 
+      // Handle vehicle assignment for INSPECTOR/SELLER roles
+      if (values.assignedVehicleIds !== undefined) {
+        const currentVehicleIds = user.assignedVehicles?.map((v) => v.id) || [];
+        const newVehicleIds = values.assignedVehicleIds || [];
+
+        const vehiclesChanged =
+          currentVehicleIds.length !== newVehicleIds.length ||
+          !currentVehicleIds.every((id) => newVehicleIds.includes(id));
+
+        if (vehiclesChanged) {
+          updateData.assignedVehicleIds = newVehicleIds;
+        }
+      }
+
       if (Object.keys(updateData).length === 0) {
         toast.info(t("users.form.noChanges"));
         setIsLoading(false);
@@ -295,7 +321,11 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
         <Tabs defaultValue="personal" className="w-full">
           <TabsList
             className={`grid w-full ${
-              isDealerRole ? "grid-cols-3" : "grid-cols-2"
+              isDealerRole && isVehicleRole
+                ? "grid-cols-4"
+                : isDealerRole || isVehicleRole
+                  ? "grid-cols-3"
+                  : "grid-cols-2"
             } mb-4 h-auto bg-muted/30 dark:bg-muted/50 p-0.5 rounded-lg border border-border/40`}
           >
             <TabsTrigger
@@ -322,6 +352,17 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
                 <Users className="size-4" />
                 <span className="hidden xs:inline">
                   {t("users.form.tabs.sellers")}
+                </span>
+              </TabsTrigger>
+            )}
+            {isVehicleRole && (
+              <TabsTrigger
+                value="vehicles"
+                className="text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
+              >
+                <Car className="size-4" />
+                <span className="hidden xs:inline">
+                  {t("users.form.tabs.vehicles")}
                 </span>
               </TabsTrigger>
             )}
@@ -540,6 +581,32 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
                         key={`seller-${user.id}`}
                         selectedSellerId={field.value}
                         onSelectionChange={handleSellerSelectionChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TabsContent>
+          )}
+
+          {/* Vehicles Tab (only for INSPECTOR/SELLER roles) */}
+          {isVehicleRole && (
+            <TabsContent value="vehicles" className="mt-0">
+              <FormField
+                control={form.control}
+                name="assignedVehicleIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <VehicleAssignment
+                        key={`vehicles-${user.id}`}
+                        selectedVehicleIds={field.value || []}
+                        onSelectionChange={(ids) => {
+                          field.onChange(ids);
+                        }}
+                        editingUserId={user.id}
+                        userRoles={selectedRoles || []}
                       />
                     </FormControl>
                     <FormMessage />

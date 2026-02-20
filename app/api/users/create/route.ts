@@ -49,6 +49,7 @@ export async function POST(request: Request) {
       isActive,
       image,
       assignedSellerId,
+      assignedVehicleIds,
     } = validation.data;
 
     const existingUser = await prisma.user.findUnique({
@@ -122,6 +123,18 @@ export async function POST(request: Request) {
         },
       },
     });
+
+    // Assign vehicles for INSPECTOR/SELLER roles
+    if (assignedVehicleIds && assignedVehicleIds.length > 0) {
+      const hasInspectorOrSeller =
+        roles.includes(Role.INSPECTOR) || roles.includes(Role.SELLER);
+      if (hasInspectorOrSeller) {
+        await prisma.vehicle.updateMany({
+          where: { id: { in: assignedVehicleIds } },
+          data: { assignedInspectorId: user.id },
+        });
+      }
+    }
 
     return NextResponse.json(
       {

@@ -54,6 +54,14 @@ export async function GET(
             },
           },
         },
+        assignedVehicles: {
+          select: {
+            id: true,
+            model: true,
+            plate: true,
+            status: true,
+          },
+        },
       },
     });
 
@@ -128,6 +136,7 @@ export async function PATCH(
       password,
       image,
       assignedSellerId,
+      assignedVehicleIds,
     } = validation.data;
 
     const userToUpdate = await prisma.user.findUnique({
@@ -198,6 +207,45 @@ export async function PATCH(
       });
     }
 
+    // Handle vehicle assignment for INSPECTOR/SELLER roles
+    if (assignedVehicleIds !== undefined) {
+      const finalRoles = roles ?? userToUpdate.roles;
+      const hasInspectorOrSeller =
+        finalRoles.includes(Role.INSPECTOR) || finalRoles.includes(Role.SELLER);
+
+      if (hasInspectorOrSeller) {
+        // Unassign all vehicles currently assigned to this user
+        await prisma.vehicle.updateMany({
+          where: { assignedInspectorId: id },
+          data: { assignedInspectorId: null },
+        });
+
+        // Assign new vehicles
+        if (assignedVehicleIds.length > 0) {
+          await prisma.vehicle.updateMany({
+            where: { id: { in: assignedVehicleIds } },
+            data: { assignedInspectorId: id },
+          });
+        }
+      }
+    }
+
+    // If roles changed and no longer INSPECTOR/SELLER, unassign vehicles
+    if (roles) {
+      const hadInspectorOrSeller =
+        userToUpdate.roles.includes(Role.INSPECTOR) ||
+        userToUpdate.roles.includes(Role.SELLER);
+      const hasInspectorOrSeller =
+        roles.includes(Role.INSPECTOR) || roles.includes(Role.SELLER);
+
+      if (hadInspectorOrSeller && !hasInspectorOrSeller) {
+        await prisma.vehicle.updateMany({
+          where: { assignedInspectorId: id },
+          data: { assignedInspectorId: null },
+        });
+      }
+    }
+
     const updateData: UpdateUserInput = {};
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;
@@ -231,6 +279,14 @@ export async function PATCH(
                 email: true,
               },
             },
+          },
+        },
+        assignedVehicles: {
+          select: {
+            id: true,
+            model: true,
+            plate: true,
+            status: true,
           },
         },
       },

@@ -45,6 +45,11 @@ export async function GET(
     const session = await getServerSession(authOptions);
     if (!session?.user) return unauthorizedResponse();
 
+    const userRoles = session.user.roles as Role[];
+    if (!hasAnyRole(userRoles, [Role.ADMIN, Role.INSPECTOR, Role.SELLER])) {
+      return unauthorizedResponse();
+    }
+
     const { id } = await params;
 
     const inspection = await prisma.inspection.findUnique({
@@ -54,8 +59,7 @@ export async function GET(
 
     if (!inspection) return notFoundResponse("INSPECTION");
 
-    // INSPECTOR can only see own inspections
-    const userRoles = session.user.roles as Role[];
+    // Non-ADMIN can only see own inspections
     if (
       !hasRole(userRoles, Role.ADMIN) &&
       inspection.userId !== session.user.id
@@ -80,6 +84,10 @@ export async function PUT(
 
     const { id } = await params;
     const userRoles = session.user.roles as Role[];
+
+    if (!hasAnyRole(userRoles, [Role.ADMIN, Role.INSPECTOR, Role.SELLER])) {
+      return unauthorizedResponse();
+    }
 
     const existing = await prisma.inspection.findUnique({
       where: { id },
@@ -178,6 +186,10 @@ export async function DELETE(
 
     const { id } = await params;
     const userRoles = session.user.roles as Role[];
+
+    if (!hasAnyRole(userRoles, [Role.ADMIN, Role.INSPECTOR, Role.SELLER])) {
+      return unauthorizedResponse();
+    }
 
     const existing = await prisma.inspection.findUnique({
       where: { id },

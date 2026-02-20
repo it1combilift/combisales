@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn, formatDateShort, getInitials } from "@/lib/utils";
+import { cn, formatDateShort, getInitials, getRoleBadge } from "@/lib/utils";
 
 import {
   ClipboardCheck,
@@ -15,7 +15,11 @@ import {
   CarFront,
   Edit,
   Trash2,
+  Shield,
+  Briefcase,
 } from "lucide-react";
+import { getAllRoles } from "@/lib/roles";
+import { Role } from "@prisma/client";
 
 export interface InspectorData {
   id: string;
@@ -35,7 +39,6 @@ export interface InspectorData {
   _count?: {
     inspections: number;
     assignedVehicles: number;
-
   };
 }
 
@@ -58,6 +61,11 @@ export function InspectorCard({
     0;
   const inspectionCount = inspector._count?.inspections ?? 0;
   const isActive = inspector.isActive;
+
+  // Role detection for badge display
+  const roles = (inspector.roles || []) as string[];
+  const hasInspectorRole = roles.includes("INSPECTOR");
+  const hasSellerRole = roles.includes("SELLER");
 
   return (
     <Card className="group relative overflow-hidden border rounded-2xl shadow-sm bg-card transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/8 flex flex-col p-0">
@@ -105,23 +113,30 @@ export function InspectorCard({
               {inspector.name || inspector.email}
             </h3>
             {inspector.name && (
-              <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+              <p className="text-xs text-muted-foreground truncate mt-0.5">
                 {inspector.email}
               </p>
             )}
-            <Badge
-              variant={isActive ? "success" : "destructive"}
-              className="mt-1.5 text-[10px] h-5 px-2 gap-1 rounded-full border-0"
-            >
-              {isActive ? (
-                <CheckCircle2 className="size-2.5" />
-              ) : (
-                <XCircle className="size-2.5" />
+            {/* Role badges */}
+            <div className="flex gap-1 w-fit mt-1">
+              <Badge
+                variant={isActive ? "success" : "destructive"}
+                className="text-sm px-2 gap-1 rounded-full border-0"
+              >
+                {isActive ? (
+                  <CheckCircle2 className="size-2.5" />
+                ) : (
+                  <XCircle className="size-2.5" />
+                )}
+                {isActive
+                  ? t("inspectionsPage.inspectors.active")
+                  : t("inspectionsPage.inspectors.inactive")}
+              </Badge>
+
+              {getAllRoles(inspector.roles as Role[]).map((role) =>
+                getRoleBadge(role),
               )}
-              {isActive
-                ? t("inspectionsPage.inspectors.active")
-                : t("inspectionsPage.inspectors.inactive")}
-            </Badge>
+            </div>
           </div>
         </div>
 

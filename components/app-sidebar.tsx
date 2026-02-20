@@ -100,13 +100,14 @@ export function AppSidebar({
       return item.url === "/dashboard/dealers";
     }
 
-    // SELLER can access Tasks, Clients, Equipment, and Dealers (for assigned visits)
+    // SELLER can access Tasks, Clients, Equipment, Dealers (for assigned visits), and Inspections
     if (hasRole(userRoles, Role.SELLER)) {
       return (
         item.url === "/dashboard/tasks" ||
         item.url === "/dashboard/clients" ||
         item.url === "/dashboard/equipment" ||
-        item.url === "/dashboard/dealers"
+        item.url === "/dashboard/dealers" ||
+        item.url === "/dashboard/inspections"
       );
     }
 

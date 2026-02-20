@@ -54,7 +54,10 @@ export default function InspectionDetailPage({
 
   const userRoles = session?.user?.roles as Role[] | undefined;
   const isAdmin = hasRole(userRoles, Role.ADMIN);
+  const isOwner = inspection?.userId === session?.user?.id;
   const canApprove = isAdmin && inspection?.status === InspectionStatus.PENDING;
+  const canDelete =
+    isAdmin || (isOwner && inspection?.status === InspectionStatus.PENDING);
 
   const statusConfig: Record<
     string,
@@ -116,7 +119,7 @@ export default function InspectionDetailPage({
               </span>
             </Button>
           )}
-          {isAdmin &&
+          {canDelete &&
             inspection &&
             inspection.status !== InspectionStatus.APPROVED &&
             inspection.status !== InspectionStatus.REJECTED && (

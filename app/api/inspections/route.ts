@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     if (!session?.user) return unauthorizedResponse();
 
     const userRoles = session.user.roles as Role[];
-    if (!hasAnyRole(userRoles, [Role.ADMIN, Role.INSPECTOR])) {
+    if (!hasAnyRole(userRoles, [Role.ADMIN, Role.INSPECTOR, Role.SELLER])) {
       return unauthorizedResponse();
     }
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user) return unauthorizedResponse();
 
     const userRoles = session.user.roles as Role[];
-    if (!hasAnyRole(userRoles, [Role.ADMIN, Role.INSPECTOR])) {
+    if (!hasAnyRole(userRoles, [Role.ADMIN, Role.INSPECTOR, Role.SELLER])) {
       return unauthorizedResponse();
     }
 
@@ -129,6 +129,15 @@ export async function POST(request: NextRequest) {
     });
     if (!vehicle) {
       return badRequestResponse("Vehicle not found");
+    }
+
+    // Non-ADMIN users can only create inspections for vehicles assigned to them
+    if (!hasRole(userRoles, Role.ADMIN)) {
+      if (vehicle.assignedInspectorId !== session.user.id) {
+        return badRequestResponse(
+          "You can only create inspections for vehicles assigned to you",
+        );
+      }
     }
 
     // Create inspection with photos
