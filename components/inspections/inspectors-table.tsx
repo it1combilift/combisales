@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { cn, getInitials } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { formatDateShort } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
+import { cn, getInitials, getRoleBadge } from "@/lib/utils";
 
 import {
   Table,
@@ -38,6 +38,8 @@ import {
   Trash2,
   Shield,
   Briefcase,
+  AlertCircle,
+  Lock,
 } from "lucide-react";
 
 import {
@@ -47,6 +49,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getAllRoles } from "@/lib/roles";
+import { Role } from "@prisma/client";
 
 interface InspectorData {
   id: string;
@@ -247,27 +251,12 @@ export function InspectorsTable({
                           <span className="font-semibold text-sm text-foreground leading-tight truncate">
                             {inspector.name || inspector.email}
                           </span>
-                          <span className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                          <span className="text-xs text-muted-foreground mt-0.5 truncate">
                             {inspector.email}
                           </span>
                           <div className="flex gap-1 mt-1">
-                            {hasInspectorRole && (
-                              <Badge
-                                variant="outline"
-                                className="text-[9px] h-4 px-1.5 gap-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
-                              >
-                                <Shield className="size-2" />
-                                {t("inspectionsPage.inspectors.roleInspector")}
-                              </Badge>
-                            )}
-                            {hasSellerRole && (
-                              <Badge
-                                variant="outline"
-                                className="text-[9px] h-4 px-1.5 gap-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
-                              >
-                                <Briefcase className="size-2" />
-                                {t("inspectionsPage.inspectors.roleSeller")}
-                              </Badge>
+                            {getAllRoles(inspector.roles as Role[]).map(
+                              (role) => getRoleBadge(role),
                             )}
                           </div>
                         </div>
@@ -306,16 +295,55 @@ export function InspectorsTable({
                     <TableCell className="text-center px-3 py-3">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="inline-flex items-center gap-1.5 text-xs bg-sky-50 dark:bg-sky-950/30 rounded-md px-2 py-1 border border-sky-200/60 dark:border-sky-800/50">
-                            <CarFront className="size-3 text-sky-600 dark:text-sky-400" />
-                            <span className="font-bold text-sky-700 dark:text-sky-300 tabular-nums">
+                          <div
+                            className={cn(
+                              "inline-flex items-center gap-1.5 text-xs rounded-md px-2 py-1 border",
+                              vehicleCount > 0
+                                ? "bg-sky-50 dark:bg-sky-950/30 border-sky-200/60 dark:border-sky-800/50"
+                                : "bg-muted/40 border-border/40",
+                            )}
+                          >
+                            <CarFront
+                              className={cn(
+                                "size-3",
+                                vehicleCount > 0
+                                  ? "text-sky-600 dark:text-sky-400"
+                                  : "text-muted-foreground/50",
+                              )}
+                            />
+                            <span
+                              className={cn(
+                                "font-bold tabular-nums",
+                                vehicleCount > 0
+                                  ? "text-sky-700 dark:text-sky-300"
+                                  : "text-muted-foreground",
+                              )}
+                            >
                               {vehicleCount}
                             </span>
+                            {/* SELLER-only lock icon when vehicle assigned */}
+                            {hasSellerRole &&
+                              !hasInspectorRole &&
+                              vehicleCount >= 1 && (
+                                <Lock className="size-2.5 text-amber-500" />
+                              )}
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="text-xs">
-                          {vehicleCount}{" "}
-                          {t("inspectionsPage.inspectors.vehiclesCount")}
+                          {vehicleCount > 0
+                            ? `${vehicleCount} ${t("inspectionsPage.inspectors.vehiclesCount")}`
+                            : t(
+                                "inspectionsPage.inspectors.noVehiclesAssigned",
+                              )}
+                          {hasSellerRole &&
+                            !hasInspectorRole &&
+                            vehicleCount >= 1 && (
+                              <span className="block text-amber-400 mt-0.5">
+                                {t(
+                                  "inspectionsPage.inspectors.sellerMaxOneVehicle",
+                                )}
+                              </span>
+                            )}
                         </TooltipContent>
                       </Tooltip>
                     </TableCell>
@@ -347,9 +375,9 @@ export function InspectorsTable({
                             <Badge
                               key={v.id}
                               variant="outline"
-                              className="text-[10px] h-5 px-2 gap-1 font-mono bg-muted/30 border-border/50"
+                              className="text-[10px] h-5 px-2 gap-1 font-mono bg-sky-50/50 dark:bg-sky-950/20 border-sky-200/60 dark:border-sky-800/50 text-sky-700 dark:text-sky-300"
                             >
-                              <Car className="size-2.5" />
+                              <Car className="size-2.5 text-sky-500" />
                               {v.plate}
                             </Badge>
                           ))}
@@ -363,9 +391,12 @@ export function InspectorsTable({
                           )}
                         </div>
                       ) : (
-                        <span className="text-[11px] text-muted-foreground italic">
-                          —
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <AlertCircle className="size-3 text-muted-foreground/40" />
+                          <span className="text-[11px] text-muted-foreground/70">
+                            {t("inspectionsPage.inspectors.noVehiclesAssigned")}
+                          </span>
+                        </div>
                       )}
                     </TableCell>
 

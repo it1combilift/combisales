@@ -3,17 +3,17 @@
 import { z } from "zod";
 import axios from "axios";
 import Image from "next/image";
-import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
-import { getAllRoles } from "@/lib/roles";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { getAllRoles, hasRole } from "@/lib/roles";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "@/lib/i18n/context";
+import { Role, VehicleStatus } from "@prisma/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn, getInitials, getRoleBadge } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,6 +28,8 @@ import {
   Search,
   Users,
   UserPlus,
+  Lock,
+  CarFront,
 } from "lucide-react";
 
 import {
@@ -43,8 +45,14 @@ interface SimpleVehicle {
   id: string;
   model: string;
   plate: string;
-  imageUrl?: string | null;
-  assignedInspectorId?: string | null;
+  status: VehicleStatus;
+  imageUrl: string | null;
+  assignedInspectorId: string | null;
+  assignedInspector?: {
+    id: string;
+    name: string | null;
+    email: string;
+  } | null;
 }
 
 export interface EditInspectorData {
@@ -270,9 +278,35 @@ export function InspectorDialog({
     setImageCloudinaryId(null);
   };
 
+  // Determine if the current target user has SELLER role
+  const selectedExistingUserIsSeller = (() => {
+    if (mode === "select" && selectedExistingUserId) {
+      const user = existingUsers.find((u) => u.id === selectedExistingUserId);
+      return user ? hasRole(user.roles as Role[], Role.SELLER) : false;
+    }
+    return false;
+  })();
+
+  const editingUserIsSeller = (() => {
+    if (isEditing && editInspector) {
+      return hasRole(editInspector.roles as Role[], Role.SELLER);
+    }
+    return false;
+  })();
+
+  const currentUserIsSeller =
+    mode === "select" ? selectedExistingUserIsSeller : editingUserIsSeller;
+
+  // SELLER users who already have a vehicle assigned (from DB) cannot change
+  // vehicle assignments from the SELECT EXISTING flow — they must use the edit flow.
+  const sellerAlreadyHasVehicle =
+    selectedExistingUserIsSeller && initialVehicleIds.length > 0;
+
   const toggleVehicle = (vehicleId: string) => {
-    // Prevent toggling vehicles assigned to other users
     const vehicle = vehicles.find((v) => v.id === vehicleId);
+    // Prevent toggling inactive vehicles
+    if (vehicle?.status === "INACTIVE") return;
+    // Prevent toggling vehicles assigned to other users
     const currentUserId =
       mode === "select" ? selectedExistingUserId : editInspector?.id;
     if (
@@ -282,11 +316,17 @@ export function InspectorDialog({
     ) {
       return;
     }
-    setSelectedVehicleIds((prev) =>
-      prev.includes(vehicleId)
-        ? prev.filter((id) => id !== vehicleId)
-        : [...prev, vehicleId],
-    );
+
+    setSelectedVehicleIds((prev) => {
+      if (prev.includes(vehicleId)) {
+        return prev.filter((id) => id !== vehicleId);
+      }
+      // SELLER role: max 1 vehicle — replace instead of adding
+      if (currentUserIsSeller) {
+        return [vehicleId];
+      }
+      return [...prev, vehicleId];
+    });
   };
 
   const filteredVehicles = vehicles.filter((v) => {
@@ -306,7 +346,7 @@ export function InspectorDialog({
           name: data.name,
           email: data.email,
           isActive,
-          roles: ["INSPECTOR"],
+          roles: [Role.INSPECTOR],
           image: imagePreview || null,
         };
         if (data.password) {
@@ -354,7 +394,7 @@ export function InspectorDialog({
         const createRes = await axios.post("/api/users/create", {
           ...data,
           confirmPassword: data.password,
-          roles: ["INSPECTOR"],
+          roles: [Role.INSPECTOR],
           isActive: true,
           image: imagePreview || undefined,
         });
@@ -395,25 +435,42 @@ export function InspectorDialog({
   });
 
   // Submit handler for "Select Existing" mode
+  // Vehicle assignment is OPTIONAL — user can be confirmed without vehicles
   const handleSelectExistingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedExistingUserId || selectedVehicleIds.length === 0) return;
+    if (!selectedExistingUserId) return;
 
     setIsSubmitting(true);
     try {
-      // Get the currently assigned vehicles for the selected user
-      const user = existingUsers.find((u) => u.id === selectedExistingUserId);
-      const userCurrentVehicleIds =
-        user?.assignedVehicles?.map((v) => v.id) || [];
+      // SELLER with existing vehicle — skip all vehicle operations
+      if (!sellerAlreadyHasVehicle) {
+        // Get the currently assigned vehicles for the selected user
+        const user = existingUsers.find((u) => u.id === selectedExistingUserId);
+        const userCurrentVehicleIds =
+          user?.assignedVehicles?.map((v) => v.id) || [];
 
-      // Only assign NEW vehicles (not already assigned to this user)
-      const toAssign = selectedVehicleIds.filter(
-        (id) => !userCurrentVehicleIds.includes(id),
-      );
+        // Only assign NEW vehicles (not already assigned to this user)
+        const toAssign = selectedVehicleIds.filter(
+          (id) => !userCurrentVehicleIds.includes(id),
+        );
 
-      if (toAssign.length > 0) {
-        await Promise.all(
-          toAssign.map((vehicleId) =>
+        // Unassign vehicles that were removed
+        const toUnassign = initialVehicleIds.filter(
+          (id) => !selectedVehicleIds.includes(id),
+        );
+
+        const vehicleOps = [
+          ...toUnassign.map((vehicleId) =>
+            axios
+              .put(`/api/vehicles/${vehicleId}`, {
+                assignedInspectorId: null,
+                force: true,
+              })
+              .catch((err) =>
+                console.error(`Failed to unassign vehicle ${vehicleId}:`, err),
+              ),
+          ),
+          ...toAssign.map((vehicleId) =>
             axios
               .put(`/api/vehicles/${vehicleId}`, {
                 assignedInspectorId: selectedExistingUserId,
@@ -423,7 +480,11 @@ export function InspectorDialog({
                 console.error(`Failed to assign vehicle ${vehicleId}:`, err),
               ),
           ),
-        );
+        ];
+
+        if (vehicleOps.length > 0) {
+          await Promise.all(vehicleOps);
+        }
       }
 
       setSelectedVehicleIds([]);
@@ -440,8 +501,8 @@ export function InspectorDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="md:max-w-lg h-[90vh] overflow-hidden p-0 m-0 max-w-[95vw]">
-        <div className="flex flex-col h-full bg-background relative">
+      <DialogContent className="max-w-[95vw] md:max-w-lg h-[90vh] max-h-[90vh] overflow-hidden p-0 m-0 gap-0 grid-rows-[1fr]">
+        <div className="flex flex-col h-full overflow-hidden bg-background relative">
           {/* ── Fixed Header ── */}
           <div className="shrink-0 px-6 pt-6 pb-3 space-y-3">
             <DialogHeader>
@@ -507,9 +568,9 @@ export function InspectorDialog({
               onSubmit={handleSelectExistingSubmit}
               className="flex flex-col flex-1 min-h-0"
             >
-              <div className="flex flex-col flex-1 min-h-0 px-6 pb-4 gap-3">
+              <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-4 space-y-3">
                 {/* ── User Search & Selection ── */}
-                <div className="flex flex-col flex-1 min-h-0">
+                <div>
                   <h4 className="shrink-0 text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-2">
                     {t("inspectionsPage.inspectors.selectUser")}
                   </h4>
@@ -533,15 +594,35 @@ export function InspectorDialog({
                       {t("inspectionsPage.inspectors.noUsersMatch")}
                     </p>
                   ) : (
-                    <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
+                    <div>
                       <div className="p-1.5 space-y-0.5">
                         {filteredExistingUsers.map((user) => {
                           const isSelected = selectedExistingUserId === user.id;
+                          const userIsSeller = hasRole(
+                            user.roles as Role[],
+                            Role.SELLER,
+                          );
+                          const userIsInspector = hasRole(
+                            user.roles as Role[],
+                            Role.INSPECTOR,
+                          );
+                          const userVehicleCount =
+                            user._count?.assignedVehicles ??
+                            user.assignedVehicles?.length ??
+                            0;
+                          // SELLER-only users who already have a vehicle are locked
+                          const isSellerLocked =
+                            userIsSeller &&
+                            !userIsInspector &&
+                            userVehicleCount >= 1;
+
                           return (
                             <button
                               key={user.id}
                               type="button"
+                              disabled={isSellerLocked}
                               onClick={() => {
+                                if (isSellerLocked) return;
                                 setSelectedExistingUserId(
                                   isSelected ? null : user.id,
                                 );
@@ -559,9 +640,11 @@ export function InspectorDialog({
                               }}
                               className={cn(
                                 "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors text-left mb-1.5",
-                                isSelected
-                                  ? "bg-primary/10 border border-primary/20"
-                                  : "hover:bg-muted/50 border border-transparent bg-muted/30",
+                                isSellerLocked
+                                  ? "opacity-50 cursor-not-allowed bg-muted/20 border border-border/30"
+                                  : isSelected
+                                    ? "bg-primary/10 border border-primary/20"
+                                    : "hover:bg-muted/50 border border-transparent bg-muted/30",
                               )}
                             >
                               <Avatar className="size-10 shrink-0 ring-1 ring-border/40">
@@ -583,13 +666,25 @@ export function InspectorDialog({
                                     {user.email}
                                   </p>
                                 )}
-                                <div className="flex gap-1 mt-0.5">
+                                <div className="flex flex-wrap gap-1 mt-0.5">
                                   {getAllRoles(user.roles as Role[]).map(
                                     (role) => getRoleBadge(role),
                                   )}
                                 </div>
+
+                                {/* SELLER locked feedback */}
+                                {isSellerLocked && (
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <Lock className="size-2.5 text-amber-500 shrink-0" />
+                                    <span className="text-[10px] text-amber-600 dark:text-amber-400 leading-tight">
+                                      {t(
+                                        "inspectionsPage.inspectors.sellerAlreadyAssigned",
+                                      )}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
-                              {isSelected && (
+                              {isSelected && !isSellerLocked && (
                                 <div className="size-5 rounded-full bg-primary flex items-center justify-center shrink-0">
                                   <svg
                                     className="size-3 text-primary-foreground"
@@ -606,6 +701,9 @@ export function InspectorDialog({
                                   </svg>
                                 </div>
                               )}
+                              {isSellerLocked && (
+                                <Lock className="size-4 text-amber-500/70 shrink-0" />
+                              )}
                             </button>
                           );
                         })}
@@ -616,117 +714,179 @@ export function InspectorDialog({
 
                 {/* ── Vehicle Assignment — only when a user is selected ── */}
                 {selectedExistingUserId && (
-                  <div className="flex flex-col flex-2 min-h-0 border-t pt-3">
-                    <h4 className="shrink-0 text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-2">
-                      {t("inspectionsPage.inspectors.assignVehicles")}
-                      {selectedVehicleIds.length > 0 && (
-                        <Badge
-                          variant="secondary"
-                          className="text-[10px] h-4 px-1.5"
-                        >
-                          {selectedVehicleIds.length}
-                        </Badge>
+                  <div className="border-t pt-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        {t("inspectionsPage.inspectors.assignVehicles")}
+                        {selectedVehicleIds.length > 0 && (
+                          <Badge
+                            variant="secondary"
+                            className="text-[10px] h-4 px-1.5"
+                          >
+                            {selectedVehicleIds.length}
+                          </Badge>
+                        )}
+                      </h4>
+                      {!sellerAlreadyHasVehicle && (
+                        <span className="text-[10px] text-muted-foreground italic">
+                          {t("inspectionsPage.inspectors.vehiclesOptional")}
+                        </span>
                       )}
-                    </h4>
+                    </div>
 
-                    {loadingVehicles ? (
-                      <div className="flex items-center justify-center py-6">
-                        <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                    {/* SELLER already has vehicle — LOCKED */}
+                    {sellerAlreadyHasVehicle ? (
+                      <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-3 space-y-1.5">
+                        <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                          {t("inspectionsPage.inspectors.sellerVehicleLocked")}
+                        </p>
+                        <p className="text-[10px] text-amber-600/80 dark:text-amber-400/80">
+                          {t(
+                            "inspectionsPage.inspectors.sellerVehicleLockedHint",
+                          )}
+                        </p>
                       </div>
-                    ) : vehicles.length === 0 ? (
-                      <p className="text-xs text-muted-foreground text-center py-4">
-                        {t("inspectionsPage.inspectors.noVehiclesAvailable")}
-                      </p>
                     ) : (
-                      <div className="flex flex-col flex-1 min-h-0 gap-2">
-                        <div className="shrink-0 relative">
-                          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                          <Input
-                            placeholder={t(
-                              "inspectionsPage.inspectors.searchVehicles",
+                      <>
+                        {/* SELLER max 1 vehicle warning */}
+                        {selectedExistingUserIsSeller && (
+                          <p className="text-xs text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md px-2.5 py-1.5">
+                            {t(
+                              "inspectionsPage.inspectors.sellerMaxOneVehicle",
                             )}
-                            value={vehicleSearch}
-                            onChange={(e) => setVehicleSearch(e.target.value)}
-                            className="h-8 pl-8 text-xs"
-                          />
-                        </div>
+                          </p>
+                        )}
 
-                        <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
-                          <div className="p-1.5 space-y-0.5">
-                            {filteredVehicles.map((vehicle) => {
-                              const isSelected = selectedVehicleIds.includes(
-                                vehicle.id,
-                              );
-                              const isAssignedToOther =
-                                vehicle.assignedInspectorId &&
-                                vehicle.assignedInspectorId !==
-                                  selectedExistingUserId &&
-                                !isSelected;
-                              return (
-                                <Label
-                                  key={vehicle.id}
-                                  className={cn(
-                                    "flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors",
-                                    isAssignedToOther
-                                      ? "opacity-50 cursor-not-allowed"
-                                      : "cursor-pointer",
-                                    isSelected
-                                      ? "bg-primary/10 border border-primary/20"
-                                      : "hover:bg-muted/50 border border-transparent",
-                                  )}
-                                >
-                                  <Checkbox
-                                    checked={isSelected}
-                                    onCheckedChange={() =>
-                                      toggleVehicle(vehicle.id)
-                                    }
-                                    disabled={!!isAssignedToOther}
-                                  />
-                                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                                    {vehicle.imageUrl ? (
-                                      <Image
-                                        src={vehicle.imageUrl}
-                                        alt={vehicle.model}
-                                        width={48}
-                                        height={48}
-                                        className="rounded object-contain object-center size-12 shrink-0"
-                                      />
-                                    ) : (
-                                      <div className="size-7 rounded bg-muted flex items-center justify-center shrink-0">
-                                        <Car className="size-3.5 text-muted-foreground" />
-                                      </div>
-                                    )}
-                                    <div className="min-w-0">
-                                      <p className="text-xs font-medium truncate">
-                                        {vehicle.model}
-                                      </p>
-                                      <p className="text-[10px] text-muted-foreground font-mono">
-                                        {vehicle.plate}
-                                        {isAssignedToOther && (
-                                          <span className="ml-1 text-amber-500">
-                                            (
-                                            {t(
-                                              "inspectionsPage.inspectors.alreadyAssigned",
-                                            )}
-                                            )
-                                          </span>
-                                        )}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </Label>
-                              );
-                            })}
-                            {filteredVehicles.length === 0 && (
-                              <p className="text-xs text-muted-foreground text-center py-3">
-                                {t(
-                                  "inspectionsPage.inspectors.noVehiclesMatch",
-                                )}
-                              </p>
-                            )}
+                        {loadingVehicles ? (
+                          <div className="flex items-center justify-center py-6">
+                            <Loader2 className="size-4 animate-spin text-muted-foreground" />
                           </div>
-                        </div>
-                      </div>
+                        ) : vehicles.length === 0 ? (
+                          <p className="text-xs text-muted-foreground text-center py-4">
+                            {t(
+                              "inspectionsPage.inspectors.noVehiclesAvailable",
+                            )}
+                          </p>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="relative">
+                              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                              <Input
+                                placeholder={t(
+                                  "inspectionsPage.inspectors.searchVehicles",
+                                )}
+                                value={vehicleSearch}
+                                onChange={(e) =>
+                                  setVehicleSearch(e.target.value)
+                                }
+                                className="h-8 pl-8 text-xs"
+                              />
+                            </div>
+
+                            <div>
+                              <div className="p-1.5 space-y-0.5">
+                                {filteredVehicles.map((vehicle) => {
+                                  const isSelected =
+                                    selectedVehicleIds.includes(vehicle.id);
+                                  const isInactive =
+                                    vehicle.status === "INACTIVE";
+                                  const isAssignedToOther =
+                                    vehicle.assignedInspectorId &&
+                                    vehicle.assignedInspectorId !==
+                                      selectedExistingUserId &&
+                                    !isSelected;
+                                  const isDisabled =
+                                    !!isAssignedToOther || isInactive;
+                                  return (
+                                    <Label
+                                      key={vehicle.id}
+                                      className={cn(
+                                        "flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors",
+                                        isDisabled
+                                          ? "opacity-50 cursor-not-allowed"
+                                          : "cursor-pointer",
+                                        isSelected && !isDisabled
+                                          ? "bg-primary/10 border border-primary/20"
+                                          : "hover:bg-muted/50 border border-transparent",
+                                      )}
+                                    >
+                                      <Checkbox
+                                        checked={isSelected && !isInactive}
+                                        onCheckedChange={() =>
+                                          toggleVehicle(vehicle.id)
+                                        }
+                                        disabled={isDisabled}
+                                      />
+                                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                                        {vehicle.imageUrl ? (
+                                          <Image
+                                            src={vehicle.imageUrl}
+                                            alt={vehicle.model}
+                                            width={48}
+                                            height={48}
+                                            className={cn(
+                                              "rounded object-contain object-center size-12 shrink-0",
+                                              isInactive && "grayscale",
+                                            )}
+                                          />
+                                        ) : (
+                                          <div className="size-7 rounded bg-muted flex items-center justify-center shrink-0">
+                                            <Car className="size-3.5 text-muted-foreground" />
+                                          </div>
+                                        )}
+                                        <div className="min-w-0">
+                                          <p className="text-xs font-medium truncate">
+                                            {vehicle.model}
+                                          </p>
+                                          <p className="text-[10px] text-muted-foreground font-mono">
+                                            {vehicle.plate}
+                                            {isInactive && (
+                                              <span className="ml-1 text-rose-500">
+                                                (
+                                                {t(
+                                                  "inspectionsPage.inspectors.vehicleInactive",
+                                                )}
+                                                )
+                                              </span>
+                                            )}
+                                            {!isInactive &&
+                                              isAssignedToOther &&
+                                              vehicle.assignedInspector && (
+                                                <span className="ml-1 text-amber-500">
+                                                  (
+                                                  {t(
+                                                    "users.form.vehicleAssignment.assignedTo",
+                                                    {
+                                                      name:
+                                                        vehicle
+                                                          .assignedInspector
+                                                          .name ||
+                                                        vehicle
+                                                          .assignedInspector
+                                                          .email,
+                                                    },
+                                                  )}
+                                                  )
+                                                </span>
+                                              )}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </Label>
+                                  );
+                                })}
+                                {filteredVehicles.length === 0 && (
+                                  <p className="text-xs text-muted-foreground text-center py-3">
+                                    {t(
+                                      "inspectionsPage.inspectors.noVehiclesMatch",
+                                    )}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
@@ -743,16 +903,14 @@ export function InspectorDialog({
                   </Button>
                   <Button
                     type="submit"
-                    disabled={
-                      isSubmitting ||
-                      !selectedExistingUserId ||
-                      selectedVehicleIds.length === 0
-                    }
+                    disabled={isSubmitting || !selectedExistingUserId}
                   >
                     {isSubmitting && (
                       <Loader2 className="size-4 animate-spin" />
                     )}
-                    {t("inspectionsPage.inspectors.assignVehicles")}
+                    {selectedVehicleIds.length > 0
+                      ? t("inspectionsPage.inspectors.assignVehicles")
+                      : t("inspectionsPage.inspectors.confirmSelection")}
                   </Button>
                 </DialogFooter>
               </div>
@@ -914,10 +1072,10 @@ export function InspectorDialog({
                     {isEditing && (
                       <div className="flex items-center justify-between rounded-lg border border-border/60 px-3 py-2.5 col-span-2">
                         <div className="space-y-0.5">
-                          <Label className="text-xs font-medium">
+                          <Label className="text-sm font-medium">
                             {t("inspectionsPage.inspectors.statusLabel")}
                           </Label>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {isActive
                               ? t("inspectionsPage.inspectors.active")
                               : t("inspectionsPage.inspectors.inactive")}
@@ -934,17 +1092,29 @@ export function InspectorDialog({
 
                 {/* Vehicle Assignment Section */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                    {t("inspectionsPage.inspectors.assignVehicles")}
-                    {selectedVehicleIds.length > 0 && (
-                      <Badge
-                        variant="secondary"
-                        className="text-[10px] h-4 px-1.5"
-                      >
-                        {selectedVehicleIds.length}
-                      </Badge>
-                    )}
-                  </h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                      {t("inspectionsPage.inspectors.assignVehicles")}
+                      {selectedVehicleIds.length > 0 && (
+                        <Badge
+                          variant="secondary"
+                          className="text-[10px] h-4 px-1.5"
+                        >
+                          {selectedVehicleIds.length}
+                        </Badge>
+                      )}
+                    </h4>
+                    <span className="text-[10px] text-muted-foreground italic">
+                      {t("inspectionsPage.inspectors.vehiclesOptional")}
+                    </span>
+                  </div>
+
+                  {/* SELLER max 1 vehicle warning */}
+                  {editingUserIsSeller && (
+                    <p className="text-[10px] text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md px-2.5 py-1.5">
+                      {t("inspectionsPage.inspectors.sellerMaxOneVehicle")}
+                    </p>
+                  )}
 
                   {loadingVehicles ? (
                     <div className="flex items-center justify-center py-6">
@@ -969,36 +1139,39 @@ export function InspectorDialog({
                         />
                       </div>
 
-                      <div className="h-52 overflow-y-auto">
+                      <div>
                         <div className="p-1.5 space-y-0.5">
                           {filteredVehicles.map((vehicle) => {
                             const isSelected = selectedVehicleIds.includes(
                               vehicle.id,
                             );
+                            const isInactive = vehicle.status === "INACTIVE";
                             const isAssignedToOther =
                               vehicle.assignedInspectorId &&
                               vehicle.assignedInspectorId !==
                                 editInspector?.id &&
                               !isSelected;
+                            const isDisabled =
+                              !!isAssignedToOther || isInactive;
                             return (
                               <Label
                                 key={vehicle.id}
-                                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors ${
-                                  isAssignedToOther
+                                className={cn(
+                                  "flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors",
+                                  isDisabled
                                     ? "opacity-50 cursor-not-allowed"
-                                    : "cursor-pointer"
-                                } ${
-                                  isSelected
+                                    : "cursor-pointer",
+                                  isSelected && !isDisabled
                                     ? "bg-primary/10 border border-primary/20"
-                                    : "hover:bg-muted/50 border border-transparent"
-                                }`}
+                                    : "hover:bg-muted/50 border border-transparent",
+                                )}
                               >
                                 <Checkbox
-                                  checked={isSelected}
+                                  checked={isSelected && !isInactive}
                                   onCheckedChange={() =>
                                     toggleVehicle(vehicle.id)
                                   }
-                                  disabled={!!isAssignedToOther}
+                                  disabled={isDisabled}
                                 />
                                 <div className="flex items-center gap-2 min-w-0 flex-1">
                                   {vehicle.imageUrl ? (
@@ -1007,11 +1180,14 @@ export function InspectorDialog({
                                       alt={vehicle.model}
                                       width={65}
                                       height={65}
-                                      className="rounded object-contain object-center"
+                                      className={cn(
+                                        "rounded object-contain object-center",
+                                        isInactive && "grayscale",
+                                      )}
                                     />
                                   ) : (
                                     <div className="size-7 rounded bg-muted flex items-center justify-center">
-                                      <Car className="size-3.5 text-muted-foreground" />
+                                      <CarFront className="size-3.5 text-muted-foreground" />
                                     </div>
                                   )}
                                   <div className="min-w-0">
@@ -1020,15 +1196,33 @@ export function InspectorDialog({
                                     </p>
                                     <p className="text-[10px] text-muted-foreground font-mono">
                                       {vehicle.plate}
-                                      {isAssignedToOther && (
-                                        <span className="ml-1 text-amber-500">
+                                      {isInactive && (
+                                        <span className="ml-1 text-rose-500">
                                           (
                                           {t(
-                                            "inspectionsPage.inspectors.alreadyAssigned",
+                                            "inspectionsPage.inspectors.vehicleInactive",
                                           )}
                                           )
                                         </span>
                                       )}
+                                      {!isInactive &&
+                                        isAssignedToOther &&
+                                        vehicle.assignedInspector && (
+                                          <span className="ml-1 text-amber-500">
+                                            (
+                                            {t(
+                                              "users.form.vehicleAssignment.assignedTo",
+                                              {
+                                                name:
+                                                  vehicle.assignedInspector
+                                                    .name ||
+                                                  vehicle.assignedInspector
+                                                    .email,
+                                              },
+                                            )}
+                                            )
+                                          </span>
+                                        )}
                                     </p>
                                   </div>
                                 </div>
@@ -1047,7 +1241,7 @@ export function InspectorDialog({
                 </div>
               </div>
 
-              <DialogFooter className="grid grid-cols-2 gap-x-3 py-5 px-3 border-t m-0">
+              <DialogFooter className="shrink-0 grid grid-cols-2 gap-x-3 py-5 px-3 border-t m-0">
                 <Button
                   type="button"
                   variant="outline"

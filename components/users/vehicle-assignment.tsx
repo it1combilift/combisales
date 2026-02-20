@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { Spinner } from "../ui/spinner";
 import { useI18n } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
@@ -212,7 +212,7 @@ export function VehicleAssignment({
                             />
                           ) : (
                             <AvatarFallback className="bg-muted/50 text-muted-foreground text-sm font-medium">
-                              {vehicle.model.charAt(0).toUpperCase()}
+                              {getInitials(vehicle.model)}
                             </AvatarFallback>
                           )}{" "}
                         </Avatar>
@@ -311,7 +311,7 @@ export function VehicleAssignment({
                               />
                             ) : (
                               <AvatarFallback className="bg-muted/50 text-muted-foreground text-sm font-medium">
-                                {vehicle.model.charAt(0).toUpperCase()}
+                                {getInitials(vehicle.model)}
                               </AvatarFallback>
                             )}{" "}
                           </Avatar>

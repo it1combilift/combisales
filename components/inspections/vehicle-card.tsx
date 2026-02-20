@@ -124,17 +124,18 @@ export function VehicleCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-44">
-                {onStartInspection && (
-                  <DropdownMenuItem
-                    onClick={() => onStartInspection(vehicle)}
-                    className="cursor-pointer"
-                  >
-                    <Play className="size-4" />
-                    {t("inspectionsPage.vehicleCard.startInspection")}
-                  </DropdownMenuItem>
-                )}
+                {vehicle.status === VehicleStatus.ACTIVE &&
+                  onStartInspection && (
+                    <DropdownMenuItem
+                      onClick={() => onStartInspection(vehicle)}
+                      className="cursor-pointer"
+                    >
+                      <Play className="size-4" />
+                      {t("inspectionsPage.vehicleCard.startInspection")}
+                    </DropdownMenuItem>
+                  )}
 
-                {onStartInspection && (onEdit || onDelete) && (
+                {vehicle.status === VehicleStatus.ACTIVE && (onEdit || onDelete) && (
                   <DropdownMenuSeparator />
                 )}
 

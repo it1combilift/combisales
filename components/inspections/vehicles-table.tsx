@@ -39,6 +39,7 @@ import {
   MoreHorizontal,
   PencilLine,
   Play,
+  CarFront,
 } from "lucide-react";
 
 import {
@@ -217,18 +218,19 @@ export function VehiclesTable({
                     className="hover:bg-muted/30 transition-colors group border-border/40"
                   >
                     {/* Thumbnail */}
-                    <TableCell className="px-4 py-3">
-                      <div className="size-12 relative overflow-hidden bg-secondary/50 rounded-lg ring-1 ring-border/30 shrink-0">
+                    <TableCell>
+                      <div className="relative overflow-hidden shrink-0 flex items-center justify-center size-16" >
                         {vehicle.imageUrl ? (
                           <Image
                             src={vehicle.imageUrl}
-                            alt={vehicle.model}
+                            alt={`${vehicle.model} - ${vehicle.plate}`}
                             fill
-                            className="object-cover object-center w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                            className="object-contain object-center rounded-sm"
+                            priority={false}
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <Car className="size-4 text-muted-foreground/40" />
+                            <CarFront className="size-7 text-muted-foreground/40" />
                           </div>
                         )}
                       </div>

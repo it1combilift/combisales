@@ -179,22 +179,10 @@ const VehicleInspectionPage = () => {
     });
   }, [vehicles, vehSearch, vehStatusFilter, vehAssignmentFilter]);
 
-  // Filtered inspectors — SELLER users only shown if they have assigned vehicles
+  // Filtered inspectors — show ALL users with INSPECTOR or SELLER roles
   const filteredInspectorsList = useMemo(() => {
     if (!inspectors) return [];
     return inspectors.filter((inspector: InspectorData) => {
-      // SELLER-only users (not also INSPECTOR) must have at least 1 vehicle
-      const roles = (inspector.roles || []) as string[];
-      const isInspectorRole = roles.includes("INSPECTOR");
-      const isSellerRole = roles.includes("SELLER");
-      if (isSellerRole && !isInspectorRole) {
-        const vCount =
-          inspector._count?.assignedVehicles ??
-          inspector.assignedVehicles?.length ??
-          0;
-        if (vCount === 0) return false;
-      }
-
       const matchesSearch =
         inspSearch === "" ||
         (inspector.name || "")
@@ -290,14 +278,14 @@ const VehicleInspectionPage = () => {
               <div className="flex flex-col justify-start">
                 <Paragraph>{t("inspectionsPage.description")}</Paragraph>
                 <div className="flex gap-1.5 mt-1">
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-xs">
                     {inspectionCount} {t("inspectionsPage.badges.inspections")}
                   </Badge>
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-xs">
                     {vehicleCount} {t("inspectionsPage.badges.vehicles")}
                   </Badge>
                   {isAdmin && (
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge variant="secondary" className="text-xs">
                       {inspectorCount} {t("inspectionsPage.badges.inspectors")}
                     </Badge>
                   )}
@@ -350,7 +338,7 @@ const VehicleInspectionPage = () => {
                   </span>
                   <Badge
                     variant="secondary"
-                    className="ml-1 text-[10px] h-4 px-1.5"
+                    className="ml-1 text-xs h-4 px-1.5"
                   >
                     {inspectionCount}
                   </Badge>
@@ -367,7 +355,7 @@ const VehicleInspectionPage = () => {
                   </span>
                   <Badge
                     variant="secondary"
-                    className="ml-1 text-[10px] h-4 px-1.5"
+                    className="ml-1 text-xs h-4 px-1.5"
                   >
                     {vehicleCount}
                   </Badge>
@@ -385,7 +373,7 @@ const VehicleInspectionPage = () => {
                     </span>
                     <Badge
                       variant="secondary"
-                      className="ml-1 text-[10px] h-4 px-1.5"
+                      className="ml-1 text-xs h-4 px-1.5"
                     >
                       {inspectorCount}
                     </Badge>

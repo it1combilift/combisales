@@ -8,8 +8,7 @@ import { UseFormReturn } from "react-hook-form";
 import { useTranslation } from "@/lib/i18n/context";
 import { InspectionFormSchema } from "@/schemas/inspections";
 import { Vehicle, VehicleStatus } from "@/interfaces/inspection";
-
-import { Gauge, CheckCircle2, Car, Search, User } from "lucide-react";
+import { Gauge, CheckCircle2, Car, Search, User, CarFront } from "lucide-react";
 
 interface VehicleDataStepProps {
   form: UseFormReturn<InspectionFormSchema>;
@@ -135,18 +134,18 @@ export function VehicleDataStep({
               )}
             >
               {/* Thumbnail */}
-              <div className="shrink-0 overflow-hidden bg-secondary/40 size-12">
+              <div className="shrink-0 overflow-hidden">
                 {vehicle.imageUrl ? (
                   <Image
                     src={vehicle.imageUrl}
                     alt={`${vehicle.model} - ${vehicle.plate}`}
-                    width={40}
-                    height={40}
-                    className="object-cover object-center h-full w-full rounded-xs"
+                    width={80}
+                    height={80}
+                    className="object-cover object-center rounded-sm"
                   />
                 ) : (
                   <div className="size-10 flex items-center justify-center">
-                    <Car className="size-4 text-muted-foreground/30" />
+                    <CarFront className="size-4 text-muted-foreground/30" />
                   </div>
                 )}
               </div>
@@ -163,7 +162,7 @@ export function VehicleDataStep({
                   {vehicle.assignedInspector ? (
                     <>
                       <span className="text-border">·</span>
-                      <span className="text-[11px] text-muted-foreground truncate flex items-center gap-1">
+                      <span className="text-xs text-muted-foreground truncate flex items-center gap-1">
                         <User className="size-2.5 shrink-0" />
                         {vehicle.assignedInspector.name ||
                           vehicle.assignedInspector.email}
@@ -172,7 +171,7 @@ export function VehicleDataStep({
                   ) : (
                     <>
                       <span className="text-border">·</span>
-                      <span className="text-[11px] text-muted-foreground/50 italic">
+                      <span className="text-xs text-muted-foreground/50 italic">
                         {t("inspectionsPage.vehicleCard.noInspector")}
                       </span>
                     </>

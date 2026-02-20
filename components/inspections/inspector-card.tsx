@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { Role } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getAllRoles, hasRole } from "@/lib/roles";
 import { useTranslation } from "@/lib/i18n/context";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn, formatDateShort, getInitials, getRoleBadge } from "@/lib/utils";
@@ -15,11 +17,9 @@ import {
   CarFront,
   Edit,
   Trash2,
-  Shield,
-  Briefcase,
+  AlertCircle,
+  Lock,
 } from "lucide-react";
-import { getAllRoles } from "@/lib/roles";
-import { Role } from "@prisma/client";
 
 export interface InspectorData {
   id: string;
@@ -61,14 +61,11 @@ export function InspectorCard({
     0;
   const inspectionCount = inspector._count?.inspections ?? 0;
   const isActive = inspector.isActive;
-
-  // Role detection for badge display
-  const roles = (inspector.roles || []) as string[];
-  const hasInspectorRole = roles.includes("INSPECTOR");
-  const hasSellerRole = roles.includes("SELLER");
+  const isSeller = hasRole(inspector.roles as Role[], Role.SELLER);
+  const isInspectorRole = hasRole(inspector.roles as Role[], Role.INSPECTOR);
 
   return (
-    <Card className="group relative overflow-hidden border rounded-2xl shadow-sm bg-card transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/8 flex flex-col p-0">
+    <Card className="group relative overflow-hidden border rounded-2xl shadow-sm bg-card transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/8 flex flex-col p-0 m-0">
       {/* Left color band — status indicator */}
       <div
         className={cn(
@@ -101,7 +98,7 @@ export function InspectorCard({
             {/* Status dot */}
             <span
               className={cn(
-                "absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full border-2 border-card transition-colors duration-300",
+                "absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full border-2 border-card transition-colors duration-300 animate-pulse",
                 isActive ? "bg-emerald-400" : "bg-rose-400",
               )}
             />
@@ -146,11 +143,37 @@ export function InspectorCard({
         {/* ── Stats ──────────────────────────────────── */}
         <div className="grid grid-cols-3 gap-2">
           {/* Vehicles */}
-          <div className="flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl bg-muted/50 border border-border/30">
-            <div className="size-7 rounded-lg bg-sky-500/10 flex items-center justify-center mb-0.5">
-              <CarFront className="size-3.5 text-sky-500" />
+          <div
+            className={cn(
+              "flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl border",
+              vehicleCount > 0
+                ? "bg-sky-50/50 dark:bg-sky-950/20 border-sky-200/50 dark:border-sky-800/40"
+                : "bg-muted/50 border-border/30",
+            )}
+          >
+            <div
+              className={cn(
+                "size-7 rounded-lg flex items-center justify-center mb-0.5",
+                vehicleCount > 0 ? "bg-sky-500/15" : "bg-muted-foreground/10",
+              )}
+            >
+              <CarFront
+                className={cn(
+                  "size-3.5",
+                  vehicleCount > 0
+                    ? "text-sky-500"
+                    : "text-muted-foreground/60",
+                )}
+              />
             </div>
-            <span className="text-sm font-bold text-foreground tabular-nums leading-none">
+            <span
+              className={cn(
+                "text-sm font-bold tabular-nums leading-none",
+                vehicleCount > 0
+                  ? "text-sky-700 dark:text-sky-300"
+                  : "text-muted-foreground",
+              )}
+            >
               {vehicleCount}
             </span>
             <span className="text-[10px] text-muted-foreground text-center leading-tight">
@@ -159,11 +182,39 @@ export function InspectorCard({
           </div>
 
           {/* Inspections */}
-          <div className="flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl bg-muted/50 border border-border/30">
-            <div className="size-7 rounded-lg bg-violet-500/10 flex items-center justify-center mb-0.5">
-              <ClipboardCheck className="size-3.5 text-violet-500" />
+          <div
+            className={cn(
+              "flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl border",
+              inspectionCount > 0
+                ? "bg-violet-50/50 dark:bg-violet-950/20 border-violet-200/50 dark:border-violet-800/40"
+                : "bg-muted/50 border-border/30",
+            )}
+          >
+            <div
+              className={cn(
+                "size-7 rounded-lg flex items-center justify-center mb-0.5",
+                inspectionCount > 0
+                  ? "bg-violet-500/15"
+                  : "bg-muted-foreground/10",
+              )}
+            >
+              <ClipboardCheck
+                className={cn(
+                  "size-3.5",
+                  inspectionCount > 0
+                    ? "text-violet-500"
+                    : "text-muted-foreground/60",
+                )}
+              />
             </div>
-            <span className="text-sm font-bold text-foreground tabular-nums leading-none">
+            <span
+              className={cn(
+                "text-sm font-bold tabular-nums leading-none",
+                inspectionCount > 0
+                  ? "text-violet-700 dark:text-violet-300"
+                  : "text-muted-foreground",
+              )}
+            >
               {inspectionCount}
             </span>
             <span className="text-[10px] text-muted-foreground text-center leading-tight">
@@ -186,20 +237,22 @@ export function InspectorCard({
         </div>
 
         {/* ── Assigned vehicles ──────────────────────── */}
-        {inspector.assignedVehicles &&
-          inspector.assignedVehicles.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            {t("inspectionsPage.inspectors.assignedVehicles")}
+          </p>
+
+          {inspector.assignedVehicles &&
+          inspector.assignedVehicles.length > 0 ? (
             <div className="space-y-1.5">
-              <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                {t("inspectionsPage.inspectors.assignedVehicles")}
-              </p>
               <div className="flex flex-wrap gap-1.5">
                 {inspector.assignedVehicles.slice(0, 3).map((v) => (
                   <Badge
                     key={v.id}
                     variant="outline"
-                    className="text-[10px] h-5 px-2 gap-1 font-mono rounded-md bg-muted/30 border-border/50"
+                    className="text-[10px] h-5 px-2 gap-1 font-mono rounded-md bg-sky-50/50 dark:bg-sky-950/20 border-sky-200/60 dark:border-sky-800/50 text-sky-700 dark:text-sky-300"
                   >
-                    <CarFront className="size-2.5 text-muted-foreground" />
+                    <CarFront className="size-2.5 text-sky-500" />
                     {v.model} · {v.plate}
                   </Badge>
                 ))}
@@ -212,13 +265,38 @@ export function InspectorCard({
                   </Badge>
                 )}
               </div>
+
+              {/* SELLER max vehicle indicator */}
+              {isSeller && !isInspectorRole && vehicleCount >= 1 && (
+                <div className="flex items-center gap-1.5 text-[10px] text-amber-600 dark:text-amber-400">
+                  <Lock className="size-2.5 shrink-0" />
+                  <span>
+                    {t("inspectionsPage.inspectors.sellerMaxOneVehicle")}
+                  </span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 py-2 px-2.5 rounded-lg bg-muted/30 border border-dashed border-border/50">
+              <div className="size-6 rounded-md bg-muted-foreground/10 flex items-center justify-center shrink-0">
+                <AlertCircle className="size-3 text-muted-foreground/50" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium text-muted-foreground">
+                  {t("inspectionsPage.inspectors.noVehiclesAssigned")}
+                </p>
+                <p className="text-[9px] text-muted-foreground/70">
+                  {t("inspectionsPage.inspectors.noVehiclesAssignedHint")}
+                </p>
+              </div>
             </div>
           )}
+        </div>
         {/* ── Actions ─────────────────────────────── */}
         {(onEdit || onDelete) && (
           <>
             <div className="h-px bg-border/50" />
-            <div className="flex items-center justify-end gap-1">
+            <div className="flex items-center justify-end gap-1 p-0 m-0">
               {onEdit && (
                 <Button
                   variant="ghost"

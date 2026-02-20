@@ -2,16 +2,17 @@
 
 import axios from "axios";
 import Image from "next/image";
+import { Role } from "@prisma/client";
 import { useForm } from "react-hook-form";
+import { getRoleBadge } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { getAllRoles, hasRole } from "@/lib/roles";
 import { useTranslation } from "@/lib/i18n/context";
 import { useState, useEffect, useRef } from "react";
 import { InspectorDialog } from "./inspector-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Role } from "@prisma/client";
-import { hasRole } from "@/lib/roles";
 import { Loader2, ImagePlus, X } from "lucide-react";
 import { VehicleStatus } from "@/interfaces/inspection";
 
@@ -36,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "../ui/switch";
 
 interface Assignee {
   id: string;
@@ -55,7 +57,7 @@ interface VehicleDialogProps {
     id: string;
     model: string;
     plate: string;
-    status?: string;
+    status?: VehicleStatus;
     assignedInspectorId: string | null;
     imageUrl?: string | null;
     imageCloudinaryId?: string | null;
@@ -91,7 +93,7 @@ export function VehicleDialog({
     defaultValues: {
       model: editVehicle?.model || "",
       plate: editVehicle?.plate || "",
-      status: (editVehicle?.status as VehicleStatus) || "ACTIVE",
+      status: (editVehicle?.status as VehicleStatus) || VehicleStatus.ACTIVE,
       assignedInspectorId: editVehicle?.assignedInspectorId || undefined,
       imageUrl: editVehicle?.imageUrl || "",
       imageCloudinaryId: editVehicle?.imageCloudinaryId || "",
@@ -105,7 +107,7 @@ export function VehicleDialog({
         form.reset({
           model: editVehicle.model,
           plate: editVehicle.plate,
-          status: (editVehicle.status as VehicleStatus) || "ACTIVE",
+          status: (editVehicle.status as VehicleStatus) || VehicleStatus.ACTIVE,
           assignedInspectorId: editVehicle.assignedInspectorId || undefined,
           imageUrl: editVehicle.imageUrl || "",
           imageCloudinaryId: editVehicle.imageCloudinaryId || "",
@@ -116,7 +118,7 @@ export function VehicleDialog({
         form.reset({
           model: "",
           plate: "",
-          status: "ACTIVE",
+          status: VehicleStatus.ACTIVE,
           assignedInspectorId: undefined,
           imageUrl: "",
           imageCloudinaryId: "",
@@ -257,28 +259,28 @@ export function VehicleDialog({
 
                 {/* Vehicle Status */}
                 {isEditing && (
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">
-                      {t("inspectionsPage.vehicles.status")}
-                    </Label>
-                    <Select
-                      value={form.watch("status") || "ACTIVE"}
-                      onValueChange={(value) =>
-                        form.setValue("status", value as VehicleStatus)
+                  <div className="flex items-center justify-between rounded-lg border border-border/60 px-3 py-2.5 col-span-2">
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">
+                        {t("inspectionsPage.vehicles.status")}
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        {form.watch("status") === VehicleStatus.ACTIVE
+                          ? t("inspectionsPage.vehicles.active")
+                          : t("inspectionsPage.vehicles.inactive")}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={form.watch("status") === VehicleStatus.ACTIVE}
+                      onCheckedChange={(checked) =>
+                        form.setValue(
+                          "status",
+                          checked
+                            ? VehicleStatus.ACTIVE
+                            : VehicleStatus.INACTIVE,
+                        )
                       }
-                    >
-                      <SelectTrigger className="h-9 w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ACTIVE">
-                          {t("inspectionsPage.vehicles.active")}
-                        </SelectItem>
-                        <SelectItem value="INACTIVE">
-                          {t("inspectionsPage.vehicles.inactive")}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    />
                   </div>
                 )}
               </div>
@@ -300,13 +302,13 @@ export function VehicleDialog({
               />
 
               {imagePreview ? (
-                <div className="relative group rounded-lg overflow-hidden border">
+                <div className="relative group rounded-lg overflow-hidden">
                   <Image
                     src={imagePreview}
                     alt="Vehicle"
-                    width={200}
+                    width={300}
                     height={200}
-                    className="w-full object-cover object-center"
+                    className="object-cover object-center mx-auto rounded-sm"
                   />
                   <button
                     type="button"
@@ -401,11 +403,13 @@ export function VehicleDialog({
                       {t("inspectionsPage.vehicles.noAssignee") ||
                         t("inspectionsPage.vehicles.noInspector")}
                     </SelectItem>
+
                     {assignees.map((assignee) => {
                       const isInspectorRole = hasRole(
                         assignee.roles,
                         Role.INSPECTOR,
                       );
+
                       const isSellerRole = hasRole(assignee.roles, Role.SELLER);
                       const isSELLEROnly = isSellerRole && !isInspectorRole;
                       const alreadyHasVehicle =
@@ -421,35 +425,20 @@ export function VehicleDialog({
                           value={assignee.id}
                           disabled={isDisabled}
                         >
-                          <span className="flex items-center gap-2">
-                            <span>{assignee.name || assignee.email}</span>
-                            {isInspectorRole && isSellerRole ? (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 font-medium">
-                                {t(
-                                  "inspectionsPage.vehicles.roleInspectorSeller",
-                                ) || "Insp + Seller"}
-                              </span>
-                            ) : isInspectorRole ? (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-medium">
-                                {t("inspectionsPage.vehicles.roleInspector") ||
-                                  "Inspector"}
-                              </span>
-                            ) : isSellerRole ? (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 font-medium">
-                                {t("inspectionsPage.vehicles.roleSeller") ||
-                                  "P. Manager"}
-                              </span>
-                            ) : null}
-                            {isDisabled && (
-                              <span className="text-[10px] text-muted-foreground">
-                                (
-                                {t(
-                                  "inspectionsPage.vehicles.vehicleAssigned",
-                                ) || "vehicle assigned"}
-                                )
-                              </span>
-                            )}
-                          </span>
+                          <span>{assignee.name || assignee.email}</span>
+
+                          {getAllRoles(assignee.roles).map((role) =>
+                            getRoleBadge(role),
+                          )}
+
+                          {isDisabled && (
+                            <span className="text-xs text-muted-foreground italic">
+                              (
+                              {t("inspectionsPage.vehicles.vehicleAssigned") ||
+                                "vehicle assigned"}
+                              )
+                            </span>
+                          )}
                         </SelectItem>
                       );
                     })}
