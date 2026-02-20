@@ -9,6 +9,7 @@ import { Loader2, ClipboardCheck } from "lucide-react";
 import { InspectionForm } from "./formulario-inspeccion";
 import { InspectionFormSchema } from "@/schemas/inspections";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Spinner } from "../ui/spinner";
 
 interface InspectionFormDialogProps {
   open: boolean;
@@ -67,8 +68,8 @@ export function InspectionFormDialog({
         </DialogTitle>
         {loadingVehicles ? (
           <div className="flex flex-col items-center justify-center flex-1 gap-3">
-            <Loader2 className="size-8 animate-spin text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">
+            <Spinner variant="bars" className="size-6" />
+            <p className="text-sm animate-pulse">
               {t("common.loading")}
             </p>
           </div>
