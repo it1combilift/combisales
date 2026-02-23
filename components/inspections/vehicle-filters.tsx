@@ -2,8 +2,10 @@
 
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { VehicleStatus } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
+import { Search, X, LayoutGrid, List } from "lucide-react";
 
 import {
   Select,
@@ -12,8 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { Search, X, LayoutGrid, List } from "lucide-react";
 
 interface VehicleFiltersProps {
   searchQuery: string;
@@ -71,10 +71,10 @@ export function VehicleFilters({
               <SelectItem value="all">
                 {t("inspectionsPage.vehicleFilters.allStatuses")}
               </SelectItem>
-              <SelectItem value="ACTIVE">
+              <SelectItem value={VehicleStatus.ACTIVE}>
                 {t("inspectionsPage.vehicles.active")}
               </SelectItem>
-              <SelectItem value="INACTIVE">
+              <SelectItem value={VehicleStatus.INACTIVE}>
                 {t("inspectionsPage.vehicles.inactive")}
               </SelectItem>
             </SelectContent>
@@ -147,7 +147,7 @@ export function VehicleFilters({
         <div className="flex gap-1.5 flex-wrap">
           {statusFilter !== "all" && (
             <Badge variant="secondary" className="text-[10px] h-5 gap-1 px-2">
-              {statusFilter === "ACTIVE"
+              {statusFilter === VehicleStatus.ACTIVE
                 ? t("inspectionsPage.vehicles.active")
                 : t("inspectionsPage.vehicles.inactive")}
               <button onClick={() => onStatusChange("all")}>

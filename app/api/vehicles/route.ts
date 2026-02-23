@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Role } from "@prisma/client";
+import { Role, VehicleStatus } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { hasRole, hasAnyRole } from "@/lib/roles";
@@ -114,14 +114,14 @@ export async function POST(request: NextRequest) {
       data: {
         model,
         plate: plate.toUpperCase(),
-        status: status || "ACTIVE",
+        status: status || VehicleStatus.ACTIVE,
         assignedInspectorId: assignedInspectorId || null,
         imageUrl: imageUrl || null,
         imageCloudinaryId: imageCloudinaryId || null,
       },
       include: {
         assignedInspector: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, name: true, email: true, image: true },
         },
       },
     });

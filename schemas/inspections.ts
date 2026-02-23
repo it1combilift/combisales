@@ -10,7 +10,10 @@ export const createVehicleSchema = (t: (key: string) => string) =>
     plate: z
       .string()
       .min(1, t("inspectionsPage.vehicles.validation.plateRequired")),
-    status: z.nativeEnum(VehicleStatus).optional().default("ACTIVE"),
+    status: z
+      .nativeEnum(VehicleStatus)
+      .optional()
+      .default(VehicleStatus.ACTIVE),
     assignedInspectorId: z.string().optional(),
     imageUrl: z.string().url().optional().or(z.literal("")),
     imageCloudinaryId: z.string().optional(),

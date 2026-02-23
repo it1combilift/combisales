@@ -306,7 +306,7 @@ export function InspectorDialog({
   const toggleVehicle = (vehicleId: string) => {
     const vehicle = vehicles.find((v) => v.id === vehicleId);
     // Prevent toggling inactive vehicles
-    if (vehicle?.status === "INACTIVE") return;
+    if (vehicle?.status === VehicleStatus.INACTIVE) return;
     // Prevent toggling vehicles assigned to other users
     const currentUserId =
       mode === "select" ? selectedExistingUserId : editInspector?.id;
@@ -789,7 +789,7 @@ export function InspectorDialog({
                                   const isSelected =
                                     selectedVehicleIds.includes(vehicle.id);
                                   const isInactive =
-                                    vehicle.status === "INACTIVE";
+                                    vehicle.status === VehicleStatus.INACTIVE;
                                   const isAssignedToOther =
                                     vehicle.assignedInspectorId &&
                                     vehicle.assignedInspectorId !==
@@ -891,27 +891,25 @@ export function InspectorDialog({
                   </div>
                 )}
               </div>
-             <DialogFooter className="shrink-0 grid grid-cols-2 items-center px-6 py-5">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => onOpenChange(false)}
-                    disabled={isSubmitting}
-                  >
-                    {t("common.cancel")}
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || !selectedExistingUserId}
-                  >
-                    {isSubmitting && (
-                      <Loader2 className="size-4 animate-spin" />
-                    )}
-                    {selectedVehicleIds.length > 0
-                      ? t("inspectionsPage.inspectors.assignVehicles")
-                      : t("inspectionsPage.inspectors.confirmSelection")}
-                  </Button>
-                </DialogFooter>
+              <DialogFooter className="shrink-0 grid grid-cols-2 items-center px-6 py-5">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  disabled={isSubmitting}
+                >
+                  {t("common.cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || !selectedExistingUserId}
+                >
+                  {isSubmitting && <Loader2 className="size-4 animate-spin" />}
+                  {selectedVehicleIds.length > 0
+                    ? t("inspectionsPage.inspectors.assignVehicles")
+                    : t("inspectionsPage.inspectors.confirmSelection")}
+                </Button>
+              </DialogFooter>
             </form>
           ) : (
             /* ── CREATE / EDIT MODE ── */
@@ -989,7 +987,7 @@ export function InspectorDialog({
                     )}
                   </div>
 
-                  <div className="space-y-3 grid grid-cols-1 md:grid-cols-2 gap-x-2">
+                  <div className="space-y-3 grid grid-cols-2 gap-x-2">
                     <div className="space-y-1.5">
                       <Label htmlFor="inspector-name" className="text-xs">
                         {t("inspectionsPage.inspectors.name")}
@@ -1029,7 +1027,7 @@ export function InspectorDialog({
                       )}
                     </div>
 
-                    <div className="space-y-1.5 md:col-span-2">
+                    <div className="space-y-1.5 col-span-2">
                       <Label htmlFor="inspector-password" className="text-xs">
                         {t("inspectionsPage.inspectors.password")}
                       </Label>
@@ -1062,7 +1060,7 @@ export function InspectorDialog({
                           {form.formState.errors.password.message}
                         </p>
                       )}
-                      <p className="text-[10px text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {isEditing
                           ? t("inspectionsPage.inspectors.passwordEditHint")
                           : t("inspectionsPage.inspectors.passwordHint")}
@@ -1099,20 +1097,20 @@ export function InspectorDialog({
                       {selectedVehicleIds.length > 0 && (
                         <Badge
                           variant="secondary"
-                          className="text-[10px h-4 px-1.5"
+                          className="text-xs h-4 px-1.5"
                         >
                           {selectedVehicleIds.length}
                         </Badge>
                       )}
                     </h4>
-                    <span className="text-[10px text-muted-foreground italic">
+                    <span className="text-xs text-muted-foreground italic">
                       {t("inspectionsPage.inspectors.vehiclesOptional")}
                     </span>
                   </div>
 
                   {/* SELLER max 1 vehicle warning */}
                   {editingUserIsSeller && (
-                    <p className="text-[10px text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md px-2.5 py-1.5">
+                    <p className="text-xs text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md px-2.5 py-1.5">
                       {t("inspectionsPage.inspectors.sellerMaxOneVehicle")}
                     </p>
                   )}
@@ -1146,7 +1144,8 @@ export function InspectorDialog({
                             const isSelected = selectedVehicleIds.includes(
                               vehicle.id,
                             );
-                            const isInactive = vehicle.status === "INACTIVE";
+                            const isInactive =
+                              vehicle.status === VehicleStatus.INACTIVE;
                             const isAssignedToOther =
                               vehicle.assignedInspectorId &&
                               vehicle.assignedInspectorId !==
@@ -1195,10 +1194,10 @@ export function InspectorDialog({
                                     <p className="text-xs font-medium truncate">
                                       {vehicle.model}
                                     </p>
-                                    <p className="text-[10px text-muted-foreground font-mono">
+                                    <p className="text-xs text-muted-foreground font-mono">
                                       {vehicle.plate}
                                       {isInactive && (
-                                        <span className="ml-1 text-rose-500">
+                                        <span className="ml-1 text-rose-500 text-pretty text-xs">
                                           (
                                           {t(
                                             "inspectionsPage.inspectors.vehicleInactive",
@@ -1209,7 +1208,7 @@ export function InspectorDialog({
                                       {!isInactive &&
                                         isAssignedToOther &&
                                         vehicle.assignedInspector && (
-                                          <span className="ml-1 text-amber-500">
+                                          <span className="ml-1 text-amber-500 text-xs text-pretty">
                                             (
                                             {t(
                                               "users.form.vehicleAssignment.assignedTo",
