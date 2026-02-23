@@ -831,17 +831,17 @@ export function InspectorDialog({
                                           />
                                         ) : (
                                           <div className="size-7 rounded bg-muted flex items-center justify-center shrink-0">
-                                            <Car className="size-3.5 text-muted-foreground" />
+                                            <CarFront className="size-3.5 text-muted-foreground" />
                                           </div>
                                         )}
                                         <div className="min-w-0">
                                           <p className="text-xs font-medium truncate">
                                             {vehicle.model}
                                           </p>
-                                          <p className="text-[10px text-muted-foreground font-mono">
+                                          <p className="text-xs text-muted-foreground font-mono">
                                             {vehicle.plate}
                                             {isInactive && (
-                                              <span className="ml-1 text-rose-500">
+                                              <span className="ml-1 text-rose-500 text-xs text-pretty">
                                                 (
                                                 {t(
                                                   "inspectionsPage.inspectors.vehicleInactive",
@@ -852,7 +852,7 @@ export function InspectorDialog({
                                             {!isInactive &&
                                               isAssignedToOther &&
                                               vehicle.assignedInspector && (
-                                                <span className="ml-1 text-amber-500">
+                                                <span className="ml-1 text-amber-500 text-xs text-pretty">
                                                   (
                                                   {t(
                                                     "users.form.vehicleAssignment.assignedTo",
@@ -891,6 +891,7 @@ export function InspectorDialog({
                   </div>
                 )}
               </div>
+
               <DialogFooter className="shrink-0 grid grid-cols-2 items-center px-6 py-5">
                 <Button
                   type="button"

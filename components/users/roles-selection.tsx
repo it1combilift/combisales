@@ -1,11 +1,11 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Label } from "../ui/label";
 import { Role } from "@prisma/client";
 import { useI18n } from "@/lib/i18n/context";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Shield, Users, Store, ClipboardCheck } from "lucide-react";
-import { Label } from "../ui/label";
 
 interface RolesSelectionProps {
   /** Currently selected roles */

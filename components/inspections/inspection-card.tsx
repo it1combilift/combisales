@@ -270,7 +270,7 @@ export function InspectionCard({
         {/* Actions */}
         <div className="flex items-center gap-1.5 pt-0.5">
           <Button
-            variant="default"
+            variant="secondary"
             size="sm"
             className="flex-1 h-8 text-xs font-medium gap-1.5 rounded-lg"
             onClick={(e) => {

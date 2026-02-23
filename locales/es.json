@@ -1381,7 +1381,7 @@
       "admin": "Admin",
       "seller": "P. Manager",
       "dealer": "Distribuidor",
-      "inspector": "Inspector",
+      "inspector": "Soporte Técnico",
       "adminDescription": "Acceso total a todas las funciones del sistema",
       "sellerDescription": "Gestiona clientes, visitas y proyectos comerciales",
       "dealerDescription": "Documenta visitas y las asigna a un P. Manager",

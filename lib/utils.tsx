@@ -2,8 +2,8 @@ import { Role } from "@prisma/client";
 import { twMerge } from "tailwind-merge";
 import { clsx, type ClassValue } from "clsx";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, PackageCheck, WrenchIcon } from "lucide-react";
 import { IconTruckDelivery } from "@tabler/icons-react";
+import { ShieldCheck, PackageCheck, ClipboardCheck } from "lucide-react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -89,11 +89,11 @@ export function getRoleBadge(role: Role, label?: string) {
   if (role === Role.INSPECTOR) {
     return (
       <Badge
-        variant="outline-primary"
+        variant="purple"
         key={`role-badge-inspector-${label || "Inspector"}`}
       >
-        <WrenchIcon className="size-3.5" />
-        {label || "Inspector"}
+        <ClipboardCheck className="size-3.5" />
+        {label || "Soporte Técnico"}
       </Badge>
     );
   }

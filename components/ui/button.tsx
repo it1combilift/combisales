@@ -1,7 +1,7 @@
-import * as React from 'react'
-import { cn } from '@/lib/utils'
-import { Slot } from '@radix-ui/react-slot'
-import { cva, type VariantProps } from 'class-variance-authority'
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -53,6 +53,21 @@ const buttonVariants = cva(
 
         glass:
           "cursor-pointer bg-white/10 text-foreground backdrop-blur-md border border-white/20 hover:bg-white/20 dark:bg-black/10 dark:border-white/10 dark:hover:bg-black/20 shadow-lg hover:shadow-xl transition-all duration-200",
+        outlineSuccess:
+          "cursor-pointer border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white dark:border-green-700 dark:hover:bg-green-700 transition-all duration-200",
+
+        outlineWarning:
+          "cursor-pointer border-2 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white dark:border-amber-600 dark:hover:bg-amber-600 transition-all duration-200",
+
+        outlineInfo:
+          "cursor-pointer border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-blue-700 dark:hover:bg-blue-700 transition-all duration-200",
+
+        secondarySuccess:
+          "cursor-pointer bg-green-600 text-white hover:bg-green-700 shadow-md shadow-green-600/20 hover:shadow-lg hover:shadow-green-600/30 dark:bg-green-700 dark:hover:bg-green-800 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200",
+        secondaryWarning:
+          "cursor-pointer bg-amber-500 text-white hover:bg-amber-600 shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/30 dark:bg-amber-600 dark:hover:bg-amber-700 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200",
+        secondaryInfo:
+          "cursor-pointer bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 dark:bg-blue-700 dark:hover:bg-blue-800 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200",
       },
 
       size: {
@@ -72,7 +87,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 function Button({
@@ -81,11 +96,11 @@ function Button({
   size,
   asChild = false,
   ...props
-}: React.ComponentProps<'button'> &
+}: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
+    asChild?: boolean;
   }) {
-  const Comp = asChild ? Slot : 'button'
+  const Comp = asChild ? Slot : "button";
 
   return (
     <Comp
@@ -93,7 +108,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  )
+  );
 }
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };
