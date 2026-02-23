@@ -65,7 +65,6 @@ const VehicleInspectionPage = () => {
   const isAdmin = hasRole(userRoles, Role.ADMIN);
   const isSeller = hasRole(userRoles, Role.SELLER);
   const isInspector = hasRole(userRoles, Role.INSPECTOR);
-  const canManage = isAdmin; // Only ADMIN can create/edit/delete vehicles & inspectors
   const canCreateInspection = isAdmin || isInspector || isSeller;
 
   // SWR data fetching
