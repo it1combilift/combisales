@@ -157,7 +157,7 @@ export function PhotosStep({ form }: PhotosStepProps) {
                   type="button"
                   onClick={() => handlePhotoCapture(type)}
                   disabled={isAnyUploading || photos.length >= maxPhotos}
-                  className="w-full aspect-video flex flex-col items-center justify-center gap-2 bg-muted/50 hover:bg-muted transition-colors cursor-pointer rounded-lg border border-dashed border-muted text-center p-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-muted/50"
+                  className="w-full h-full aspect-auto flex flex-col items-center justify-center gap-2 bg-muted/50 hover:bg-muted transition-colors cursor-pointer rounded-lg border border-dashed border-muted text-center p-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-muted/50"
                 >
                   {isUploading ? (
                     <>
@@ -187,7 +187,7 @@ export function PhotosStep({ form }: PhotosStepProps) {
       </div>
 
       {/* Photos counter */}
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2 text-xs">
         <ImageIcon className="size-4 text-muted-foreground" />
         <span className="text-muted-foreground">
           {photos.length} / {maxPhotos}{" "}
@@ -196,7 +196,7 @@ export function PhotosStep({ form }: PhotosStepProps) {
       </div>
 
       {errors.photos && (
-        <p className="text-sm text-destructive">
+        <p className="text-xs text-destructive">
           {typeof errors.photos.message === "string"
             ? errors.photos.message
             : t("inspectionsPage.form.photos.validation.allRequired")}
