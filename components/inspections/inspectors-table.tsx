@@ -36,8 +36,6 @@ import {
   MoreHorizontal,
   PencilLine,
   Trash2,
-  Shield,
-  Briefcase,
   AlertCircle,
   Lock,
 } from "lucide-react";
@@ -377,7 +375,7 @@ export function InspectorsTable({
                               variant="outline"
                               className="text-[10px] h-5 px-2 gap-1 font-mono bg-sky-50/50 dark:bg-sky-950/20 border-sky-200/60 dark:border-sky-800/50 text-sky-700 dark:text-sky-300"
                             >
-                              <Car className="size-2.5 text-sky-500" />
+                              <CarFront className="size-2.5 text-sky-500" />
                               {v.plate}
                             </Badge>
                           ))}
