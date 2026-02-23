@@ -97,7 +97,7 @@
   "common": {
     "optional": "opcional",
     "appName": "CombiSales",
-    "description": "Gestión de ventas y clientes de Combilift",
+    "description": "Plataforma integral para optimizar procesos comerciales y operacionales.",
     "shortDescription": "Ventas y clientes",
     "loading": "Cargando...",
     "refreshing": "Actualizando...",

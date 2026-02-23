@@ -27,6 +27,8 @@ export function LoginForm({
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
+  const IMAGE_URL =
+    "https://res.cloudinary.com/dwjxcpfrf/image/upload/v1768957949/Untitled_design__1_-removebg-preview_t8oji9.png";
 
   const schema = createLoginSchema(t);
   type LoginValues = z.infer<typeof schema>;
@@ -132,7 +134,7 @@ export function LoginForm({
                 <div className="md:hidden mb-3">
                   <div className="relative w-32 h-16 sm:w-40 sm:h-20 mx-auto dark:rounded-xl dark:bg-white/95 dark:p-3 dark:shadow-sm dark:ring-1 dark:ring-white/10 overflow-hidden bg-white/95 p-2 rounded-lg shadow-sm ring-1 ring-black/5">
                     <Image
-                      src="https://res.cloudinary.com/dwjxcpfrf/image/upload/v1768957949/Untitled_design__1_-removebg-preview_t8oji9.png"
+                      src={IMAGE_URL}
                       alt="CombiSales Logo"
                       fill
                       className="object-contain object-center"
@@ -302,7 +304,7 @@ export function LoginForm({
               className="absolute inset-0 group"
             >
               <Image
-                src="https://cdn-ilecokb.nitrocdn.com/hnMkqPskCLTYmYthFPcpNZClCZrSTwWV/assets/images/optimized/rev-80aa0d4/combilift.com/wp-content/uploads/2024/10/Aisle-Master-OP-1.jpg"
+                src="/Maquina_2.png"
                 alt="CombiSales Login Background"
                 fill
                 className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
@@ -325,7 +327,7 @@ export function LoginForm({
                     {t("common.appName")}
                   </h2>
 
-                  <p className="text-white/90 text-xs sm:text-sm font-light leading-relaxed drop-shadow-sm max-w-md text-pretty">
+                  <p className="text-white/90 text-xs sm:text-sm font-light leading-relaxed drop-shadow-sm max-w-full text-wrap">
                     {t("common.description")}
                   </p>
                 </motion.div>
