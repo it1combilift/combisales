@@ -3,6 +3,8 @@
 import axios from "axios";
 import Image from "next/image";
 import { Role } from "@prisma/client";
+import { Switch } from "../ui/switch";
+import { Spinner } from "../ui/spinner";
 import { useForm } from "react-hook-form";
 import { getRoleBadge } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -13,8 +15,8 @@ import { useTranslation } from "@/lib/i18n/context";
 import { useState, useEffect, useRef } from "react";
 import { InspectorDialog } from "./inspector-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, ImagePlus, X } from "lucide-react";
 import { VehicleStatus } from "@/interfaces/inspection";
+import { Loader2, ImagePlus, X, XIcon, CheckIcon } from "lucide-react";
 
 import {
   createVehicleSchema,
@@ -37,8 +39,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "../ui/switch";
-import { Spinner } from "../ui/spinner";
 
 interface Assignee {
   id: string;
@@ -271,17 +271,27 @@ export function VehicleDialog({
                           : t("inspectionsPage.vehicles.inactive")}
                       </p>
                     </div>
-                    <Switch
-                      checked={form.watch("status") === VehicleStatus.ACTIVE}
-                      onCheckedChange={(checked) =>
-                        form.setValue(
-                          "status",
-                          checked
-                            ? VehicleStatus.ACTIVE
-                            : VehicleStatus.INACTIVE,
-                        )
-                      }
-                    />
+                    <div className="relative inline-grid h-6 grid-cols-[1fr_1fr] items-center text-sm font-medium">
+                      <Switch
+                        checked={form.watch("status") === VehicleStatus.ACTIVE}
+                        onCheckedChange={(checked) =>
+                          form.setValue(
+                            "status",
+                            checked
+                              ? VehicleStatus.ACTIVE
+                              : VehicleStatus.INACTIVE,
+                          )
+                        }
+                        className="peer data-[state=unchecked]:bg-input absolute inset-0 h-[inherit] w-12 [&_span]:z-10 [&_span]:size-5 [&_span]:transition-transform [&_span]:duration-300 [&_span]:ease-[cubic-bezier(0.16,1,0.3,1)] [&_span]:data-[state=checked]:translate-x-6 [&_span]:data-[state=checked]:rtl:-translate-x-6"
+                        aria-label="Switch with permanent icon indicators"
+                      />
+                      <span className="text-muted-foreground pointer-events-none relative ml-0.5 flex min-w-6 items-center justify-center text-center transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] peer-data-[state=checked]:invisible peer-data-[state=unchecked]:translate-x-5 peer-data-[state=unchecked]:rtl:-translate-x-5">
+                        <XIcon className="size-3.5" aria-hidden="true" />
+                      </span>
+                      <span className="peer-data-[state=checked]:text-background pointer-events-none relative flex min-w-6 items-center justify-center text-center transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] peer-data-[state=checked]:-translate-x-full peer-data-[state=unchecked]:invisible peer-data-[state=checked]:rtl:translate-x-full">
+                        <CheckIcon className="size-3.5" aria-hidden="true" />
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>

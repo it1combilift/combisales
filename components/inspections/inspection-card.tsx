@@ -11,7 +11,6 @@ import { Inspection, InspectionStatus } from "@/interfaces/inspection";
 
 import {
   CheckCircle2,
-  XCircle,
   Clock,
   Car,
   Calendar,
@@ -20,6 +19,8 @@ import {
   ShieldCheck,
   Trash2,
   ImageIcon,
+  ShieldXIcon,
+  ShieldCheckIcon,
 } from "lucide-react";
 
 interface InspectionCardProps {
@@ -51,13 +52,13 @@ export function InspectionCard({
   > = {
     APPROVED: {
       variant: "default",
-      icon: CheckCircle2,
+      icon: ShieldCheckIcon,
       colorClass:
         "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
     },
     REJECTED: {
       variant: "destructive",
-      icon: XCircle,
+      icon: ShieldXIcon,
       colorClass:
         "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800",
     },
