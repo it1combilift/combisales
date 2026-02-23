@@ -525,7 +525,9 @@ const VehicleInspectionPage = () => {
                       }}
                     >
                       <Plus className="size-4" />
-                      {t("inspectionsPage.vehicles.addVehicle")}
+                      <span className="hidden md:block">
+                        {t("inspectionsPage.vehicles.addVehicle")}
+                      </span>
                     </Button>
                   )}
                 </div>
@@ -572,7 +574,7 @@ const VehicleInspectionPage = () => {
                         }}
                       >
                         <Plus className="size-4" />
-                        {t("inspectionsPage.vehicles.addVehicle")}
+                        <span className="hidden md:block">{t("inspectionsPage.vehicles.addVehicle")}</span>
                       </Button>
                     ) : vehicleCount > 0 ? (
                       <Button
@@ -659,7 +661,9 @@ const VehicleInspectionPage = () => {
                       }}
                     >
                       <UserPlus className="size-4" />
-                      {t("inspectionsPage.inspectors.create")}
+                      <span className="hidden md:block">
+                        {t("inspectionsPage.inspectors.create")}
+                      </span>
                     </Button>
                   </div>
 
@@ -702,7 +706,9 @@ const VehicleInspectionPage = () => {
                           onClick={() => setInspectorDialogOpen(true)}
                         >
                           <UserPlus className="size-4" />
-                          {t("inspectionsPage.inspectors.create")}
+                          <span className="hidden md:block">
+                            {t("inspectionsPage.inspectors.create")}
+                          </span>
                         </Button>
                       ) : (
                         <Button
