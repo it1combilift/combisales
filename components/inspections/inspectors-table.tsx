@@ -336,7 +336,7 @@ export function InspectorsTable({
                           {hasSellerRole &&
                             !hasInspectorRole &&
                             vehicleCount >= 1 && (
-                              <span className="block text-amber-400 mt-0.5">
+                              <span className="block text-amber-400 mt-0.5 dark:text-amber-700">
                                 {t(
                                   "inspectionsPage.inspectors.sellerMaxOneVehicle",
                                 )}
