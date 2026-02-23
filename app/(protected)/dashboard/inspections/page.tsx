@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AlertMessage } from "@/components/alert";
 import { useTranslation } from "@/lib/i18n/context";
-import { Skeleton } from "@/components/ui/skeleton";
 import { H1, Paragraph } from "@/components/fonts/fonts";
 import { Inspection, Vehicle } from "@/interfaces/inspection";
 import { useState, useMemo, useCallback, useEffect } from "react";
@@ -29,6 +28,13 @@ import { InspectionsTable } from "@/components/inspections/inspections-table";
 import { InspectionFilters } from "@/components/inspections/inspection-filters";
 import { InspectionFormDialog } from "@/components/inspections/inspection-form-dialog";
 import { DeleteInspectionDialog } from "@/components/inspections/delete-inspection-dialog";
+
+import {
+  Skeleton,
+  InspectionTabSkeleton,
+  VehicleTabSkeleton,
+  InspectorTabSkeleton,
+} from "@/components/ui/skeleton";
 
 import {
   InspectorCard,
@@ -72,6 +78,7 @@ const VehicleInspectionPage = () => {
     data: inspections,
     error: inspError,
     isLoading: inspLoading,
+    isValidating: inspValidating,
     mutate: mutateInspections,
   } = useSWR<Inspection[]>("/api/inspections", fetcher);
 
@@ -80,10 +87,15 @@ const VehicleInspectionPage = () => {
     data: vehicles,
     error: vehError,
     isLoading: vehLoading,
+    isValidating: vehValidating,
     mutate: mutateVehicles,
   } = useSWR<Vehicle[]>("/api/vehicles", fetcher);
 
-  const { data: inspectors, mutate: mutateInspectors } = useSWR<any[]>(
+  const {
+    data: inspectors,
+    isValidating: inspectorsValidating,
+    mutate: mutateInspectors,
+  } = useSWR<any[]>(
     isAdmin ? `/api/users?roles=${Role.INSPECTOR},${Role.SELLER}` : null,
     fetcher,
   );
@@ -251,6 +263,10 @@ const VehicleInspectionPage = () => {
   }, []);
 
   const isLoading = inspLoading || vehLoading;
+  const isRefreshing =
+    (!inspLoading && inspValidating) ||
+    (!vehLoading && vehValidating) ||
+    (isAdmin && !inspectors && inspectorsValidating);
   const hasError = inspError || vehError;
 
   // Tab counts
@@ -277,16 +293,30 @@ const VehicleInspectionPage = () => {
               <div className="flex flex-col justify-start">
                 <Paragraph>{t("inspectionsPage.description")}</Paragraph>
                 <div className="flex gap-1.5 mt-1">
-                  <Badge variant="secondary" className="text-xs">
-                    {inspectionCount} {t("inspectionsPage.badges.inspections")}
-                  </Badge>
-                  <Badge variant="secondary" className="text-xs">
-                    {vehicleCount} {t("inspectionsPage.badges.vehicles")}
-                  </Badge>
-                  {isAdmin && (
-                    <Badge variant="secondary" className="text-xs">
-                      {inspectorCount} {t("inspectionsPage.badges.inspectors")}
-                    </Badge>
+                  {isLoading ? (
+                    <>
+                      <Skeleton className="h-5 w-24 rounded-full" />
+                      <Skeleton className="h-5 w-20 rounded-full" />
+                      {isAdmin && (
+                        <Skeleton className="h-5 w-24 rounded-full" />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Badge variant="secondary" className="text-xs">
+                        {inspectionCount}{" "}
+                        {t("inspectionsPage.badges.inspections")}
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        {vehicleCount} {t("inspectionsPage.badges.vehicles")}
+                      </Badge>
+                      {isAdmin && (
+                        <Badge variant="secondary" className="text-xs">
+                          {inspectorCount}{" "}
+                          {t("inspectionsPage.badges.inspectors")}
+                        </Badge>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -298,13 +328,15 @@ const VehicleInspectionPage = () => {
                 title={t("common.refresh")}
                 size="sm"
                 onClick={refreshAll}
-                disabled={isLoading}
+                disabled={isLoading || isRefreshing}
               >
                 <RefreshCw
-                  className={`size-4 ${isLoading ? "animate-spin" : ""}`}
+                  className={`size-4 ${isLoading || isRefreshing ? "animate-spin" : ""}`}
                 />
                 <span className="hidden md:inline">
-                  {isLoading ? t("common.refreshing") : t("common.refresh")}
+                  {isLoading || isRefreshing
+                    ? t("common.refreshing")
+                    : t("common.refresh")}
                 </span>
               </Button>
               {canCreateInspection && (
@@ -387,17 +419,12 @@ const VehicleInspectionPage = () => {
                 value="inspections"
                 className="focus:outline-none space-y-4"
               >
-                {inspLoading ? (
-                  <div className="space-y-6">
-                    <Skeleton className="h-12 rounded-lg" />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {[...Array(6)].map((_, i) => (
-                        <Skeleton key={i} className="h-64 rounded-xl" />
-                      ))}
-                    </div>
-                  </div>
+                {inspLoading || isRefreshing || isLoading ? (
+                  <InspectionTabSkeleton viewMode={viewMode} />
                 ) : (
-                  <>
+                  <div
+                    className={`space-y-4 ${inspValidating && !inspLoading ? "opacity-60 pointer-events-none transition-opacity duration-200" : "transition-opacity duration-200"}`}
+                  >
                     <InspectionFilters
                       searchQuery={searchQuery}
                       onSearchChange={setSearchQuery}
@@ -495,7 +522,7 @@ const VehicleInspectionPage = () => {
                         ) : null}
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
               </TabsContent>
 
@@ -504,115 +531,99 @@ const VehicleInspectionPage = () => {
                 value="vehicles"
                 className="focus:outline-none space-y-4"
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    <span className="font-medium text-foreground">
-                      {filteredVehicles.length}
-                    </span>
-                    {` ${t("inspectionsPage.results.of")} `}
-                    <span className="font-medium text-foreground">
-                      {vehicleCount}
-                    </span>
-                    {` ${t("inspectionsPage.results.vehiclesRegistered")}`}
-                  </p>
-                  {isAdmin && (
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setEditVehicle(null);
-                        setVehicleDialogOpen(true);
-                      }}
-                    >
-                      <Plus className="size-4" />
-                      <span className="hidden md:block">
-                        {t("inspectionsPage.vehicles.addVehicle")}
-                      </span>
-                    </Button>
-                  )}
-                </div>
-
-                <VehicleFilters
-                  searchQuery={vehSearch}
-                  onSearchChange={setVehSearch}
-                  statusFilter={vehStatusFilter}
-                  onStatusChange={setVehStatusFilter}
-                  assignmentFilter={vehAssignmentFilter}
-                  onAssignmentChange={setVehAssignmentFilter}
-                  viewMode={vehViewMode}
-                  onViewModeChange={setVehViewMode}
-                  showViewToggle={!isMobile}
-                />
-
-                {vehLoading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[...Array(3)].map((_, i) => (
-                      <Skeleton key={i} className="h-44 rounded-xl" />
-                    ))}
-                  </div>
-                ) : filteredVehicles.length === 0 ? (
-                  <div className="text-center py-12 px-4">
-                    <div className="inline-flex items-center justify-center size-12 rounded-full bg-muted mb-3">
-                      <Car className="size-6 text-muted-foreground" />
-                    </div>
-                    <h3 className="text-sm font-semibold text-foreground mb-1">
-                      {vehicleCount === 0
-                        ? t("inspectionsPage.empty.vehicles")
-                        : t("inspectionsPage.empty.noResults")}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mb-3 max-w-sm mx-auto">
-                      {vehicleCount === 0
-                        ? t("inspectionsPage.empty.vehiclesHint")
-                        : t("inspectionsPage.empty.noResultsHint")}
-                    </p>
-                    {vehicleCount === 0 && isAdmin ? (
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setEditVehicle(null);
-                          setVehicleDialogOpen(true);
-                        }}
-                      >
-                        <Plus className="size-4" />
-                        <span className="hidden md:block">{t("inspectionsPage.vehicles.addVehicle")}</span>
-                      </Button>
-                    ) : vehicleCount > 0 ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setVehSearch("");
-                          setVehStatusFilter("all");
-                          setVehAssignmentFilter("all");
-                        }}
-                      >
-                        {t("inspectionsPage.filters.clearFilters")}
-                      </Button>
-                    ) : null}
-                  </div>
-                ) : vehViewMode === "list" ? (
-                  <VehiclesTable
-                    vehicles={filteredVehicles}
-                    onEdit={
-                      isAdmin
-                        ? (v) => {
-                            setEditVehicle(v);
-                            setVehicleDialogOpen(true);
-                          }
-                        : undefined
-                    }
-                    onDelete={
-                      isAdmin ? (v) => setDeleteVehicleTarget(v) : undefined
-                    }
-                    onStartInspection={
-                      canCreateInspection ? handleStartInspection : undefined
-                    }
+                {vehLoading || isRefreshing || isLoading ? (
+                  <VehicleTabSkeleton
+                    viewMode={vehViewMode}
+                    showAdminButton={isAdmin}
                   />
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-                    {filteredVehicles.map((vehicle) => (
-                      <VehicleCard
-                        key={vehicle.id}
-                        vehicle={vehicle}
+                  <div
+                    className={`space-y-4 ${vehValidating && !vehLoading ? "opacity-60 pointer-events-none transition-opacity duration-200" : "transition-opacity duration-200"}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">
+                          {filteredVehicles.length}
+                        </span>
+                        {` ${t("inspectionsPage.results.of")} `}
+                        <span className="font-medium text-foreground">
+                          {vehicleCount}
+                        </span>
+                        {` ${t("inspectionsPage.results.vehiclesRegistered")}`}
+                      </p>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setEditVehicle(null);
+                            setVehicleDialogOpen(true);
+                          }}
+                        >
+                          <Plus className="size-4" />
+                          <span className="hidden md:block">
+                            {t("inspectionsPage.vehicles.addVehicle")}
+                          </span>
+                        </Button>
+                      )}
+                    </div>
+
+                    <VehicleFilters
+                      searchQuery={vehSearch}
+                      onSearchChange={setVehSearch}
+                      statusFilter={vehStatusFilter}
+                      onStatusChange={setVehStatusFilter}
+                      assignmentFilter={vehAssignmentFilter}
+                      onAssignmentChange={setVehAssignmentFilter}
+                      viewMode={vehViewMode}
+                      onViewModeChange={setVehViewMode}
+                      showViewToggle={!isMobile}
+                    />
+
+                    {filteredVehicles.length === 0 ? (
+                      <div className="text-center py-12 px-4">
+                        <div className="inline-flex items-center justify-center size-12 rounded-full bg-muted mb-3">
+                          <Car className="size-6 text-muted-foreground" />
+                        </div>
+                        <h3 className="text-sm font-semibold text-foreground mb-1">
+                          {vehicleCount === 0
+                            ? t("inspectionsPage.empty.vehicles")
+                            : t("inspectionsPage.empty.noResults")}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mb-3 max-w-sm mx-auto">
+                          {vehicleCount === 0
+                            ? t("inspectionsPage.empty.vehiclesHint")
+                            : t("inspectionsPage.empty.noResultsHint")}
+                        </p>
+                        {vehicleCount === 0 && isAdmin ? (
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setEditVehicle(null);
+                              setVehicleDialogOpen(true);
+                            }}
+                          >
+                            <Plus className="size-4" />
+                            <span className="hidden md:block">
+                              {t("inspectionsPage.vehicles.addVehicle")}
+                            </span>
+                          </Button>
+                        ) : vehicleCount > 0 ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setVehSearch("");
+                              setVehStatusFilter("all");
+                              setVehAssignmentFilter("all");
+                            }}
+                          >
+                            {t("inspectionsPage.filters.clearFilters")}
+                          </Button>
+                        ) : null}
+                      </div>
+                    ) : vehViewMode === "list" ? (
+                      <VehiclesTable
+                        vehicles={filteredVehicles}
                         onEdit={
                           isAdmin
                             ? (v) => {
@@ -630,7 +641,34 @@ const VehicleInspectionPage = () => {
                             : undefined
                         }
                       />
-                    ))}
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+                        {filteredVehicles.map((vehicle) => (
+                          <VehicleCard
+                            key={vehicle.id}
+                            vehicle={vehicle}
+                            onEdit={
+                              isAdmin
+                                ? (v) => {
+                                    setEditVehicle(v);
+                                    setVehicleDialogOpen(true);
+                                  }
+                                : undefined
+                            }
+                            onDelete={
+                              isAdmin
+                                ? (v) => setDeleteVehicleTarget(v)
+                                : undefined
+                            }
+                            onStartInspection={
+                              canCreateInspection
+                                ? handleStartInspection
+                                : undefined
+                            }
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </TabsContent>
@@ -641,111 +679,115 @@ const VehicleInspectionPage = () => {
                   value="inspectors"
                   className="focus:outline-none space-y-4"
                 >
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">
-                        {filteredInspectorsList.length}
-                      </span>
-                      {` ${t("inspectionsPage.results.of")} `}
-                      <span className="font-medium text-foreground">
-                        {inspectorCount}
-                      </span>
-                      {` ${t("inspectionsPage.results.inspectorsRegistered")}`}
-                    </p>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setEditInspector(null);
-                        setInspectorDialogOpen(true);
-                      }}
+                  {!inspectors || isRefreshing || isLoading ? (
+                    <InspectorTabSkeleton viewMode={inspViewMode} />
+                  ) : (
+                    <div
+                      className={`space-y-4 ${inspectorsValidating ? "opacity-60 pointer-events-none transition-opacity duration-200" : "transition-opacity duration-200"}`}
                     >
-                      <UserPlus className="size-4" />
-                      <span className="hidden md:block">
-                        {t("inspectionsPage.inspectors.create")}
-                      </span>
-                    </Button>
-                  </div>
-
-                  <InspectorFilters
-                    searchQuery={inspSearch}
-                    onSearchChange={setInspSearch}
-                    statusFilter={inspStatusFilter}
-                    onStatusChange={setInspStatusFilter}
-                    vehicleFilter={inspVehicleFilter}
-                    onVehicleFilterChange={setInspVehicleFilter}
-                    viewMode={inspViewMode}
-                    onViewModeChange={setInspViewMode}
-                    showViewToggle={!isMobile}
-                  />
-
-                  {!inspectors ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {[...Array(3)].map((_, i) => (
-                        <Skeleton key={i} className="h-28 rounded-xl" />
-                      ))}
-                    </div>
-                  ) : filteredInspectorsList.length === 0 ? (
-                    <div className="text-center py-12 px-4">
-                      <div className="inline-flex items-center justify-center size-12 rounded-full bg-muted mb-3">
-                        <Users className="size-6 text-muted-foreground" />
-                      </div>
-                      <h3 className="text-sm font-semibold text-foreground mb-1">
-                        {inspectorCount === 0
-                          ? t("inspectionsPage.empty.inspectors")
-                          : t("inspectionsPage.empty.noResults")}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mb-3 max-w-sm mx-auto">
-                        {inspectorCount === 0
-                          ? t("inspectionsPage.empty.inspectorsHint")
-                          : t("inspectionsPage.empty.noResultsHint")}
-                      </p>
-                      {inspectorCount === 0 ? (
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">
+                            {filteredInspectorsList.length}
+                          </span>
+                          {` ${t("inspectionsPage.results.of")} `}
+                          <span className="font-medium text-foreground">
+                            {inspectorCount}
+                          </span>
+                          {` ${t("inspectionsPage.results.inspectorsRegistered")}`}
+                        </p>
                         <Button
                           size="sm"
-                          onClick={() => setInspectorDialogOpen(true)}
+                          onClick={() => {
+                            setEditInspector(null);
+                            setInspectorDialogOpen(true);
+                          }}
                         >
                           <UserPlus className="size-4" />
                           <span className="hidden md:block">
                             {t("inspectionsPage.inspectors.create")}
                           </span>
                         </Button>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setInspSearch("");
-                            setInspStatusFilter("all");
-                            setInspVehicleFilter("all");
+                      </div>
+
+                      <InspectorFilters
+                        searchQuery={inspSearch}
+                        onSearchChange={setInspSearch}
+                        statusFilter={inspStatusFilter}
+                        onStatusChange={setInspStatusFilter}
+                        vehicleFilter={inspVehicleFilter}
+                        onVehicleFilterChange={setInspVehicleFilter}
+                        viewMode={inspViewMode}
+                        onViewModeChange={setInspViewMode}
+                        showViewToggle={!isMobile}
+                      />
+
+                      {filteredInspectorsList.length === 0 ? (
+                        <div className="text-center py-12 px-4">
+                          <div className="inline-flex items-center justify-center size-12 rounded-full bg-muted mb-3">
+                            <Users className="size-6 text-muted-foreground" />
+                          </div>
+                          <h3 className="text-sm font-semibold text-foreground mb-1">
+                            {inspectorCount === 0
+                              ? t("inspectionsPage.empty.inspectors")
+                              : t("inspectionsPage.empty.noResults")}
+                          </h3>
+                          <p className="text-xs text-muted-foreground mb-3 max-w-sm mx-auto">
+                            {inspectorCount === 0
+                              ? t("inspectionsPage.empty.inspectorsHint")
+                              : t("inspectionsPage.empty.noResultsHint")}
+                          </p>
+                          {inspectorCount === 0 ? (
+                            <Button
+                              size="sm"
+                              onClick={() => setInspectorDialogOpen(true)}
+                            >
+                              <UserPlus className="size-4" />
+                              <span className="hidden md:block">
+                                {t("inspectionsPage.inspectors.create")}
+                              </span>
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setInspSearch("");
+                                setInspStatusFilter("all");
+                                setInspVehicleFilter("all");
+                              }}
+                            >
+                              {t("inspectionsPage.filters.clearFilters")}
+                            </Button>
+                          )}
+                        </div>
+                      ) : inspViewMode === "list" ? (
+                        <InspectorsTable
+                          inspectors={filteredInspectorsList}
+                          onEdit={(insp) => {
+                            setEditInspector(insp);
+                            setInspectorDialogOpen(true);
                           }}
-                        >
-                          {t("inspectionsPage.filters.clearFilters")}
-                        </Button>
-                      )}
-                    </div>
-                  ) : inspViewMode === "list" ? (
-                    <InspectorsTable
-                      inspectors={filteredInspectorsList}
-                      onEdit={(insp) => {
-                        setEditInspector(insp);
-                        setInspectorDialogOpen(true);
-                      }}
-                      onDelete={(insp) => setDeleteInspectorTarget(insp)}
-                    />
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-                      {filteredInspectorsList.map(
-                        (inspector: InspectorData) => (
-                          <InspectorCard
-                            key={inspector.id}
-                            inspector={inspector}
-                            onEdit={(insp) => {
-                              setEditInspector(insp);
-                              setInspectorDialogOpen(true);
-                            }}
-                            onDelete={(insp) => setDeleteInspectorTarget(insp)}
-                          />
-                        ),
+                          onDelete={(insp) => setDeleteInspectorTarget(insp)}
+                        />
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+                          {filteredInspectorsList.map(
+                            (inspector: InspectorData) => (
+                              <InspectorCard
+                                key={inspector.id}
+                                inspector={inspector}
+                                onEdit={(insp) => {
+                                  setEditInspector(insp);
+                                  setInspectorDialogOpen(true);
+                                }}
+                                onDelete={(insp) =>
+                                  setDeleteInspectorTarget(insp)
+                                }
+                              />
+                            ),
+                          )}
+                        </div>
                       )}
                     </div>
                   )}
