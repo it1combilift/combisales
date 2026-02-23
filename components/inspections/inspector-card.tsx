@@ -118,7 +118,7 @@ export function InspectorCard({
             <div className="flex gap-1 w-fit mt-1">
               <Badge
                 variant={isActive ? "success" : "destructive"}
-                className="text-sm px-2 gap-1 rounded-full border-0"
+                className="text-xs px-2 gap-1 rounded-full border-0"
               >
                 {isActive ? (
                   <CheckCircle2 className="size-2.5" />
