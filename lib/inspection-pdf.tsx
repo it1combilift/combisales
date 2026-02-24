@@ -226,9 +226,9 @@ const PDF_LABELS: Record<Locale, Record<string, string>> = {
 //  - Local development: regular puppeteer (bundled Chrome)
 // ═══════════════════════════════════════════════════════════════
 
-// Hosted chromium binary for Lambda/Vercel (no local binary needed)
+// Hosted chromium binary for Lambda/Vercel (x64, matches @sparticuz/chromium-min@143.0.4)
 const CHROMIUM_PACK_URL =
-  "https://github.com/Sparticuz/chromium/releases/download/v143.0.0/chromium-v143.0.0-pack.tar";
+  "https://github.com/Sparticuz/chromium/releases/download/v143.0.4/chromium-v143.0.4-pack.x64.tar";
 
 async function getBrowser() {
   if (process.env.NODE_ENV === "production") {
