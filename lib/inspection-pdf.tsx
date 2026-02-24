@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import React from "react";
 
 import { InspectionStatus, InspectionPhotoType, Role } from "@prisma/client";
 
@@ -217,6 +217,31 @@ const PDF_LABELS: Record<Locale, Record<string, string>> = {
     roleDealer: "Dealer",
   },
 };
+
+// ═══════════════════════════════════════════════════════════════
+//  BROWSER FACTORY
+//  - Production (Vercel/Lambda): puppeteer-core + @sparticuz/chromium
+//  - Local development: regular puppeteer (bundled Chrome)
+// ═══════════════════════════════════════════════════════════════
+
+async function getBrowser() {
+  if (process.env.NODE_ENV === "production") {
+    const chromium = (await import("@sparticuz/chromium")).default;
+    const puppeteerCore = (await import("puppeteer-core")).default;
+    return puppeteerCore.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless as boolean,
+    });
+  } else {
+    const puppeteer = (await import("puppeteer")).default;
+    return puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════
 //  IMAGE PRE-FETCH (convert external URLs → base64 data URIs)
@@ -585,10 +610,7 @@ export async function generateInspectionPdf(
 </html>`;
 
   // 3) Launch headless Chrome and generate PDF
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  const browser = await getBrowser();
 
   try {
     const page = await browser.newPage();

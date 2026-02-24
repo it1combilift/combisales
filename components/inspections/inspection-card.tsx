@@ -298,6 +298,7 @@ export function InspectionCard({
               e.stopPropagation();
               onView(inspection);
             }}
+            disabled={isGeneratingPdf && generatingPdfId === inspection.id}
           >
             <ArrowUpRight className="size-3.5" />
             {t("inspectionsPage.card.viewDetails")}
@@ -335,6 +336,7 @@ export function InspectionCard({
                   onApprove(inspection);
                 }}
                 title={t("inspectionsPage.approval.review")}
+                disabled={isGeneratingPdf && generatingPdfId === inspection.id}
               >
                 <ShieldCheck className="size-4" />
               </Button>
@@ -354,6 +356,7 @@ export function InspectionCard({
                   onDelete(inspection);
                 }}
                 title={t("inspectionsPage.delete.title")}
+                disabled={isGeneratingPdf && generatingPdfId === inspection.id}
               >
                 <Trash2 className="size-4" />
               </Button>
