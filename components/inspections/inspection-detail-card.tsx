@@ -702,7 +702,7 @@ export function InspectionDetailCard({
                   className="object-contain w-full rounded-lg"
                 />
               </div>
-              <p className="text-xs text-muted-foreground text-center mt-2">
+              <p className="text-xs text-muted-foreground text-center mt-2 font-mono tabular-nums truncate max-w-[200px] mx-auto">
                 {inspection.user.name || inspection.user.email}
               </p>
             </div>
