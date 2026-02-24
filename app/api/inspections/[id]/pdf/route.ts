@@ -12,6 +12,9 @@ import {
   serverErrorResponse,
 } from "@/lib/api-response";
 
+// Allow up to 60s: cold-start Chromium download + PDF generation
+export const maxDuration = 60;
+
 const INSPECTION_INCLUDE = {
   vehicle: {
     select: {

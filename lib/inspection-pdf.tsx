@@ -220,19 +220,31 @@ const PDF_LABELS: Record<Locale, Record<string, string>> = {
 
 // ═══════════════════════════════════════════════════════════════
 //  BROWSER FACTORY
-//  - Production (Vercel/Lambda): puppeteer-core + @sparticuz/chromium
+//  - Production (Vercel): puppeteer-core + @sparticuz/chromium-min
+//    Downloads Chromium at cold-start from GitHub releases.
+//    Set CHROMIUM_EXECUTABLE_PATH env var in Vercel to override.
 //  - Local development: regular puppeteer (bundled Chrome)
 // ═══════════════════════════════════════════════════════════════
 
+// Hosted chromium binary for Lambda/Vercel (no local binary needed)
+const CHROMIUM_PACK_URL =
+  "https://github.com/Sparticuz/chromium/releases/download/v143.0.0/chromium-v143.0.0-pack.tar";
+
 async function getBrowser() {
   if (process.env.NODE_ENV === "production") {
-    const chromium = (await import("@sparticuz/chromium")).default;
+    const chromium = (await import("@sparticuz/chromium-min")).default;
     const puppeteerCore = (await import("puppeteer-core")).default;
+
+    // Allow overriding via Vercel env var (set to the pack URL or a /tmp path)
+    const executablePath = process.env.CHROMIUM_EXECUTABLE_PATH
+      ? await chromium.executablePath(process.env.CHROMIUM_EXECUTABLE_PATH)
+      : await chromium.executablePath(CHROMIUM_PACK_URL);
+
     return puppeteerCore.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless as boolean,
+      defaultViewport: null,
+      executablePath,
+      headless: true,
     });
   } else {
     const puppeteer = (await import("puppeteer")).default;
