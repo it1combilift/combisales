@@ -463,8 +463,8 @@
       "vehiclesCount": "vehículos",
       "inspectionsCount": "inspecciones",
       "assignedVehicles": "Vehículos Asignados",
-      "deleteTitle": "Eliminar Inspector",
-      "deleteDescription": "¿Estás seguro de que quieres eliminar al inspector {{name}}? Esta acción no se puede deshacer.",
+      "deleteTitle": "Eliminar Usuario",
+      "deleteDescription": "¿Estás seguro de que quieres eliminar al usuario {{name}}? Esta acción no se puede deshacer.",
       "validation": {
         "nameRequired": "El nombre debe tener al menos 2 caracteres",
         "emailInvalid": "Introduce un correo electrónico válido",
@@ -573,6 +573,7 @@
     "form": {
       "title": "Nueva Inspección de Vehículo",
       "description": "Completa todos los pasos para enviar la inspección.",
+      "noVehiclesTitle": "Sin vehículos disponibles",
       "noVehicles": "No hay vehículos disponibles. Pide a un administrador que añada vehículos.",
       "submit": "Enviar Inspección",
       "stepOf": "Paso {current} de {total}",

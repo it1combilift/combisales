@@ -365,8 +365,27 @@ export async function DELETE(
       );
     }
 
-    await prisma.user.delete({
-      where: { id },
+    // Explicit pre-delete cleanup inside a transaction.
+    // Even though Prisma schema has onDelete:SetNull / onDelete:Cascade at DB level,
+    // we perform this explicitly so the behaviour is predictable and auditable:
+    //
+    //  1. Unassign vehicles         → SET assignedInspectorId = NULL
+    //  2. Delete the user record    → DB cascades handle the rest:
+    //       - DealerSeller rows        (onDelete: Cascade on both sides)
+    //       - Account / Session rows   (onDelete: Cascade)
+    //       - Visit rows (userId FK)   (onDelete: Cascade)
+    //       - Inspection rows          (onDelete: Cascade → photos + approvals cascade from them)
+    //       - InspectionApproval rows  (approver userId FK, onDelete: Cascade)
+    //       - Visit.assignedSellerId   (onDelete: SetNull → NULL)
+    await prisma.$transaction(async (tx) => {
+      // 1. Unassign any vehicles this user is assigned to as inspector/seller
+      await tx.vehicle.updateMany({
+        where: { assignedInspectorId: id },
+        data: { assignedInspectorId: null },
+      });
+
+      // 2. Delete the user — all remaining related records are handled by DB cascades
+      await tx.user.delete({ where: { id } });
     });
 
     return NextResponse.json({

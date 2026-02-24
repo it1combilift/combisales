@@ -49,12 +49,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await prisma.user.deleteMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
+    // Explicit pre-delete cleanup + deletion in a single transaction.
+    // 1. Unassign vehicles  → SET assignedInspectorId = NULL for all affected users
+    // 2. deleteMany users   → DB cascades handle everything else
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.vehicle.updateMany({
+        where: { assignedInspectorId: { in: ids } },
+        data: { assignedInspectorId: null },
+      });
+
+      return tx.user.deleteMany({
+        where: { id: { in: ids } },
+      });
     });
 
     return NextResponse.json({

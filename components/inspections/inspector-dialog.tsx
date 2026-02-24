@@ -3,6 +3,7 @@
 import { z } from "zod";
 import axios from "axios";
 import Image from "next/image";
+import { Spinner } from "../ui/spinner";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,7 +41,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Spinner } from "../ui/spinner";
 
 interface SimpleVehicle {
   id: string;
@@ -343,11 +343,12 @@ export function InspectorDialog({
     try {
       if (isEditing && editInspector) {
         // ── EDIT MODE ──
+        // NOTE: roles are intentionally NOT included — this dialog must never
+        // overwrite the user's existing roles (e.g. SELLER, ADMIN, or combinations).
         const updatePayload: Record<string, unknown> = {
           name: data.name,
           email: data.email,
           isActive,
-          roles: [Role.INSPECTOR],
           image: imagePreview || null,
         };
         if (data.password) {
@@ -364,31 +365,39 @@ export function InspectorDialog({
           (id) => !initialVehicleIds.includes(id),
         );
 
-        const vehicleOps = [
-          ...toUnassign.map((vehicleId) =>
-            axios
-              .put(`/api/vehicles/${vehicleId}`, {
-                assignedInspectorId: null,
-                force: true,
-              })
-              .catch((err) =>
-                console.error(`Failed to unassign vehicle ${vehicleId}:`, err),
-              ),
-          ),
-          ...toAssign.map((vehicleId) =>
-            axios
-              .put(`/api/vehicles/${vehicleId}`, {
-                assignedInspectorId: editInspector.id,
-                force: true,
-              })
-              .catch((err) =>
-                console.error(`Failed to assign vehicle ${vehicleId}:`, err),
-              ),
-          ),
-        ];
+        // Unassign MUST complete before assigning to avoid the SELLER 1-vehicle
+        // limit check rejecting the new assignment while the old one is still in the DB.
+        if (toUnassign.length > 0) {
+          await Promise.all(
+            toUnassign.map((vehicleId) =>
+              axios
+                .put(`/api/vehicles/${vehicleId}`, {
+                  assignedInspectorId: null,
+                  force: true,
+                })
+                .catch((err) =>
+                  console.error(
+                    `Failed to unassign vehicle ${vehicleId}:`,
+                    err,
+                  ),
+                ),
+            ),
+          );
+        }
 
-        if (vehicleOps.length > 0) {
-          await Promise.all(vehicleOps);
+        if (toAssign.length > 0) {
+          await Promise.all(
+            toAssign.map((vehicleId) =>
+              axios
+                .put(`/api/vehicles/${vehicleId}`, {
+                  assignedInspectorId: editInspector.id,
+                  force: true,
+                })
+                .catch((err) =>
+                  console.error(`Failed to assign vehicle ${vehicleId}:`, err),
+                ),
+            ),
+          );
         }
       } else {
         // ── CREATE MODE ──
@@ -460,31 +469,39 @@ export function InspectorDialog({
           (id) => !selectedVehicleIds.includes(id),
         );
 
-        const vehicleOps = [
-          ...toUnassign.map((vehicleId) =>
-            axios
-              .put(`/api/vehicles/${vehicleId}`, {
-                assignedInspectorId: null,
-                force: true,
-              })
-              .catch((err) =>
-                console.error(`Failed to unassign vehicle ${vehicleId}:`, err),
-              ),
-          ),
-          ...toAssign.map((vehicleId) =>
-            axios
-              .put(`/api/vehicles/${vehicleId}`, {
-                assignedInspectorId: selectedExistingUserId,
-                force: true,
-              })
-              .catch((err) =>
-                console.error(`Failed to assign vehicle ${vehicleId}:`, err),
-              ),
-          ),
-        ];
+        // Unassign MUST complete before assigning to avoid the SELLER 1-vehicle
+        // limit check rejecting the new assignment while the old one is still in the DB.
+        if (toUnassign.length > 0) {
+          await Promise.all(
+            toUnassign.map((vehicleId) =>
+              axios
+                .put(`/api/vehicles/${vehicleId}`, {
+                  assignedInspectorId: null,
+                  force: true,
+                })
+                .catch((err) =>
+                  console.error(
+                    `Failed to unassign vehicle ${vehicleId}:`,
+                    err,
+                  ),
+                ),
+            ),
+          );
+        }
 
-        if (vehicleOps.length > 0) {
-          await Promise.all(vehicleOps);
+        if (toAssign.length > 0) {
+          await Promise.all(
+            toAssign.map((vehicleId) =>
+              axios
+                .put(`/api/vehicles/${vehicleId}`, {
+                  assignedInspectorId: selectedExistingUserId,
+                  force: true,
+                })
+                .catch((err) =>
+                  console.error(`Failed to assign vehicle ${vehicleId}:`, err),
+                ),
+            ),
+          );
         }
       }
 
