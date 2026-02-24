@@ -312,7 +312,7 @@ function PhotoGallery({
               </div>
             </div>
             <div className="absolute bottom-0 inset-x-0 px-2.5 py-2">
-              <span className="text-xs font-medium text-card drop-shadow-sm invert">
+              <span className="text-xs font-medium drop-shadow-sm text-white">
                 {getPhotoLabel(photo.photoType)}
               </span>
             </div>
@@ -352,10 +352,10 @@ function PhotoGallery({
                 />
                 {/* Caption */}
                 <div className="absolute bottom-0 inset-x-0 bg-linear-to-t from-black/70 to-transparent px-4 py-3">
-                  <p className="text-card text-sm font-medium invert">
+                  <p className="text-sm font-medium text-white">
                     {getPhotoLabel(photos[selectedIndex].photoType)}
                   </p>
-                  <p className="text-card/60 text-xs invert">
+                  <p className="text-card/60 text-xs text-white">
                     {selectedIndex + 1} / {photos.length}
                   </p>
                 </div>
@@ -524,7 +524,7 @@ export function InspectionDetailCard({
       )}
 
       {/* ═══════════ Vehicle Hero Card ═══════════ */}
-      <Card className="border-border/50 shadow-none overflow-hidden">
+      <Card className="border-border/50 shadow-none overflow-hidden py-0">
         <CardContent className="px-4 py-4 md:px-5 md:py-5">
           {/* Vehicle Info */}
           <div className="flex items-start gap-3.5">
