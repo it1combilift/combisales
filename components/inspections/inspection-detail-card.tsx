@@ -355,7 +355,7 @@ function PhotoGallery({
                   <p className="text-sm font-medium text-white">
                     {getPhotoLabel(photos[selectedIndex].photoType)}
                   </p>
-                  <p className="text-card/60 text-xs text-white">
+                  <p className="text-xs text-white">
                     {selectedIndex + 1} / {photos.length}
                   </p>
                 </div>
