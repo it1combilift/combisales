@@ -21,7 +21,10 @@ import {
   ImageIcon,
   ShieldXIcon,
   ShieldCheckIcon,
+  CarFront,
 } from "lucide-react";
+import { DialogOverlay } from "../ui/dialog";
+import { Separator } from "../ui/separator";
 
 interface InspectionCardProps {
   inspection: Inspection;
@@ -139,7 +142,7 @@ export function InspectionCard({
                   />
                 ) : (
                   <div className="size-full flex items-center justify-center bg-linear-to-br from-muted to-muted/50">
-                    <Car className="size-4 text-muted-foreground/60" />
+                    <CarFront className="size-4 text-muted-foreground/60" />
                   </div>
                 )}
               </div>
@@ -172,6 +175,7 @@ export function InspectionCard({
               "shrink-0 text-[10px] font-medium h-6 px-2.5 gap-1.5 rounded-full border",
               config.colorClass,
             )}
+            title={t(`inspectionsPage.status.${inspection.status.toLowerCase()}`)}
           >
             <StatusIcon className="size-2.5" />
             {t(`inspectionsPage.status.${inspection.status.toLowerCase()}`)}
@@ -179,12 +183,15 @@ export function InspectionCard({
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-border/50" />
+        <Separator className="my-0" />
 
         {/* Metadata */}
         <div className="space-y-2">
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground font-mono">
+            {t("inspectionsPage.vehicles.assignedTo")}
+          </span>
           {/* Inspector row with avatar */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <Avatar className="size-8 shrink-0 ring-2 ring-border/60 group-hover:ring-primary/20 transition-all duration-300">
               <AvatarImage
                 className="object-cover object-center"
@@ -221,7 +228,11 @@ export function InspectionCard({
                 label: `${photosCount}/6 ${t("inspectionsPage.form.photos.uploaded")}`,
               },
             ].map(({ icon: Icon, label }, i) => (
-              <div key={i} className="flex items-center gap-2 min-w-0">
+              <div
+                key={i}
+                className="flex items-center gap-2 min-w-0"
+                title={label}
+              >
                 <div className="size-6 rounded-md bg-muted/60 flex items-center justify-center shrink-0">
                   <Icon className="size-3 text-muted-foreground" />
                 </div>
