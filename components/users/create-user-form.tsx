@@ -508,7 +508,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
         </Tabs>
 
         {/* Action Buttons */}
-        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-4 mt-4 border-t">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 pt-4">
           <Button
             type="button"
             variant="outline"

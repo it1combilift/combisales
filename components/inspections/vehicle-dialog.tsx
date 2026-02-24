@@ -232,7 +232,7 @@ export function VehicleDialog({
                     id="model"
                     placeholder={t("inspectionsPage.vehicles.modelPlaceholder")}
                     {...form.register("model")}
-                    className="h-9"
+                    className="h-9 text-xs md:text-sm"
                   />
                   {form.formState.errors.model && (
                     <p className="text-xs text-destructive">
@@ -249,7 +249,7 @@ export function VehicleDialog({
                     id="plate"
                     placeholder={t("inspectionsPage.vehicles.platePlaceholder")}
                     {...form.register("plate")}
-                    className="uppercase h-9"
+                    className="uppercase h-9 text-xs md:text-sm"
                   />
                   {form.formState.errors.plate && (
                     <p className="text-xs text-destructive">
@@ -410,7 +410,7 @@ export function VehicleDialog({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">
+                    <SelectItem value="none" className="text-xs md:text-sm">
                       {t("inspectionsPage.vehicles.noAssignee") ||
                         t("inspectionsPage.vehicles.noInspector")}
                     </SelectItem>
@@ -436,7 +436,9 @@ export function VehicleDialog({
                           value={assignee.id}
                           disabled={isDisabled}
                         >
-                          <span>{assignee.name || assignee.email}</span>
+                          <span className="text-xs md:text-sm">
+                            {assignee.name || assignee.email}
+                          </span>
 
                           {getAllRoles(assignee.roles).map((role) =>
                             getRoleBadge(role),

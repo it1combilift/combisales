@@ -4,6 +4,7 @@ import { clsx, type ClassValue } from "clsx";
 import { Badge } from "@/components/ui/badge";
 import { IconTruckDelivery } from "@tabler/icons-react";
 import { ShieldCheck, PackageCheck, ClipboardCheck } from "lucide-react";
+import { useTranslation } from "./i18n/context";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -62,14 +63,16 @@ export function formatDateTime(
 }
 
 export function getRoleBadge(role: Role, label?: string) {
+  const { t } = useTranslation();
+
   if (role === Role.ADMIN) {
     return (
       <Badge
         variant="outline-info"
-        key={`role-badge-admin-${label || "Admin"}`}
+        key={`role-badge-admin-${label || t("users.roles.admin")}`}
       >
         <ShieldCheck className="size-3.5" />
-        {label || "Admin"}
+        {label || t("users.roles.admin")}
       </Badge>
     );
   }
@@ -78,10 +81,10 @@ export function getRoleBadge(role: Role, label?: string) {
     return (
       <Badge
         variant="outline-warning"
-        key={`role-badge-dealer-${label || "Dealer"}`}
+        key={`role-badge-dealer-${label || t("users.roles.dealer")}`}
       >
         <IconTruckDelivery className="size-3.5" />
-        {label || "Dealer"}
+        {label || t("users.roles.dealer")}
       </Badge>
     );
   }
@@ -90,10 +93,10 @@ export function getRoleBadge(role: Role, label?: string) {
     return (
       <Badge
         variant="purple"
-        key={`role-badge-inspector-${label || "Inspector"}`}
+        key={`role-badge-inspector-${label || t("users.roles.inspector")}`}
       >
         <ClipboardCheck className="size-3.5" />
-        {label || "Soporte Técnico"}
+        {label || t("users.roles.inspector")}
       </Badge>
     );
   }
@@ -101,10 +104,10 @@ export function getRoleBadge(role: Role, label?: string) {
   return (
     <Badge
       variant="outline-success"
-      key={`role-badge-manager-${label || "P. Manager"}`}
+      key={`role-badge-manager-${label || t("users.roles.seller")}`}
     >
       <PackageCheck className="size-3.5" />
-      {label || "P. Manager"}
+      {label || t("users.roles.seller")}
     </Badge>
   );
 }
