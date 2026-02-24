@@ -700,7 +700,12 @@
       "approvedBy": "Revisado por",
       "backToList": "Volver a inspecciones",
       "failed": "fallidos",
-      "itemsPassed": "elementos aprobados"
+      "itemsPassed": "elementos aprobados",
+      "photoDialogTitle": "Vista Previa de Foto"
+    },
+    "pdf": {
+      "download": "Descargar PDF",
+      "generating": "Generando..."
     }
   },
   "taskPage": {

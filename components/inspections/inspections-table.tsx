@@ -38,6 +38,8 @@ import {
   Gauge,
   ImageIcon,
   ArrowUpDown,
+  FileDown,
+  Loader2,
 } from "lucide-react";
 
 interface InspectionsTableProps {
@@ -45,6 +47,9 @@ interface InspectionsTableProps {
   onView: (inspection: Inspection) => void;
   onApprove?: (inspection: Inspection) => void;
   onDelete?: (inspection: Inspection) => void;
+  onDownloadPdf?: (inspection: Inspection) => void;
+  isGeneratingPdf?: boolean;
+  generatingPdfId?: string;
   isAdmin?: boolean;
   currentUserId?: string;
 }
@@ -70,6 +75,9 @@ export function InspectionsTable({
   onView,
   onApprove,
   onDelete,
+  onDownloadPdf,
+  isGeneratingPdf,
+  generatingPdfId,
   isAdmin,
   currentUserId,
 }: InspectionsTableProps) {
@@ -439,6 +447,33 @@ export function InspectionsTable({
                             {t("inspectionsPage.card.viewDetails")}
                           </TooltipContent>
                         </Tooltip>
+
+                        {onDownloadPdf && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10"
+                                onClick={() => onDownloadPdf(inspection)}
+                                disabled={
+                                  isGeneratingPdf &&
+                                  generatingPdfId === inspection.id
+                                }
+                              >
+                                {isGeneratingPdf &&
+                                generatingPdfId === inspection.id ? (
+                                  <Loader2 className="size-3.5 animate-spin" />
+                                ) : (
+                                  <FileDown className="size-3.5" />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="left" className="text-xs">
+                              {t("inspectionsPage.pdf.download")}
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
 
                         {isAdmin &&
                           inspection.status === InspectionStatus.PENDING &&

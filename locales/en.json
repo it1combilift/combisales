@@ -701,7 +701,12 @@
       "approvedBy": "Reviewed by",
       "backToList": "Back to inspections",
       "failed": "failed",
-      "itemsPassed": "items passed"
+      "itemsPassed": "items passed",
+      "photoDialogTitle": "Photo Preview"
+    },
+    "pdf": {
+      "download": "Download PDF",
+      "generating": "Generating..."
     }
   },
   "taskPage": {

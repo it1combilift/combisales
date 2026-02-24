@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/resend";
-import { Role, InspectionStatus } from "@prisma/client";
 import { EMAIL_CONFIG } from "@/constants/constants";
-import { hasRole } from "@/lib/roles";
+import { Role, InspectionStatus, InspectionPhotoType } from "@prisma/client";
 
 // ==================== TYPES ====================
+interface InspectionPhoto {
+  photoType: InspectionPhotoType;
+  cloudinaryUrl: string;
+}
+
 interface InspectionEmailData {
   id: string;
   mileage: number;
@@ -18,6 +22,7 @@ interface InspectionEmailData {
     name: string | null;
     email: string;
   };
+  photos?: InspectionPhoto[];
   approval?: {
     approved: boolean;
     comments: string | null;
@@ -28,6 +33,15 @@ interface InspectionEmailData {
   } | null;
   createdAt: Date | string;
 }
+
+const PHOTO_TYPE_LABELS: Record<InspectionPhotoType, string> = {
+  FRONT: "Front",
+  REAR: "Rear",
+  DRIVER_SIDE: "Driver Side",
+  PASSENGER_SIDE: "Passenger Side",
+  INTERIOR: "Interior",
+  SAFETY_DEVICES: "Safety Devices",
+};
 
 // ==================== EMAIL TEMPLATES ====================
 function generateInspectionEmailHTML(
@@ -126,6 +140,37 @@ function generateInspectionEmailHTML(
         }
 
         ${
+          data.photos && data.photos.length > 0
+            ? `<div style="margin-bottom:20px;">
+              <strong style="color:#424242;display:block;margin-bottom:10px;">Inspection Photos (${data.photos.length})</strong>
+              <table width="100%" cellpadding="4" cellspacing="0">
+                <tr>
+                  ${data.photos
+                    .map(
+                      (photo, i) => `
+                    ${i > 0 && i % 3 === 0 ? "</tr><tr>" : ""}
+                    <td width="33%" style="text-align:center;vertical-align:top;padding:4px;">
+                      <a href="${photo.cloudinaryUrl}" target="_blank" style="display:block;text-decoration:none;">
+                        <img
+                          src="${photo.cloudinaryUrl}"
+                          alt="${PHOTO_TYPE_LABELS[photo.photoType] || photo.photoType}"
+                          width="160"
+                          style="max-width:160px;height:110px;object-fit:cover;border-radius:6px;border:1px solid #e0e0e0;display:block;margin:0 auto;"
+                        />
+                        <span style="display:block;margin-top:4px;font-size:11px;color:#757575;">
+                          ${PHOTO_TYPE_LABELS[photo.photoType] || photo.photoType}
+                        </span>
+                      </a>
+                    </td>`,
+                    )
+                    .join("")}
+                </tr>
+              </table>
+            </div>`
+            : ""
+        }
+
+        ${
           data.approval?.comments
             ? `<div style="margin-bottom:16px;">
               <strong style="color:#424242;">Reviewer Comments:</strong>
@@ -176,6 +221,15 @@ function generateInspectionEmailText(
 
   if (data.observations) {
     lines.push("", `Observations: ${data.observations}`);
+  }
+
+  if (data.photos && data.photos.length > 0) {
+    lines.push("", `Inspection Photos (${data.photos.length}):`);
+    data.photos.forEach((photo) => {
+      lines.push(
+        `  ${PHOTO_TYPE_LABELS[photo.photoType] || photo.photoType}: ${photo.cloudinaryUrl}`,
+      );
+    });
   }
 
   if (data.approval?.comments) {

@@ -23,6 +23,8 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  FileDown,
+  Loader2,
 } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -32,12 +34,39 @@ export default function InspectionDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const router = useRouter();
   const { data: session } = useSession();
   const [approvalOpen, setApprovalOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [inspectionId, setInspectionId] = useState<string>("");
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (!inspection || isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
+    try {
+      const res = await fetch(
+        `/api/inspections/${inspection.id}/pdf?locale=${locale}`,
+      );
+      if (!res.ok) throw new Error("PDF generation failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download =
+        res.headers.get("content-disposition")?.match(/filename="(.+)"/)?.[1] ||
+        `inspection_${inspection.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   useEffect(() => {
     params.then(({ id }) => setInspectionId(id));
@@ -111,6 +140,26 @@ export default function InspectionDetailPage({
         </div>
 
         <div className="flex gap-2 items-center shrink-0">
+          {inspection && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadPdf}
+              disabled={isGeneratingPdf}
+              title={t("inspectionsPage.pdf.download")}
+            >
+              {isGeneratingPdf ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <FileDown className="size-4" />
+              )}
+              <span className="hidden sm:inline">
+                {isGeneratingPdf
+                  ? t("inspectionsPage.pdf.generating")
+                  : t("inspectionsPage.pdf.download")}
+              </span>
+            </Button>
+          )}
           {canApprove && (
             <Button size="sm" onClick={() => setApprovalOpen(true)}>
               <ShieldCheck className="size-4" />

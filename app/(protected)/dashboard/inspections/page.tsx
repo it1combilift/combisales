@@ -62,7 +62,7 @@ import {
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const VehicleInspectionPage = () => {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const router = useRouter();
   const { data: session } = useSession();
   const isMobile = useIsMobile();
@@ -137,6 +137,43 @@ const VehicleInspectionPage = () => {
   const [preSelectedVehicleId, setPreSelectedVehicleId] = useState<
     string | undefined
   >(undefined);
+
+  // PDF generation state
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [generatingPdfId, setGeneratingPdfId] = useState<string>("");
+
+  const handleDownloadPdf = useCallback(
+    async (inspection: Inspection) => {
+      if (isGeneratingPdf) return;
+      setIsGeneratingPdf(true);
+      setGeneratingPdfId(inspection.id);
+      try {
+        const res = await fetch(
+          `/api/inspections/${inspection.id}/pdf?locale=${locale}`,
+        );
+        if (!res.ok) throw new Error("PDF generation failed");
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download =
+          res.headers
+            .get("content-disposition")
+            ?.match(/filename="(.+)"/)?.[1] ||
+          `inspection_${inspection.id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error downloading PDF:", error);
+      } finally {
+        setIsGeneratingPdf(false);
+        setGeneratingPdfId("");
+      }
+    },
+    [isGeneratingPdf, locale],
+  );
 
   useEffect(() => {
     if (isMobile) setViewMode("grid");
@@ -464,6 +501,9 @@ const VehicleInspectionPage = () => {
                             setSelectedInspection(insp);
                             setDeleteDialogOpen(true);
                           }}
+                          onDownloadPdf={handleDownloadPdf}
+                          isGeneratingPdf={isGeneratingPdf}
+                          generatingPdfId={generatingPdfId}
                           isAdmin={isAdmin}
                           currentUserId={session?.user?.id}
                         />
@@ -482,6 +522,9 @@ const VehicleInspectionPage = () => {
                                 setSelectedInspection(insp);
                                 setDeleteDialogOpen(true);
                               }}
+                              onDownloadPdf={handleDownloadPdf}
+                              isGeneratingPdf={isGeneratingPdf}
+                              generatingPdfId={generatingPdfId}
                               isAdmin={isAdmin}
                               currentUserId={session?.user?.id}
                             />

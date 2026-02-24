@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { Separator } from "../ui/separator";
+import { DialogOverlay } from "../ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
@@ -22,15 +24,18 @@ import {
   ShieldXIcon,
   ShieldCheckIcon,
   CarFront,
+  FileDown,
+  Loader2,
 } from "lucide-react";
-import { DialogOverlay } from "../ui/dialog";
-import { Separator } from "../ui/separator";
 
 interface InspectionCardProps {
   inspection: Inspection;
   onView: (inspection: Inspection) => void;
   onApprove?: (inspection: Inspection) => void;
   onDelete?: (inspection: Inspection) => void;
+  onDownloadPdf?: (inspection: Inspection) => void;
+  isGeneratingPdf?: boolean;
+  generatingPdfId?: string;
   isAdmin?: boolean;
   currentUserId?: string;
 }
@@ -40,6 +45,9 @@ export function InspectionCard({
   onView,
   onApprove,
   onDelete,
+  onDownloadPdf,
+  isGeneratingPdf,
+  generatingPdfId,
   isAdmin,
   currentUserId,
 }: InspectionCardProps) {
@@ -175,7 +183,9 @@ export function InspectionCard({
               "shrink-0 text-xs font-medium h-6 px-2.5 gap-1.5 rounded-full border transition-colors duration-300 flex items-center justify-center",
               config.colorClass,
             )}
-            title={t(`inspectionsPage.status.${inspection.status.toLowerCase()}`)}
+            title={t(
+              `inspectionsPage.status.${inspection.status.toLowerCase()}`,
+            )}
           >
             <StatusIcon className="size-2.5 animate-pulse" />
             {t(`inspectionsPage.status.${inspection.status.toLowerCase()}`)}
@@ -292,6 +302,26 @@ export function InspectionCard({
             <ArrowUpRight className="size-3.5" />
             {t("inspectionsPage.card.viewDetails")}
           </Button>
+
+          {onDownloadPdf && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDownloadPdf(inspection);
+              }}
+              disabled={isGeneratingPdf && generatingPdfId === inspection.id}
+              title={t("inspectionsPage.pdf.download")}
+            >
+              {isGeneratingPdf && generatingPdfId === inspection.id ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <FileDown className="size-4" />
+              )}
+            </Button>
+          )}
 
           {isAdmin &&
             inspection.status === InspectionStatus.PENDING &&
