@@ -172,12 +172,12 @@ export function InspectionCard({
           <Badge
             variant="outline"
             className={cn(
-              "shrink-0 text-[10px] font-medium h-6 px-2.5 gap-1.5 rounded-full border",
+              "shrink-0 text-xs font-medium h-6 px-2.5 gap-1.5 rounded-full border transition-colors duration-300 flex items-center justify-center",
               config.colorClass,
             )}
             title={t(`inspectionsPage.status.${inspection.status.toLowerCase()}`)}
           >
-            <StatusIcon className="size-2.5" />
+            <StatusIcon className="size-2.5 animate-pulse" />
             {t(`inspectionsPage.status.${inspection.status.toLowerCase()}`)}
           </Badge>
         </div>
