@@ -58,6 +58,7 @@ import {
   Users,
   CarFrontIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -95,7 +96,7 @@ const VehicleInspectionPage = () => {
     data: inspectors,
     isValidating: inspectorsValidating,
     mutate: mutateInspectors,
-  } = useSWR<any[]>(
+  } = useSWR<InspectorData[]>(
     isAdmin ? `/api/users?roles=${Role.INSPECTOR},${Role.SELLER}` : null,
     fetcher,
   );
@@ -267,8 +268,10 @@ const VehicleInspectionPage = () => {
     if (isAdmin) {
       mutateInspectors();
     }
+     toast.success(t("messages.updated"));
   }, [mutateInspections, mutateVehicles, mutateInspectors, isAdmin]);
 
+  // View inspection details
   const handleViewInspection = useCallback(
     (inspection: Inspection) => {
       router.push(`/dashboard/inspections/${inspection.id}`);
@@ -276,10 +279,12 @@ const VehicleInspectionPage = () => {
     [router],
   );
 
+  // Delete vehicle
   const handleDeleteVehicle = async (vehicle: Vehicle) => {
     try {
       await fetch(`/api/vehicles/${vehicle.id}`, { method: "DELETE" });
       mutateVehicles();
+      toast.success(t("messages.deleted"));
     } catch (error) {
       console.error("Failed to delete vehicle:", error);
     }
@@ -289,6 +294,7 @@ const VehicleInspectionPage = () => {
     try {
       await fetch(`/api/users/${inspector.id}`, { method: "DELETE" });
       mutateInspectors();
+      toast.success(t("messages.deleted"));
     } catch (error) {
       console.error("Failed to delete inspector:", error);
     }
