@@ -7,7 +7,7 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen w-full relative flex items-center justify-center px-4 py-0 m-0">
+    <section className="min-h-dvh w-full relative flex items-center justify-center px-4 py-0 m-0">
       {/* Light Mode - Radial Gradient from Top */}
       <div
         className="absolute inset-0 z-0 pointer-events-none dark:hidden"
@@ -34,6 +34,6 @@ export default function LoginPage() {
           <LoginForm />
         </Suspense>
       </motion.div>
-    </div>
+    </section>
   );
 }

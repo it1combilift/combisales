@@ -148,11 +148,14 @@ const VehicleInspectionPage = () => {
       if (isGeneratingPdf) return;
       setIsGeneratingPdf(true);
       setGeneratingPdfId(inspection.id);
+      toast.success(t("inspectionsPage.pdf.generating"));
+
       try {
         const res = await fetch(
           `/api/inspections/${inspection.id}/pdf?locale=${locale}`,
         );
         if (!res.ok) throw new Error("PDF generation failed");
+        toast.error(t("inspectionsPage.pdf.error"));
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -166,6 +169,7 @@ const VehicleInspectionPage = () => {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        toast.success(t("inspectionsPage.pdf.success"));
       } catch (error) {
         console.error("Error downloading PDF:", error);
       } finally {

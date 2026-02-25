@@ -705,7 +705,9 @@
     },
     "pdf": {
       "download": "Descargar PDF",
-      "generating": "Generando..."
+      "generating": "Generando...",
+      "error": "Error al generar PDF",
+      "success": "PDF generado exitosamente"
     }
   },
   "taskPage": {
