@@ -238,13 +238,13 @@
   "navigation": {
     "tasks": "Tareas",
     "clients": "Clientes",
-    "equipment": "Equipos",
+    "equipment": "Flota",
     "users": "Usuarios",
     "reports": "Informes",
     "documents": "Documentos",
     "assistant": "Asistente",
-    "dealers": "Proveedores",
-    "inspections": "Inspecciones"
+    "dealers": "Distribuidores",
+    "inspections": "Insp. Veh"
   },
   "header": {
     "welcome": "Bienvenido",

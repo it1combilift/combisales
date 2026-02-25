@@ -1,11 +1,11 @@
 import {
   Unplug,
   Ruler,
-  Route,
   Paperclip,
   Building2,
   PencilLine,
   NotebookText,
+  AlignHorizontalSpaceAround,
 } from "lucide-react";
 
 // Customer data step shown only when enableCustomerEntry is true
@@ -107,7 +107,7 @@ export const REGULAR_STEPS = [
     title: "forms.logistica.steps.aisle.title",
     shortTitle: "forms.logistica.steps.aisle.shortTitle",
     description: "forms.logistica.steps.aisle.description",
-    icon: Route,
+    icon: AlignHorizontalSpaceAround,
     color: "violet" as const,
     fields: ["pasilloActual"],
   },

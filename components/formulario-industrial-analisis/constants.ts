@@ -1,11 +1,11 @@
 import {
   Ruler,
-  Route,
   Paperclip,
   Building2,
   PencilLine,
   Unplug,
   NotebookText,
+  AlignHorizontalSpaceAround,
 } from "lucide-react";
 
 // Customer data step (only for DEALER flow with enableCustomerEntry=true)
@@ -93,7 +93,7 @@ const REGULAR_STEPS = [
     title: "forms.industrial.steps.aisle.title",
     shortTitle: "forms.industrial.steps.aisle.shortTitle",
     description: "forms.industrial.steps.aisle.description",
-    icon: Route,
+    icon: AlignHorizontalSpaceAround,
     color: "rose" as const,
     fields: ["especificacionesPasillo"],
   },
