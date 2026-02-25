@@ -190,7 +190,7 @@ function generateInspectionEmailHTML(
     </tr>
     <tr>
       <td style="background:#f5f5f5;padding:16px;text-align:center;color:#9e9e9e;font-size:12px;">
-        Combilift Sales &mdash; Vehicle Inspection System
+        CombiSales &mdash; Vehicle Inspection System
       </td>
     </tr>
   </table>
