@@ -95,6 +95,7 @@
     "system": "System"
   },
   "common": {
+    "viewDetails": "View details",
     "optional": "optional",
     "appName": "CombiSales",
     "description": "Comprehensive platform to optimize operational processes.",

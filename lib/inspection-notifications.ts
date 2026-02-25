@@ -181,9 +181,9 @@ function generateInspectionEmailHTML(
         }
 
         <div style="text-align:center;margin-top:24px;">
-          <a href="${process.env.NEXTAUTH_URL || ""}/dashboard/inspections"
+          <a href="${process.env.NEXTAUTH_URL || ""}/dashboard/inspections/${data.id}" target="_blank"
              style="display:inline-block;padding:12px 24px;background:#679436;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">
-            View Inspections
+            View Inspection Details
           </a>
         </div>
       </td>

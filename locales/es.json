@@ -95,6 +95,7 @@
     "system": "Sistema"
   },
   "common": {
+    "viewDetails": "Ver detalles",
     "optional": "opcional",
     "appName": "CombiSales",
     "description": "Plataforma integral para optimizar procesos comerciales y operacionales.",
