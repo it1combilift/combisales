@@ -54,7 +54,7 @@ export interface UpdateVehiclePayload {
 // ==================== INSPECTION INTERFACES ====================
 export interface InspectionPhoto {
   id: string;
-  inspectionId: string;
+  inspectionId: number;
   photoType: InspectionPhotoType;
   cloudinaryId: string;
   cloudinaryUrl: string;
@@ -68,7 +68,7 @@ export interface InspectionPhoto {
 
 export interface InspectionApproval {
   id: string;
-  inspectionId: string;
+  inspectionId: number;
   userId: string;
   approved: boolean;
   comments: string | null;
@@ -82,7 +82,7 @@ export interface InspectionApproval {
 }
 
 export interface Inspection {
-  id: string;
+  id: number;
   vehicleId: string;
   userId: string;
   mileage: number;
@@ -131,7 +131,7 @@ export interface Inspection {
 }
 
 export interface InspectionSummary {
-  id: string;
+  id: number;
   mileage: number;
   status: InspectionStatus;
   createdAt: string;

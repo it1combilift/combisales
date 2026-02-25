@@ -59,7 +59,7 @@ export async function GET(
     const { id } = await params;
 
     const inspection = await prisma.inspection.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: INSPECTION_INCLUDE,
     });
 

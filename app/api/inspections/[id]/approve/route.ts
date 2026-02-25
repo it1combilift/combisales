@@ -15,7 +15,6 @@ import {
   createSuccessResponse,
 } from "@/lib/api-response";
 
-
 // ==================== POST /api/inspections/[id]/approve ====================
 export async function POST(
   request: NextRequest,
@@ -44,7 +43,7 @@ export async function POST(
     }
 
     const inspection = await prisma.inspection.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: { approval: true },
     });
 
@@ -60,9 +59,9 @@ export async function POST(
     const updatedInspection = await prisma.$transaction(async (tx) => {
       // Upsert approval
       await tx.inspectionApproval.upsert({
-        where: { inspectionId: id },
+        where: { inspectionId: parseInt(id, 10) },
         create: {
-          inspectionId: id,
+          inspectionId: parseInt(id, 10),
           userId: session.user.id,
           approved,
           comments: comments || null,
@@ -76,7 +75,7 @@ export async function POST(
 
       // Update inspection status
       return tx.inspection.update({
-        where: { id },
+        where: { id: parseInt(id, 10) },
         data: {
           status: approved
             ? InspectionStatus.APPROVED

@@ -766,7 +766,7 @@ model Vehicle {
 }
 
 model Inspection {
-  id        String @id @default(cuid())
+  id        Int    @id @default(autoincrement())
   vehicleId String
   userId    String // Inspector who performed the inspection
 
@@ -826,7 +826,7 @@ model Inspection {
 
 model InspectionPhoto {
   id           String @id @default(cuid())
-  inspectionId String
+  inspectionId Int
 
   // Photo type
   photoType InspectionPhotoType
@@ -852,7 +852,7 @@ model InspectionPhoto {
 
 model InspectionApproval {
   id           String @id @default(cuid())
-  inspectionId String @unique
+  inspectionId Int    @unique
 
   // Approver
   userId   String

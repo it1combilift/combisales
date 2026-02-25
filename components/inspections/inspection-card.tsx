@@ -14,7 +14,6 @@ import { Inspection, InspectionStatus } from "@/interfaces/inspection";
 import {
   CheckCircle2,
   Clock,
-  Car,
   Calendar,
   Gauge,
   ArrowUpRight,
@@ -35,7 +34,7 @@ interface InspectionCardProps {
   onDelete?: (inspection: Inspection) => void;
   onDownloadPdf?: (inspection: Inspection) => void;
   isGeneratingPdf?: boolean;
-  generatingPdfId?: string;
+  generatingPdfId?: number;
   isAdmin?: boolean;
   currentUserId?: string;
 }
@@ -293,7 +292,11 @@ export function InspectionCard({
           <Button
             variant="secondary"
             size="sm"
-            className="flex-1 h-8 text-xs font-medium gap-1.5 rounded-lg"
+            className={`flex-1 h-8 text-xs font-medium gap-1.5 rounded-lg ${
+              isGeneratingPdf && generatingPdfId === inspection.id
+                ? "cursor-not-allowed opacity-50"
+                : ""
+            }`}
             onClick={(e) => {
               e.stopPropagation();
               onView(inspection);
@@ -308,7 +311,11 @@ export function InspectionCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 shrink-0"
+              className={`h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 dark:hover:bg-muted/30 shrink-0 ${
+                isGeneratingPdf && generatingPdfId === inspection.id
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
                 onDownloadPdf(inspection);
@@ -330,7 +337,11 @@ export function InspectionCard({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-lg text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 shrink-0"
+                className={`h-8 w-8 rounded-lg text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950/40 shrink-0 ${
+                  isGeneratingPdf && generatingPdfId === inspection.id
+                    ? "cursor-not-allowed opacity-50"
+                    : ""
+                }`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onApprove(inspection);
@@ -350,7 +361,11 @@ export function InspectionCard({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+                className={`h-8 w-8 rounded-lg text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 shrink-0 ${
+                  isGeneratingPdf && generatingPdfId === inspection.id
+                    ? "cursor-not-allowed opacity-50"
+                    : ""
+                }`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(inspection);

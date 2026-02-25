@@ -49,7 +49,7 @@ interface InspectionsTableProps {
   onDelete?: (inspection: Inspection) => void;
   onDownloadPdf?: (inspection: Inspection) => void;
   isGeneratingPdf?: boolean;
-  generatingPdfId?: string;
+  generatingPdfId?: number;
   isAdmin?: boolean;
   currentUserId?: string;
 }

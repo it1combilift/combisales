@@ -1,6 +1,7 @@
 "use client";
 
 import useSWR from "swr";
+import { toast } from "sonner";
 import { hasRole } from "@/lib/roles";
 import { Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -58,7 +59,6 @@ import {
   Users,
   CarFrontIcon,
 } from "lucide-react";
-import { toast } from "sonner";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -141,21 +141,20 @@ const VehicleInspectionPage = () => {
 
   // PDF generation state
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const [generatingPdfId, setGeneratingPdfId] = useState<string>("");
+  const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
 
   const handleDownloadPdf = useCallback(
     async (inspection: Inspection) => {
       if (isGeneratingPdf) return;
       setIsGeneratingPdf(true);
       setGeneratingPdfId(inspection.id);
-      toast.success(t("inspectionsPage.pdf.generating"));
-
+      
       try {
+        toast.success(t("inspectionsPage.pdf.generating"));
         const res = await fetch(
           `/api/inspections/${inspection.id}/pdf?locale=${locale}`,
         );
-        if (!res.ok) throw new Error("PDF generation failed");
-        toast.error(t("inspectionsPage.pdf.error"));
+        if (!res.ok) toast.error(t("inspectionsPage.pdf.error"));
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -174,7 +173,7 @@ const VehicleInspectionPage = () => {
         console.error("Error downloading PDF:", error);
       } finally {
         setIsGeneratingPdf(false);
-        setGeneratingPdfId("");
+        setGeneratingPdfId(null);
       }
     },
     [isGeneratingPdf, locale],
@@ -272,7 +271,7 @@ const VehicleInspectionPage = () => {
     if (isAdmin) {
       mutateInspectors();
     }
-     toast.success(t("messages.updated"));
+    toast.success(t("messages.updated"));
   }, [mutateInspections, mutateVehicles, mutateInspectors, isAdmin]);
 
   // View inspection details
@@ -513,7 +512,7 @@ const VehicleInspectionPage = () => {
                           }}
                           onDownloadPdf={handleDownloadPdf}
                           isGeneratingPdf={isGeneratingPdf}
-                          generatingPdfId={generatingPdfId}
+                          generatingPdfId={generatingPdfId ?? undefined}
                           isAdmin={isAdmin}
                           currentUserId={session?.user?.id}
                         />
@@ -534,7 +533,7 @@ const VehicleInspectionPage = () => {
                               }}
                               onDownloadPdf={handleDownloadPdf}
                               isGeneratingPdf={isGeneratingPdf}
-                              generatingPdfId={generatingPdfId}
+                              generatingPdfId={generatingPdfId ?? undefined}
                               isAdmin={isAdmin}
                               currentUserId={session?.user?.id}
                             />

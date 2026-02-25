@@ -10,7 +10,7 @@ interface InspectionPhoto {
 }
 
 interface InspectionEmailData {
-  id: string;
+  id: number;
   mileage: number;
   status: InspectionStatus;
   observations: string | null;
@@ -53,7 +53,7 @@ function generateInspectionEmailHTML(
       bg: "#DBEAFE",
       text: "#1E40AF",
       border: "#93C5FD",
-      label: "Pending Review",
+      label: "Pending Approval",
     },
     approved: {
       bg: "#E8F5E9",

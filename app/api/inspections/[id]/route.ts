@@ -53,7 +53,7 @@ export async function GET(
     const { id } = await params;
 
     const inspection = await prisma.inspection.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: INSPECTION_INCLUDE,
     });
 
@@ -90,7 +90,7 @@ export async function PUT(
     }
 
     const existing = await prisma.inspection.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: { photos: true },
     });
 
@@ -111,7 +111,7 @@ export async function PUT(
     const body = await request.json();
 
     const inspection = await prisma.inspection.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         ...(body.mileage !== undefined && { mileage: Number(body.mileage) }),
         ...(body.oilLevel !== undefined && {
@@ -192,7 +192,7 @@ export async function DELETE(
     }
 
     const existing = await prisma.inspection.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: { photos: true },
     });
 
@@ -224,7 +224,7 @@ export async function DELETE(
       }
     }
 
-    await prisma.inspection.delete({ where: { id } });
+    await prisma.inspection.delete({ where: { id: parseInt(id, 10) } });
 
     return createSuccessResponse({
       message: API_SUCCESS.INSPECTION_DELETED,

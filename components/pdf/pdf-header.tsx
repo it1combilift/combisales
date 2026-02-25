@@ -61,8 +61,8 @@ export function PdfHeader({
           />
           {status}
         </span>
-        <span className="text-[7px] font-mono text-white/50 tracking-wide">
-          ID: {inspectionId}
+        <span className="text-xs font-mono text-white/50 tracking-wide">
+          ID: #{inspectionId}
         </span>
       </div>
     </header>

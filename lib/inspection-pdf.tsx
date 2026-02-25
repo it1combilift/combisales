@@ -43,7 +43,7 @@ interface PdfApprovalData {
 }
 
 export interface InspectionPdfData {
-  id: string;
+  id: number;
   mileage: number;
   status: InspectionStatus;
   observations: string | null;
@@ -80,8 +80,8 @@ type Locale = "es" | "en";
 const PDF_LABELS: Record<Locale, Record<string, string>> = {
   en: {
     title: "Vehicle Inspection Report",
-    subtitle: "Combilift Fleet Management",
-    companyFooter: "Combilift Fleet Management",
+    subtitle: "CombiSales — Vehicle Inspection System",
+    companyFooter: "CombiSales — Vehicle Inspection System",
     generatedOn: "Generated on",
     page: "Page",
     of: "of",
@@ -149,8 +149,8 @@ const PDF_LABELS: Record<Locale, Record<string, string>> = {
   },
   es: {
     title: "Reporte de Inspección Vehicular",
-    subtitle: "Combilift - Gestión de Flota",
-    companyFooter: "Combilift - Gestión de Flota",
+    subtitle: "CombiSales — Sistema de Inspección Vehicular",
+    companyFooter: "CombiSales — Sistema de Inspección Vehicular",
     generatedOn: "Generado el",
     page: "Página",
     of: "de",
@@ -166,7 +166,7 @@ const PDF_LABELS: Record<Locale, Record<string, string>> = {
     name: "Nombre",
     email: "Email",
     role: "Rol",
-    statusPending: "Pendiente de Revisión",
+    statusPending: "Pendiente de Aprobación",
     statusApproved: "Aprobada",
     statusRejected: "Rechazada",
     checklistTitle: "Lista de Verificación",
@@ -429,7 +429,7 @@ function InspectionPdfDocument({
         subtitle={t.subtitle}
         status={getStatusText(data.status, t)}
         statusType={getStatusType(data.status)}
-        inspectionId={data.id.slice(-8).toUpperCase()}
+        inspectionId={String(data.id)}
         logoUrl={logoBase64}
       />
 
@@ -440,7 +440,7 @@ function InspectionPdfDocument({
           fields: [
             {
               label: t.inspectionId,
-              value: data.id.slice(-8).toUpperCase(),
+              value: String(data.id),
             },
             { label: t.date, value: formatDateShort(data.createdAt, locale) },
             { label: t.status, value: getStatusText(data.status, t) },
