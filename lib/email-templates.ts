@@ -597,7 +597,7 @@ function buildIndustrialFormContent(
     html += endSection();
   }
 
-  // Section 5: Especificaciones del pasillo
+  // Section 5: Especificaciones del pasillo — 2-column layout with reference image
   const hasPasilloData =
     data.profundidadProducto ||
     data.anchoLibreEntreProductos ||
@@ -606,43 +606,77 @@ function buildIndustrialFormContent(
     data.alturaBaseEstanteria ||
     data.alturaSueloPrimerBrazo ||
     data.grosorPilarColumna ||
+    data.alturaUltimoNivelEstanteria ||
     data.alturaMaximaInteriorEdificio;
 
   if (hasPasilloData) {
+    const aisleImageUrl =
+      "https://res.cloudinary.com/dwjxcpfrf/image/upload/v1772120402/industrial-aisle-spec_ackey3.png";
+
+    // Build each field row with numbered prefixes matching the reference diagram
+    const aisleFieldRows = [
+      buildRow(
+        `1. ${t("email.industrial.productDepth", locale)}`,
+        formatNumber(data.profundidadProducto, "mm", locale),
+      ),
+      buildRow(
+        `2. ${t("email.industrial.widthBetweenProducts", locale)}`,
+        formatNumber(data.anchoLibreEntreProductos, "mm", locale),
+      ),
+      buildRow(
+        `3. ${t("email.industrial.distBetweenRacks", locale)}`,
+        formatNumber(data.distanciaLibreEntreEstanterias, "mm", locale),
+      ),
+      buildRow(
+        `4. ${t("email.industrial.rackUsefulDepth", locale)}`,
+        formatNumber(data.fondoUtilEstanteria, "mm", locale),
+      ),
+      buildRow(
+        `5. ${t("email.industrial.rackBaseHeight", locale)}`,
+        formatNumber(data.alturaBaseEstanteria, "mm", locale),
+      ),
+      buildRow(
+        `7. ${t("email.industrial.floorToFirstArm", locale)}`,
+        formatNumber(data.alturaSueloPrimerBrazo, "mm", locale),
+      ),
+      buildRow(
+        `10. ${t("email.industrial.columnThickness", locale)}`,
+        formatNumber(data.grosorPilarColumna, "mm", locale),
+      ),
+      buildRow(
+        `11. ${t("email.industrial.lastLevelHeight", locale)}`,
+        formatNumber(data.alturaUltimoNivelEstanteria, "mm", locale),
+      ),
+      buildRow(
+        `12. ${t("email.industrial.maxInteriorHeight", locale)}`,
+        formatNumber(data.alturaMaximaInteriorEdificio, "mm", locale),
+      ),
+    ].join("");
+
     html += startSection();
     html += buildSectionHeader(t("email.industrial.aisleSpecs", locale));
-    html += buildRow(
-      t("email.industrial.productDepth", locale),
-      formatNumber(data.profundidadProducto, "mm", locale),
-    );
-    html += buildRow(
-      t("email.industrial.widthBetweenProducts", locale),
-      formatNumber(data.anchoLibreEntreProductos, "mm", locale),
-    );
-    html += buildRow(
-      t("email.industrial.distBetweenRacks", locale),
-      formatNumber(data.distanciaLibreEntreEstanterias, "mm", locale),
-    );
-    html += buildRow(
-      t("email.industrial.rackUsefulDepth", locale),
-      formatNumber(data.fondoUtilEstanteria, "mm", locale),
-    );
-    html += buildRow(
-      t("email.industrial.rackBaseHeight", locale),
-      formatNumber(data.alturaBaseEstanteria, "mm", locale),
-    );
-    html += buildRow(
-      t("email.industrial.floorToFirstArm", locale),
-      formatNumber(data.alturaSueloPrimerBrazo, "mm", locale),
-    );
-    html += buildRow(
-      t("email.industrial.columnThickness", locale),
-      formatNumber(data.grosorPilarColumna, "mm", locale),
-    );
-    html += buildRow(
-      t("email.industrial.maxInteriorHeight", locale),
-      formatNumber(data.alturaMaximaInteriorEdificio, "mm", locale),
-    );
+    html += aisleFieldRows;
+    html += `
+      <tr>
+        <td colspan="2" style="padding: 0; background-color: ${DESIGN.colors.gray50}; border-top: 1px solid ${DESIGN.colors.gray200};">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 16px 24px 8px; text-align: center;">
+                <p style="margin: 0 0 10px; font-family: ${DESIGN.fonts.family}; font-size: 10px; font-weight: ${DESIGN.fonts.weights.medium}; color: ${DESIGN.colors.gray700}; text-transform: uppercase; letter-spacing: 0.6px;">${locale === "en" ? "Reference Diagram" : "Diagrama de Referencia"}</p>
+                <a href="${aisleImageUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; text-decoration: none;">
+                  <img src="${aisleImageUrl}" alt="${locale === "en" ? "Aisle specifications reference diagram" : "Diagrama de referencia del pasillo"}" width="480" style="max-width: 480px; width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 6px; border: 1px solid ${DESIGN.colors.gray300};" />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 24px 14px; text-align: center;">
+                <a href="${aisleImageUrl}" target="_blank" rel="noopener noreferrer" style="font-family: ${DESIGN.fonts.family}; font-size: 11px; color: ${DESIGN.colors.primary}; text-decoration: underline;">${locale === "en" ? "Click to view" : "Click para ver"}</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    `;
     html += endSection();
   }
 

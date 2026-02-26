@@ -2761,6 +2761,7 @@
       "rackBaseHeight": "Altura base estantería",
       "floorToFirstArm": "Altura suelo al primer brazo",
       "columnThickness": "Grosor pilar/columna",
+      "lastLevelHeight": "Altura último nivel estantería",
       "maxInteriorHeight": "Altura máx. interior edificio"
     },
     "logistica": {

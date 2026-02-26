@@ -2763,6 +2763,7 @@
       "rackBaseHeight": "Rack base height",
       "floorToFirstArm": "Floor to first arm height",
       "columnThickness": "Column/pillar thickness",
+      "lastLevelHeight": "Last rack level height",
       "maxInteriorHeight": "Max interior building height"
     },
     "logistica": {
