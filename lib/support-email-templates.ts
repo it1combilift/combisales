@@ -202,7 +202,7 @@ export function generateSupportRequestEmailHTML(
           <tr>
             <td align="center" style="background-color: ${DESIGN.colors.gray100}; padding: 20px 24px; border-top: 1px solid ${DESIGN.colors.gray200}; border-radius: 0 0 12px 12px;">
               <p style="margin: 0 0 4px 0; font-family: ${DESIGN.fonts.family}; font-size: ${DESIGN.fonts.sizes.xs}; color: ${DESIGN.colors.gray500};">
-                ${t("email.common.automaticMessage", locale)} <strong style="color: ${DESIGN.colors.gray700};">Combilift Sales</strong>
+                ${t("email.common.automaticMessage", locale)} <strong style="color: ${DESIGN.colors.gray700};">CombiSales</strong>
               </p>
               <p style="margin: 0; font-family: ${DESIGN.fonts.family}; font-size: 10px; color: #9E9E9E;">
                 © ${new Date().getFullYear()} Combilift. ${t("email.common.allRightsReserved", locale)}
