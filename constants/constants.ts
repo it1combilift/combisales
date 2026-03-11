@@ -47,8 +47,8 @@ export const MAX_FILES = 20;
 export const MANAGEMENT_EMAIL = "direccion@combilift.es";
 
 export const EMAIL_CONFIG = {
-  fromEmail: "onboarding@resend.dev",
-  fromName: "Combilift Sales",
+  fromEmail: "onboarding@combiliftsales.com",
+  fromName: "CombiSales",
   /** @deprecated Use resolveVisitRecipients() for dynamic routing */
   draftRecipients: ["it1@combilift.es"],
   /** @deprecated Use resolveVisitRecipients() for dynamic routing */
