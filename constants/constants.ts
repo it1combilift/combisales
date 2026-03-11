@@ -44,7 +44,7 @@ export const MAX_TOTAL_SIZE = 500 * 1024 * 1024; // 500MB total
 export const MAX_FILES = 20;
 
 // ======= EMAIL CONFIG (safe for client) =======
-export const MANAGEMENT_EMAIL = "direccion@combilift.es";
+export const MANAGEMENT_EMAIL = "info@combilift.es";
 
 export const EMAIL_CONFIG = {
   fromEmail: "onboarding@combiliftsales.com",
