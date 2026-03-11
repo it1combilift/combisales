@@ -7,7 +7,6 @@ import { hasRole, hasAnyRole } from "@/lib/roles";
 
 import {
   HTTP_STATUS,
-  API_SUCCESS,
   unauthorizedResponse,
   badRequestResponse,
   serverErrorResponse,

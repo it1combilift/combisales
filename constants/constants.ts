@@ -44,19 +44,15 @@ export const MAX_TOTAL_SIZE = 500 * 1024 * 1024; // 500MB total
 export const MAX_FILES = 20;
 
 // ======= EMAIL CONFIG (safe for client) =======
+export const MANAGEMENT_EMAIL = "direccion@combilift.es";
+
 export const EMAIL_CONFIG = {
   fromEmail: "onboarding@resend.dev",
   fromName: "Combilift Sales",
+  /** @deprecated Use resolveVisitRecipients() for dynamic routing */
   draftRecipients: ["it1@combilift.es"],
-  completedRecipients: [
-    "it1@combilift.es",
-    // "anyelobg.dev@gmail.com",
-  ],
-  // Blue logo
-  // companyLogo:
-  //   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvaouoocfP1dTdTRxHMh_ZTwF5VozVThGujg&s",
-
-  // Gray logo
+  /** @deprecated Use resolveVisitRecipients() for dynamic routing */
+  completedRecipients: [MANAGEMENT_EMAIL],
   companyLogo:
     "https://res.cloudinary.com/dwjxcpfrf/image/upload/v1768957949/Untitled_design__1_-removebg-preview_t8oji9.png",
 } as const;

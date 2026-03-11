@@ -246,7 +246,8 @@ function generateInspectionEmailText(
 // ==================== SEND FUNCTIONS ====================
 
 /**
- * Send notification to all ADMIN users when a new inspection is created
+ * Send notification when a new inspection is created.
+ * Recipients: all active ADMIN users + the inspector who created it.
  */
 export async function sendInspectionCreatedEmail(
   inspection: InspectionEmailData,
@@ -259,24 +260,27 @@ export async function sendInspectionCreatedEmail(
     select: { email: true, name: true },
   });
 
-  if (admins.length === 0) return;
+  // Build unique recipient list: all admins + the inspector (self)
+  const recipientEmails = new Set<string>(admins.map((a) => a.email));
+  if (inspection.user?.email) {
+    recipientEmails.add(inspection.user.email);
+  }
+
+  if (recipientEmails.size === 0) return;
 
   const html = generateInspectionEmailHTML(inspection, "created");
   const text = generateInspectionEmailText(inspection, "created");
 
-  for (const admin of admins) {
+  for (const email of recipientEmails) {
     try {
       await sendEmail({
-        to: admin.email,
+        to: email,
         subject: `[Inspection] New inspection - ${inspection.vehicle.model} (${inspection.vehicle.plate})`,
         html,
         text,
       });
     } catch (error) {
-      console.error(
-        `Failed to send inspection email to ${admin.email}:`,
-        error,
-      );
+      console.error(`Failed to send inspection email to ${email}:`, error);
     }
   }
 }

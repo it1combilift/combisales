@@ -1,15 +1,15 @@
 "use client";
 
 import axios from "axios";
+import { Spinner } from "../ui/spinner";
 import { EmptyCard } from "../empty-card";
 import { useState, useEffect } from "react";
+import { ClipboardCheck } from "lucide-react";
 import { Vehicle } from "@/interfaces/inspection";
 import { useTranslation } from "@/lib/i18n/context";
-import { Loader2, ClipboardCheck } from "lucide-react";
 import { InspectionForm } from "./formulario-inspeccion";
 import { InspectionFormSchema } from "@/schemas/inspections";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Spinner } from "../ui/spinner";
 
 interface InspectionFormDialogProps {
   open: boolean;
@@ -69,9 +69,7 @@ export function InspectionFormDialog({
         {loadingVehicles ? (
           <div className="flex flex-col items-center justify-center flex-1 gap-3">
             <Spinner variant="bars" className="size-6" />
-            <p className="text-sm animate-pulse">
-              {t("common.loading")}
-            </p>
+            <p className="text-sm animate-pulse">{t("common.loading")}</p>
           </div>
         ) : vehicles.length === 0 ? (
           <EmptyCard

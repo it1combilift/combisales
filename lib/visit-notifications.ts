@@ -1,6 +1,10 @@
 import { sendEmail } from "@/lib/resend";
 import { VisitStatus, VisitFormType, Role } from "@prisma/client";
-import { EMAIL_CONFIG, NOTIFICATION_CONFIG } from "@/constants/constants";
+import {
+  EMAIL_CONFIG,
+  NOTIFICATION_CONFIG,
+  MANAGEMENT_EMAIL,
+} from "@/constants/constants";
 import { getPrimaryRole } from "@/lib/roles";
 
 import {
@@ -431,14 +435,55 @@ export function buildVisitEmailDataExtended(
 
 /**
  * Get email recipients based on visit status
- * - BORRADOR: Only draft recipients
- * - COMPLETADA: All completed recipients
+ * @deprecated Use resolveVisitRecipients() for dynamic role-based routing
  */
 export function getEmailRecipients(status: string): string[] {
   if (status === VisitStatus.COMPLETADA) {
     return EMAIL_CONFIG.completedRecipients as unknown as string[];
   }
   return EMAIL_CONFIG.draftRecipients as unknown as string[];
+}
+
+/**
+ * Resolve email recipients dynamically based on submitter role and visit status.
+ *
+ * Routing rules:
+ * ─────────────────────────────────────────────────────────────────
+ * ADMIN / SELLER (Tasks, Client Visits, or cloned visits):
+ *   BORRADOR   → [owner.email]                 (self only)
+ *   COMPLETADA → [owner.email, dirección]       (self + management)
+ *
+ * DEALER (Dealers page, original visit):
+ *   BORRADOR   → [dealer.email]                 (self only)
+ *   COMPLETADA → [dealer.email, vendedor.email]  (self + assigned seller)
+ * ─────────────────────────────────────────────────────────────────
+ */
+export function resolveVisitRecipients(emailData: VisitEmailData): string[] {
+  const { submitterRole, status, owner, dealer, vendedor } = emailData;
+  const recipients: string[] = [];
+
+  if (submitterRole === "DEALER") {
+    // DEALER flow: always include the dealer (self)
+    if (dealer?.email) {
+      recipients.push(dealer.email);
+    }
+    // On COMPLETADA, also notify the assigned seller / P. Manager
+    if (status === "COMPLETADA" && vendedor?.email) {
+      recipients.push(vendedor.email);
+    }
+  } else {
+    // ADMIN / SELLER flow (includes clones): always include the owner (self)
+    if (owner?.email) {
+      recipients.push(owner.email);
+    }
+    // On COMPLETADA, also notify management
+    if (status === "COMPLETADA") {
+      recipients.push(MANAGEMENT_EMAIL);
+    }
+  }
+
+  // Deduplicate and filter out empty strings
+  return [...new Set(recipients.filter(Boolean))];
 }
 
 /**
@@ -525,7 +570,7 @@ export async function sendVisitNotification({
     ? Array.isArray(to)
       ? to
       : [to]
-    : getEmailRecipients(visitData.status);
+    : resolveVisitRecipients(visitData);
 
   const locale = visitData.locale || "es";
 
@@ -588,17 +633,7 @@ export function shouldSendVisitNotification(
     return false;
   }
 
-  // DEALER flow: Only send email on COMPLETADA (Submit)
-  if (userRole === "DEALER") {
-    return status === VisitStatus.COMPLETADA;
-  }
-
-  // SELLER/ADMIN flow: Send email on both BORRADOR and COMPLETADA
-  // This provides visibility into clone progress and final submissions
-  if (userRole === "SELLER" || userRole === "ADMIN") {
-    return status === VisitStatus.COMPLETADA || status === VisitStatus.BORRADOR;
-  }
-
-  // Default behavior (no role specified): Only COMPLETADA
-  return status === VisitStatus.COMPLETADA;
+  // All roles (DEALER, SELLER, ADMIN) send emails on both BORRADOR and COMPLETADA
+  // The recipient routing is handled by resolveVisitRecipients()
+  return status === VisitStatus.COMPLETADA || status === VisitStatus.BORRADOR;
 }
