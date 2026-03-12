@@ -1135,7 +1135,10 @@ export function InspectorDialog({
 
                   {loadingVehicles ? (
                     <div className="flex items-center justify-center py-6">
-                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                      <Spinner variant="bars" className="size-4 md:size-5"/>
+                      <span className="text-xs animate-pulse ml-2 md:text-sm">
+                        {t("common.loading") || "Loading vehicles..."}
+                      </span>
                     </div>
                   ) : vehicles.length === 0 ? (
                     <p className="text-xs text-muted-foreground text-center py-4">
