@@ -48,7 +48,10 @@ export default function FormularioLogisticaAnalisis({
   const formulario = existingVisit?.formularioLogisticaAnalisis;
 
   const { t, locale } = useI18n();
-  const schema = useMemo(() => getFormularioLogisticaSchema(t), [t]);
+  const schema = useMemo(
+    () => getFormularioLogisticaSchema(t, enableCustomerEntry),
+    [t, enableCustomerEntry],
+  );
 
   // Get form steps based on enableCustomerEntry prop
   const formSteps = useMemo(

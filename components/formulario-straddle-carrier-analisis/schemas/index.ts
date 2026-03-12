@@ -39,21 +39,28 @@ export const contenedoresTamaniosSchema = z.object({
 // ==================== MAIN FORM SCHEMA ====================
 export const getFormularioStraddleCarrierSchema = (
   t: (key: string) => string,
+  enableCustomerEntry: boolean = true,
 ) =>
   z
     .object({
       // ==================== DATOS DEL CLIENTE ====================
-      // Required fields for customer step
-      razonSocial: z
-        .string()
-        .min(1, t("forms.straddleCarrier.validation.companyNameRequired")),
-      direccion: z
-        .string()
-        .min(1, t("forms.straddleCarrier.validation.addressRequired")),
-      website: z
-        .string()
-        .url(t("forms.straddleCarrier.validation.urlInvalid"))
-        .min(1, t("forms.straddleCarrier.validation.websiteRequired")),
+      // Required fields for customer step (only when showing customer data step)
+      razonSocial: enableCustomerEntry
+        ? z
+            .string()
+            .min(1, t("forms.straddleCarrier.validation.companyNameRequired"))
+        : z.string().default(""),
+      direccion: enableCustomerEntry
+        ? z
+            .string()
+            .min(1, t("forms.straddleCarrier.validation.addressRequired"))
+        : z.string().default(""),
+      website: enableCustomerEntry
+        ? z
+            .string()
+            .url(t("forms.straddleCarrier.validation.urlInvalid"))
+            .min(1, t("forms.straddleCarrier.validation.websiteRequired"))
+        : z.string().default(""),
       // Optional customer fields
       personaContacto: z.string().optional().default(""),
       email: z

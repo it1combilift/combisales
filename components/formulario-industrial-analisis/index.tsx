@@ -46,7 +46,10 @@ export default function FormularioIndustrialAnalisis({
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioIndustrialAnalisis;
   const { t, locale } = useI18n();
-  const schema = useMemo(() => getFormularioIndustrialSchema(t), [t]);
+  const schema = useMemo(
+    () => getFormularioIndustrialSchema(t, enableCustomerEntry),
+    [t, enableCustomerEntry],
+  );
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioIndustrialSchema>({

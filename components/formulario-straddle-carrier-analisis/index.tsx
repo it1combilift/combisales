@@ -45,8 +45,10 @@ export default function FormularioStraddleCarrierAnalisis({
   const isEditing = !!existingVisit;
   const formulario = existingVisit?.formularioStraddleCarrierAnalisis;
   const { t, locale } = useI18n();
-  const schema = useMemo(() => getFormularioStraddleCarrierSchema(t), [t]);
-
+  const schema = useMemo(
+    () => getFormularioStraddleCarrierSchema(t, enableCustomerEntry),
+    [t, enableCustomerEntry],
+  );
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioStraddleCarrierSchema>({

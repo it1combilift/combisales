@@ -102,21 +102,26 @@ export const equiposElectricosSchema = z.object({
 export type EquiposElectricos = z.infer<typeof equiposElectricosSchema>;
 
 // ==================== MAIN FORM SCHEMA ====================
-export const getFormularioLogisticaSchema = (t: any) =>
+export const getFormularioLogisticaSchema = (
+  t: any,
+  enableCustomerEntry: boolean = true,
+) =>
   z
     .object({
       // ==================== DATOS DEL CLIENTE ====================
-      // Required fields for customer step
-      razonSocial: z
-        .string()
-        .min(1, t("forms.logistica.validation.companyNameRequired")),
-      direccion: z
-        .string()
-        .min(1, t("forms.logistica.validation.addressRequired")),
-      website: z
-        .string()
-        .url(t("forms.logistica.validation.urlInvalid"))
-        .min(1, t("forms.logistica.validation.websiteRequired")),
+      // Required fields for customer step (only when showing customer data step)
+      razonSocial: enableCustomerEntry
+        ? z.string().min(1, t("forms.logistica.validation.companyNameRequired"))
+        : z.string().default(""),
+      direccion: enableCustomerEntry
+        ? z.string().min(1, t("forms.logistica.validation.addressRequired"))
+        : z.string().default(""),
+      website: enableCustomerEntry
+        ? z
+            .string()
+            .url(t("forms.logistica.validation.urlInvalid"))
+            .min(1, t("forms.logistica.validation.websiteRequired"))
+        : z.string().default(""),
       // Optional customer fields
       personaContacto: z.string().optional().default(""),
       email: z

@@ -22,17 +22,24 @@ export const archivoSubidoSchema = z.object({
 
 export type ArchivoSubido = z.infer<typeof archivoSubidoSchema>;
 
-export const getFormularioCSSSchema = (t: (key: string) => string) =>
+export const getFormularioCSSSchema = (
+  t: (key: string) => string,
+  enableCustomerEntry: boolean = true,
+) =>
   z.object({
-    // Required customer fields
-    razonSocial: z
-      .string()
-      .min(1, t("forms.css.validation.companyNameRequired")),
-    direccion: z.string().min(1, t("forms.css.validation.addressRequired")),
-    website: z
-      .string()
-      .url(t("forms.css.validation.urlInvalid"))
-      .min(1, t("forms.css.validation.websiteRequired")),
+    // Required customer fields (only when showing customer data step)
+    razonSocial: enableCustomerEntry
+      ? z.string().min(1, t("forms.css.validation.companyNameRequired"))
+      : z.string().default(""),
+    direccion: enableCustomerEntry
+      ? z.string().min(1, t("forms.css.validation.addressRequired"))
+      : z.string().default(""),
+    website: enableCustomerEntry
+      ? z
+          .string()
+          .url(t("forms.css.validation.urlInvalid"))
+          .min(1, t("forms.css.validation.websiteRequired"))
+      : z.string().default(""),
     // Optional customer fields
     personaContacto: z.string().optional().default(""),
     email: z

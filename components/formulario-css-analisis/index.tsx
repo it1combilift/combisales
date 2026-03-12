@@ -41,7 +41,10 @@ export default function FormularioCSSAnalisis({
   const formulario = existingVisit?.formularioCSSAnalisis;
 
   const { t, locale } = useI18n();
-  const schema = useMemo(() => getFormularioCSSSchema(t), [t]);
+  const schema = useMemo(
+    () => getFormularioCSSSchema(t, enableCustomerEntry),
+    [t, enableCustomerEntry],
+  );
 
   // ==================== FORM SETUP ====================
   const form = useForm<FormularioCSSSchema>({
