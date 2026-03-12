@@ -741,10 +741,14 @@ enum InspectionPhotoType {
 }
 
 model Vehicle {
-  id     String        @id @default(cuid())
-  model  String
-  plate  String        @unique
-  status VehicleStatus @default(ACTIVE)
+  id          String        @id @default(cuid())
+  model       String
+  plate       String        @unique
+  year        Int?
+  color       String?
+  description String?
+  fuelType    String?
+  status      VehicleStatus @default(ACTIVE)
 
   // Vehicle image
   imageUrl          String?

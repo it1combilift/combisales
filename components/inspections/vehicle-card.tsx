@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/tooltip";
 
 import {
-  Car,
   User,
   Calendar,
   ClipboardCheck,
@@ -26,6 +25,9 @@ import {
   MoreHorizontal,
   PencilLine,
   Play,
+  Fuel,
+  Palette,
+  CarFront,
 } from "lucide-react";
 
 import {
@@ -78,7 +80,7 @@ export function VehicleCard({
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-secondary/60">
             <div className="size-12 rounded-xl bg-muted flex items-center justify-center">
-              <Car className="size-6 text-muted-foreground/50" />
+              <CarFront className="size-6 text-muted-foreground/50" />
             </div>
             <span className="text-[10px] text-muted-foreground/50 font-medium uppercase tracking-widest">
               {t("inspectionsPage.vehicleCard.noImage")}
@@ -135,9 +137,8 @@ export function VehicleCard({
                     </DropdownMenuItem>
                   )}
 
-                {vehicle.status === VehicleStatus.ACTIVE && (onEdit || onDelete) && (
-                  <DropdownMenuSeparator />
-                )}
+                {vehicle.status === VehicleStatus.ACTIVE &&
+                  (onEdit || onDelete) && <DropdownMenuSeparator />}
 
                 {onEdit && (
                   <DropdownMenuItem
@@ -176,13 +177,36 @@ export function VehicleCard({
               "border border-border/30 shadow-sm font-mono",
             )}
           >
-            {vehicle.model} - {vehicle.plate}
+            {vehicle.model}
+            {vehicle.year ? ` (${vehicle.year})` : ""} - {vehicle.plate}
           </span>
         </div>
       </div>
 
       {/* ---- Body ---- */}
       <CardContent className="px-4 pb-4 flex-1 flex flex-col gap-3">
+        {/* Vehicle details */}
+        {(vehicle.color || vehicle.fuelType) && (
+          <div className="flex items-center gap-3 flex-wrap">
+            {vehicle.color && (
+              <div className="flex items-center gap-1.5">
+                <Palette className="size-3 text-muted-foreground" />
+                <span className="text-[11px] text-muted-foreground">
+                  {vehicle.color}
+                </span>
+              </div>
+            )}
+            {vehicle.fuelType && (
+              <div className="flex items-center gap-1.5">
+                <Fuel className="size-3 text-muted-foreground" />
+                <span className="text-[11px] text-muted-foreground">
+                  {vehicle.fuelType}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Inspector */}
         <div className="flex items-center gap-2.5 min-w-0">
           {vehicle.assignedInspector ? (

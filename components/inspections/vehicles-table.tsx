@@ -219,7 +219,7 @@ export function VehiclesTable({
                   >
                     {/* Thumbnail */}
                     <TableCell>
-                      <div className="relative overflow-hidden shrink-0 flex items-center justify-center size-16" >
+                      <div className="relative overflow-hidden shrink-0 flex items-center justify-center size-16">
                         {vehicle.imageUrl ? (
                           <Image
                             src={vehicle.imageUrl}
@@ -240,6 +240,11 @@ export function VehiclesTable({
                     <TableCell className="px-3 py-3">
                       <div className="font-medium text-sm text-foreground leading-tight">
                         {vehicle.model}
+                        {vehicle.year && (
+                          <span className="text-xs text-muted-foreground ml-1">
+                            ({vehicle.year})
+                          </span>
+                        )}
                       </div>
                       <div className="text-[10px] font-mono text-muted-foreground mt-0.5 sm:hidden tracking-wide">
                         {vehicle.plate}

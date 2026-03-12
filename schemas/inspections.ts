@@ -10,6 +10,19 @@ export const createVehicleSchema = (t: (key: string) => string) =>
     plate: z
       .string()
       .min(1, t("inspectionsPage.vehicles.validation.plateRequired")),
+    year: z.coerce
+      .number()
+      .int()
+      .min(1900, t("inspectionsPage.vehicles.validation.yearMin"))
+      .max(
+        new Date().getFullYear() + 1,
+        t("inspectionsPage.vehicles.validation.yearMax"),
+      )
+      .optional()
+      .or(z.literal(0).transform(() => undefined)),
+    color: z.string().optional(),
+    description: z.string().optional(),
+    fuelType: z.string().optional(),
     status: z
       .nativeEnum(VehicleStatus)
       .optional()
@@ -33,6 +46,16 @@ export const updateVehicleSchema = (t: (key: string) => string) =>
       .string()
       .min(1, t("inspectionsPage.vehicles.validation.plateRequired"))
       .optional(),
+    year: z.coerce
+      .number()
+      .int()
+      .min(1900)
+      .max(new Date().getFullYear() + 1)
+      .nullable()
+      .optional(),
+    color: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    fuelType: z.string().nullable().optional(),
     status: z.nativeEnum(VehicleStatus).optional(),
     assignedInspectorId: z.string().nullable().optional(),
     imageUrl: z.string().url().nullable().optional(),

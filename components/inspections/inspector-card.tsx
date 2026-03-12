@@ -76,7 +76,7 @@ export function InspectorCard({
         )}
       />
 
-      <CardContent className="px-4 pt-4 pb-4 flex flex-col gap-4 flex-1">
+      <CardContent className="px-4 pt-4 pb-2 flex flex-col gap-4 flex-1">
         {/* ── Header ─────────────────────────────────── */}
         <div className="flex items-start gap-3">
           {/* Avatar */}
@@ -308,7 +308,7 @@ export function InspectorCard({
                   {t("common.edit")}
                 </Button>
               )}
-              {onDelete && (
+              {/* {onDelete && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -318,7 +318,7 @@ export function InspectorCard({
                   <Trash2 className="size-3" />
                   {t("common.delete")}
                 </Button>
-              )}
+              )} */}
             </div>
           </>
         )}

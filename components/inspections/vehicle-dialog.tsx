@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { getRoleBadge } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { getAllRoles, hasRole } from "@/lib/roles";
 import { useTranslation } from "@/lib/i18n/context";
@@ -58,6 +59,10 @@ interface VehicleDialogProps {
     id: string;
     model: string;
     plate: string;
+    year?: number | null;
+    color?: string | null;
+    description?: string | null;
+    fuelType?: string | null;
     status?: VehicleStatus;
     assignedInspectorId: string | null;
     imageUrl?: string | null;
@@ -94,6 +99,10 @@ export function VehicleDialog({
     defaultValues: {
       model: editVehicle?.model || "",
       plate: editVehicle?.plate || "",
+      year: editVehicle?.year || undefined,
+      color: editVehicle?.color || "",
+      description: editVehicle?.description || "",
+      fuelType: editVehicle?.fuelType || "",
       status: (editVehicle?.status as VehicleStatus) || VehicleStatus.ACTIVE,
       assignedInspectorId: editVehicle?.assignedInspectorId || undefined,
       imageUrl: editVehicle?.imageUrl || "",
@@ -108,6 +117,10 @@ export function VehicleDialog({
         form.reset({
           model: editVehicle.model,
           plate: editVehicle.plate,
+          year: editVehicle.year || undefined,
+          color: editVehicle.color || "",
+          description: editVehicle.description || "",
+          fuelType: editVehicle.fuelType || "",
           status: (editVehicle.status as VehicleStatus) || VehicleStatus.ACTIVE,
           assignedInspectorId: editVehicle.assignedInspectorId || undefined,
           imageUrl: editVehicle.imageUrl || "",
@@ -119,6 +132,10 @@ export function VehicleDialog({
         form.reset({
           model: "",
           plate: "",
+          year: undefined,
+          color: "",
+          description: "",
+          fuelType: "",
           status: VehicleStatus.ACTIVE,
           assignedInspectorId: undefined,
           imageUrl: "",
@@ -205,7 +222,7 @@ export function VehicleDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="md:max-w-md">
+        <DialogContent className="md:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {isEditing
@@ -224,38 +241,141 @@ export function VehicleDialog({
                 {t("inspectionsPage.vehicles.vehicleInfo")}
               </h4>
               <div className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="model" className="text-xs">
-                    {t("inspectionsPage.vehicles.modelo")}
-                  </Label>
-                  <Input
-                    id="model"
-                    placeholder={t("inspectionsPage.vehicles.modelPlaceholder")}
-                    {...form.register("model")}
-                    className="h-9 text-xs md:text-sm"
-                  />
-                  {form.formState.errors.model && (
-                    <p className="text-xs text-destructive">
-                      {form.formState.errors.model.message}
-                    </p>
-                  )}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="model" className="text-xs">
+                      {t("inspectionsPage.vehicles.modelo")}
+                    </Label>
+                    <Input
+                      id="model"
+                      placeholder={t(
+                        "inspectionsPage.vehicles.modelPlaceholder",
+                      )}
+                      {...form.register("model")}
+                      className="h-9 text-xs md:text-sm"
+                    />
+                    {form.formState.errors.model && (
+                      <p className="text-xs text-destructive">
+                        {form.formState.errors.model.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="plate" className="text-xs">
+                      {t("inspectionsPage.vehicles.matricula")}
+                    </Label>
+                    <Input
+                      id="plate"
+                      placeholder={t(
+                        "inspectionsPage.vehicles.platePlaceholder",
+                      )}
+                      {...form.register("plate")}
+                      className="uppercase h-9 text-xs md:text-sm"
+                    />
+                    {form.formState.errors.plate && (
+                      <p className="text-xs text-destructive">
+                        {form.formState.errors.plate.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="year" className="text-xs">
+                      {t("inspectionsPage.vehicles.year")}
+                    </Label>
+                    <Input
+                      id="year"
+                      type="number"
+                      placeholder={t(
+                        "inspectionsPage.vehicles.yearPlaceholder",
+                      )}
+                      {...form.register("year", { valueAsNumber: true })}
+                      className="h-9 text-xs md:text-sm"
+                    />
+                    {form.formState.errors.year && (
+                      <p className="text-xs text-destructive">
+                        {form.formState.errors.year.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="color" className="text-xs">
+                      {t("inspectionsPage.vehicles.color")}
+                    </Label>
+                    <Input
+                      id="color"
+                      placeholder={t(
+                        "inspectionsPage.vehicles.colorPlaceholder",
+                      )}
+                      {...form.register("color")}
+                      className="h-9 text-xs md:text-sm"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="plate" className="text-xs">
-                    {t("inspectionsPage.vehicles.matricula")}
+                  <Label htmlFor="fuelType" className="text-xs">
+                    {t("inspectionsPage.vehicles.fuelType")}
                   </Label>
-                  <Input
-                    id="plate"
-                    placeholder={t("inspectionsPage.vehicles.platePlaceholder")}
-                    {...form.register("plate")}
-                    className="uppercase h-9 text-xs md:text-sm"
+                  <Select
+                    value={form.watch("fuelType") || "none"}
+                    onValueChange={(value) =>
+                      form.setValue("fuelType", value === "none" ? "" : value)
+                    }
+                  >
+                    <SelectTrigger className="h-9 w-full">
+                      <SelectValue
+                        placeholder={t(
+                          "inspectionsPage.vehicles.fuelTypePlaceholder",
+                        )}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none" className="text-xs md:text-sm">
+                        {t("inspectionsPage.vehicles.fuelTypeNone")}
+                      </SelectItem>
+                      <SelectItem value="Diesel" className="text-xs md:text-sm">
+                        Diesel
+                      </SelectItem>
+                      <SelectItem
+                        value="Gasoline"
+                        className="text-xs md:text-sm"
+                      >
+                        {t("inspectionsPage.vehicles.fuelGasoline")}
+                      </SelectItem>
+                      <SelectItem
+                        value="Electric"
+                        className="text-xs md:text-sm"
+                      >
+                        {t("inspectionsPage.vehicles.fuelElectric")}
+                      </SelectItem>
+                      <SelectItem value="Hybrid" className="text-xs md:text-sm">
+                        {t("inspectionsPage.vehicles.fuelHybrid")}
+                      </SelectItem>
+                      <SelectItem value="LPG" className="text-xs md:text-sm">
+                        LPG
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="description" className="text-xs">
+                    {t("inspectionsPage.vehicles.description")}
+                  </Label>
+                  <Textarea
+                    id="description"
+                    placeholder={t(
+                      "inspectionsPage.vehicles.descriptionPlaceholder",
+                    )}
+                    {...form.register("description")}
+                    className="text-xs md:text-sm min-h-[60px] resize-none"
+                    rows={2}
                   />
-                  {form.formState.errors.plate && (
-                    <p className="text-xs text-destructive">
-                      {form.formState.errors.plate.message}
-                    </p>
-                  )}
                 </div>
 
                 {/* Vehicle Status */}

@@ -429,7 +429,7 @@ export function InspectorsTable({
                               </DropdownMenuItem>
                             )}
                             {onEdit && onDelete && <DropdownMenuSeparator />}
-                            {onDelete && (
+                            {/* {onDelete && (
                               <DropdownMenuItem
                                 variant="destructive"
                                 onClick={() => onDelete(inspector)}
@@ -438,7 +438,7 @@ export function InspectorsTable({
                                 <Trash2 className="size-4" />
                                 {t("common.delete")}
                               </DropdownMenuItem>
-                            )}
+                            )} */}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

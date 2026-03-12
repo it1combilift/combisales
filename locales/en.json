@@ -516,6 +516,18 @@
       "vehicleAssigned": "vehicle assigned",
       "vehicleInfo": "Vehicle Information",
       "vehicleImage": "Vehicle Image",
+      "year": "Year",
+      "yearPlaceholder": "e.g. 2024",
+      "color": "Color",
+      "colorPlaceholder": "e.g. White",
+      "description": "Description",
+      "descriptionPlaceholder": "Additional details about the vehicle...",
+      "fuelType": "Fuel Type",
+      "fuelTypePlaceholder": "Select fuel type",
+      "fuelTypeNone": "Not specified",
+      "fuelGasoline": "Gasoline",
+      "fuelElectric": "Electric",
+      "fuelHybrid": "Hybrid",
       "status": "Status",
       "uploadImage": "Click to upload image",
       "removeImage": "Remove image",
@@ -528,7 +540,9 @@
       "inspectionCount": "Inspections",
       "validation": {
         "modelRequired": "Vehicle model is required",
-        "plateRequired": "License plate is required"
+        "plateRequired": "License plate is required",
+        "yearMin": "Year must be 1900 or later",
+        "yearMax": "Year cannot be in the future"
       }
     },
     "vehicleTable": {

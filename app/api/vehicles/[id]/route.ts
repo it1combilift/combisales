@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Role } from "@prisma/client";
 import { hasRole, hasAnyRole } from "@/lib/roles";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import {
-  HTTP_STATUS,
   API_SUCCESS,
   unauthorizedResponse,
   notFoundResponse,
@@ -70,6 +69,10 @@ export async function PUT(
     const {
       model,
       plate,
+      year,
+      color,
+      description,
+      fuelType,
       status,
       assignedInspectorId,
       imageUrl,
@@ -140,6 +143,10 @@ export async function PUT(
       data: {
         ...(model && { model }),
         ...(plate && { plate: plate.toUpperCase() }),
+        ...(year !== undefined && { year: year || null }),
+        ...(color !== undefined && { color: color || null }),
+        ...(description !== undefined && { description: description || null }),
+        ...(fuelType !== undefined && { fuelType: fuelType || null }),
         ...(status !== undefined && { status }),
         ...(assignedInspectorId !== undefined && { assignedInspectorId }),
         ...(imageUrl !== undefined && { imageUrl }),

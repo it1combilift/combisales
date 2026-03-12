@@ -515,6 +515,18 @@
       "vehicleAssigned": "vehículo asignado",
       "vehicleInfo": "Información del Vehículo",
       "vehicleImage": "Imagen del Vehículo",
+      "year": "Año",
+      "yearPlaceholder": "ej. 2024",
+      "color": "Color",
+      "colorPlaceholder": "ej. Blanco",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Detalles adicionales sobre el vehículo...",
+      "fuelType": "Tipo de Combustible",
+      "fuelTypePlaceholder": "Seleccionar tipo de combustible",
+      "fuelTypeNone": "No especificado",
+      "fuelGasoline": "Gasolina",
+      "fuelElectric": "Eléctrico",
+      "fuelHybrid": "Híbrido",
       "status": "Estado",
       "uploadImage": "Clic para subir imagen",
       "removeImage": "Eliminar imagen",
@@ -527,7 +539,9 @@
       "inspectionCount": "Inspecciones",
       "validation": {
         "modelRequired": "El modelo del vehículo es obligatorio",
-        "plateRequired": "La matrícula es obligatoria"
+        "plateRequired": "La matrícula es obligatoria",
+        "yearMin": "El año debe ser 1900 o posterior",
+        "yearMax": "El año no puede ser en el futuro"
       }
     },
     "vehicleTable": {

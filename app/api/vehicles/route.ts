@@ -63,6 +63,10 @@ export async function POST(request: NextRequest) {
     const {
       model,
       plate,
+      year,
+      color,
+      description,
+      fuelType,
       status,
       assignedInspectorId,
       imageUrl,
@@ -114,6 +118,10 @@ export async function POST(request: NextRequest) {
       data: {
         model,
         plate: plate.toUpperCase(),
+        year: year || null,
+        color: color || null,
+        description: description || null,
+        fuelType: fuelType || null,
         status: status || VehicleStatus.ACTIVE,
         assignedInspectorId: assignedInspectorId || null,
         imageUrl: imageUrl || null,

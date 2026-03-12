@@ -13,6 +13,10 @@ export interface Vehicle {
   id: string;
   model: string;
   plate: string;
+  year: number | null;
+  color: string | null;
+  description: string | null;
+  fuelType: string | null;
   status: VehicleStatus;
   imageUrl: string | null;
   imageCloudinaryId: string | null;
@@ -36,6 +40,10 @@ export interface VehicleInspector {
 export interface CreateVehiclePayload {
   model: string;
   plate: string;
+  year?: number;
+  color?: string;
+  description?: string;
+  fuelType?: string;
   status?: VehicleStatus;
   assignedInspectorId?: string;
   imageUrl?: string;
@@ -45,6 +53,10 @@ export interface CreateVehiclePayload {
 export interface UpdateVehiclePayload {
   model?: string;
   plate?: string;
+  year?: number | null;
+  color?: string | null;
+  description?: string | null;
+  fuelType?: string | null;
   status?: VehicleStatus;
   assignedInspectorId?: string | null;
   imageUrl?: string | null;
