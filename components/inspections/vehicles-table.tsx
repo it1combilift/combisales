@@ -238,7 +238,7 @@ export function VehiclesTable({
 
                     {/* Model + plate on mobile */}
                     <TableCell className="px-3 py-3">
-                      <div className="font-medium text-sm text-foreground leading-tight">
+                      <div className="font-medium text-sm text-foreground leading-tight text-pretty truncate">
                         {vehicle.model}
                         {vehicle.year && (
                           <span className="text-xs text-muted-foreground ml-1">

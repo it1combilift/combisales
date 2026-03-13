@@ -1,9 +1,9 @@
 import {
-  Car,
   ClipboardCheck,
   Camera,
   MessageSquare,
   PenTool,
+  CarFront,
 } from "lucide-react";
 
 export type StepColor = "primary" | "blue" | "amber" | "violet" | "emerald";
@@ -60,7 +60,7 @@ export const INSPECTION_STEPS: StepConfig[] = [
     title: "inspectionsPage.form.steps.vehicle.title",
     shortTitle: "inspectionsPage.form.steps.vehicle.shortTitle",
     description: "inspectionsPage.form.steps.vehicle.description",
-    icon: Car,
+    icon: CarFront,
     color: "primary",
     fields: ["vehicleId", "mileage"],
   },
