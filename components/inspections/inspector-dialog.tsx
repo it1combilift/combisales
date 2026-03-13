@@ -31,6 +31,7 @@ import {
   UserPlus,
   Lock,
   CarFront,
+  Hash,
 } from "lucide-react";
 
 import {
@@ -1135,7 +1136,7 @@ export function InspectorDialog({
 
                   {loadingVehicles ? (
                     <div className="flex items-center justify-center py-6">
-                      <Spinner variant="bars" className="size-4 md:size-5"/>
+                      <Spinner variant="bars" className="size-4 md:size-5" />
                       <span className="text-xs animate-pulse ml-2 md:text-sm">
                         {t("common.loading") || "Loading vehicles..."}
                       </span>
@@ -1216,6 +1217,7 @@ export function InspectorDialog({
                                       {vehicle.model}
                                     </p>
                                     <p className="text-xs text-muted-foreground font-mono">
+                                      <Hash className="size-3 inline-flex m-0" />
                                       {vehicle.plate}
                                       {isInactive && (
                                         <span className="ml-1 text-rose-500 text-pretty text-xs">
