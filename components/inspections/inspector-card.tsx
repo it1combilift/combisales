@@ -11,14 +11,14 @@ import { cn, formatDateShort, getInitials, getRoleBadge } from "@/lib/utils";
 
 import {
   ClipboardCheck,
-  Calendar,
   CheckCircle2,
   XCircle,
   CarFront,
   Edit,
-  Trash2,
   AlertCircle,
   Lock,
+  CalendarDays,
+  MoreHorizontal,
 } from "lucide-react";
 
 export interface InspectorData {
@@ -64,6 +64,10 @@ export function InspectorCard({
   const isSeller = hasRole(inspector.roles as Role[], Role.SELLER);
   const isInspectorRole = hasRole(inspector.roles as Role[], Role.INSPECTOR);
 
+  // Show first 3, collapse the rest
+  const visibleVehicles = inspector.assignedVehicles?.slice(0, 3) ?? [];
+  const extraCount = (inspector.assignedVehicles?.length ?? 0) - 3;
+
   return (
     <Card className="group relative overflow-hidden border rounded-2xl shadow-sm bg-card transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/8 flex flex-col p-0 m-0">
       {/* Left color band — status indicator */}
@@ -94,7 +98,6 @@ export function InspectorCard({
                 {getInitials(inspector.name || inspector.email)}
               </div>
             )}
-
             {/* Status dot */}
             <span
               className={cn(
@@ -104,7 +107,7 @@ export function InspectorCard({
             />
           </div>
 
-          {/* Name + email */}
+          {/* Name + email + roles */}
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-sm text-foreground truncate leading-snug">
               {inspector.name || inspector.email}
@@ -114,8 +117,7 @@ export function InspectorCard({
                 {inspector.email}
               </p>
             )}
-            {/* Role badges */}
-            <div className="flex gap-1 w-fit mt-1">
+            <div className="flex flex-wrap gap-1 mt-1.5">
               <Badge
                 variant={isActive ? "success" : "destructive"}
                 className="text-xs px-2 gap-1 rounded-full border-0"
@@ -129,7 +131,6 @@ export function InspectorCard({
                   ? t("inspectionsPage.inspectors.active")
                   : t("inspectionsPage.inspectors.inactive")}
               </Badge>
-
               {getAllRoles(inspector.roles as Role[]).map((role) =>
                 getRoleBadge(role),
               )}
@@ -225,9 +226,9 @@ export function InspectorCard({
           {/* Since */}
           <div className="flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl bg-muted/50 border border-border/30">
             <div className="size-7 rounded-lg bg-amber-500/10 flex items-center justify-center mb-0.5">
-              <Calendar className="size-3.5 text-amber-500" />
+              <CalendarDays className="size-3.5 text-amber-500" />
             </div>
-            <span className="text-[11px] font-bold text-foreground leading-none">
+            <span className="text-[11px] font-bold text-foreground leading-none text-center">
               {formatDateShort(inspector.createdAt, locale)}
             </span>
             <span className="text-[10px] text-muted-foreground text-center leading-tight">
@@ -237,34 +238,60 @@ export function InspectorCard({
         </div>
 
         {/* ── Assigned vehicles ──────────────────────── */}
-        <div className="space-y-1.5">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-            {t("inspectionsPage.inspectors.assignedVehicles")}
-          </p>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              {t("inspectionsPage.inspectors.assignedVehicles")}
+            </p>
+            {vehicleCount > 0 && (
+              <span className="text-[10px] font-semibold text-sky-600 dark:text-sky-400 tabular-nums">
+                {vehicleCount}
+              </span>
+            )}
+          </div>
 
-          {inspector.assignedVehicles &&
-          inspector.assignedVehicles.length > 0 ? (
+          {visibleVehicles.length > 0 ? (
             <div className="space-y-1.5">
-              <div className="flex flex-wrap gap-1.5">
-                {inspector.assignedVehicles.slice(0, 3).map((v) => (
-                  <Badge
-                    key={v.id}
-                    variant="outline"
-                    className="text-[10px] h-5 px-2 gap-1 font-mono rounded-md bg-sky-50/50 dark:bg-sky-950/20 border-sky-200/60 dark:border-sky-800/50 text-sky-700 dark:text-sky-300"
-                  >
-                    <CarFront className="size-2.5 text-sky-500" />
-                    {v.model} · {v.plate}
-                  </Badge>
-                ))}
-                {inspector.assignedVehicles.length > 3 && (
-                  <Badge
-                    variant="secondary"
-                    className="text-[10px] h-5 px-2 rounded-md"
-                  >
-                    +{inspector.assignedVehicles.length - 3}
-                  </Badge>
-                )}
-              </div>
+              {visibleVehicles.map((v) => (
+                <div
+                  key={v.id}
+                  className={cn(
+                    "flex items-center gap-2.5 px-2.5 py-2 rounded-lg",
+                    "bg-sky-50/50 dark:bg-sky-950/20",
+                    "border border-sky-200/50 dark:border-sky-800/40",
+                  )}
+                >
+                  {/* Icon */}
+                  <div className="size-6 rounded-md bg-sky-500/15 flex items-center justify-center shrink-0">
+                    <CarFront className="size-3.5 text-sky-500" />
+                  </div>
+
+                  {/* Model + plate — two-line layout, no overflow */}
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className="text-xs font-semibold text-sky-800 dark:text-sky-200 leading-tight truncate"
+                      title={v.model}
+                    >
+                      {v.model}
+                    </p>
+                    <p className="text-[10px] font-mono font-bold tracking-widest text-sky-600/80 dark:text-sky-400/80 uppercase leading-tight mt-0.5">
+                      {v.plate}
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {/* Overflow pill */}
+              {extraCount > 0 && (
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/40 border border-dashed border-border/50">
+                  <MoreHorizontal className="size-3 text-muted-foreground/60 shrink-0" />
+                  <span className="text-[10px] text-muted-foreground">
+                    {t("inspectionsPage.inspectors.moreVehicles", {
+                      count: extraCount,
+                    })}
+                  </span>
+                </div>
+              )}
 
               {/* SELLER max vehicle indicator */}
               {isSeller && !isInspectorRole && vehicleCount >= 1 && (
@@ -277,7 +304,7 @@ export function InspectorCard({
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2 py-2 px-2.5 rounded-lg bg-muted/30 border border-dashed border-border/50">
+            <div className="flex items-center gap-2 py-2.5 px-3 rounded-lg bg-muted/30 border border-dashed border-border/50">
               <div className="size-6 rounded-md bg-muted-foreground/10 flex items-center justify-center shrink-0">
                 <AlertCircle className="size-3 text-muted-foreground/50" />
               </div>
@@ -292,6 +319,7 @@ export function InspectorCard({
             </div>
           )}
         </div>
+
         {/* ── Actions ─────────────────────────────── */}
         {(onEdit || onDelete) && (
           <>
@@ -308,17 +336,6 @@ export function InspectorCard({
                   {t("common.edit")}
                 </Button>
               )}
-              {/* {onDelete && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2.5 text-xs gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => onDelete(inspector)}
-                >
-                  <Trash2 className="size-3" />
-                  {t("common.delete")}
-                </Button>
-              )} */}
             </div>
           </>
         )}
