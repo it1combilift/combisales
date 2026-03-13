@@ -27,7 +27,7 @@ import {
   CheckCircle2,
   Settings,
   Users,
-  Car,
+  CarFront,
 } from "lucide-react";
 
 import {
@@ -360,7 +360,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
                 value="vehicles"
                 className="text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
               >
-                <Car className="size-4" />
+                <CarFront className="size-4" />
                 <span className="hidden xs:inline">
                   {t("users.form.tabs.vehicles")}
                 </span>
