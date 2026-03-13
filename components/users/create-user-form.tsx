@@ -3,7 +3,9 @@
 import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { Role } from "@prisma/client";
+import { Spinner } from "../ui/spinner";
 import { useI18n } from "@/lib/i18n/context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,7 +22,6 @@ import { ProfileImageUpload } from "./profile-image-upload";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
-  Loader2,
   Mail,
   User,
   Globe,
@@ -29,6 +30,7 @@ import {
   Settings,
   Users,
   Car,
+  CarFront,
 } from "lucide-react";
 
 import {
@@ -41,13 +43,27 @@ import {
   FormMessage,
 } from "../ui/form";
 
+
+/* ─────────────────────────────────────────────────────────────────
+   Shared tab trigger class — icon + label always visible, 
+   compact on mobile, fuller on larger screens
+   ───────────────────────────────────────────────────────────────── */
+const TAB_TRIGGER_CLASS = cn(
+  "flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5",
+  "py-2 px-1.5 sm:px-3 min-h-[52px] sm:min-h-[44px]",
+  "text-[10px] sm:text-xs font-medium leading-tight",
+  "data-[state=active]:bg-background data-[state=active]:text-foreground",
+  "data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20",
+  "data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground",
+  "data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md",
+);
+ 
 export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
-
-  // Create schema with translations
+ 
   const createUserSchema = createUserSchemaFactory(t);
-
+ 
   const form = useForm<z.infer<typeof createUserSchema>>({
     resolver: zodResolver(createUserSchema),
     mode: "onChange",
@@ -64,8 +80,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       assignedVehicleIds: [],
     },
   });
-
-  // Watch form values using useWatch for proper reactivity
+ 
   const selectedRoles = useWatch({ control: form.control, name: "roles" });
   const isDealerRole = selectedRoles?.includes(Role.DEALER) ?? false;
   const isVehicleRole =
@@ -76,65 +91,24 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
     control: form.control,
     name: "assignedSellerId",
   });
-  const name = useWatch({ control: form.control, name: "name" });
-  const email = useWatch({ control: form.control, name: "email" });
-  const password = useWatch({ control: form.control, name: "password" });
-  const confirmPassword = useWatch({
-    control: form.control,
-    name: "confirmPassword",
-  });
-
-  // Check if form is valid for submission
-  const hasErrors = Object.keys(form.formState.errors).length > 0;
-
+ 
+  const tabCount = 3 + (isDealerRole ? 1 : 0) + (isVehicleRole ? 1 : 0);
+ 
   const isFormValid =
-    !!name &&
-    !!email &&
-    !!password &&
-    !!confirmPassword &&
-    !hasErrors &&
-    (!isDealerRole || !!assignedSellerId);
-
+    form.formState.isValid && (!isDealerRole || !!assignedSellerId);
+ 
   const handleSellerSelectionChange = useCallback(
     (id: string | null) => {
-      console.log("Seller selection changed:", id);
       form.setValue("assignedSellerId", id, {
         shouldValidate: true,
         shouldDirty: true,
         shouldTouch: true,
       });
-      // Force trigger validation to ensure form state updates
       form.trigger("assignedSellerId");
     },
     [form],
   );
-
-  // Debug logging
-  useEffect(() => {
-    console.log("CreateUserForm State:", {
-      selectedRoles,
-      isDealerRole,
-      assignedSellerId,
-      assignedVehicleIds: form.getValues("assignedVehicleIds"),
-      name,
-      email,
-      password: password ? "***" : "",
-      confirmPassword: confirmPassword ? "***" : "",
-      hasErrors,
-      isFormValid,
-    });
-  }, [
-    selectedRoles,
-    isDealerRole,
-    assignedSellerId,
-    name,
-    email,
-    password,
-    confirmPassword,
-    hasErrors,
-    isFormValid,
-  ]);
-
+ 
   const handleImageChange = useCallback(
     (imageUrl: string | null) => {
       form.setValue("image", imageUrl, {
@@ -144,21 +118,18 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
     },
     [form],
   );
-
-  // Trigger validation when roles change
+ 
   useEffect(() => {
     if (selectedRoles) {
       form.trigger("assignedSellerId");
     }
   }, [selectedRoles, form]);
-
+ 
   async function onSubmit(values: z.infer<typeof createUserSchema>) {
     setIsLoading(true);
     try {
       await axios.post("/api/users/create", values);
-
       toast.success(t("users.userCreated"));
-
       form.reset();
       onSuccess?.();
     } catch (error) {
@@ -173,79 +144,68 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
       setIsLoading(false);
     }
   }
-
+ 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <Tabs defaultValue="personal" className="w-full">
+          {/* ── Tab navigation — icon + label stacked on mobile ── */}
           <TabsList
-            className={`grid w-full ${
-              isDealerRole && isVehicleRole
-                ? "grid-cols-5"
-                : isDealerRole || isVehicleRole
-                  ? "grid-cols-4"
-                  : "grid-cols-3"
-            } mb-4 h-auto bg-muted/30 dark:bg-muted/50 p-0.5 rounded-lg border border-border/40`}
+            className={cn(
+              "grid w-full mb-5 h-auto",
+              "bg-muted/30 dark:bg-muted/50 p-0.5 rounded-xl border border-border/40",
+              tabCount === 3 && "grid-cols-3",
+              tabCount === 4 && "grid-cols-4",
+              tabCount === 5 && "grid-cols-5",
+            )}
           >
-            <TabsTrigger
-              value="personal"
-              className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
-            >
-              <User className="size-4" />
-              <span className="hidden xs:inline">
+            <TabsTrigger value="personal" className={TAB_TRIGGER_CLASS}>
+              <User className="size-4 shrink-0" />
+              <span className="truncate max-w-full text-center leading-tight">
                 {t("users.form.tabs.personal")}
               </span>
             </TabsTrigger>
-            <TabsTrigger
-              value="security"
-              className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
-            >
-              <Lock className="size-4" />
-              <span className="hidden xs:inline">
+ 
+            <TabsTrigger value="security" className={TAB_TRIGGER_CLASS}>
+              <Lock className="size-4 shrink-0" />
+              <span className="truncate max-w-full text-center leading-tight">
                 {t("users.form.tabs.security")}
               </span>
             </TabsTrigger>
-            <TabsTrigger
-              value="config"
-              className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
-            >
-              <Settings className="size-4" />
-              <span className="hidden xs:inline">
+ 
+            <TabsTrigger value="config" className={TAB_TRIGGER_CLASS}>
+              <Settings className="size-4 shrink-0" />
+              <span className="truncate max-w-full text-center leading-tight">
                 {t("users.form.tabs.config")}
               </span>
             </TabsTrigger>
+ 
             {isDealerRole && (
-              <TabsTrigger
-                value="sellers"
-                className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
-              >
-                <Users className="size-4" />
-                <span className="hidden xs:inline">
+              <TabsTrigger value="sellers" className={TAB_TRIGGER_CLASS}>
+                <Users className="size-4 shrink-0" />
+                <span className="truncate max-w-full text-center leading-tight">
                   {t("users.form.tabs.sellers")}
                 </span>
               </TabsTrigger>
             )}
+ 
             {isVehicleRole && (
-              <TabsTrigger
-                value="vehicles"
-                className="text-xs sm:text-sm py-2.5 sm:py-3 px-3 gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50 transition-all duration-200 rounded-md font-medium"
-              >
-                <Car className="size-4" />
-                <span className="hidden xs:inline">
+              <TabsTrigger value="vehicles" className={TAB_TRIGGER_CLASS}>
+                <CarFront className="size-4 shrink-0" />
+                <span className="truncate max-w-full text-center leading-tight">
                   {t("users.form.tabs.vehicles")}
                 </span>
               </TabsTrigger>
             )}
           </TabsList>
-
-          {/* Personal Information Tab */}
-          <TabsContent value="personal" className="space-y-3 mt-0">
-            {/* Profile Image */}
+ 
+          {/* ── Personal Information ── */}
+          <TabsContent value="personal" className="space-y-4 mt-0">
             <FormField
               control={form.control}
               name="image"
               render={({ field }) => (
-                <FormItem className="flex flex-col items-center">
+                <FormItem className="flex flex-col items-center pb-2">
                   <FormControl>
                     <ProfileImageUpload
                       currentImage={field.value}
@@ -258,194 +218,174 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                 </FormItem>
               )}
             />
-
-            <div className="grid grid-cols-1 gap-4">
-              {/* Name Field */}
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold">
-                      {t("users.form.fullNameLabel")}
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                        <Input
-                          placeholder={t("users.form.fullNamePlaceholder")}
-                          className="pl-10 h-11 transition-all focus-visible:ring-2 text-xs sm:text-sm"
-                          disabled={isLoading}
-                          autoComplete="name"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold">
-                      {t("users.form.emailLabel")}
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                        <Input
-                          type="email"
-                          placeholder={t("users.form.emailPlaceholder")}
-                          className="pl-10 h-11 transition-all focus-visible:ring-2 text-xs sm:text-sm"
-                          disabled={isLoading}
-                          autoComplete="email"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </TabsContent>
-
-          {/* Security Tab */}
-          <TabsContent value="security" className="space-y-3 mt-0">
-            <div className="grid grid-cols-1 gap-4">
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold">
-                      {t("users.form.passwordLabel")}
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type="password"
-                          placeholder="**********"
-                          className="h-11 transition-all focus-visible:ring-2 text-xs sm:text-sm"
-                          disabled={isLoading}
-                          autoComplete="new-password"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold">
-                      {t("users.form.confirmPasswordLabel")}
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type="password"
-                          placeholder="**********"
-                          className="h-11 transition-all focus-visible:ring-2 text-xs sm:text-sm"
-                          disabled={isLoading}
-                          autoComplete="new-password"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </TabsContent>
-
-          {/* Configuration Tab */}
-          <TabsContent value="config" className="space-y-3 mt-0">
-            <div className="grid grid-cols-1 gap-4">
-              <FormField
-                control={form.control}
-                name="roles"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold">
-                      {t("users.form.roleLabel")}
-                    </FormLabel>
-                    <FormDescription className="text-xs text-muted-foreground">
-                      {t("users.form.rolesDescription")}
-                    </FormDescription>
-                    <FormControl>
-                      <RolesSelection
-                        selectedRoles={field.value}
-                        onSelectionChange={field.onChange}
+ 
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-semibold">
+                    {t("users.form.fullNameLabel")}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                      <Input
+                        placeholder={t("users.form.fullNamePlaceholder")}
+                        className="pl-10 h-11 text-sm"
                         disabled={isLoading}
+                        autoComplete="name"
+                        {...field}
                       />
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid gap-4">
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-semibold">
-                      {t("users.form.countryLabel")}{" "}
-                      <span className="text-muted-foreground">
-                        ({t("forms.optional")})
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                        <Input
-                          placeholder={t("users.form.countryPlaceholder")}
-                          className="pl-10 h-11 transition-all focus-visible:ring-2 text-xs sm:text-sm"
-                          disabled={isLoading}
-                          autoComplete="country"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="pt-2">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-3.5 text-muted-foreground" />
-                <h4 className="text-xs font-medium text-muted-foreground">
-                  {t("users.form.accountState")}
-                </h4>
-              </div>
-            </div>
-
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+ 
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-semibold">
+                    {t("users.form.emailLabel")}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                      <Input
+                        type="email"
+                        placeholder={t("users.form.emailPlaceholder")}
+                        className="pl-10 h-11 text-sm"
+                        disabled={isLoading}
+                        autoComplete="email"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+          </TabsContent>
+ 
+          {/* ── Security ── */}
+          <TabsContent value="security" className="space-y-4 mt-0">
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-semibold">
+                    {t("users.form.passwordLabel")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="**********"
+                      className="h-11 text-sm"
+                      disabled={isLoading}
+                      autoComplete="new-password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+ 
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-semibold">
+                    {t("users.form.confirmPasswordLabel")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="**********"
+                      className="h-11 text-sm"
+                      disabled={isLoading}
+                      autoComplete="new-password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+          </TabsContent>
+ 
+          {/* ── Configuration ── */}
+          <TabsContent value="config" className="space-y-4 mt-0">
+            <FormField
+              control={form.control}
+              name="roles"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-semibold">
+                    {t("users.form.roleLabel")}
+                  </FormLabel>
+                  <FormDescription className="text-xs text-muted-foreground">
+                    {t("users.form.rolesDescription")}
+                  </FormDescription>
+                  <FormControl>
+                    <RolesSelection
+                      selectedRoles={field.value}
+                      onSelectionChange={field.onChange}
+                      disabled={isLoading}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+ 
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-semibold">
+                    {t("users.form.countryLabel")}{" "}
+                    <span className="text-muted-foreground font-normal text-xs">
+                      ({t("forms.optional")})
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                      <Input
+                        placeholder={t("users.form.countryPlaceholder")}
+                        className="pl-10 h-11 text-sm"
+                        disabled={isLoading}
+                        autoComplete="country"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+ 
+            <div className="h-px bg-border/50" />
+ 
             <FormField
               control={form.control}
               name="isActive"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
+                <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/60 p-4 gap-4 bg-muted/20">
+                  <div className="space-y-0.5 min-w-0">
                     <FormLabel className="text-sm font-semibold flex items-center gap-2">
-                      <CheckCircle2 className="size-4 text-muted-foreground" />
+                      <CheckCircle2 className="size-4 text-muted-foreground shrink-0" />
                       {t("users.form.account")}
                     </FormLabel>
-                    <FormDescription className="text-xs text-muted-foreground text-pretty">
+                    <FormDescription className="text-xs text-muted-foreground leading-relaxed">
                       {t("users.form.inactiveDescription")}
                     </FormDescription>
                   </div>
@@ -460,8 +400,8 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
               )}
             />
           </TabsContent>
-
-          {/* Sellers Tab (only for DEALER role) */}
+ 
+          {/* ── Sellers (DEALER role only) ── */}
           {isDealerRole && (
             <TabsContent value="sellers" className="mt-0">
               <FormField
@@ -481,8 +421,8 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
               />
             </TabsContent>
           )}
-
-          {/* Vehicles Tab (only for INSPECTOR/SELLER roles) */}
+ 
+          {/* ── Vehicles (INSPECTOR / SELLER roles only) ── */}
           {isVehicleRole && (
             <TabsContent value="vehicles" className="mt-0">
               <FormField
@@ -493,9 +433,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
                     <FormControl>
                       <VehicleAssignment
                         selectedVehicleIds={field.value || []}
-                        onSelectionChange={(ids) => {
-                          field.onChange(ids);
-                        }}
+                        onSelectionChange={field.onChange}
                         userRoles={selectedRoles || []}
                       />
                     </FormControl>
@@ -506,29 +444,29 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
             </TabsContent>
           )}
         </Tabs>
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 pt-4">
+ 
+        {/* ── Action Buttons ── */}
+        <div className="grid grid-cols-2 gap-3 pt-5 mt-1">
           <Button
             type="button"
             variant="outline"
             onClick={() => form.reset()}
             disabled={isLoading}
-            className="w-full sm:w-auto h-10 sm:h-11"
           >
             {t("users.form.clear")}
           </Button>
+
           <Button
             type="submit"
             disabled={isLoading || !isFormValid}
-            className="w-full sm:w-auto h-10 sm:h-11 gap-2 shadow-sm"
           >
             {isLoading ? (
               <>
-                <Loader2 className="size-4 animate-spin" />
+                <Spinner variant="circle" className="size-4" />
+                <span>{t("common.loading")}</span>
               </>
             ) : (
-              <>{t("users.form.confirm")}</>
+              t("users.form.confirm")
             )}
           </Button>
         </div>

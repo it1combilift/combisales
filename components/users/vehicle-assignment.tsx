@@ -346,7 +346,7 @@ function VehicleRow({
       {/* Info */}
       <div className="flex-1 min-w-0">
         <p
-          className="text-xs font-semibold text-foreground leading-tight truncate"
+          className="text-xs font-semibold text-foreground leading-tight truncate max-w-[200px] md:max-h-full"
           title={vehicle.model}
         >
           {vehicle.model}
