@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/tooltip";
 
 import {
-  Car,
   User,
   CheckCircle2,
   XCircle,
@@ -40,6 +39,9 @@ import {
   PencilLine,
   Play,
   CarFront,
+  CalendarRange,
+  Palette,
+  Fuel,
 } from "lucide-react";
 
 import {
@@ -56,7 +58,6 @@ interface VehiclesTableProps {
   onDelete?: (vehicle: Vehicle) => void;
   onStartInspection?: (vehicle: Vehicle) => void;
 }
-
 type SortField =
   | "model"
   | "plate"
@@ -176,6 +177,9 @@ export function VehiclesTable({
                 >
                   {t("inspectionsPage.vehicleTable.plate")}
                 </SortableHeader>
+                <TableHead className="hidden md:table-cell px-3 py-3 font-medium text-xs text-muted-foreground whitespace-nowrap">
+                  {t("inspectionsPage.vehicleTable.details")}
+                </TableHead>
                 <SortableHeader field="status" className="px-3 py-3">
                   {t("inspectionsPage.vehicleTable.status")}
                 </SortableHeader>
@@ -218,44 +222,89 @@ export function VehiclesTable({
                     className="hover:bg-muted/30 transition-colors group border-border/40"
                   >
                     {/* Thumbnail */}
-                    <TableCell>
-                      <div className="relative overflow-hidden shrink-0 flex items-center justify-center size-16">
+                    <TableCell className="px-4 py-3">
+                      <div className="relative overflow-hidden shrink-0 flex items-center justify-center size-12 rounded-lg bg-secondary/60">
                         {vehicle.imageUrl ? (
                           <Image
                             src={vehicle.imageUrl}
                             alt={`${vehicle.model} - ${vehicle.plate}`}
                             fill
-                            className="object-contain object-center rounded-sm"
+                            className="object-cover object-center rounded-lg"
                             priority={false}
                           />
                         ) : (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <CarFront className="size-7 text-muted-foreground/40" />
-                          </div>
+                          <CarFront className="size-5 text-muted-foreground/40" />
                         )}
                       </div>
                     </TableCell>
 
-                    {/* Model + plate on mobile */}
-                    <TableCell className="px-3 py-3">
-                      <div className="font-medium text-sm text-foreground leading-tight text-pretty truncate">
-                        {vehicle.model}
-                        {vehicle.year && (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            ({vehicle.year})
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[10px] font-mono text-muted-foreground mt-0.5 sm:hidden tracking-wide">
+                    {/* Model — standalone, no year/plate clutter */}
+                    <TableCell className="px-3 py-3 max-w-[180px]">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="font-medium text-sm text-foreground leading-tight truncate cursor-default">
+                            {vehicle.model}
+                          </div>
+                        </TooltipTrigger>
+                        {/* Show full name on truncation */}
+                        <TooltipContent
+                          side="bottom"
+                          className="text-xs max-w-xs"
+                        >
+                          {vehicle.model}
+                        </TooltipContent>
+                      </Tooltip>
+                      {/* Plate fallback on mobile */}
+                      <div className="text-[10px] font-mono text-muted-foreground mt-0.5 sm:hidden tracking-wide uppercase">
                         {vehicle.plate}
                       </div>
                     </TableCell>
 
                     {/* Plate */}
                     <TableCell className="hidden sm:table-cell px-3 py-3">
-                      <Badge variant="outline-info" className="shadow-xs">
+                      <Badge
+                        variant="outline-info"
+                        className="shadow-xs font-mono tracking-widest text-xs"
+                      >
                         {vehicle.plate}
                       </Badge>
+                    </TableCell>
+
+                    {/* Details: year · color · fuel */}
+                    <TableCell className="hidden md:table-cell px-3 py-3">
+                      <div className="flex flex-row gap-x-2 text-center justify-center items-center">
+                        {vehicle.year && (
+                          <div className="flex items-center gap-1.5">
+                            <CalendarRange className="size-3 text-muted-foreground shrink-0" />
+                            <span className="text-sm text-muted-foreground font-medium">
+                              {vehicle.year}
+                            </span>
+                          </div>
+                        )}
+                        {vehicle.color && (
+                          <div className="flex items-center gap-1.5">
+                            <Palette className="size-3 text-muted-foreground shrink-0" />
+                            <span className="text-sm text-muted-foreground">
+                              {vehicle.color}
+                            </span>
+                          </div>
+                        )}
+                        {vehicle.fuelType && (
+                          <div className="flex items-center gap-1.5">
+                            <Fuel className="size-3 text-muted-foreground shrink-0" />
+                            <span className="text-sm text-muted-foreground">
+                              {vehicle.fuelType}
+                            </span>
+                          </div>
+                        )}
+                        {!vehicle.year &&
+                          !vehicle.color &&
+                          !vehicle.fuelType && (
+                            <span className="text-sm text-muted-foreground/50 italic">
+                              —
+                            </span>
+                          )}
+                      </div>
                     </TableCell>
 
                     {/* Status */}
@@ -281,7 +330,7 @@ export function VehiclesTable({
                     <TableCell className="hidden md:table-cell px-3 py-3">
                       {vehicle.assignedInspector ? (
                         <div className="flex items-center gap-2.5">
-                          <Avatar className="size-9 shrink-0 ring-2 ring-border/60">
+                          <Avatar className="size-8 shrink-0 ring-2 ring-border/60">
                             <AvatarImage
                               className="object-cover object-center"
                               src={vehicle.assignedInspector.image || undefined}
@@ -362,7 +411,7 @@ export function VehiclesTable({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-44">
-                            {onStartInspection && (
+                            {onStartInspection && isActive && (
                               <DropdownMenuItem
                                 onClick={() => onStartInspection(vehicle)}
                                 className="cursor-pointer"
@@ -373,9 +422,9 @@ export function VehiclesTable({
                                 )}
                               </DropdownMenuItem>
                             )}
-                            {onStartInspection && (onEdit || onDelete) && (
-                              <DropdownMenuSeparator />
-                            )}
+                            {onStartInspection &&
+                              isActive &&
+                              (onEdit || onDelete) && <DropdownMenuSeparator />}
                             {onEdit && (
                               <DropdownMenuItem
                                 onClick={() => onEdit(vehicle)}

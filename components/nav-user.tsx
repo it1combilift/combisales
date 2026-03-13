@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { getRoleBadge } from "@/lib/utils";
 import { Role, User } from "@prisma/client";
 import { useI18n } from "@/lib/i18n/context";
+import { getInitials, getRoleBadge } from "@/lib/utils";
 import { getAllRoles, getPrimaryRole } from "@/lib/roles";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -35,16 +35,6 @@ export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
   const { t } = useI18n();
 
-  const getInitials = (name?: string | null) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
   };
@@ -52,7 +42,6 @@ export function NavUser({ user }: { user: User }) {
   const userImage = user.image || null;
   const userName = user.name || "Usuario";
   const userEmail = user.email || "email@example.com";
-  const userRole = getPrimaryRole(user.roles) || Role.SELLER;
   const userCountry = user.country || "";
 
   return (

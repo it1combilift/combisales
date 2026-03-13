@@ -550,10 +550,11 @@
       "model": "Model",
       "plate": "Plate",
       "status": "Status",
-      "inspector": "Inspector",
+      "inspector": "Owner",
       "inspections": "Inspections",
       "created": "Created",
-      "notAssigned": "Not assigned"
+      "notAssigned": "Not assigned",
+      "details": "Details"
     },
     "vehicleCard": {
       "noImage": "No image",

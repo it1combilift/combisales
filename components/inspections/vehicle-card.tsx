@@ -29,6 +29,7 @@ import {
   CarFront,
   CalendarDays,
   Hash,
+  CalendarRange,
 } from "lucide-react";
 
 import {
@@ -167,79 +168,87 @@ export function VehicleCard({
             </DropdownMenu>
           </div>
         )}
+
+        {/* Model name badge — full-width at bottom to handle long names gracefully */}
+        <div className="absolute bottom-0 left-0 right-0 z-10 px-3 pb-3">
+          <span
+            className={cn(
+              "inline-flex items-center px-2.5 py-1 rounded-lg",
+              "text-[12px] font-semibold",
+              "bg-background/80 text-foreground backdrop-blur-sm",
+              "border border-border/30 shadow-sm",
+              "max-w-full truncate",
+            )}
+            title={vehicle.model}
+          >
+            {vehicle.model}
+          </span>
+        </div>
       </div>
 
       {/* ---- Body ---- */}
-      <CardContent className="px-4  pb-4 flex-1 flex flex-col gap-3">
-        {/* Vehicle name — primary identity, full width, truncates gracefully */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <h3 className="text-sm font-semibold text-card-foreground leading-snug line-clamp-2 text-pretty">
-              {vehicle.model}
-            </h3>
+      <CardContent className="px-4 pb-4 flex-1 flex flex-col gap-3">
+        {/* Plate · Year · Color · Fuel — compact identifier row */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 pt-0.5">
+          {/* Plate */}
+          <div className="flex items-center gap-1.5 bg-muted rounded-md px-2">
+            <Hash className="size-3 text-muted-foreground shrink-0" />
+            <span className="font-mono text-[11px] font-bold tracking-widest text-card-foreground uppercase">
+              {vehicle.plate}
+            </span>
           </div>
-          {/* Pulse dot */}
-          <span className="relative flex size-2 mt-1.5 shrink-0">
-            <span
-              className={cn(
-                "relative inline-flex size-2 rounded-full animate-pulse",
-                isActive ? "bg-emerald-500" : "bg-destructive",
-              )}
-            />
-          </span>
-        </div>
-
-        {/* Plate + Year + optional details row */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Plate — distinct monospace badge */}
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 px-2 py-0.5 rounded-md",
-              "font-mono text-[11px] font-bold tracking-widest",
-              "bg-foreground/5 text-foreground",
-              "border border-border/50",
-            )}
-          >
-            <Hash className="size-2.5 opacity-50" />
-            {vehicle.plate}
-          </span>
 
           {/* Year */}
           {vehicle.year && (
-            <span
-              className={cn(
-                "inline-flex items-center gap-1 px-2 py-0.5 rounded-md",
-                "text-[11px] font-medium text-muted-foreground",
-                "bg-secondary/60 border border-border/30",
-              )}
-            >
-              <CalendarDays className="size-2.5" />
-              {vehicle.year}
-            </span>
+            <>
+              <div className="flex items-center gap-1.5 bg-muted rounded-md px-2">
+                <CalendarRange className="size-3 text-muted-foreground shrink-0" />
+                <span className="text-[11px] text-muted-foreground font-medium">
+                  {vehicle.year}
+                </span>
+              </div>
+            </>
           )}
 
           {/* Color */}
           {vehicle.color && (
-            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-              <Palette className="size-2.5" />
-              {vehicle.color}
-            </span>
+            <>
+              <span className="text-border/60 select-none">·</span>
+              <div className="flex items-center gap-1.5">
+                <Palette className="size-3 text-muted-foreground shrink-0" />
+                <span className="text-[11px] text-muted-foreground">
+                  {vehicle.color}
+                </span>
+              </div>
+            </>
           )}
 
-          {/* Fuel */}
+          {/* Fuel type */}
           {vehicle.fuelType && (
-            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-              <Fuel className="size-2.5" />
-              {vehicle.fuelType}
-            </span>
+            <>
+              <span className="text-border/60 select-none">·</span>
+              <div className="flex items-center gap-1.5">
+                <Fuel className="size-3 text-muted-foreground shrink-0" />
+                <span className="text-[11px] text-muted-foreground">
+                  {vehicle.fuelType}
+                </span>
+              </div>
+            </>
           )}
         </div>
+
+        {/* Description — shown only when present, capped at 2 lines */}
+        {vehicle.description && (
+          <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
+            {vehicle.description}
+          </p>
+        )}
 
         {/* Inspector */}
         <div className="flex items-center gap-2.5 min-w-0">
           {vehicle.assignedInspector ? (
             <>
-              <Avatar className="size-7 shrink-0 ring-2 ring-border/60 group-hover:ring-primary/20 transition-all duration-300">
+              <Avatar className="size-8 shrink-0 ring-2 ring-border/60 group-hover:ring-primary/20 transition-all duration-300">
                 <AvatarImage
                   className="object-cover object-center"
                   src={vehicle.assignedInspector.image || undefined}
@@ -248,7 +257,7 @@ export function VehicleCard({
                     vehicle.assignedInspector.email
                   }
                 />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
                   {getInitials(
                     vehicle.assignedInspector.name ||
                       vehicle.assignedInspector.email,
@@ -256,21 +265,21 @@ export function VehicleCard({
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-card-foreground truncate leading-tight">
+                <p className="text-sm font-medium text-card-foreground truncate leading-tight">
                   {vehicle.assignedInspector.name ||
                     vehicle.assignedInspector.email}
                 </p>
                 {vehicle.assignedInspector.name && (
-                  <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">
                     {vehicle.assignedInspector.email}
                   </p>
                 )}
               </div>
             </>
           ) : (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="size-7 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                <User className="size-3" />
+            <div className="flex items-center gap-2.5 text-muted-foreground">
+              <div className="size-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                <User className="size-3.5" />
               </div>
               <span className="text-[11px] italic">
                 {t("inspectionsPage.vehicleCard.noInspector")}
@@ -282,35 +291,50 @@ export function VehicleCard({
         {/* Divider */}
         <div className="h-px bg-border/50" />
 
-        {/* Stats row */}
+        {/* Stats */}
         <div className="flex items-center justify-between gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1.5 cursor-default">
-                <div className="size-6 rounded-md bg-violet-500/10 flex items-center justify-center">
-                  <ClipboardCheck className="size-3 text-violet-500" />
+          <div className="flex items-center gap-3">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-1.5 cursor-default">
+                  <div className="size-6 rounded-md bg-violet-500/10 flex items-center justify-center">
+                    <ClipboardCheck className="size-3 text-violet-500" />
+                  </div>
+                  <span className="text-xs font-semibold text-card-foreground tabular-nums">
+                    {inspectionCount}
+                  </span>
                 </div>
-                <span className="text-xs font-semibold text-card-foreground tabular-nums">
-                  {inspectionCount}
-                </span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">
-              {inspectionCount === 1
-                ? t("inspectionsPage.vehicleCard.inspectionCountSingular", {
-                    count: inspectionCount,
-                  })
-                : t("inspectionsPage.vehicleCard.inspectionCount", {
-                    count: inspectionCount,
-                  })}
-            </TooltipContent>
-          </Tooltip>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">
+                {inspectionCount === 1
+                  ? t("inspectionsPage.vehicleCard.inspectionCountSingular", {
+                      count: inspectionCount,
+                    })
+                  : t("inspectionsPage.vehicleCard.inspectionCount", {
+                      count: inspectionCount,
+                    })}
+              </TooltipContent>
+            </Tooltip>
 
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] text-muted-foreground">
-              {formatDate(vehicle.createdAt, locale)}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <div className="size-6 rounded-md bg-amber-500/10 flex items-center justify-center">
+                <CalendarDays className="size-3 text-amber-500" />
+              </div>
+              <span className="text-[11px] text-muted-foreground">
+                {formatDate(vehicle.createdAt, locale)}
+              </span>
+            </div>
           </div>
+
+          {/* Pulse dot */}
+          <span className="relative flex size-2">
+            <span
+              className={cn(
+                "relative inline-flex size-2 rounded-full animate-pulse",
+                isActive ? "bg-emerald-500" : "bg-destructive",
+              )}
+            />
+          </span>
         </div>
       </CardContent>
     </Card>

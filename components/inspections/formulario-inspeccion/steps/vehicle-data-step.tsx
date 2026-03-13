@@ -2,26 +2,23 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { useTranslation } from "@/lib/i18n/context";
 import { InspectionFormSchema } from "@/schemas/inspections";
 import { Vehicle, VehicleStatus } from "@/interfaces/inspection";
-import { Gauge, CheckCircle2, Car, Search, User, CarFront } from "lucide-react";
+import { Gauge, CheckCircle2, Car, Search, CarFront } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface VehicleDataStepProps {
   form: UseFormReturn<InspectionFormSchema>;
   vehicles: Vehicle[];
-  preSelectedVehicleId?: string;
 }
 
-export function VehicleDataStep({
-  form,
-  vehicles,
-  preSelectedVehicleId,
-}: VehicleDataStepProps) {
+export function VehicleDataStep({ form, vehicles }: VehicleDataStepProps) {
   const { t } = useTranslation();
+
   const {
     register,
     setValue,
@@ -30,7 +27,6 @@ export function VehicleDataStep({
   } = form;
 
   const selectedVehicleId = watch("vehicleId");
-  const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Filter active vehicles and by search
@@ -76,47 +72,6 @@ export function VehicleDataStep({
         )}
       </div>
 
-      {/* Compact Selected Vehicle Card — shown above list when selected */}
-      {/* {selectedVehicle && (
-        <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-2.5 animate-in fade-in-50 duration-200">
-          <div className="size-12 shrink-0 rounded-lg overflow-hidden bg-secondary/40">
-            {selectedVehicle.imageUrl ? (
-              <Image
-                src={selectedVehicle.imageUrl}
-                alt={selectedVehicle.model}
-                width={48}
-                height={48}
-                className="size-12 object-cover object-center"
-              />
-            ) : (
-              <div className="size-12 flex items-center justify-center">
-                <Car className="size-5 text-muted-foreground/40" />
-              </div>
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold truncate leading-tight">
-              {selectedVehicle.model}
-            </p>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="font-mono text-[11px] text-muted-foreground">
-                {selectedVehicle.plate}
-              </span>
-              {selectedVehicle.assignedInspector && (
-                <>
-                  <span className="text-border">·</span>
-                  <span className="text-[11px] text-muted-foreground truncate">
-                    {selectedVehicle.assignedInspector.name ||
-                      selectedVehicle.assignedInspector.email}
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
-          <CheckCircle2 className="size-5 text-primary shrink-0" />
-        </div>
-      )} */}
-
       {/* Vehicle List — compact vertical rows, no inner scroll */}
       <div className="space-y-1">
         {filteredVehicles.map((vehicle) => {
@@ -152,18 +107,29 @@ export function VehicleDataStep({
 
               {/* Info */}
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium truncate leading-tight">
-                  {vehicle.model}
+                <p className="text-xs font-medium truncate leading-tight text-pretty">
+                  {vehicle.model}{" "}
+                  <span className="font-mono text-[11px] text-muted-foreground">
+                    ({vehicle.plate})
+                  </span>
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="font-mono text-[11px] text-muted-foreground">
-                    {vehicle.plate}
-                  </span>
                   {vehicle.assignedInspector ? (
                     <>
-                      <span className="text-border">·</span>
                       <span className="text-xs text-muted-foreground truncate flex items-center gap-1">
-                        <User className="size-2.5 shrink-0" />
+                        <Avatar className="h-9 w-9 rounded-lg border border-border/50">
+                          <AvatarImage
+                            src={vehicle.assignedInspector.image || undefined}
+                            alt={
+                              vehicle.assignedInspector.name ||
+                              "Inspector Image"
+                            }
+                            className="object-cover object-center"
+                          />
+                          <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold text-sm">
+                            {getInitials(vehicle.assignedInspector.name)}
+                          </AvatarFallback>
+                        </Avatar>
                         {vehicle.assignedInspector.name ||
                           vehicle.assignedInspector.email}
                       </span>

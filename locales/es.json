@@ -549,10 +549,11 @@
       "model": "Modelo",
       "plate": "Matrícula",
       "status": "Estado",
-      "inspector": "Inspector",
+      "inspector": "Propietario",
       "inspections": "Inspecciones",
       "created": "Creado",
-      "notAssigned": "Sin asignar"
+      "notAssigned": "Sin asignar",
+      "details": "Detalles"
     },
     "vehicleCard": {
       "noImage": "Sin imagen",

@@ -65,7 +65,6 @@ export function InspectionForm({
           <VehicleDataStep
             form={form}
             vehicles={vehicles}
-            preSelectedVehicleId={preSelectedVehicleId}
           />
         );
       case "checklist":
