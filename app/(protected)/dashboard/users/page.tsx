@@ -40,6 +40,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 
 export default function UsersPage() {
   const { t, locale } = useI18n();
@@ -335,7 +336,6 @@ export default function UsersPage() {
                 />
                 {isRefreshing ? t("common.refreshing") : t("common.refresh")}
               </Button>
-
               <Dialog
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
@@ -346,8 +346,19 @@ export default function UsersPage() {
                     {t("users.createUser")}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[95vw] xs:max-w-3xl p-0 gap-0">
-                  <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
+
+                <DialogContent
+                  className={cn(
+                    // Width: near-full on mobile, capped on larger screens
+                    "w-[calc(100vw-24px)] sm:max-w-lg p-0 gap-0",
+                    // Fixed height: fills viewport on mobile, capped on desktop
+                    "h-[calc(100dvh-48px)] sm:h-[min(680px,calc(100dvh-64px))]",
+                    // Flex column so children can share the fixed space
+                    "flex flex-col",
+                  )}
+                >
+                  {/* Header — always visible */}
+                  <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 border-b shrink-0">
                     <DialogTitle className="text-left text-base sm:text-lg">
                       {t("users.createUser")}
                     </DialogTitle>
@@ -355,7 +366,9 @@ export default function UsersPage() {
                       {t("users.createUserDescription")}
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="overflow-y-auto px-4 sm:px-6 py-4">
+
+                  {/* Form — flex-1 so it takes remaining height; form handles internal scroll */}
+                  <div className="flex-1 min-h-0 px-4 sm:px-6 py-4 overflow-hidden flex flex-col">
                     <CreateUserForm onSuccess={handleUserCreated} />
                   </div>
                 </DialogContent>
@@ -492,10 +505,16 @@ export default function UsersPage() {
             </AlertDialogContent>
           </AlertDialog>
 
-          {/* Edit User Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="max-w-[95vw] xs:max-w-3xl p-0 gap-0">
-              <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b">
+            <DialogContent
+              className={cn(
+                "w-[calc(100vw-24px)] sm:max-w-lg p-0 gap-0",
+                "h-[calc(100dvh-48px)] sm:h-[min(680px,calc(100dvh-64px))]",
+                "flex flex-col",
+              )}
+            >
+              {/* Header — always visible */}
+              <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 border-b shrink-0">
                 <DialogTitle className="text-left text-base sm:text-lg">
                   {t("users.editUser")}
                 </DialogTitle>
@@ -503,7 +522,9 @@ export default function UsersPage() {
                   {t("users.editUserDescription")}
                 </DialogDescription>
               </DialogHeader>
-              <div className="overflow-y-auto px-4 sm:px-6 py-4">
+
+              {/* Form — flex-1 so it takes remaining height */}
+              <div className="flex-1 min-h-0 px-4 sm:px-6 py-4 overflow-hidden flex flex-col">
                 {selectedUser && (
                   <EditUserForm
                     user={selectedUser}

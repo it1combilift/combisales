@@ -43,7 +43,7 @@ import {
 
 const EDIT_TAB_TRIGGER_CLASS = cn(
   "flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5",
-  "py-2 px-1.5 sm:px-3 min-h-[52px] sm:min-h-[44px]",
+  "py-2 px-1 sm:px-3 min-h-[52px] sm:min-h-[44px]",
   "text-[10px] sm:text-xs font-medium leading-tight",
   "data-[state=active]:bg-background data-[state=active]:text-foreground",
   "data-[state=active]:shadow-md data-[state=active]:shadow-black/5 dark:data-[state=active]:shadow-black/20",
@@ -136,14 +136,12 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   });
 
   const tabCount = 2 + (isDealerRole ? 1 : 0) + (isVehicleRole ? 1 : 0);
-
   const isFormValid =
     form.formState.isValid && (!isDealerRole || !!watchedAssignedSellerId);
 
   useEffect(() => {
     const newAssignedSellerId = user.assignedSellers?.[0]?.seller?.id || null;
     const newVehicleIds = user.assignedVehicles?.map((v) => v.id) || [];
-
     form.reset({
       name: user.name || "",
       email: user.email,
@@ -174,9 +172,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
   );
 
   useEffect(() => {
-    if (selectedRoles) {
-      form.trigger("assignedSellerId");
-    }
+    if (selectedRoles) form.trigger("assignedSellerId");
   }, [selectedRoles, form]);
 
   const handleSellerSelectionChange = useCallback(
@@ -267,12 +263,21 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <Tabs defaultValue="personal" className="w-full">
-          {/* ── Tab navigation ── */}
+      {/*
+        Layout: flex column filling the dialog's available height.
+        - TabsList: always visible, never scrolls
+        - TabsContent wrapper: flex-1 + overflow-y-auto → internal scroll
+        - Save button: always pinned at the bottom, never hidden
+      */}
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col h-full"
+      >
+        <Tabs defaultValue="personal" className="flex flex-col flex-1 min-h-0">
+          {/* ── Tab navigation — always visible, never scrolls ── */}
           <TabsList
             className={cn(
-              "grid w-full mb-5 h-auto",
+              "grid w-full mb-4 h-auto shrink-0",
               "bg-muted/30 dark:bg-muted/50 p-0.5 rounded-xl border border-border/40",
               tabCount === 2 && "grid-cols-2",
               tabCount === 3 && "grid-cols-3",
@@ -281,14 +286,14 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
           >
             <TabsTrigger value="personal" className={EDIT_TAB_TRIGGER_CLASS}>
               <User className="size-4 shrink-0" />
-              <span className="truncate max-w-full text-center leading-tight">
+              <span className="w-full text-center leading-tight line-clamp-2">
                 {t("users.form.personal")}
               </span>
             </TabsTrigger>
 
             <TabsTrigger value="config" className={EDIT_TAB_TRIGGER_CLASS}>
               <Settings className="size-4 shrink-0" />
-              <span className="truncate max-w-full text-center leading-tight">
+              <span className="w-full text-center leading-tight line-clamp-2">
                 {t("users.form.config")}
               </span>
             </TabsTrigger>
@@ -296,7 +301,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
             {isDealerRole && (
               <TabsTrigger value="sellers" className={EDIT_TAB_TRIGGER_CLASS}>
                 <Users className="size-4 shrink-0" />
-                <span className="truncate max-w-full text-center leading-tight">
+                <span className="w-full text-center leading-tight line-clamp-2">
                   {t("users.form.tabs.sellers")}
                 </span>
               </TabsTrigger>
@@ -305,258 +310,260 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
             {isVehicleRole && (
               <TabsTrigger value="vehicles" className={EDIT_TAB_TRIGGER_CLASS}>
                 <CarFront className="size-4 shrink-0" />
-                <span className="truncate max-w-full text-center leading-tight">
+                <span className="w-full text-center leading-tight line-clamp-2">
                   {t("users.form.tabs.vehicles")}
                 </span>
               </TabsTrigger>
             )}
           </TabsList>
 
-          {/* ── Personal & Security ── */}
-          <TabsContent value="personal" className="space-y-4 mt-0">
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem className="flex flex-col items-center pb-2">
-                  <FormControl>
-                    <ProfileImageUpload
-                      currentImage={field.value}
-                      userName={form.watch("name")}
-                      onImageChange={handleImageChange}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-sm font-semibold">
-                    {t("users.form.fullNameLabel")}
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-                      <Input
-                        placeholder={t("users.form.fullNamePlaceholder")}
-                        className="pl-10 h-11 text-sm"
+          {/* ── Scrollable tab content area ── */}
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {/* ── Personal & Security ── */}
+            <TabsContent value="personal" className="space-y-4 mt-0 pb-1">
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col items-center pb-1">
+                    <FormControl>
+                      <ProfileImageUpload
+                        currentImage={field.value}
+                        userName={form.watch("name")}
+                        onImageChange={handleImageChange}
                         disabled={isLoading}
-                        autoComplete="name"
-                        {...field}
                       />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-sm font-semibold">
-                    {t("users.form.emailLabel")}
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-                      <Input
-                        type="email"
-                        placeholder={t("users.form.emailPlaceholder")}
-                        className="pl-10 h-11 text-sm"
-                        disabled={isLoading}
-                        autoComplete="email"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-
-            {/* Password section */}
-            <div className="h-px bg-border/50" />
-
-            <div className="flex items-center gap-2">
-              <Lock className="size-3.5 text-muted-foreground" />
-              <p className="text-xs font-medium text-muted-foreground">
-                {t("users.form.changePassword")}
-              </p>
-            </div>
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-sm font-semibold">
-                    {t("users.form.newPassword")}{" "}
-                    <span className="text-muted-foreground font-normal text-xs">
-                      ({t("forms.optional")})
-                    </span>
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-                      <Input
-                        type="password"
-                        placeholder={t("users.form.leaveEmpty")}
-                        className="pl-10 h-11 text-sm"
-                        disabled={isLoading}
-                        autoComplete="new-password"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-          </TabsContent>
-
-          {/* ── Configuration ── */}
-          <TabsContent value="config" className="space-y-4 mt-0">
-            <FormField
-              control={form.control}
-              name="roles"
-              render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-sm font-semibold">
-                    {t("users.form.roleLabel")}
-                  </FormLabel>
-                  <FormDescription className="text-xs text-muted-foreground">
-                    {t("users.form.rolesDescription")}
-                  </FormDescription>
-                  <FormControl>
-                    <RolesSelection
-                      selectedRoles={field.value || []}
-                      onSelectionChange={handleRolesChange}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-sm font-semibold">
-                    {t("users.form.countryLabel")}{" "}
-                    <span className="text-muted-foreground font-normal text-xs">
-                      ({t("forms.optional")})
-                    </span>
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-                      <Input
-                        placeholder={t("users.form.countryPlaceholder")}
-                        className="pl-10 h-11 text-sm"
-                        disabled={isLoading}
-                        autoComplete="country"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-
-            <div className="h-px bg-border/50" />
-
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/60 p-4 gap-4 bg-muted/20">
-                  <div className="space-y-0.5 min-w-0">
-                    <FormLabel className="text-sm font-semibold flex items-center gap-2">
-                      <CheckCircle2 className="size-4 text-muted-foreground shrink-0" />
-                      {t("users.form.account")}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="space-y-1.5">
+                    <FormLabel className="text-sm font-semibold">
+                      {t("users.form.fullNameLabel")}
                     </FormLabel>
-                    <FormDescription className="text-xs text-muted-foreground leading-relaxed">
-                      {t("users.form.inactiveDescription")}
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                        <Input
+                          placeholder={t("users.form.fullNamePlaceholder")}
+                          className="pl-10 h-11 text-sm"
+                          disabled={isLoading}
+                          autoComplete="name"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="space-y-1.5">
+                    <FormLabel className="text-sm font-semibold">
+                      {t("users.form.emailLabel")}
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                        <Input
+                          type="email"
+                          placeholder={t("users.form.emailPlaceholder")}
+                          className="pl-10 h-11 text-sm"
+                          disabled={isLoading}
+                          autoComplete="email"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+
+              <div className="h-px bg-border/50" />
+
+              <div className="flex items-center gap-2">
+                <Lock className="size-3.5 text-muted-foreground" />
+                <p className="text-xs font-medium text-muted-foreground">
+                  {t("users.form.changePassword")}
+                </p>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="space-y-1.5">
+                    <FormLabel className="text-sm font-semibold">
+                      {t("users.form.newPassword")}{" "}
+                      <span className="text-muted-foreground font-normal text-xs">
+                        ({t("forms.optional")})
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                        <Input
+                          type="password"
+                          placeholder={t("users.form.leaveEmpty")}
+                          className="pl-10 h-11 text-sm"
+                          disabled={isLoading}
+                          autoComplete="new-password"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+            </TabsContent>
+
+            {/* ── Configuration ── */}
+            <TabsContent value="config" className="space-y-4 mt-0 pb-1">
+              <FormField
+                control={form.control}
+                name="roles"
+                render={({ field }) => (
+                  <FormItem className="space-y-1.5">
+                    <FormLabel className="text-sm font-semibold">
+                      {t("users.form.roleLabel")}
+                    </FormLabel>
+                    <FormDescription className="text-xs text-muted-foreground">
+                      {t("users.form.rolesDescription")}
                     </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </TabsContent>
-
-          {/* ── Sellers (DEALER role only) ── */}
-          {isDealerRole && (
-            <TabsContent value="sellers" className="mt-0">
-              <FormField
-                control={form.control}
-                name="assignedSellerId"
-                render={({ field }) => (
-                  <FormItem>
                     <FormControl>
-                      <SellerSelection
-                        key={`seller-${user.id}`}
-                        selectedSellerId={field.value}
-                        onSelectionChange={handleSellerSelectionChange}
+                      <RolesSelection
+                        selectedRoles={field.value || []}
+                        onSelectionChange={handleRolesChange}
+                        disabled={isLoading}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem className="space-y-1.5">
+                    <FormLabel className="text-sm font-semibold">
+                      {t("users.form.countryLabel")}{" "}
+                      <span className="text-muted-foreground font-normal text-xs">
+                        ({t("forms.optional")})
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                        <Input
+                          placeholder={t("users.form.countryPlaceholder")}
+                          className="pl-10 h-11 text-sm"
+                          disabled={isLoading}
+                          autoComplete="country"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+
+              <div className="h-px bg-border/50" />
+
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/60 p-4 gap-4 bg-muted/20">
+                    <div className="space-y-0.5 min-w-0">
+                      <FormLabel className="text-sm font-semibold flex items-center gap-2">
+                        <CheckCircle2 className="size-4 text-muted-foreground shrink-0" />
+                        {t("users.form.account")}
+                      </FormLabel>
+                      <FormDescription className="text-xs text-muted-foreground leading-relaxed">
+                        {t("users.form.inactiveDescription")}
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />
             </TabsContent>
-          )}
 
-          {/* ── Vehicles (INSPECTOR / SELLER roles only) ── */}
-          {isVehicleRole && (
-            <TabsContent value="vehicles" className="mt-0">
-              <FormField
-                control={form.control}
-                name="assignedVehicleIds"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <VehicleAssignment
-                        key={`vehicles-${user.id}`}
-                        selectedVehicleIds={field.value || []}
-                        onSelectionChange={(ids) => field.onChange(ids)}
-                        editingUserId={user.id}
-                        userRoles={selectedRoles || []}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </TabsContent>
-          )}
+            {/* ── Sellers (DEALER role only) ── */}
+            {isDealerRole && (
+              <TabsContent value="sellers" className="mt-0 pb-1">
+                <FormField
+                  control={form.control}
+                  name="assignedSellerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <SellerSelection
+                          key={`seller-${user.id}`}
+                          selectedSellerId={field.value}
+                          onSelectionChange={handleSellerSelectionChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </TabsContent>
+            )}
+
+            {/* ── Vehicles (INSPECTOR / SELLER roles only) ── */}
+            {isVehicleRole && (
+              <TabsContent value="vehicles" className="mt-0 pb-1">
+                <FormField
+                  control={form.control}
+                  name="assignedVehicleIds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <VehicleAssignment
+                          key={`vehicles-${user.id}`}
+                          selectedVehicleIds={field.value || []}
+                          onSelectionChange={(ids) => field.onChange(ids)}
+                          editingUserId={user.id}
+                          userRoles={selectedRoles || []}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </TabsContent>
+            )}
+          </div>
         </Tabs>
 
-        {/* ── Save Button ── */}
-        <div className="pt-5 mt-1 border-t border-border/60">
+        {/* ── Save button — always pinned, never scrolls away ── */}
+        <div className="pt-4 mt-2 border-t border-border/60 shrink-0">
           <Button
             type="submit"
             disabled={isLoading || !form.formState.isDirty || !isFormValid}
-            className="w-full"
+            className="w-full h-11 gap-2"
           >
             {isLoading ? (
               <>
@@ -572,3 +579,4 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
     </Form>
   );
 }
+ 
