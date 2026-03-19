@@ -237,6 +237,7 @@ export interface BuildVisitEmailDataParams {
   visitDate: Date;
   status: VisitStatus | string;
   locale?: string;
+  subjectMail?: string;
   // Visit identification
   visitId?: string;
   // User who owns the visit (creator)
@@ -306,6 +307,7 @@ export function buildVisitEmailDataExtended(
     visitDate,
     status,
     locale = "es",
+    subjectMail,
     visitId,
     owner,
     vendedor,
@@ -343,6 +345,7 @@ export function buildVisitEmailDataExtended(
   // ==================== BUILD EMAIL DATA ====================
   const emailData: VisitEmailData = {
     visitId: visitId,
+    subjectMail: subjectMail?.trim() || undefined,
     razonSocial: razonSocial,
     personaContacto: safeString(baseData.personaContacto),
     email: safeString(baseData.email),
@@ -494,6 +497,10 @@ function generateEmailSubject(
   data: VisitEmailData,
   locale: string = "es",
 ): string {
+  if (data.subjectMail && data.subjectMail.trim() !== "") {
+    return data.subjectMail.trim();
+  }
+
   const status = data.status as string;
   const formType = data.formType;
   const archivosCount = data.archivos?.length || 0;

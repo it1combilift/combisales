@@ -1,12 +1,15 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { StepContentProps } from "../types";
 import { useI18n } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { FileText, CalendarDays } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 
 import {
   Popover,
@@ -22,16 +25,35 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-/**
- * Step 1: Descripción de la Operación (anteriormente Step 2)
- * Fields: notasOperacion, fechaCierre
- *
- * Este paso ahora es el primero del formulario tras la optimización.
- */
-export function Step1Content({ form }: StepContentProps) {
+export function Step1Content({ form, enableSubjectMail }: StepContentProps) {
   const { t, locale } = useI18n();
+
   return (
     <div className="flex flex-col h-full space-y-3 sm:space-y-4">
+      {enableSubjectMail && (
+        <FormField
+          control={form.control}
+          name="subjectMail"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("forms.clientData.fields.subjectMail.label")}
+                <span className="text-destructive ml-1">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "forms.clientData.fields.subjectMail.placeholder",
+                  )}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+
       <FormField
         control={form.control}
         name="notasOperacion"
@@ -55,7 +77,6 @@ export function Step1Content({ form }: StepContentProps) {
         )}
       />
 
-      {/* Fecha de cierre estimada */}
       <FormField
         control={form.control}
         name="fechaCierre"
@@ -105,5 +126,4 @@ export function Step1Content({ form }: StepContentProps) {
   );
 }
 
-// Mantener compatibilidad con nombre anterior
 export { Step1Content as Step2Content };

@@ -44,6 +44,7 @@ const DealersPage = () => {
   const [visitToDelete, setVisitToDelete] = useState<Visit | null>(null);
   const [visitToEdit, setVisitToEdit] = useState<Visit | null>(null);
   const [isFormReadOnly, setIsFormReadOnly] = useState(false);
+  const [enableSubjectMail, setEnableSubjectMail] = useState(false);
   const [userRoles, setUserRoles] = useState<Role[]>([]);
   const [isCloning, setIsCloning] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -102,6 +103,7 @@ const DealersPage = () => {
       return;
     }
     setIsFormReadOnly(false);
+    setEnableSubjectMail((isSeller || isAdmin) && !!visit.clonedFromId);
     setVisitToEdit(visit);
     setIsVisitDialogOpen(true);
   };
@@ -109,6 +111,7 @@ const DealersPage = () => {
   // View form (read-only) - for SELLER viewing original visits
   const handleViewForm = (visit: Visit) => {
     setIsFormReadOnly(true);
+    setEnableSubjectMail(false);
     setVisitToEdit(visit);
     setIsVisitDialogOpen(true);
   };
@@ -160,6 +163,9 @@ const DealersPage = () => {
       const response = await axios.get(`/api/visits/${visit.clones[0].id}`);
       if (response.status === 200) {
         setIsFormReadOnly(false);
+        setEnableSubjectMail(
+          (isSeller || isAdmin) && !!response.data.visit?.clonedFromId,
+        );
         setVisitToEdit(response.data.visit);
         setIsVisitDialogOpen(true);
       }
@@ -224,6 +230,7 @@ const DealersPage = () => {
     setIsVisitDialogOpen(false);
     setVisitToEdit(null);
     setIsFormReadOnly(false);
+    setEnableSubjectMail(false);
     fetchVisits();
   };
 
@@ -365,12 +372,14 @@ const DealersPage = () => {
           if (!open) {
             setVisitToEdit(null);
             setIsFormReadOnly(false);
+            setEnableSubjectMail(false);
           }
         }}
         onSuccess={handleVisitSuccess}
         existingVisit={visitToEdit || undefined}
         isSellerEditing={isSeller && !!visitToEdit?.clonedFromId}
         readOnly={isFormReadOnly}
+        enableSubjectMail={enableSubjectMail}
       />
 
       {/* Delete Confirmation Dialog - Use custom dialog for ADMIN (cascade support) */}

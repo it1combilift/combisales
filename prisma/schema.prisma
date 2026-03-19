@@ -290,13 +290,14 @@ enum VisitStatus {
 }
 
 model Visit {
-  id         String        @id @default(cuid())
-  customerId String? // Opcional: visita asociada a cliente
-  zohoTaskId String? // Opcional: visita asociada a tarea de Zoho
-  userId     String
-  formType   VisitFormType
-  status     VisitStatus   @default(BORRADOR)
-  visitDate  DateTime      @default(now())
+  id          String        @id @default(cuid())
+  customerId  String? // Opcional: visita asociada a cliente
+  zohoTaskId  String? // Opcional: visita asociada a tarea de Zoho
+  userId      String
+  formType    VisitFormType
+  status      VisitStatus   @default(BORRADOR)
+  visitDate   DateTime      @default(now())
+  subjectMail String?
 
   // Para visitas creadas por DEALER: vendedor asignado
   // El DEALER selecciona a qué vendedor se asocia la documentación

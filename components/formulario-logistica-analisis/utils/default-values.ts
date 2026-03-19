@@ -7,7 +7,7 @@ import { FormularioLogisticaSchema } from "../schemas";
  * Prefills data from customer information
  */
 export function getDefaultValuesForNew(
-  customer: Customer
+  customer: Customer,
 ): FormularioLogisticaSchema {
   return {
     // Datos del cliente
@@ -23,6 +23,7 @@ export function getDefaultValuesForNew(
     numeroIdentificacionFiscal: customer.cif || "",
     distribuidor: "",
     contactoDistribuidor: "",
+    subjectMail: "",
     fechaCierre: null,
 
     // Descripción operación
@@ -86,7 +87,8 @@ export function getDefaultValuesForNew(
  * Maps database formulario data to form schema
  */
 export function getDefaultValuesForEdit(
-  formulario: any
+  formulario: any,
+  visitSubjectMail?: string | null,
 ): FormularioLogisticaSchema {
   return {
     // Datos del cliente
@@ -102,6 +104,7 @@ export function getDefaultValuesForEdit(
     numeroIdentificacionFiscal: formulario.numeroIdentificacionFiscal || "",
     distribuidor: formulario.distribuidor || "",
     contactoDistribuidor: formulario.contactoDistribuidor || "",
+    subjectMail: visitSubjectMail || "",
     fechaCierre: formulario.fechaCierre
       ? new Date(formulario.fechaCierre)
       : null,

@@ -261,6 +261,7 @@ export default function DealerVisitDetailPage({
       originalArchivos: [], // Empty - clone owns its files independently
       enableCustomerEntry: true, // Enable customer data steps for DEALER clone editing
       customerStepBeforeFiles: true, // Customer step appears near the end (before files)
+      enableSubjectMail: isClone && (isSeller || isAdmin),
     };
 
     switch (visit.formType) {

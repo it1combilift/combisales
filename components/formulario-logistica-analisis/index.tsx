@@ -12,7 +12,7 @@ import { FormNavigation } from "./ui/form-navigation";
 import { FormularioLogisticaAnalisisProps } from "./types";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { useLogisticaAnalisisForm } from "./hooks/use-logistica-analisis-form";
-import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
+import { Step1Content as CustomerDataStep } from "./steps";
 
 import { Step1Content } from "./steps/step-2-descripcion-operacion";
 import { Step2Content } from "./steps/step-3-datos-aplicacion";
@@ -42,6 +42,7 @@ export default function FormularioLogisticaAnalisis({
   readOnly = false,
   enableCustomerEntry = false,
   customerStepBeforeFiles = false,
+  enableSubjectMail = false,
   onDirtyChange,
 }: FormularioLogisticaAnalisisProps) {
   const isEditing = !!existingVisit;
@@ -65,7 +66,7 @@ export default function FormularioLogisticaAnalisis({
     mode: "onChange",
     defaultValues:
       isEditing && formulario
-        ? getDefaultValuesForEdit(formulario)
+        ? getDefaultValuesForEdit(formulario, existingVisit?.subjectMail)
         : customer
           ? getDefaultValuesForNew(customer)
           : getDefaultValuesForNew({} as any),
@@ -87,6 +88,8 @@ export default function FormularioLogisticaAnalisis({
     completedSteps,
     progress,
     allStepsComplete,
+    canSubmit,
+    submitDisabledReason,
     currentStepConfig,
     isFirstStep,
     isLastStep,
@@ -113,6 +116,7 @@ export default function FormularioLogisticaAnalisis({
     assignedSellerId,
     enableCustomerEntry,
     customerStepBeforeFiles,
+    enableSubjectMail,
   });
 
   const {
@@ -143,7 +147,9 @@ export default function FormularioLogisticaAnalisis({
       case "customerData":
         return <CustomerDataStep {...stepProps} />;
       case "operation":
-        return <Step1Content {...stepProps} />;
+        return (
+          <Step1Content {...stepProps} enableSubjectMail={enableSubjectMail} />
+        );
       case "application":
         return <Step2Content {...stepProps} />;
       case "batteries":
@@ -211,6 +217,8 @@ export default function FormularioLogisticaAnalisis({
             isLastStep={isLastStep}
             isEditing={isEditing}
             allStepsComplete={allStepsComplete}
+            canSubmit={canSubmit}
+            submitDisabledReason={submitDisabledReason}
             isSubmitting={isSubmitting}
             isSavingDraft={isSavingDraft}
             isSavingChanges={isSavingChanges}

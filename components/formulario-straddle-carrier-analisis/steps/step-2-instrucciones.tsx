@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 
 import {
   Collapsible,
@@ -48,7 +49,7 @@ import {
  * Shows instructions and allows user to select which sections to complete
  * Includes fechaCierre field
  */
-export function Step1Content({ form }: StepContentProps) {
+export function Step1Content({ form, enableSubjectMail }: StepContentProps) {
   const { t, locale } = useI18n();
   const isMobile = useIsMobile();
   const [isInstructionsOpen, setIsInstructionsOpen] = React.useState(!isMobile);
@@ -63,6 +64,31 @@ export function Step1Content({ form }: StepContentProps) {
 
   return (
     <div className="space-y-3 sm:space-y-4 min-h-full">
+      {enableSubjectMail && (
+        <FormField
+          control={form.control}
+          name="subjectMail"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+                {t("forms.clientData.fields.subjectMail.label")}
+                <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "forms.clientData.fields.subjectMail.placeholder",
+                  )}
+                  className="h-9 text-sm"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="text-sm" />
+            </FormItem>
+          )}
+        />
+      )}
+
       {/* ==================== INSTRUCCIONES - Collapsible ==================== */}
       <Collapsible
         open={isInstructionsOpen}

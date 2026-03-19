@@ -512,6 +512,10 @@ export async function POST(req: NextRequest) {
     });
 
     const isDealer = hasRole(currentUser?.roles, Role.DEALER);
+    const isSellerOrAdmin = hasAnyRole(currentUser?.roles, [
+      Role.SELLER,
+      Role.ADMIN,
+    ]);
 
     // Para DEALERS: pueden crear visitas sin customerId ni zohoTaskId (documentación propia)
     // Para otros usuarios: deben proporcionar customerId O zohoTaskId
@@ -665,6 +669,7 @@ export async function POST(req: NextRequest) {
         formType: visitData.formType,
         status: visitData.status || VisitStatus.COMPLETADA,
         visitDate: visitData.visitDate || new Date(),
+        subjectMail: isSellerOrAdmin ? visitData.subjectMail || null : null,
         // Para visitas creadas por DEALER: asignar vendedor
         assignedSellerId: visitData.assignedSellerId || null,
         ...formDataCreate,
@@ -698,6 +703,7 @@ export async function POST(req: NextRequest) {
         formularioData,
         visitDate: visitData.visitDate || new Date(),
         status: finalStatus,
+        subjectMail: visit.subjectMail || undefined,
         locale: visitData.locale || "es",
         visitId: visit.id,
         // Owner is the user who created the visit

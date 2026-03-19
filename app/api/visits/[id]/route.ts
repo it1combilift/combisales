@@ -125,6 +125,11 @@ export async function PUT(
     const isAdminUser = hasRole(currentUser.roles, Role.ADMIN);
     const isSellerUser = hasRole(currentUser.roles, Role.SELLER);
     const isDealerUser = hasRole(currentUser.roles, Role.DEALER);
+    const isSellerOrAdmin = hasAnyRole(currentUser.roles, [
+      Role.SELLER,
+      Role.ADMIN,
+    ]);
+    const canEditSubjectMail = isSellerOrAdmin && !!existingVisit.clonedFromId;
 
     // ADMIN: puede editar cualquier visita (no requiere validación adicional)
     // Priority: Check ADMIN first
@@ -251,6 +256,10 @@ export async function PUT(
       data: {
         ...(visitData?.status && { status: visitData.status }),
         ...(visitData?.visitDate && { visitDate: visitData.visitDate }),
+        ...(visitData?.subjectMail !== undefined &&
+          canEditSubjectMail && {
+            subjectMail: visitData.subjectMail?.trim() || null,
+          }),
         ...formDataUpdate,
       },
       include: VISIT_INCLUDE,
@@ -262,10 +271,6 @@ export async function PUT(
     // This ensures both records show consistent status in the UI
     const newStatus = visitData?.status;
     const isClone = !!existingVisit.clonedFromId;
-    const isSellerOrAdmin = hasAnyRole(currentUser.roles, [
-      Role.SELLER,
-      Role.ADMIN,
-    ]);
 
     if (
       isClone &&
@@ -343,6 +348,7 @@ export async function PUT(
         formularioData,
         visitDate: visit.visitDate,
         status: currentStatus,
+        subjectMail: visit.subjectMail || undefined,
         locale: visitData?.locale || "es",
         visitId: visit.id,
         // Owner is the user who created the visit

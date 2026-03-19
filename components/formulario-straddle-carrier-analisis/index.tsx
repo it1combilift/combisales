@@ -10,7 +10,7 @@ import { FormNavigation } from "./ui/form-navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFileUploader } from "./hooks/use-file-uploader";
 import { FormularioStraddleCarrierAnalisisProps } from "./types";
-import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
+import { Step1Content as CustomerDataStep } from "./steps";
 import { useStraddleCarrierAnalisisForm } from "./hooks/use-straddle-carrier-analisis-form";
 
 import { Step1Content } from "./steps/step-2-instrucciones";
@@ -40,6 +40,7 @@ export default function FormularioStraddleCarrierAnalisis({
   readOnly = false,
   enableCustomerEntry = false,
   customerStepBeforeFiles = false,
+  enableSubjectMail = false,
   onDirtyChange,
 }: FormularioStraddleCarrierAnalisisProps) {
   const isEditing = !!existingVisit;
@@ -56,7 +57,7 @@ export default function FormularioStraddleCarrierAnalisis({
     mode: "onChange",
     defaultValues:
       isEditing && formulario
-        ? getDefaultValuesForEdit(formulario)
+        ? getDefaultValuesForEdit(formulario, existingVisit?.subjectMail)
         : customer
           ? getDefaultValuesForNew(customer)
           : getDefaultValuesForNew({} as any),
@@ -78,6 +79,8 @@ export default function FormularioStraddleCarrierAnalisis({
     completedSteps,
     progress,
     allStepsComplete,
+    canSubmit,
+    submitDisabledReason,
     currentStepConfig,
     isFirstStep,
     isLastStep,
@@ -105,6 +108,7 @@ export default function FormularioStraddleCarrierAnalisis({
     assignedSellerId,
     enableCustomerEntry,
     customerStepBeforeFiles,
+    enableSubjectMail,
   });
 
   const {
@@ -135,7 +139,9 @@ export default function FormularioStraddleCarrierAnalisis({
       case "customerData":
         return <CustomerDataStep {...stepProps} />;
       case "instructions":
-        return <Step1Content {...stepProps} />;
+        return (
+          <Step1Content {...stepProps} enableSubjectMail={enableSubjectMail} />
+        );
       case "containers":
         return <Step2Content {...stepProps} />;
       case "specialLoad":
@@ -202,6 +208,8 @@ export default function FormularioStraddleCarrierAnalisis({
             isLastStep={isLastStep}
             isEditing={isEditing}
             allStepsComplete={allStepsComplete}
+            canSubmit={canSubmit}
+            submitDisabledReason={submitDisabledReason}
             isSubmitting={isSubmitting}
             isSavingDraft={isSavingDraft}
             isSavingChanges={isSavingChanges}

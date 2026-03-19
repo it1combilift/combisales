@@ -35,6 +35,8 @@ export interface DealerVisitFormDialogProps {
   isSellerEditing?: boolean;
   /** If true, the form opens in read-only mode (SELLER viewing original visit) */
   readOnly?: boolean;
+  /** If true, enables SubjectMail field for SELLER/ADMIN clone editing */
+  enableSubjectMail?: boolean;
 }
 
 interface SellerInfo {
@@ -51,6 +53,7 @@ export default function DealerVisitFormDialog({
   existingVisit,
   isSellerEditing = false,
   readOnly = false,
+  enableSubjectMail = false,
 }: DealerVisitFormDialogProps) {
   const { t } = useI18n();
 
@@ -377,6 +380,7 @@ export default function DealerVisitFormDialog({
                         readOnly={readOnly}
                         enableCustomerEntry={true}
                         customerStepBeforeFiles={true}
+                        enableSubjectMail={enableSubjectMail}
                         onDirtyChange={handleDirtyChange}
                       />
                     )}
@@ -392,6 +396,7 @@ export default function DealerVisitFormDialog({
                         readOnly={readOnly}
                         enableCustomerEntry={true}
                         customerStepBeforeFiles={true}
+                        enableSubjectMail={enableSubjectMail}
                         onDirtyChange={handleDirtyChange}
                       />
                     )}
@@ -407,6 +412,7 @@ export default function DealerVisitFormDialog({
                         readOnly={readOnly}
                         enableCustomerEntry={true}
                         customerStepBeforeFiles={true}
+                        enableSubjectMail={enableSubjectMail}
                         onDirtyChange={handleDirtyChange}
                       />
                     )}
@@ -423,6 +429,7 @@ export default function DealerVisitFormDialog({
                         readOnly={readOnly}
                         enableCustomerEntry={true}
                         customerStepBeforeFiles={true}
+                        enableSubjectMail={enableSubjectMail}
                         onDirtyChange={handleDirtyChange}
                       />
                     )}

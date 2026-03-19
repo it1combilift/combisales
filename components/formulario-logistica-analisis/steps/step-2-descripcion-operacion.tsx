@@ -47,7 +47,7 @@ import {
  * (Antes Step 2, renumerado tras eliminar datos del cliente)
  * Includes fechaCierre and additional fields for ramps, doors, restrictions, etc.
  */
-export function Step1Content({ form }: StepContentProps) {
+export function Step1Content({ form, enableSubjectMail }: StepContentProps) {
   const { t, locale } = useI18n();
   const tieneRampas = form.watch("tieneRampas");
   const tienePasosPuertas = form.watch("tienePasosPuertas");
@@ -55,6 +55,30 @@ export function Step1Content({ form }: StepContentProps) {
 
   return (
     <div className="space-y-2 md:space-y-4 pb-2">
+      {enableSubjectMail && (
+        <FormField
+          control={form.control}
+          name="subjectMail"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("forms.clientData.fields.subjectMail.label")}
+                <span className="text-destructive ml-1">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "forms.clientData.fields.subjectMail.placeholder",
+                  )}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+
       {/* ==================== NOTAS OPERACIÓN ==================== */}
       <section>
         <FormField
@@ -69,7 +93,7 @@ export function Step1Content({ form }: StepContentProps) {
               <FormControl>
                 <Textarea
                   placeholder={t(
-                    "forms.logistica.fields.operation.notes.placeholder"
+                    "forms.logistica.fields.operation.notes.placeholder",
                   )}
                   className="min-h-[100px] text-sm bg-background/50 resize-none leading-relaxed text-balance"
                   {...field}
@@ -115,7 +139,7 @@ export function Step1Content({ form }: StepContentProps) {
                     <FormControl>
                       <Textarea
                         placeholder={t(
-                          "forms.logistica.fields.operation.ramps.placeholder"
+                          "forms.logistica.fields.operation.ramps.placeholder",
                         )}
                         className="min-h-[60px] text-sm bg-background/50 resize-none"
                         {...field}
@@ -159,7 +183,7 @@ export function Step1Content({ form }: StepContentProps) {
                     <FormControl>
                       <Textarea
                         placeholder={t(
-                          "forms.logistica.fields.operation.doors.placeholder"
+                          "forms.logistica.fields.operation.doors.placeholder",
                         )}
                         className="min-h-[60px] text-sm bg-background/50 resize-none"
                         {...field}
@@ -204,7 +228,7 @@ export function Step1Content({ form }: StepContentProps) {
                     <FormControl>
                       <Textarea
                         placeholder={t(
-                          "forms.logistica.fields.operation.restrictions.placeholder"
+                          "forms.logistica.fields.operation.restrictions.placeholder",
                         )}
                         className="min-h-[60px] text-sm bg-background/50 resize-none"
                         {...field}
@@ -244,7 +268,7 @@ export function Step1Content({ form }: StepContentProps) {
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value ? parseFloat(e.target.value) : null
+                          e.target.value ? parseFloat(e.target.value) : null,
                         )
                       }
                     />
@@ -274,7 +298,7 @@ export function Step1Content({ form }: StepContentProps) {
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value ? parseFloat(e.target.value) : null
+                          e.target.value ? parseFloat(e.target.value) : null,
                         )
                       }
                     />
@@ -304,7 +328,7 @@ export function Step1Content({ form }: StepContentProps) {
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value ? parseFloat(e.target.value) : null
+                          e.target.value ? parseFloat(e.target.value) : null,
                         )
                       }
                     />
@@ -333,32 +357,20 @@ export function Step1Content({ form }: StepContentProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem
-                        value="almacenamiento"
-                        className="text-sm"
-                      >
+                      <SelectItem value="almacenamiento" className="text-sm">
                         {t("forms.logistica.options.operationType.storage")}
                       </SelectItem>
-                      <SelectItem
-                        value="cross-docking"
-                        className="text-sm"
-                      >
+                      <SelectItem value="cross-docking" className="text-sm">
                         {t(
-                          "forms.logistica.options.operationType.crossDocking"
+                          "forms.logistica.options.operationType.crossDocking",
                         )}
                       </SelectItem>
-                      <SelectItem
-                        value="picking"
-                        className="text-sm"
-                      >
+                      <SelectItem value="picking" className="text-sm">
                         {t("forms.logistica.options.operationType.picking")}
                       </SelectItem>
-                      <SelectItem
-                        value="carga-descarga"
-                        className="text-sm"
-                      >
+                      <SelectItem value="carga-descarga" className="text-sm">
                         {t(
-                          "forms.logistica.options.operationType.loadingUnloading"
+                          "forms.logistica.options.operationType.loadingUnloading",
                         )}
                       </SelectItem>
                       <SelectItem
@@ -367,10 +379,7 @@ export function Step1Content({ form }: StepContentProps) {
                       >
                         {t("forms.logistica.options.operationType.orderPrep")}
                       </SelectItem>
-                      <SelectItem
-                        value="mixto"
-                        className="text-sm"
-                      >
+                      <SelectItem value="mixto" className="text-sm">
                         {t("forms.logistica.options.operationType.mixed")}
                       </SelectItem>
                     </SelectContent>
@@ -394,7 +403,7 @@ export function Step1Content({ form }: StepContentProps) {
                   <FormControl>
                     <Input
                       placeholder={t(
-                        "forms.logistica.fields.operation.floor.placeholder"
+                        "forms.logistica.fields.operation.floor.placeholder",
                       )}
                       className="text-sm h-9"
                       {...field}
@@ -425,7 +434,7 @@ export function Step1Content({ form }: StepContentProps) {
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal h-8 text-xs",
-                        !field.value && "text-muted-foreground"
+                        !field.value && "text-muted-foreground",
                       )}
                     >
                       <CalendarDays className="size-4" />

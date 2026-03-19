@@ -7,7 +7,7 @@ import { FormularioCSSSchema } from "@/schemas/visits";
  * Prefills data from customer information
  */
 export function getDefaultValuesForNew(
-  customer: Customer
+  customer: Customer,
 ): FormularioCSSSchema {
   return {
     // Step 1: Company
@@ -31,6 +31,7 @@ export function getDefaultValuesForNew(
     // Step 3: Commercial
     distribuidor: customer.zohoOwnerName || "",
     contactoDistribuidor: customer.zohoOwnerEmail || "",
+    subjectMail: "",
     datosClienteUsuarioFinal: "",
 
     // Step 4-7: Empty fields
@@ -47,7 +48,10 @@ export function getDefaultValuesForNew(
  * Generate default form values for editing existing visit
  * Maps database formulario data to form schema
  */
-export function getDefaultValuesForEdit(formulario: any): FormularioCSSSchema {
+export function getDefaultValuesForEdit(
+  formulario: any,
+  visitSubjectMail?: string | null,
+): FormularioCSSSchema {
   return {
     // Step 1: Company
     razonSocial: formulario.razonSocial || "",
@@ -66,6 +70,7 @@ export function getDefaultValuesForEdit(formulario: any): FormularioCSSSchema {
     // Step 3: Commercial
     distribuidor: formulario.distribuidor || "",
     contactoDistribuidor: formulario.contactoDistribuidor || "",
+    subjectMail: visitSubjectMail || "",
     datosClienteUsuarioFinal: formulario.datosClienteUsuarioFinal || "",
     fechaCierre: formulario.fechaCierre
       ? new Date(formulario.fechaCierre)

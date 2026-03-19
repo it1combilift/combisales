@@ -35,6 +35,7 @@ export default function FormularioCSSAnalisis({
   readOnly = false,
   enableCustomerEntry = false,
   customerStepBeforeFiles = false,
+  enableSubjectMail = false,
   onDirtyChange,
 }: FormularioCSSAnalisisProps) {
   const isEditing = !!existingVisit;
@@ -52,7 +53,7 @@ export default function FormularioCSSAnalisis({
     mode: "onChange",
     defaultValues:
       isEditing && formulario
-        ? getDefaultValuesForEdit(formulario)
+        ? getDefaultValuesForEdit(formulario, existingVisit?.subjectMail)
         : customer
           ? getDefaultValuesForNew(customer)
           : getDefaultValuesForNew({} as any),
@@ -74,6 +75,8 @@ export default function FormularioCSSAnalisis({
     completedSteps,
     progress,
     allStepsComplete,
+    canSubmit,
+    submitDisabledReason,
     currentStepConfig,
     isFirstStep,
     isLastStep,
@@ -100,6 +103,7 @@ export default function FormularioCSSAnalisis({
     assignedSellerId,
     enableCustomerEntry,
     customerStepBeforeFiles,
+    enableSubjectMail,
   });
 
   const {
@@ -130,7 +134,9 @@ export default function FormularioCSSAnalisis({
       case "customerData":
         return <CompanyStep {...stepProps} />;
       case "product":
-        return <Step1Content {...stepProps} />;
+        return (
+          <Step1Content {...stepProps} enableSubjectMail={enableSubjectMail} />
+        );
       case "container":
         return <Step2Content {...stepProps} />;
       case "measurements":
@@ -194,6 +200,8 @@ export default function FormularioCSSAnalisis({
             isLastStep={isLastStep}
             isEditing={isEditing}
             allStepsComplete={allStepsComplete}
+            canSubmit={canSubmit}
+            submitDisabledReason={submitDisabledReason}
             isSubmitting={isSubmitting}
             isSavingDraft={isSavingDraft}
             isSavingChanges={isSavingChanges}

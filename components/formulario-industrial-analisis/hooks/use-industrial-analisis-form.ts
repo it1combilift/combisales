@@ -22,6 +22,8 @@ interface UseIndustrialAnalisisFormProps {
   enableCustomerEntry?: boolean;
   // Para flujo DEALER: posicionar paso cliente antes de archivos
   customerStepBeforeFiles?: boolean;
+  // Habilita el campo subjectMail para el flujo SELLER/ADMIN sobre clones
+  enableSubjectMail?: boolean;
 }
 
 export function useIndustrialAnalisisForm({
@@ -36,6 +38,7 @@ export function useIndustrialAnalisisForm({
   assignedSellerId,
   enableCustomerEntry = false,
   customerStepBeforeFiles = false,
+  enableSubjectMail = false,
 }: UseIndustrialAnalisisFormProps) {
   // Get the appropriate steps based on enableCustomerEntry and position
   const formSteps = useMemo(
@@ -288,6 +291,17 @@ export function useIndustrialAnalisisForm({
   const currentStepConfig = formSteps[currentStep - 1];
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === formSteps.length;
+  const subjectMailValue = form.watch("subjectMail");
+  const isSubjectMailValid =
+    !enableSubjectMail ||
+    (typeof subjectMailValue === "string" &&
+      subjectMailValue.trim().length > 0);
+  const canSubmit = allStepsComplete && isSubjectMailValid;
+  const submitDisabledReason = !allStepsComplete
+    ? t("visits.formNavigation.completeAllSteps")
+    : !isSubjectMailValid
+      ? t("visits.formNavigation.subjectRequired")
+      : undefined;
 
   // ==================== STEP VALIDATION ====================
   const validateStep = useCallback(
@@ -413,6 +427,9 @@ export function useIndustrialAnalisisForm({
             formType: "ANALISIS_INDUSTRIAL",
             status: visitStatus,
             locale,
+            ...(enableSubjectMail && {
+              subjectMail: formData.subjectMail?.trim() || "",
+            }),
             // Para visitas de DEALER: asignar vendedor
             assignedSellerId,
           },
@@ -448,6 +465,10 @@ export function useIndustrialAnalisisForm({
   // ==================== FORM SUBMIT ====================
   const onSubmit = useCallback(
     async (data: FormularioIndustrialSchema) => {
+      if (!isSubjectMailValid) {
+        toast.error(t("visits.formNavigation.subjectRequired"));
+        return;
+      }
       setIsSubmitting(true);
       try {
         await saveVisit({ saveType: "submit", visitStatus: "COMPLETADA" });
@@ -455,7 +476,7 @@ export function useIndustrialAnalisisForm({
         setIsSubmitting(false);
       }
     },
-    [saveVisit],
+    [saveVisit, isSubjectMailValid, t],
   );
 
   const onSubmitError = useCallback(
@@ -509,6 +530,8 @@ export function useIndustrialAnalisisForm({
     // Computed
     progress,
     allStepsComplete,
+    canSubmit,
+    submitDisabledReason,
     currentStepConfig,
     isFirstStep,
     isLastStep,

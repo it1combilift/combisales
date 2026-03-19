@@ -989,7 +989,8 @@
       "errorSavingChanges": "Error al guardar cambios",
       "visitSubmitted": "Visita enviada exitosamente",
       "errorSubmitting": "Error al enviar la visita",
-      "cannotEditCompleted": "No se pueden guardar cambios en una visita completada"
+      "cannotEditCompleted": "No se pueden guardar cambios en una visita completada",
+      "subjectRequired": "El asunto del correo es obligatorio para enviar"
     }
   },
   "tasks": {
@@ -1858,6 +1859,10 @@
         "distributorContact": {
           "label": "Contacto",
           "placeholder": "Teléfono o email"
+        },
+        "subjectMail": {
+          "label": "Asunto del correo",
+          "placeholder": "Escribe el asunto del correo"
         },
         "closingDate": {
           "label": "Fecha Cierre Estimada",

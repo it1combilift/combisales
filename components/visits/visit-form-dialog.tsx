@@ -27,6 +27,7 @@ export default function VisitFormDialog({
   onOpenChange,
   customer,
   zohoTaskId,
+  enableSubjectMail = false,
   onSuccess,
   existingVisit,
 }: VisitFormDialogProps) {
@@ -226,6 +227,7 @@ export default function VisitFormDialog({
                 <FormularioCSSAnalisis
                   customer={customer}
                   zohoTaskId={zohoTaskId}
+                  enableSubjectMail={enableSubjectMail}
                   onBack={handleBack}
                   onSuccess={handleSuccess}
                   existingVisit={existingVisit}
@@ -236,6 +238,7 @@ export default function VisitFormDialog({
                 <FormularioIndustrialAnalisis
                   customer={customer}
                   zohoTaskId={zohoTaskId}
+                  enableSubjectMail={enableSubjectMail}
                   onBack={handleBack}
                   onSuccess={handleSuccess}
                   existingVisit={existingVisit}
@@ -246,6 +249,7 @@ export default function VisitFormDialog({
                 <FormularioLogisticaAnalisis
                   customer={customer}
                   zohoTaskId={zohoTaskId}
+                  enableSubjectMail={enableSubjectMail}
                   onBack={handleBack}
                   onSuccess={handleSuccess}
                   existingVisit={existingVisit}
@@ -256,6 +260,7 @@ export default function VisitFormDialog({
                 <FormularioStraddleCarrierAnalisis
                   customer={customer}
                   zohoTaskId={zohoTaskId}
+                  enableSubjectMail={enableSubjectMail}
                   onBack={handleBack}
                   onSuccess={handleSuccess}
                   existingVisit={existingVisit}

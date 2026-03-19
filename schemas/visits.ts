@@ -54,6 +54,7 @@ export const getFormularioCSSSchema = (
     numeroIdentificacionFiscal: z.string().optional(),
     distribuidor: z.string().optional(),
     contactoDistribuidor: z.string().optional(),
+    subjectMail: z.string().trim().max(200).optional().default(""),
     fechaCierre: z.date().optional(),
     datosClienteUsuarioFinal: z.string().optional(),
 

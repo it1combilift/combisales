@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { Visit } from "@/interfaces/visits";
 import { useI18n } from "@/lib/i18n/context";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { Role } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
@@ -73,6 +75,10 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
   const router = useRouter();
   const isMobile = useIsMobile();
   const { t, locale } = useI18n();
+  const { data: session } = useSession();
+  const userRoles = session?.user?.roles as Role[] | undefined;
+  const canEditSubjectMail =
+    userRoles?.includes(Role.SELLER) || userRoles?.includes(Role.ADMIN);
 
   /**
    * Fetch client data based on $se_module
@@ -506,6 +512,7 @@ const TaskDetailPage = ({ params }: TaskDetailPageProps) => {
           clientContext ? clientContextToCustomer(clientContext) : undefined
         }
         zohoTaskId={taskId}
+        enableSubjectMail={!!canEditSubjectMail}
         onSuccess={handleVisitSuccess}
         existingVisit={visitToEdit || undefined}
       />

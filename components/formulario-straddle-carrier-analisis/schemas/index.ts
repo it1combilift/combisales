@@ -75,6 +75,7 @@ export const getFormularioStraddleCarrierSchema = (
       numeroIdentificacionFiscal: z.string().optional().default(""),
       distribuidor: z.string().optional(),
       contactoDistribuidor: z.string().optional(),
+      subjectMail: z.string().trim().max(200).optional().default(""),
       fechaCierre: z.date().optional().nullable(),
 
       // ==================== INSTRUCCIONES (toggles) ====================

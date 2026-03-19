@@ -4,12 +4,14 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useI18n } from "@/lib/i18n/context";
 import { ZohoAccount } from "@/interfaces/zoho";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { EmptyCard } from "@/components/empty-card";
 import { Customer, Visit } from "@/interfaces/visits";
+import { Role } from "@prisma/client";
 import { H1, MonoText } from "@/components/fonts/fonts";
 import { createColumns } from "@/components/visits/columns";
 import AnimatedTabsComponent from "@/components/accounts/tabs";
@@ -53,6 +55,10 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
   const isMobile = useIsMobile();
   const { t, locale } = useI18n();
+  const { data: session } = useSession();
+  const userRoles = session?.user?.roles as Role[] | undefined;
+  const canEditSubjectMail =
+    userRoles?.includes(Role.SELLER) || userRoles?.includes(Role.ADMIN);
 
   // Function to save customer automatically
   const saveCustomerAutomatically = async (accountData: ZohoAccount) => {
@@ -427,6 +433,7 @@ const HistoryVisitsPage = ({ params }: { params: Promise<{ id: string }> }) => {
               open={isVisitDialogOpen}
               onOpenChange={handleDialogClose}
               customer={customer}
+              enableSubjectMail={!!canEditSubjectMail}
               onSuccess={handleVisitSuccess}
               existingVisit={visitToEdit || undefined}
             />

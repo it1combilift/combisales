@@ -22,6 +22,8 @@ interface UseStraddleCarrierAnalisisFormProps {
   enableCustomerEntry?: boolean;
   // Si es true, coloca el paso del cliente antes del de archivos (al final del formulario)
   customerStepBeforeFiles?: boolean;
+  // Habilita el campo subjectMail para el flujo SELLER/ADMIN sobre clones
+  enableSubjectMail?: boolean;
 }
 
 export function useStraddleCarrierAnalisisForm({
@@ -36,6 +38,7 @@ export function useStraddleCarrierAnalisisForm({
   assignedSellerId,
   enableCustomerEntry = false,
   customerStepBeforeFiles = false,
+  enableSubjectMail = false,
 }: UseStraddleCarrierAnalisisFormProps) {
   // Get form steps based on enableCustomerEntry and customerStepBeforeFiles
   const formSteps = useMemo(
@@ -123,14 +126,18 @@ export function useStraddleCarrierAnalisisForm({
               values.zonasPasoAncho !== undefined) ||
             (values.zonasPasoAlto !== null &&
               values.zonasPasoAlto !== undefined) ||
-            (values.condicionesPiso &&
-              values.condicionesPiso.trim().length > 0) ||
+            Boolean(
+              values.condicionesPiso &&
+              values.condicionesPiso.trim().length > 0,
+            ) ||
             (values.restriccionesAltura !== null &&
               values.restriccionesAltura !== undefined) ||
             (values.restriccionesAnchura !== null &&
               values.restriccionesAnchura !== undefined) ||
-            (values.notasAdicionales &&
-              values.notasAdicionales.trim().length > 0);
+            Boolean(
+              values.notasAdicionales &&
+              values.notasAdicionales.trim().length > 0,
+            );
           return othersHasData;
 
         case "files":
@@ -268,6 +275,17 @@ export function useStraddleCarrierAnalisisForm({
   const currentStepConfig = formSteps[currentStep - 1];
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === formSteps.length;
+  const subjectMailValue = form.watch("subjectMail");
+  const isSubjectMailValid =
+    !enableSubjectMail ||
+    (typeof subjectMailValue === "string" &&
+      subjectMailValue.trim().length > 0);
+  const canSubmit = allStepsComplete && isSubjectMailValid;
+  const submitDisabledReason = !allStepsComplete
+    ? t("visits.formNavigation.completeAllSteps")
+    : !isSubjectMailValid
+      ? t("visits.formNavigation.subjectRequired")
+      : undefined;
 
   const validateStep = useCallback(
     async (step: number): Promise<boolean> => {
@@ -371,6 +389,9 @@ export function useStraddleCarrierAnalisisForm({
             formType: "ANALISIS_STRADDLE_CARRIER",
             status: visitStatus,
             locale,
+            ...(enableSubjectMail && {
+              subjectMail: formData.subjectMail?.trim() || "",
+            }),
             // Para visitas de DEALER: asignar vendedor
             assignedSellerId,
           },
@@ -404,6 +425,10 @@ export function useStraddleCarrierAnalisisForm({
 
   const onSubmit = useCallback(
     async (data: FormularioStraddleCarrierSchema) => {
+      if (!isSubjectMailValid) {
+        toast.error(t("visits.formNavigation.subjectRequired"));
+        return;
+      }
       setIsSubmitting(true);
       try {
         await saveVisit({ saveType: "submit" });
@@ -411,7 +436,7 @@ export function useStraddleCarrierAnalisisForm({
         setIsSubmitting(false);
       }
     },
-    [saveVisit],
+    [saveVisit, isSubjectMailValid, t],
   );
 
   const onSubmitError = useCallback(
@@ -460,6 +485,8 @@ export function useStraddleCarrierAnalisisForm({
     // Computed
     progress,
     allStepsComplete,
+    canSubmit,
+    submitDisabledReason,
     currentStepConfig,
     isFirstStep,
     isLastStep,

@@ -52,11 +52,6 @@ export function AppSidebar({
         icon: IconBuildings,
       },
       {
-        title: t("navigation.equipment"),
-        url: "/dashboard/equipment",
-        icon: Forklift,
-      },
-      {
         title: t("navigation.dealers"),
         url: "/dashboard/dealers",
         icon: IconTruckDelivery,
@@ -70,6 +65,11 @@ export function AppSidebar({
         title: t("navigation.inspections"),
         url: "/dashboard/inspections",
         icon: ClipboardCheck,
+      },
+      {
+        title: t("navigation.equipment"),
+        url: "/dashboard/equipment",
+        icon: Forklift,
       },
     ],
     navSecondary: [

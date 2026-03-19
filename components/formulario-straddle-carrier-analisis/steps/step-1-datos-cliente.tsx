@@ -14,7 +14,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-// ==================== TEXT INPUT FIELD ====================
 interface TextInputProps {
   control: any;
   name: string;
@@ -48,10 +47,13 @@ function TextInput({
           </FormLabel>
           <FormControl>
             <div className="relative">
+              {Icon && (
+                <Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              )}
               <Input
                 type={type}
                 placeholder={placeholder}
-                className={cn("text-sm h-8 sm:h-9")}
+                className={cn("text-sm h-8 sm:h-9", Icon && "pl-9")}
                 {...field}
               />
             </div>
@@ -63,21 +65,13 @@ function TextInput({
   );
 }
 
-/**
- * Step 1: Datos del Cliente
- * Company information, contact details, and commercial data
- * Optimized responsive grid layout - minimal vertical scrolling on large screens
- */
 export function Step1Content({ form }: StepContentProps) {
   const { t } = useI18n();
 
   return (
     <div className="space-y-3 md:space-y-4 min-h-full pb-2">
-      {/* ==================== EMPRESA Y CONTACTO ==================== */}
       <section>
-        {/* Grid: 1 col mobile, 2 cols md, 3 cols xl - Optimized for large screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
-          {/* Razón Social - Spans 2 cols on XL */}
           <TextInput
             control={form.control}
             name="razonSocial"
@@ -87,7 +81,7 @@ export function Step1Content({ form }: StepContentProps) {
             required
             className="md:col-span-2"
           />
-          {/* Persona Contacto */}
+
           <TextInput
             control={form.control}
             name="personaContacto"
@@ -98,7 +92,6 @@ export function Step1Content({ form }: StepContentProps) {
             className="md:col-span-2"
           />
 
-          {/* NIF */}
           <TextInput
             control={form.control}
             name="numeroIdentificacionFiscal"
@@ -108,7 +101,6 @@ export function Step1Content({ form }: StepContentProps) {
             required
           />
 
-          {/* Email */}
           <TextInput
             control={form.control}
             name="email"
@@ -119,7 +111,6 @@ export function Step1Content({ form }: StepContentProps) {
             type="email"
           />
 
-          {/* Website */}
           <TextInput
             control={form.control}
             name="website"
@@ -132,7 +123,6 @@ export function Step1Content({ form }: StepContentProps) {
         </div>
       </section>
 
-      {/* ==================== UBICACIÓN ==================== */}
       <section>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
           <TextInput
@@ -154,7 +144,6 @@ export function Step1Content({ form }: StepContentProps) {
             className="md:col-span-2"
           />
 
-          {/* Código Postal */}
           <TextInput
             control={form.control}
             name="codigoPostal"
@@ -163,7 +152,6 @@ export function Step1Content({ form }: StepContentProps) {
             required
           />
 
-          {/* Provincia - Spans 3 cols on XL */}
           <TextInput
             control={form.control}
             name="provinciaEstado"
@@ -172,7 +160,6 @@ export function Step1Content({ form }: StepContentProps) {
             required
           />
 
-          {/* País - Spans 3 cols on XL */}
           <TextInput
             control={form.control}
             name="pais"
@@ -184,10 +171,8 @@ export function Step1Content({ form }: StepContentProps) {
         </div>
       </section>
 
-      {/* ==================== COMERCIAL ==================== */}
       <section>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {/* Distribuidor */}
           <TextInput
             control={form.control}
             name="distribuidor"
@@ -195,7 +180,6 @@ export function Step1Content({ form }: StepContentProps) {
             placeholder={t("forms.clientData.fields.distributor.placeholder")}
           />
 
-          {/* Contacto Distribuidor */}
           <TextInput
             control={form.control}
             name="contactoDistribuidor"

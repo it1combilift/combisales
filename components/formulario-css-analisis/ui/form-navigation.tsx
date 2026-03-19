@@ -23,6 +23,8 @@ export function FormNavigation({
   isLastStep,
   isEditing,
   allStepsComplete,
+  canSubmit = allStepsComplete,
+  submitDisabledReason,
   isSubmitting,
   isSavingDraft,
   isSavingChanges,
@@ -127,10 +129,11 @@ export function FormNavigation({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isDisabled || !allStepsComplete}
+                    disabled={isDisabled || !canSubmit}
                     title={
-                      !allStepsComplete
-                        ? t("visits.formNavigation.completeAllSteps")
+                      !canSubmit
+                        ? submitDisabledReason ||
+                          t("visits.formNavigation.completeAllSteps")
                         : t("visits.formNavigation.submit")
                     }
                   >
@@ -180,7 +183,7 @@ export function FormNavigation({
                     size="sm"
                     disabled={
                       isDisabled ||
-                      !allStepsComplete ||
+                      !canSubmit ||
                       visitIsCompleted === VisitStatus.COMPLETADA
                     }
                     className={
@@ -189,8 +192,9 @@ export function FormNavigation({
                         : ""
                     }
                     title={
-                      !allStepsComplete
-                        ? t("visits.formNavigation.completeAllSteps")
+                      !canSubmit
+                        ? submitDisabledReason ||
+                          t("visits.formNavigation.completeAllSteps")
                         : t("visits.formNavigation.submit")
                     }
                   >

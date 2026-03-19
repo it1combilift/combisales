@@ -267,6 +267,7 @@ export async function POST(
         // Siempre empieza como borrador
         status: VisitStatus.BORRADOR,
         visitDate: new Date(),
+        subjectMail: originalVisit.subjectMail,
         // No tiene vendedor asignado (es del SELLER)
         assignedSellerId: null,
         // Campos de clonación

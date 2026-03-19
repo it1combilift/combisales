@@ -21,6 +21,8 @@ export interface FormularioIndustrialAnalisisProps {
   enableCustomerEntry?: boolean;
   // Si es true, el paso de cliente se muestra antes de archivos (casi al final)
   customerStepBeforeFiles?: boolean;
+  // Si es true, habilita el campo subjectMail en datos de cliente
+  enableSubjectMail?: boolean;
   // Callback para notificar cambios no guardados al componente padre
   onDirtyChange?: (isDirty: boolean) => void;
 }
@@ -54,6 +56,7 @@ export interface DimensionCarga {
 // ==================== STEP COMPONENT PROPS ====================
 export interface StepContentProps {
   form: UseFormReturn<FormularioIndustrialSchema>;
+  enableSubjectMail?: boolean;
 }
 
 // ==================== FIELD WRAPPER PROPS ====================
@@ -109,6 +112,8 @@ export interface FormNavigationProps {
   isLastStep: boolean;
   isEditing: boolean;
   allStepsComplete: boolean;
+  canSubmit?: boolean;
+  submitDisabledReason?: string;
   isSubmitting: boolean;
   isSavingDraft: boolean;
   isSavingChanges: boolean;

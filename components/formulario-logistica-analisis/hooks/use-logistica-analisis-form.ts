@@ -22,6 +22,8 @@ interface UseLogisticaAnalisisFormProps {
   enableCustomerEntry?: boolean;
   // Si es true, coloca el paso del cliente antes del de archivos (al final del formulario)
   customerStepBeforeFiles?: boolean;
+  // Habilita el campo subjectMail para el flujo SELLER/ADMIN sobre clones
+  enableSubjectMail?: boolean;
 }
 
 export function useLogisticaAnalisisForm({
@@ -36,6 +38,7 @@ export function useLogisticaAnalisisForm({
   assignedSellerId,
   enableCustomerEntry = false,
   customerStepBeforeFiles = false,
+  enableSubjectMail = false,
 }: UseLogisticaAnalisisFormProps) {
   // Get form steps based on enableCustomerEntry and customerStepBeforeFiles
   const formSteps = useMemo(
@@ -268,6 +271,17 @@ export function useLogisticaAnalisisForm({
   const currentStepConfig = formSteps[currentStep - 1];
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === formSteps.length;
+  const subjectMailValue = form.watch("subjectMail");
+  const isSubjectMailValid =
+    !enableSubjectMail ||
+    (typeof subjectMailValue === "string" &&
+      subjectMailValue.trim().length > 0);
+  const canSubmit = allStepsComplete && isSubjectMailValid;
+  const submitDisabledReason = !allStepsComplete
+    ? t("visits.formNavigation.completeAllSteps")
+    : !isSubjectMailValid
+      ? t("visits.formNavigation.subjectRequired")
+      : undefined;
 
   // ==================== STEP VALIDATION ====================
   const validateStep = useCallback(
@@ -367,6 +381,9 @@ export function useLogisticaAnalisisForm({
             formType: "ANALISIS_LOGISTICA",
             status: visitStatus,
             locale,
+            ...(enableSubjectMail && {
+              subjectMail: formData.subjectMail?.trim() || "",
+            }),
             // Para visitas de DEALER: asignar vendedor
             assignedSellerId,
           },
@@ -402,6 +419,10 @@ export function useLogisticaAnalisisForm({
   // ==================== FORM SUBMIT ====================
   const onSubmit = useCallback(
     async (data: FormularioLogisticaSchema) => {
+      if (!isSubjectMailValid) {
+        toast.error(t("visits.formNavigation.subjectRequired"));
+        return;
+      }
       setIsSubmitting(true);
       try {
         await saveVisit({ saveType: "submit", visitStatus: "COMPLETADA" });
@@ -409,7 +430,7 @@ export function useLogisticaAnalisisForm({
         setIsSubmitting(false);
       }
     },
-    [saveVisit],
+    [saveVisit, isSubjectMailValid, t],
   );
 
   const onSubmitError = useCallback(
@@ -463,6 +484,8 @@ export function useLogisticaAnalisisForm({
     // Computed
     progress,
     allStepsComplete,
+    canSubmit,
+    submitDisabledReason,
     currentStepConfig,
     isFirstStep,
     isLastStep,

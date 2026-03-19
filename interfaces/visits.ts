@@ -119,6 +119,7 @@ export interface Visit {
   formType: VisitFormType;
   status: VisitStatus;
   visitDate: Date;
+  subjectMail?: string | null;
   createdAt: Date;
   updatedAt: Date;
   // Para visitas creadas por DEALER: vendedor asignado
@@ -522,6 +523,7 @@ export interface CreateVisitData {
   formType: VisitFormType;
   status?: VisitStatus;
   visitDate?: Date;
+  subjectMail?: string;
   locale?: string; // Idioma para la generación de emails
   // Para visitas creadas por DEALER: vendedor al que se asigna
   assignedSellerId?: string;
@@ -670,6 +672,7 @@ export interface CreateFormularioStraddleCarrierData {
 export interface UpdateVisitData {
   status?: VisitStatus;
   visitDate?: Date;
+  subjectMail?: string;
   locale?: string; // Idioma para la generación de emails
 }
 
@@ -774,6 +777,7 @@ export interface VisitFormDialogProps {
   onOpenChange: (open: boolean) => void;
   customer?: Customer; // Opcional: para visitas de cliente
   zohoTaskId?: string; // Opcional: para visitas de tarea
+  enableSubjectMail?: boolean;
   onSuccess: () => void;
   existingVisit?: Visit;
 }

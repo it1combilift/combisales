@@ -991,7 +991,8 @@
       "errorSavingChanges": "Error saving changes",
       "visitSubmitted": "Visit submitted successfully",
       "errorSubmitting": "Error submitting visit",
-      "cannotEditCompleted": "Cannot save changes to a completed visit"
+      "cannotEditCompleted": "Cannot save changes to a completed visit",
+      "subjectRequired": "Email subject is required to submit"
     }
   },
   "tasks": {
@@ -1860,6 +1861,10 @@
         "distributorContact": {
           "label": "Contact",
           "placeholder": "Phone or email"
+        },
+        "subjectMail": {
+          "label": "Email subject",
+          "placeholder": "Write the email subject"
         },
         "closingDate": {
           "label": "Approximate date of project development",

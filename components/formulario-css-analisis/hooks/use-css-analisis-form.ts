@@ -22,6 +22,8 @@ interface UseCSSAnalisisFormProps {
   enableCustomerEntry?: boolean;
   // Para flujo DEALER: posicionar paso cliente antes de archivos
   customerStepBeforeFiles?: boolean;
+  // Habilita el campo subjectMail para el flujo SELLER/ADMIN sobre clones
+  enableSubjectMail?: boolean;
 }
 
 export function useCSSAnalisisForm({
@@ -36,6 +38,7 @@ export function useCSSAnalisisForm({
   assignedSellerId,
   enableCustomerEntry = false,
   customerStepBeforeFiles = false,
+  enableSubjectMail = false,
 }: UseCSSAnalisisFormProps) {
   // Get the appropriate steps based on enableCustomerEntry and position
   const formSteps = useMemo(
@@ -193,6 +196,17 @@ export function useCSSAnalisisForm({
   const currentStepConfig = formSteps[currentStep - 1];
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === formSteps.length;
+  const subjectMailValue = form.watch("subjectMail");
+  const isSubjectMailValid =
+    !enableSubjectMail ||
+    (typeof subjectMailValue === "string" &&
+      subjectMailValue.trim().length > 0);
+  const canSubmit = allStepsComplete && isSubjectMailValid;
+  const submitDisabledReason = !allStepsComplete
+    ? t("visits.formNavigation.completeAllSteps")
+    : !isSubjectMailValid
+      ? t("visits.formNavigation.subjectRequired")
+      : undefined;
 
   // ==================== VALIDATION ====================
   const validateStep = useCallback(
@@ -254,7 +268,13 @@ export function useCSSAnalisisForm({
 
       if (isEditing && existingVisit) {
         response = await axios.put(`/api/visits/${existingVisit.id}`, {
-          visitData: { status, locale },
+          visitData: {
+            status,
+            locale,
+            ...(enableSubjectMail && {
+              subjectMail: data.subjectMail?.trim() || "",
+            }),
+          },
           formularioData: data,
         });
 
@@ -276,6 +296,9 @@ export function useCSSAnalisisForm({
             visitDate: new Date(),
             status,
             locale,
+            ...(enableSubjectMail && {
+              subjectMail: data.subjectMail?.trim() || "",
+            }),
             // Para visitas de DEALER: asignar vendedor
             assignedSellerId,
           },
@@ -306,6 +329,10 @@ export function useCSSAnalisisForm({
   };
 
   const onSubmit = async (data: FormularioCSSSchema) => {
+    if (!isSubjectMailValid) {
+      toast.error(t("visits.formNavigation.subjectRequired"));
+      return;
+    }
     await saveVisit(data, VisitStatus.COMPLETADA, "submit");
   };
 
@@ -343,6 +370,8 @@ export function useCSSAnalisisForm({
     // Computed
     progress,
     allStepsComplete,
+    canSubmit,
+    submitDisabledReason,
     currentStepConfig,
     isFirstStep,
     isLastStep,

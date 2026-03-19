@@ -1,5 +1,6 @@
 import { StepContentProps } from "../types";
 import { useI18n } from "@/lib/i18n/context";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 import {
@@ -17,11 +18,36 @@ import {
  * Este paso ahora es el primero del formulario tras la optimización.
  * Incluye la descripción del producto (requerida) y la fecha de cierre estimada (opcional).
  */
-export function Step1Content({ form }: StepContentProps) {
+export function Step1Content({ form, enableSubjectMail }: StepContentProps) {
   const { t } = useI18n();
 
   return (
-    <div className="pb-2 h-full flex flex-col">
+    <div className="pb-2 h-full flex flex-col gap-3">
+      {enableSubjectMail && (
+        <FormField
+          control={form.control}
+          name="subjectMail"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+                {t("forms.clientData.fields.subjectMail.label")}
+                <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "forms.clientData.fields.subjectMail.placeholder",
+                  )}
+                  className="h-10 text-sm bg-background/50 border-input/80 focus:border-primary rounded-lg"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="text-sm" />
+            </FormItem>
+          )}
+        />
+      )}
+
       {/* Descripción del producto */}
       <FormField
         control={form.control}

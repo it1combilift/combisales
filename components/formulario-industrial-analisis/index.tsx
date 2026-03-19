@@ -10,14 +10,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormNavigation } from "./ui/form-navigation";
 import { FormularioIndustrialAnalisisProps } from "./types";
 import { useFileUploader } from "./hooks/use-file-uploader";
-import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
 import { useIndustrialAnalisisForm } from "./hooks/use-industrial-analisis-form";
+import { Step1Content as CustomerDataStep } from "./steps/step-1-datos-cliente";
 
 import { Step6Content } from "./steps/step-7-archivos";
+import { Step1Content } from "./steps/step-2-descripcion-operacion";
 import { Step2Content } from "./steps/step-3-datos-aplicacion";
 import { Step3Content } from "./steps/step-4-equipos-electricos";
 import { Step4Content } from "./steps/step-5-dimensiones-cargas";
-import { Step1Content } from "./steps/step-2-descripcion-operacion";
 import { Step5Content } from "./steps/step-6-especificaciones-pasillo";
 
 import {
@@ -41,6 +41,7 @@ export default function FormularioIndustrialAnalisis({
   readOnly = false,
   enableCustomerEntry = false,
   customerStepBeforeFiles = false,
+  enableSubjectMail = false,
   onDirtyChange,
 }: FormularioIndustrialAnalisisProps) {
   const isEditing = !!existingVisit;
@@ -57,7 +58,7 @@ export default function FormularioIndustrialAnalisis({
     mode: "onChange",
     defaultValues:
       isEditing && formulario
-        ? getDefaultValuesForEdit(formulario)
+        ? getDefaultValuesForEdit(formulario, existingVisit?.subjectMail)
         : customer
           ? getDefaultValuesForNew(customer)
           : getDefaultValuesForNew({} as any),
@@ -79,6 +80,8 @@ export default function FormularioIndustrialAnalisis({
     completedSteps,
     progress,
     allStepsComplete,
+    canSubmit,
+    submitDisabledReason,
     currentStepConfig,
     isFirstStep,
     isLastStep,
@@ -105,6 +108,7 @@ export default function FormularioIndustrialAnalisis({
     assignedSellerId,
     enableCustomerEntry,
     customerStepBeforeFiles,
+    enableSubjectMail,
   });
 
   const {
@@ -135,7 +139,9 @@ export default function FormularioIndustrialAnalisis({
       case "customerData":
         return <CustomerDataStep {...stepProps} />;
       case "operation":
-        return <Step1Content {...stepProps} />;
+        return (
+          <Step1Content {...stepProps} enableSubjectMail={enableSubjectMail} />
+        );
       case "application":
         return <Step2Content {...stepProps} />;
       case "batteries":
@@ -203,6 +209,8 @@ export default function FormularioIndustrialAnalisis({
             isLastStep={isLastStep}
             isEditing={isEditing}
             allStepsComplete={allStepsComplete}
+            canSubmit={canSubmit}
+            submitDisabledReason={submitDisabledReason}
             isSubmitting={isSubmitting}
             isSavingDraft={isSavingDraft}
             isSavingChanges={isSavingChanges}

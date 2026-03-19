@@ -154,6 +154,9 @@ export interface VisitEmailData {
   // Identificador de la visita
   visitId?: string;
 
+  // Asunto personalizado para el email (cuando aplica)
+  subjectMail?: string;
+
   // Datos basicos del cliente
   razonSocial: string;
   personaContacto: string;
