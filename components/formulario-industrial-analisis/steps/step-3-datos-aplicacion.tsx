@@ -1,7 +1,7 @@
 import { TipoAlimentacion } from "../types";
 import { StepContentProps } from "../types";
 import { Input } from "@/components/ui/input";
-import { Package, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 
 import {
@@ -302,7 +302,7 @@ export function Step3Content({ form }: StepContentProps) {
                   <Input
                     type="number"
                     min="1"
-                    placeholder="1"
+                    placeholder="Ej: 2"
                     className="text-sm h-8 text-pretty"
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
