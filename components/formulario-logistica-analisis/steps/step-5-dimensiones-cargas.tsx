@@ -185,7 +185,7 @@ export function Step5Content({ form }: StepContentProps) {
   const isValid = Math.abs(totalPorcentaje - 100) < 0.01;
 
   // State for collapsible reference image
-  const [isImageOpen, setIsImageOpen] = useState(false);
+  const [isImageOpen, setIsImageOpen] = useState(true);
 
   return (
     <div className="space-y-3 sm:space-y-4 min-h-full pb-2">

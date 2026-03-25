@@ -1,11 +1,12 @@
 import { sendEmail } from "@/lib/resend";
+import { getPrimaryRole } from "@/lib/roles";
 import { VisitStatus, VisitFormType, Role } from "@prisma/client";
+
 import {
   EMAIL_CONFIG,
   NOTIFICATION_CONFIG,
   MANAGEMENT_EMAIL,
 } from "@/constants/constants";
-import { getPrimaryRole } from "@/lib/roles";
 
 import {
   SendVisitNotificationParams,
