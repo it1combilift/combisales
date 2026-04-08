@@ -34,6 +34,22 @@ interface InspectionEmailData {
   createdAt: Date | string;
 }
 
+interface ReminderVehicleData {
+  id: string;
+  model: string;
+  plate: string;
+}
+
+interface InspectionReminderEmailData {
+  recipientName: string;
+  recipientEmail: string;
+  frequency: "MONTHLY" | "WEEKLY";
+  month: number;
+  year: number;
+  week: number | null;
+  assignedVehicles: ReminderVehicleData[];
+}
+
 const PHOTO_TYPE_LABELS: Record<InspectionPhotoType, string> = {
   FRONT: "Front",
   REAR: "Rear",
@@ -314,3 +330,163 @@ export async function sendInspectionApprovedEmail(
     );
   }
 }
+
+function generateInspectionReminderEmailHTML(
+  data: InspectionReminderEmailData,
+): string {
+  const monthName = new Date(data.year, data.month - 1, 1).toLocaleDateString(
+    "es-ES",
+    {
+      month: "long",
+      year: "numeric",
+    },
+  );
+
+  const visibleVehicles = data.assignedVehicles.slice(0, 8);
+  const hiddenCount = Math.max(
+    data.assignedVehicles.length - visibleVehicles.length,
+    0,
+  );
+  const isWeekly = data.frequency === "WEEKLY";
+  const periodLabel = isWeekly
+    ? `semana ${data.week ?? "actual"} de ${data.year}`
+    : monthName;
+  const reminderTitle = isWeekly
+    ? "Recordatorio semanal de inspecciones"
+    : "Recordatorio mensual de inspecciones";
+  const cadenceDescription = isWeekly
+    ? "Este es tu recordatorio semanal para revisar y registrar las inspecciones"
+    : "Este es el recordatorio programado";
+
+  return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;background-color:#f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background:#fff;">
+    <tr>
+      <td style="background:#679436;padding:24px;text-align:center;">
+        <img src="${EMAIL_CONFIG.companyLogo}" alt="Combilift" height="40" style="filter:brightness(0) invert(1);"/>
+        <h1 style="color:#fff;margin:12px 0 0;font-size:20px;">${reminderTitle}</h1>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:24px;">
+        <p style="margin:0 0 12px;color:#424242;">Hola ${data.recipientName},</p>
+        <p style="margin:0 0 16px;color:#616161;line-height:1.5;">
+          ${cadenceDescription} de los vehículos que tienes asignados para <strong>${periodLabel}</strong>.
+        </p>
+
+        <table width="100%" cellpadding="10" cellspacing="0" style="border:1px solid #e0e0e0;border-radius:8px;margin-bottom:16px;">
+          <tr style="background:#f5f5f5;">
+            <td style="font-weight:bold;font-size:14px;color:#424242;">Vehículos asignados (${data.assignedVehicles.length})</td>
+          </tr>
+          ${visibleVehicles
+            .map(
+              (vehicle, index) => `
+            <tr style="background:${index % 2 === 0 ? "#ffffff" : "#fafafa"};">
+              <td style="color:#424242;">${vehicle.model} <span style="color:#757575;">(${vehicle.plate})</span></td>
+            </tr>`,
+            )
+            .join("")}
+          ${
+            hiddenCount > 0
+              ? `<tr><td style="color:#757575;">Y ${hiddenCount} vehículo(s) más.</td></tr>`
+              : ""
+          }
+        </table>
+
+        <div style="text-align:center;margin-top:24px;">
+          <a href="${process.env.NEXTAUTH_URL || ""}/dashboard/inspections" target="_blank"
+             style="display:inline-block;padding:12px 24px;background:#679436;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">
+            Ir al módulo de inspecciones
+          </a>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="background:#f5f5f5;padding:16px;text-align:center;color:#9e9e9e;font-size:12px;">
+        CombiSales &mdash; Vehicle Inspection System
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function generateInspectionReminderEmailText(
+  data: InspectionReminderEmailData,
+): string {
+  const monthName = new Date(data.year, data.month - 1, 1).toLocaleDateString(
+    "es-ES",
+    {
+      month: "long",
+      year: "numeric",
+    },
+  );
+  const isWeekly = data.frequency === "WEEKLY";
+  const periodLabel = isWeekly
+    ? `semana ${data.week ?? "actual"} de ${data.year}`
+    : monthName;
+  const title = isWeekly
+    ? `Recordatorio semanal de inspecciones (${periodLabel})`
+    : `Recordatorio mensual de inspecciones (${periodLabel})`;
+  const cadenceLine = isWeekly
+    ? "Este es tu recordatorio semanal para registrar las inspecciones de los vehículos asignados."
+    : "Este es tu recordatorio mensual para registrar las inspecciones de los vehículos asignados.";
+
+  const lines = [
+    title,
+    "",
+    `Hola ${data.recipientName},`,
+    "",
+    cadenceLine,
+    "",
+    `Vehículos asignados (${data.assignedVehicles.length}):`,
+    ...data.assignedVehicles.map(
+      (vehicle) => `- ${vehicle.model} (${vehicle.plate})`,
+    ),
+    "",
+    `Abrir inspecciones: ${(process.env.NEXTAUTH_URL || "") + "/dashboard/inspections"}`,
+  ];
+
+  return lines.join("\n");
+}
+
+export async function sendInspectionMonthlyReminderEmail(
+  data: InspectionReminderEmailData,
+): Promise<boolean> {
+  const html = generateInspectionReminderEmailHTML(data);
+  const text = generateInspectionReminderEmailText(data);
+
+  try {
+    const result = await sendEmail({
+      to: data.recipientEmail,
+      subject:
+        data.frequency === "WEEKLY"
+          ? `[Inspecciones] Recordatorio semanal - Semana ${String(data.week ?? "--")}/${data.year}`
+          : `[Inspecciones] Recordatorio mensual - ${String(data.month).padStart(2, "0")}/${data.year}`,
+      html,
+      text,
+    });
+
+    if (!result.success) {
+      console.error(
+        `Failed to send monthly inspection reminder to ${data.recipientEmail}:`,
+        result.error,
+      );
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error(
+      `Failed to send monthly inspection reminder to ${data.recipientEmail}:`,
+      error,
+    );
+    return false;
+  }
+}
+
+export const sendInspectionScheduledReminderEmail =
+  sendInspectionMonthlyReminderEmail;

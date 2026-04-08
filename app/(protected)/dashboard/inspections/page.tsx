@@ -12,13 +12,20 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { AlertMessage } from "@/components/alert";
 import { useTranslation } from "@/lib/i18n/context";
 import { H1, Paragraph } from "@/components/fonts/fonts";
-import { Inspection, Vehicle } from "@/interfaces/inspection";
+import {
+  Inspection,
+  Vehicle,
+  InspectionReminderSettingsResponse,
+  UpdateInspectionReminderSettingsPayload,
+  RunInspectionReminderResponse,
+} from "@/interfaces/inspection";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { VehicleCard } from "@/components/inspections/vehicle-card";
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { VehiclesTable } from "@/components/inspections/vehicles-table";
 import { VehicleDialog } from "@/components/inspections/vehicle-dialog";
 import { VehicleFilters } from "@/components/inspections/vehicle-filters";
+import { ReminderSettingsCard } from "@/components/inspections/reminder-settings-card";
 import { ApprovalDialog } from "@/components/inspections/approval-dialog";
 import { InspectionCard } from "@/components/inspections/inspection-card";
 import { InspectorDialog } from "@/components/inspections/inspector-dialog";
@@ -72,6 +79,7 @@ const VehicleInspectionPage = () => {
   const isAdmin = hasRole(userRoles, Role.ADMIN);
   const isSeller = hasRole(userRoles, Role.SELLER);
   const isInspector = hasRole(userRoles, Role.INSPECTOR);
+  const canManageReminders = isAdmin || isInspector;
   const canCreateInspection = isAdmin || isInspector || isSeller;
 
   // SWR data fetching
@@ -98,6 +106,15 @@ const VehicleInspectionPage = () => {
     mutate: mutateInspectors,
   } = useSWR<InspectorData[]>(
     isAdmin ? `/api/users?roles=${Role.INSPECTOR},${Role.SELLER}` : null,
+    fetcher,
+  );
+
+  const {
+    data: reminderData,
+    isLoading: remindersLoading,
+    mutate: mutateReminders,
+  } = useSWR<InspectionReminderSettingsResponse>(
+    canManageReminders ? "/api/inspections/reminders" : null,
     fetcher,
   );
 
@@ -142,13 +159,106 @@ const VehicleInspectionPage = () => {
   // PDF generation state
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
+  const [isSavingReminderSettings, setIsSavingReminderSettings] =
+    useState(false);
+  const [isRunningReminderNow, setIsRunningReminderNow] = useState(false);
+
+  const getReminderSkipMessage = useCallback(
+    (reason: RunInspectionReminderResponse["reason"]) => {
+      switch (reason) {
+        case "disabled":
+          return t("inspectionsPage.reminders.skipDisabled");
+        case "not_due":
+          return t("inspectionsPage.reminders.skipNotDue");
+        case "already_sent":
+          return t("inspectionsPage.reminders.skipAlreadySent");
+        case "in_progress":
+          return t("inspectionsPage.reminders.skipInProgress");
+        case "failed_already":
+          return t("inspectionsPage.reminders.skipFailedAlready");
+        default:
+          return t("inspectionsPage.reminders.skipGeneric");
+      }
+    },
+    [t],
+  );
+
+  const handleSaveReminderSettings = useCallback(
+    async (payload: UpdateInspectionReminderSettingsPayload) => {
+      try {
+        setIsSavingReminderSettings(true);
+
+        const response = await fetch("/api/inspections/reminders", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          toast.error(t("inspectionsPage.reminders.saveError"));
+          return;
+        }
+
+        await mutateReminders();
+        toast.success(t("inspectionsPage.reminders.saveSuccess"));
+      } catch (error) {
+        console.error("Failed to save reminder settings:", error);
+        toast.error(t("inspectionsPage.reminders.saveError"));
+      } finally {
+        setIsSavingReminderSettings(false);
+      }
+    },
+    [mutateReminders, t],
+  );
+
+  const handleRunReminderNow = useCallback(async () => {
+    try {
+      setIsRunningReminderNow(true);
+
+      const response = await fetch("/api/inspections/reminders/run", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ force: true }),
+      });
+
+      if (!response.ok) {
+        toast.error(t("inspectionsPage.reminders.runError"));
+        return;
+      }
+
+      const result: RunInspectionReminderResponse = await response.json();
+
+      if (result.status === "sent") {
+        toast.success(
+          t("inspectionsPage.reminders.runSuccess", {
+            count: result.successfulCount,
+          }),
+        );
+      } else if (result.status === "failed") {
+        toast.error(t("inspectionsPage.reminders.runFailed"));
+      } else {
+        toast.success(getReminderSkipMessage(result.reason));
+      }
+
+      await mutateReminders();
+    } catch (error) {
+      console.error("Failed to run reminder manually:", error);
+      toast.error(t("inspectionsPage.reminders.runError"));
+    } finally {
+      setIsRunningReminderNow(false);
+    }
+  }, [getReminderSkipMessage, mutateReminders, t]);
 
   const handleDownloadPdf = useCallback(
     async (inspection: Inspection) => {
       if (isGeneratingPdf) return;
       setIsGeneratingPdf(true);
       setGeneratingPdfId(inspection.id);
-      
+
       try {
         toast.success(t("inspectionsPage.pdf.generating"));
         const res = await fetch(
@@ -271,8 +381,19 @@ const VehicleInspectionPage = () => {
     if (isAdmin) {
       mutateInspectors();
     }
+    if (canManageReminders) {
+      mutateReminders();
+    }
     toast.success(t("messages.updated"));
-  }, [mutateInspections, mutateVehicles, mutateInspectors, isAdmin]);
+  }, [
+    mutateInspections,
+    mutateVehicles,
+    mutateInspectors,
+    mutateReminders,
+    isAdmin,
+    canManageReminders,
+    t,
+  ]);
 
   // View inspection details
   const handleViewInspection = useCallback(
@@ -385,6 +506,19 @@ const VehicleInspectionPage = () => {
                     : t("common.refresh")}
                 </span>
               </Button>
+
+              {canManageReminders && (
+                <ReminderSettingsCard
+                  settings={reminderData?.settings ?? null}
+                  lastDispatch={reminderData?.lastDispatch ?? null}
+                  isLoading={remindersLoading}
+                  isSaving={isSavingReminderSettings}
+                  isRunning={isRunningReminderNow}
+                  onSave={handleSaveReminderSettings}
+                  onRunNow={handleRunReminderNow}
+                />
+              )}
+
               {canCreateInspection && (
                 <Button size="sm" onClick={() => setFormDialogOpen(true)}>
                   <Plus className="size-4" />

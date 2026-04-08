@@ -190,6 +190,81 @@ export interface ApproveInspectionPayload {
   comments?: string;
 }
 
+export type InspectionReminderFrequency = "MONTHLY" | "WEEKLY";
+
+export interface InspectionReminderSettings {
+  id: string;
+  key: string;
+  isEnabled: boolean;
+  frequency: InspectionReminderFrequency;
+  dayOfMonth: number;
+  weeklyDay: number;
+  sendTime: string;
+  timezone: string;
+  lastTriggeredAt: string | null;
+  updatedById: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InspectionReminderDispatchLog {
+  id: string;
+  periodKey: string;
+  frequency: InspectionReminderFrequency;
+  year: number;
+  month: number;
+  week: number | null;
+  status: "PROCESSING" | "SENT" | "FAILED";
+  scheduledFor: string;
+  recipientCount: number;
+  successfulCount: number;
+  failedCount: number;
+  failureReason: string | null;
+  triggeredBy: string | null;
+  startedAt: string;
+  sentAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InspectionReminderSettingsResponse {
+  settings: InspectionReminderSettings;
+  lastDispatch: InspectionReminderDispatchLog | null;
+}
+
+export interface UpdateInspectionReminderSettingsPayload {
+  isEnabled: boolean;
+  frequency: InspectionReminderFrequency;
+  dayOfMonth: number;
+  weeklyDay: number;
+  sendTime: string;
+  timezone: string;
+}
+
+export interface RunInspectionReminderPayload {
+  force?: boolean;
+}
+
+export interface RunInspectionReminderResponse {
+  status: "sent" | "skipped" | "failed";
+  frequency: InspectionReminderFrequency;
+  reason:
+    | "sent"
+    | "disabled"
+    | "not_due"
+    | "already_sent"
+    | "in_progress"
+    | "failed_already"
+    | "send_failed";
+  year: number;
+  month: number;
+  recipientCount: number;
+  successfulCount: number;
+  failedCount: number;
+  dispatchId: string | null;
+  week: number | null;
+}
+
 // ==================== CHECKLIST CONFIGURATION ====================
 export interface ChecklistItem {
   key: string;

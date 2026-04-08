@@ -874,3 +874,73 @@ model InspectionApproval {
   @@index([inspectionId])
   @@index([userId])
 }
+
+enum InspectionReminderDispatchStatus {
+  PROCESSING
+  SENT
+  FAILED
+}
+
+enum InspectionReminderFrequency {
+  MONTHLY
+  WEEKLY
+}
+
+model InspectionReminderSettings {
+  id String @id @default(cuid())
+
+  // Singleton key for global reminder settings
+  key String @unique @default("default")
+
+  // Schedule configuration
+  isEnabled  Boolean                     @default(true)
+  frequency  InspectionReminderFrequency @default(MONTHLY)
+  dayOfMonth Int                         @default(10)
+  weeklyDay  Int                         @default(1)
+  sendTime   String                      @default("09:00")
+  timezone   String                      @default("Europe/Madrid")
+
+  // Operational metadata
+  lastTriggeredAt DateTime?
+  updatedById     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isEnabled])
+}
+
+model InspectionReminderDispatchLog {
+  id String @id @default(cuid())
+
+  // Period key for idempotency
+  periodKey String @unique
+
+  // Schedule period context
+  frequency InspectionReminderFrequency @default(MONTHLY)
+  year      Int
+  month     Int
+  week      Int?
+
+  status InspectionReminderDispatchStatus @default(PROCESSING)
+
+  // Schedule context and result metrics
+  scheduledFor    DateTime
+  recipientCount  Int      @default(0)
+  successfulCount Int      @default(0)
+  failedCount     Int      @default(0)
+  failureReason   String?
+  triggeredBy     String?
+
+  startedAt DateTime  @default(now())
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status])
+  @@index([frequency])
+  @@index([year, month])
+  @@index([week])
+  @@index([scheduledFor])
+  @@index([sentAt])
+}

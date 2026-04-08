@@ -46,6 +46,12 @@ export const API_ERRORS = {
     UPDATE_INSPECTION: "Error al actualizar la inspección",
     DELETE_INSPECTION: "Error al eliminar la inspección",
     APPROVE_INSPECTION: "Error al aprobar/rechazar la inspección",
+    FETCH_INSPECTION_REMINDER_SETTINGS:
+      "Error al obtener la configuración del recordatorio de inspecciones",
+    UPDATE_INSPECTION_REMINDER_SETTINGS:
+      "Error al actualizar la configuración del recordatorio de inspecciones",
+    RUN_INSPECTION_REMINDER:
+      "Error al ejecutar el recordatorio mensual de inspecciones",
   },
 } as const;
 
