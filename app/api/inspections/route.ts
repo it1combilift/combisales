@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Role, InspectionPhotoType } from "@prisma/client";
 import { hasRole, hasAnyRole } from "@/lib/roles";
+import { Role, InspectionPhotoType } from "@prisma/client";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { sendInspectionCreatedEmail } from "@/lib/inspection-notifications";
 
 import {
   HTTP_STATUS,
@@ -13,9 +14,6 @@ import {
   createSuccessResponse,
 } from "@/lib/api-response";
 
-import { sendInspectionCreatedEmail } from "@/lib/inspection-notifications";
-
-// Include object for full inspection data
 const INSPECTION_INCLUDE = {
   vehicle: {
     include: {
