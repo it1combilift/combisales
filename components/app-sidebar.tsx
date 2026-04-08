@@ -91,7 +91,7 @@ export function AppSidebar({
   // DEALER: Only Dealers
   const filteredNavMain = data.navMain.filter((item) => {
     // ADMIN can access everything
-    if (hasRole(userRoles, Role.ADMIN)) {
+    if (hasRole(userRoles, Role.ADMIN) && !hasRole(userRoles, Role.INSPECTOR)) {
       return true;
     }
 
@@ -111,7 +111,7 @@ export function AppSidebar({
       );
     }
 
-    // INSPECTOR can access Tasks and Inspections
+    // INSPECTOR can ONLY access Inspections
     if (hasRole(userRoles, Role.INSPECTOR)) {
       return item.url === "/dashboard/inspections";
     }

@@ -142,12 +142,6 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
 
   return (
     <Form {...form}>
-      {/*
-        Layout: flex column filling the dialog's available height.
-        - TabsList: always visible, never scrolls
-        - TabsContent wrapper: flex-1 + overflow-y-auto → internal scroll
-        - Action buttons: always pinned at the bottom, never hidden
-      */}
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col h-full"
@@ -156,7 +150,7 @@ export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
           {/* ── Tab navigation — always visible, never scrolls ── */}
           <TabsList
             className={cn(
-              "grid w-full mb-4 h-auto shrink-0",
+              "grid w-full mb-2 h-auto shrink-0",
               "bg-muted/30 dark:bg-muted/50 p-0.5 rounded-xl border border-border/40",
               tabCount === 3 && "grid-cols-3",
               tabCount === 4 && "grid-cols-4",

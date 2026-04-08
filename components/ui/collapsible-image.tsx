@@ -3,8 +3,9 @@
 import * as React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ChevronDown, ImageIcon } from "lucide-react";
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -57,7 +58,7 @@ export function CollapsibleImageTrigger({
         "font-medium transition-colors",
         "hover:bg-primary/5 hover:border-primary/30",
         isOpen && "bg-primary/5 border-primary/30",
-        className
+        className,
       )}
     >
       <ImageIcon className="size-3 text-primary" />
@@ -65,7 +66,7 @@ export function CollapsibleImageTrigger({
       <ChevronDown
         className={cn(
           "size-3 text-muted-foreground transition-transform duration-200",
-          isOpen && "rotate-180"
+          isOpen && "rotate-180",
         )}
       />
     </Button>
@@ -106,7 +107,7 @@ export function CollapsibleImageContent({
           sizes="100vw"
           className={cn(
             "w-full h-auto object-contain",
-            maxHeightClasses[maxHeight]
+            maxHeightClasses[maxHeight],
           )}
           priority={false}
         />
@@ -142,7 +143,7 @@ export function CollapsibleImage({
         className={cn(
           "overflow-hidden",
           "data-[state=open]:animate-collapsible-down",
-          "data-[state=closed]:animate-collapsible-up"
+          "data-[state=closed]:animate-collapsible-up",
         )}
       >
         <CollapsibleImageContent src={src} alt={alt} maxHeight={maxHeight} />

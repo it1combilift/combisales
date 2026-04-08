@@ -40,7 +40,7 @@ export default function DashboardLayout({
         <SiteHeader session={session} />
         <div className="flex flex-1 flex-col w-full">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <main className="flex flex-col gap-4 py-4 md:gap-6 w-full">
+            <main className="flex flex-col gap-4 py-4 w-full">
               <NuqsAdapter>{children}</NuqsAdapter>
               <Toaster position="bottom-right" richColors />
             </main>

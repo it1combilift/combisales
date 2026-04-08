@@ -277,7 +277,7 @@ export function EditUserForm({ user, onSuccess }: EditUserFormProps) {
           {/* ── Tab navigation — always visible, never scrolls ── */}
           <TabsList
             className={cn(
-              "grid w-full mb-4 h-auto shrink-0",
+              "grid w-full mb-2 h-auto shrink-0",
               "bg-muted/30 dark:bg-muted/50 p-0.5 rounded-xl border border-border/40",
               tabCount === 2 && "grid-cols-2",
               tabCount === 3 && "grid-cols-3",
