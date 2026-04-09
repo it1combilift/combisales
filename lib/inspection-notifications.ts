@@ -50,17 +50,70 @@ interface InspectionReminderEmailData {
   assignedVehicles: ReminderVehicleData[];
 }
 
+const CHECKLIST_FAILURE_HEADER = "Observaciones de Checklist (Fallo):";
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function formatMultilineHtml(value: string): string {
+  return escapeHtml(value).replace(/\n/g, "<br />");
+}
+
+function splitObservationSections(rawObservations: string): {
+  generalText: string;
+  failedChecklistItems: string[];
+} {
+  const normalized = rawObservations.replace(/\r\n/g, "\n").trim();
+  if (!normalized) {
+    return {
+      generalText: "",
+      failedChecklistItems: [],
+    };
+  }
+
+  const headerIndex = normalized.indexOf(CHECKLIST_FAILURE_HEADER);
+  if (headerIndex < 0) {
+    return {
+      generalText: normalized,
+      failedChecklistItems: [],
+    };
+  }
+
+  const generalText = normalized.slice(0, headerIndex).trim();
+  const checklistPart = normalized
+    .slice(headerIndex + CHECKLIST_FAILURE_HEADER.length)
+    .trim();
+
+  const failedChecklistItems = checklistPart
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => (line.startsWith("-") ? line.slice(1).trim() : line))
+    .filter(Boolean);
+
+  return {
+    generalText,
+    failedChecklistItems,
+  };
+}
+
 const PHOTO_TYPE_LABELS: Record<InspectionPhotoType, string> = {
-  FRONT: "Front",
-  REAR: "Rear",
-  DRIVER_SIDE: "Left Side",
-  PASSENGER_SIDE: "Right Side",
+  FRONT: "Frontal",
+  REAR: "Trasera",
+  DRIVER_SIDE: "Lateral Izquierdo",
+  PASSENGER_SIDE: "Lateral Derecho",
   INTERIOR: "Interior",
-  SAFETY_DEVICES: "Dashboard with Engine On",
-  WHEEL_FRONT_LEFT: "Front Left Wheel",
-  WHEEL_FRONT_RIGHT: "Front Right Wheel",
-  WHEEL_REAR_LEFT: "Rear Left Wheel",
-  WHEEL_REAR_RIGHT: "Rear Right Wheel",
+  SAFETY_DEVICES: "Cuadro con Motor Encendido",
+  WHEEL_FRONT_LEFT: "Rueda D/I ",
+  WHEEL_FRONT_RIGHT: "Rueda D/D",
+  WHEEL_REAR_LEFT: "Rueda T/I",
+  WHEEL_REAR_RIGHT: "Rueda T/D",
 };
 
 // ==================== EMAIL TEMPLATES ====================
@@ -73,25 +126,25 @@ function generateInspectionEmailHTML(
       bg: "#DBEAFE",
       text: "#1E40AF",
       border: "#93C5FD",
-      label: "Pending Approval",
+      label: "Pendiente de Aprobacion",
     },
     approved: {
       bg: "#E8F5E9",
       text: "#1B5E20",
       border: "#4CAF50",
-      label: "Approved",
+      label: "Aprobada",
     },
     rejected: {
       bg: "#FFEBEE",
       text: "#C62828",
       border: "#EF5350",
-      label: "Rejected",
+      label: "Rechazada",
     },
   };
 
   const color = statusColors[type];
-  const inspectorName = data.user?.name || data.user?.email || "Unknown";
-  const date = new Date(data.createdAt).toLocaleDateString("en-US", {
+  const inspectorName = data.user?.name || data.user?.email || "Desconocido";
+  const date = new Date(data.createdAt).toLocaleDateString("es-ES", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -101,10 +154,45 @@ function generateInspectionEmailHTML(
 
   const title =
     type === "created"
-      ? "New Vehicle Inspection Submitted"
+      ? "Nueva Inspeccion de Vehiculo Enviada"
       : type === "approved"
-        ? "Vehicle Inspection Approved"
-        : "Vehicle Inspection Rejected";
+        ? "Inspeccion de Vehiculo Aprobada"
+        : "Inspeccion de Vehiculo Rechazada";
+
+  const observationSections = data.observations
+    ? splitObservationSections(data.observations)
+    : null;
+
+  const observationsHtml = observationSections
+    ? `<div style="margin-bottom:16px;">
+        <strong style="color:#424242;display:block;margin-bottom:8px;">Observaciones:</strong>
+        ${
+          observationSections.generalText
+            ? `<div style="background:#f7f7f7;border:1px solid #e8e8e8;border-radius:8px;padding:10px 12px;color:#616161;line-height:1.55;white-space:normal;">${formatMultilineHtml(observationSections.generalText)}</div>`
+            : ""
+        }
+        ${
+          observationSections.failedChecklistItems.length > 0
+            ? `<div style="margin-top:${observationSections.generalText ? "10px" : "0"};background:#fff7f7;border:1px solid #ffd6d6;border-radius:8px;padding:10px 12px;">
+                <div style="color:#b42318;font-weight:600;font-size:13px;margin-bottom:6px;">Detalle de checklist en fallo</div>
+                <ul style="margin:0;padding-left:18px;color:#7a271a;line-height:1.5;">
+                  ${observationSections.failedChecklistItems
+                    .map((item) => `<li>${escapeHtml(item)}</li>`)
+                    .join("")}
+                </ul>
+              </div>`
+            : ""
+        }
+      </div>`
+    : "";
+
+  const approvalCommentsHtml = data.approval?.comments
+    ? `<div style="margin-bottom:16px;">
+          <strong style="color:#424242;">Comentarios del Revisor:</strong>
+          <p style="color:#616161;margin:4px 0;line-height:1.5;">${formatMultilineHtml(data.approval.comments)}</p>
+          <span style="color:#9e9e9e;font-size:12px;">Por ${escapeHtml(data.approval.user?.name || data.approval.user?.email || "Revisor")}</span>
+        </div>`
+    : "";
 
   return `
 <!DOCTYPE html>
@@ -126,43 +214,36 @@ function generateInspectionEmailHTML(
 
         <table width="100%" cellpadding="8" cellspacing="0" style="border:1px solid #e0e0e0;border-radius:8px;margin-bottom:16px;">
           <tr style="background:#f5f5f5;">
-            <td colspan="2" style="font-weight:bold;font-size:14px;color:#424242;">Vehicle Information</td>
+            <td colspan="2" style="font-weight:bold;font-size:14px;color:#424242;">Informacion del Vehiculo</td>
           </tr>
           <tr>
-            <td style="color:#757575;width:40%;">Vehicle</td>
-            <td style="font-weight:500;">${data.vehicle.model}</td>
+            <td style="color:#757575;width:40%;">Vehiculo</td>
+            <td style="font-weight:500;">${escapeHtml(data.vehicle.model)}</td>
           </tr>
           <tr style="background:#fafafa;">
-            <td style="color:#757575;">License Plate</td>
-            <td style="font-weight:500;">${data.vehicle.plate}</td>
+            <td style="color:#757575;">Matricula</td>
+            <td style="font-weight:500;">${escapeHtml(data.vehicle.plate)}</td>
           </tr>
           <tr>
-            <td style="color:#757575;">Mileage</td>
+            <td style="color:#757575;">Kilometraje</td>
             <td style="font-weight:500;">${data.mileage.toLocaleString()} km</td>
           </tr>
           <tr style="background:#fafafa;">
             <td style="color:#757575;">Inspector</td>
-            <td style="font-weight:500;">${inspectorName}</td>
+            <td style="font-weight:500;">${escapeHtml(inspectorName)}</td>
           </tr>
           <tr>
-            <td style="color:#757575;">Date</td>
+            <td style="color:#757575;">Fecha</td>
             <td style="font-weight:500;">${date}</td>
           </tr>
         </table>
 
-        ${
-          data.observations
-            ? `<div style="margin-bottom:16px;">
-              <strong style="color:#424242;">Observations:</strong>
-              <p style="color:#616161;margin:4px 0;">${data.observations}</p>
-            </div>`
-            : ""
-        }
+        ${observationsHtml}
 
         ${
           data.photos && data.photos.length > 0
             ? `<div style="margin-bottom:20px;">
-              <strong style="color:#424242;display:block;margin-bottom:10px;">Inspection Photos (${data.photos.length})</strong>
+              <strong style="color:#424242;display:block;margin-bottom:10px;">Fotografias de Inspeccion (${data.photos.length})</strong>
               <table width="100%" cellpadding="4" cellspacing="0">
                 <tr>
                   ${data.photos
@@ -190,27 +271,19 @@ function generateInspectionEmailHTML(
             : ""
         }
 
-        ${
-          data.approval?.comments
-            ? `<div style="margin-bottom:16px;">
-              <strong style="color:#424242;">Reviewer Comments:</strong>
-              <p style="color:#616161;margin:4px 0;">${data.approval.comments}</p>
-              <span style="color:#9e9e9e;font-size:12px;">By ${data.approval.user?.name || data.approval.user?.email}</span>
-            </div>`
-            : ""
-        }
+        ${approvalCommentsHtml}
 
         <div style="text-align:center;margin-top:24px;">
           <a href="${process.env.NEXTAUTH_URL || ""}/dashboard/inspections/${data.id}" target="_blank"
              style="display:inline-block;padding:12px 24px;background:#679436;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">
-            View Inspection Details
+            Ver detalle de la inspeccion
           </a>
         </div>
       </td>
     </tr>
     <tr>
       <td style="background:#f5f5f5;padding:16px;text-align:center;color:#9e9e9e;font-size:12px;">
-        CombiSales &mdash; Vehicle Inspection System
+        CombiSales &mdash; Sistema de Inspeccion Vehicular
       </td>
     </tr>
   </table>
@@ -224,27 +297,27 @@ function generateInspectionEmailText(
 ): string {
   const title =
     type === "created"
-      ? "New Vehicle Inspection Submitted"
+      ? "Nueva inspeccion de vehiculo enviada"
       : type === "approved"
-        ? "Vehicle Inspection Approved"
-        : "Vehicle Inspection Rejected";
+        ? "Inspeccion de vehiculo aprobada"
+        : "Inspeccion de vehiculo rechazada";
 
   const lines = [
     title,
     "=".repeat(title.length),
     "",
-    `Vehicle: ${data.vehicle.model} (${data.vehicle.plate})`,
-    `Mileage: ${data.mileage.toLocaleString()} km`,
+    `Vehiculo: ${data.vehicle.model} (${data.vehicle.plate})`,
+    `Kilometraje: ${data.mileage.toLocaleString()} km`,
     `Inspector: ${data.user?.name || data.user?.email}`,
-    `Date: ${new Date(data.createdAt).toLocaleDateString()}`,
+    `Fecha: ${new Date(data.createdAt).toLocaleDateString("es-ES")}`,
   ];
 
   if (data.observations) {
-    lines.push("", `Observations: ${data.observations}`);
+    lines.push("", `Observaciones: ${data.observations}`);
   }
 
   if (data.photos && data.photos.length > 0) {
-    lines.push("", `Inspection Photos (${data.photos.length}):`);
+    lines.push("", `Fotografias de inspeccion (${data.photos.length}):`);
     data.photos.forEach((photo) => {
       lines.push(
         `  ${PHOTO_TYPE_LABELS[photo.photoType] || photo.photoType}: ${photo.cloudinaryUrl}`,
@@ -255,8 +328,8 @@ function generateInspectionEmailText(
   if (data.approval?.comments) {
     lines.push(
       "",
-      `Reviewer Comments: ${data.approval.comments}`,
-      `By: ${data.approval.user?.name || data.approval.user?.email}`,
+      `Comentarios del revisor: ${data.approval.comments}`,
+      `Por: ${data.approval.user?.name || data.approval.user?.email}`,
     );
   }
 
@@ -295,7 +368,7 @@ export async function sendInspectionCreatedEmail(
     try {
       await sendEmail({
         to: email,
-        subject: `[Inspection] New inspection - ${inspection.vehicle.model} (${inspection.vehicle.plate})`,
+        subject: `[Inspeccion] Nueva inspeccion - ${inspection.vehicle.model} (${inspection.vehicle.plate})`,
         html,
         text,
       });
@@ -318,12 +391,12 @@ export async function sendInspectionApprovedEmail(
   const html = generateInspectionEmailHTML(inspection, type);
   const text = generateInspectionEmailText(inspection, type);
 
-  const statusLabel = type === "approved" ? "Approved" : "Rejected";
+  const statusLabel = type === "approved" ? "Aprobada" : "Rechazada";
 
   try {
     await sendEmail({
       to: inspection.user.email,
-      subject: `[Inspection] ${statusLabel} - ${inspection.vehicle.model} (${inspection.vehicle.plate})`,
+      subject: `[Inspeccion] ${statusLabel} - ${inspection.vehicle.model} (${inspection.vehicle.plate})`,
       html,
       text,
     });
@@ -410,7 +483,7 @@ function generateInspectionReminderEmailHTML(
     </tr>
     <tr>
       <td style="background:#f5f5f5;padding:16px;text-align:center;color:#9e9e9e;font-size:12px;">
-        CombiSales &mdash; Vehicle Inspection System
+        CombiSales &mdash; Sistema de Inspeccion Vehicular
       </td>
     </tr>
   </table>
