@@ -49,6 +49,25 @@ export function VehicleDataStep({ form, vehicles }: VehicleDataStepProps) {
 
   return (
     <div className="space-y-4">
+      {/* Mileage */}
+      <div className="space-y-2.5">
+        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          <Gauge className="size-3" />
+          {t("inspectionsPage.form.vehicle.mileage")}
+        </h4>
+        <Input
+          id="mileage"
+          type="number"
+          min={0}
+          placeholder={t("inspectionsPage.form.vehicle.mileagePlaceholder")}
+          {...register("mileage", { valueAsNumber: true })}
+          className="h-9"
+        />
+        {errors.mileage && (
+          <p className="text-xs text-destructive">{errors.mileage.message}</p>
+        )}
+      </div>
+
       {/* Header + Search */}
       <div className="space-y-2.5">
         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
@@ -164,25 +183,6 @@ export function VehicleDataStep({ form, vehicles }: VehicleDataStepProps) {
                 : t("inspectionsPage.form.noVehicles")}
             </p>
           </div>
-        )}
-      </div>
-
-      {/* Mileage */}
-      <div className="space-y-2.5 rounded-lg border p-3 bg-muted/30">
-        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-          <Gauge className="size-3" />
-          {t("inspectionsPage.form.vehicle.mileage")}
-        </h4>
-        <Input
-          id="mileage"
-          type="number"
-          min={0}
-          placeholder={t("inspectionsPage.form.vehicle.mileagePlaceholder")}
-          {...register("mileage", { valueAsNumber: true })}
-          className="h-9"
-        />
-        {errors.mileage && (
-          <p className="text-xs text-destructive">{errors.mileage.message}</p>
         )}
       </div>
     </div>

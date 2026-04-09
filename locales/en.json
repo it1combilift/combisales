@@ -667,7 +667,7 @@
         "photos": {
           "title": "Photographs",
           "shortTitle": "Photos",
-          "description": "Take the 6 mandatory photographs of the vehicle."
+          "description": "Take the 10 mandatory photographs of the vehicle."
         },
         "observations": {
           "title": "Observations",
@@ -695,6 +695,8 @@
       "checklist": {
         "good": "OK",
         "bad": "Fail",
+        "commentLabel": "Comment / Observation",
+        "commentPlaceholder": "Describe why this item failed",
         "levels": {
           "title": "Fluid Levels",
           "oil": "Oil Level",
@@ -717,20 +719,27 @@
           "hazardLights": "Hazard Lights",
           "reversingLights": "Reversing Lights",
           "dashboardLights": "Dashboard Lights"
+        },
+        "validation": {
+          "commentRequired": "Comment is required when the item is marked as failed"
         }
       },
       "photos": {
-        "description": "Take all 6 required photographs of the vehicle.",
+        "description": "Take all 10 required photographs of the vehicle.",
         "takePhoto": "Tap to take photo",
         "uploaded": "photos uploaded",
         "front": "Front",
         "rear": "Rear",
-        "driverSide": "Driver Side",
-        "passengerSide": "Passenger Side",
+        "leftSide": "Left Side",
+        "rightSide": "Right Side",
         "interior": "Interior",
-        "safetyDevices": "Safety Devices",
+        "engineDashboard": "Dashboard with Engine On",
+        "wheelFrontLeft": "Front L/W",
+        "wheelFrontRight": "Front R/W",
+        "wheelRearLeft": "Rear L/W",
+        "wheelRearRight": "Rear R/W",
         "validation": {
-          "allRequired": "All 6 photographs are required"
+          "allRequired": "All 10 photographs are required"
         }
       },
       "observations": {

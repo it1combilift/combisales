@@ -666,7 +666,7 @@
         "photos": {
           "title": "Fotografías",
           "shortTitle": "Fotos",
-          "description": "Toma las 6 fotografías obligatorias del vehículo."
+          "description": "Toma las 10 fotografías obligatorias del vehículo."
         },
         "observations": {
           "title": "Observaciones",
@@ -694,6 +694,8 @@
       "checklist": {
         "good": "OK",
         "bad": "Fallo",
+        "commentLabel": "Comentario / Observacion",
+        "commentPlaceholder": "Describe el motivo del fallo",
         "levels": {
           "title": "Niveles de Fluidos",
           "oil": "Nivel de Aceite",
@@ -716,20 +718,27 @@
           "hazardLights": "Luces de Emergencia",
           "reversingLights": "Luces de Marcha Atrás",
           "dashboardLights": "Luces del Tablero"
+        },
+        "validation": {
+          "commentRequired": "El comentario es obligatorio cuando el item esta en fallo"
         }
       },
       "photos": {
-        "description": "Toma las 6 fotografías obligatorias del vehículo.",
+        "description": "Toma las 10 fotografías obligatorias del vehículo.",
         "takePhoto": "Toca para tomar foto",
         "uploaded": "fotos subidas",
         "front": "Frontal",
         "rear": "Trasera",
-        "driverSide": "Lado del Conductor",
-        "passengerSide": "Lado del Copiloto",
+        "leftSide": "Lateral Izquierdo",
+        "rightSide": "Lateral Derecho",
         "interior": "Interior",
-        "safetyDevices": "Dispositivos de Seguridad",
+        "engineDashboard": "Cuadro con Motor Encendido",
+        "wheelFrontLeft": "Rueda D/I",
+        "wheelFrontRight": "Rueda D/D",
+        "wheelRearLeft": "Rueda T/I",
+        "wheelRearRight": "Rueda T/D",
         "validation": {
-          "allRequired": "Las 6 fotografías son obligatorias"
+          "allRequired": "Las 10 fotografías son obligatorias"
         }
       },
       "observations": {

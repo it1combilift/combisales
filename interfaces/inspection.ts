@@ -169,6 +169,22 @@ export interface CreateInspectionPayload {
   reversingLights: boolean;
   dashboardLights: boolean;
 
+  // Checklist failure comments (required when a checklist item is marked as failed)
+  oilLevelComment?: string;
+  coolantLevelComment?: string;
+  brakeFluidLevelComment?: string;
+  hydraulicLevelComment?: string;
+  brakePedalComment?: string;
+  clutchPedalComment?: string;
+  gasPedalComment?: string;
+  headlightsComment?: string;
+  tailLightsComment?: string;
+  brakeLightsComment?: string;
+  turnSignalsComment?: string;
+  hazardLightsComment?: string;
+  reversingLightsComment?: string;
+  dashboardLightsComment?: string;
+
   observations?: string;
   signatureUrl?: string;
   signatureCloudinaryId?: string;
@@ -357,14 +373,33 @@ export const INSPECTION_PHOTO_TYPES: {
 }[] = [
   { type: "FRONT", labelKey: "inspectionsPage.form.photos.front" },
   { type: "REAR", labelKey: "inspectionsPage.form.photos.rear" },
-  { type: "DRIVER_SIDE", labelKey: "inspectionsPage.form.photos.driverSide" },
+  {
+    type: "DRIVER_SIDE",
+    labelKey: "inspectionsPage.form.photos.leftSide",
+  },
   {
     type: "PASSENGER_SIDE",
-    labelKey: "inspectionsPage.form.photos.passengerSide",
+    labelKey: "inspectionsPage.form.photos.rightSide",
   },
   { type: "INTERIOR", labelKey: "inspectionsPage.form.photos.interior" },
   {
     type: "SAFETY_DEVICES",
-    labelKey: "inspectionsPage.form.photos.safetyDevices",
+    labelKey: "inspectionsPage.form.photos.engineDashboard",
+  },
+  {
+    type: "WHEEL_FRONT_LEFT",
+    labelKey: "inspectionsPage.form.photos.wheelFrontLeft",
+  },
+  {
+    type: "WHEEL_FRONT_RIGHT",
+    labelKey: "inspectionsPage.form.photos.wheelFrontRight",
+  },
+  {
+    type: "WHEEL_REAR_LEFT",
+    labelKey: "inspectionsPage.form.photos.wheelRearLeft",
+  },
+  {
+    type: "WHEEL_REAR_RIGHT",
+    labelKey: "inspectionsPage.form.photos.wheelRearRight",
   },
 ];

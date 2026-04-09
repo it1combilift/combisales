@@ -53,10 +53,14 @@ interface InspectionReminderEmailData {
 const PHOTO_TYPE_LABELS: Record<InspectionPhotoType, string> = {
   FRONT: "Front",
   REAR: "Rear",
-  DRIVER_SIDE: "Driver Side",
-  PASSENGER_SIDE: "Passenger Side",
+  DRIVER_SIDE: "Left Side",
+  PASSENGER_SIDE: "Right Side",
   INTERIOR: "Interior",
-  SAFETY_DEVICES: "Safety Devices",
+  SAFETY_DEVICES: "Dashboard with Engine On",
+  WHEEL_FRONT_LEFT: "Front Left Wheel",
+  WHEEL_FRONT_RIGHT: "Front Right Wheel",
+  WHEEL_REAR_LEFT: "Rear Left Wheel",
+  WHEEL_REAR_RIGHT: "Rear Right Wheel",
 };
 
 // ==================== EMAIL TEMPLATES ====================

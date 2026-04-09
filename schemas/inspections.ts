@@ -1,6 +1,40 @@
 import { z } from "zod";
 import { InspectionPhotoType, VehicleStatus } from "@prisma/client";
 
+const CHECKLIST_FAILURE_COMMENT_RULES = [
+  { statusKey: "oilLevel", commentKey: "oilLevelComment" },
+  { statusKey: "coolantLevel", commentKey: "coolantLevelComment" },
+  { statusKey: "brakeFluidLevel", commentKey: "brakeFluidLevelComment" },
+  { statusKey: "hydraulicLevel", commentKey: "hydraulicLevelComment" },
+  { statusKey: "brakePedal", commentKey: "brakePedalComment" },
+  { statusKey: "clutchPedal", commentKey: "clutchPedalComment" },
+  { statusKey: "gasPedal", commentKey: "gasPedalComment" },
+  { statusKey: "headlights", commentKey: "headlightsComment" },
+  { statusKey: "tailLights", commentKey: "tailLightsComment" },
+  { statusKey: "brakeLights", commentKey: "brakeLightsComment" },
+  { statusKey: "turnSignals", commentKey: "turnSignalsComment" },
+  { statusKey: "hazardLights", commentKey: "hazardLightsComment" },
+  { statusKey: "reversingLights", commentKey: "reversingLightsComment" },
+  { statusKey: "dashboardLights", commentKey: "dashboardLightsComment" },
+] as const;
+
+const checklistCommentsShape = {
+  oilLevelComment: z.string().optional().default(""),
+  coolantLevelComment: z.string().optional().default(""),
+  brakeFluidLevelComment: z.string().optional().default(""),
+  hydraulicLevelComment: z.string().optional().default(""),
+  brakePedalComment: z.string().optional().default(""),
+  clutchPedalComment: z.string().optional().default(""),
+  gasPedalComment: z.string().optional().default(""),
+  headlightsComment: z.string().optional().default(""),
+  tailLightsComment: z.string().optional().default(""),
+  brakeLightsComment: z.string().optional().default(""),
+  turnSignalsComment: z.string().optional().default(""),
+  hazardLightsComment: z.string().optional().default(""),
+  reversingLightsComment: z.string().optional().default(""),
+  dashboardLightsComment: z.string().optional().default(""),
+};
+
 // ==================== VEHICLE SCHEMAS ====================
 export const createVehicleSchema = (t: (key: string) => string) =>
   z.object({
@@ -95,30 +129,48 @@ export const vehicleDataSchema = (t: (key: string) => string) =>
   });
 
 // Step 2: Checklist
-export const checklistSchema = () =>
-  z.object({
-    oilLevel: z.boolean().default(false),
-    coolantLevel: z.boolean().default(false),
-    brakeFluidLevel: z.boolean().default(false),
-    hydraulicLevel: z.boolean().default(false),
-    brakePedal: z.boolean().default(false),
-    clutchPedal: z.boolean().default(false),
-    gasPedal: z.boolean().default(false),
-    headlights: z.boolean().default(false),
-    tailLights: z.boolean().default(false),
-    brakeLights: z.boolean().default(false),
-    turnSignals: z.boolean().default(false),
-    hazardLights: z.boolean().default(false),
-    reversingLights: z.boolean().default(false),
-    dashboardLights: z.boolean().default(false),
-  });
+export const checklistSchema = (t: (key: string) => string) =>
+  z
+    .object({
+      oilLevel: z.boolean().default(false),
+      coolantLevel: z.boolean().default(false),
+      brakeFluidLevel: z.boolean().default(false),
+      hydraulicLevel: z.boolean().default(false),
+      brakePedal: z.boolean().default(false),
+      clutchPedal: z.boolean().default(false),
+      gasPedal: z.boolean().default(false),
+      headlights: z.boolean().default(false),
+      tailLights: z.boolean().default(false),
+      brakeLights: z.boolean().default(false),
+      turnSignals: z.boolean().default(false),
+      hazardLights: z.boolean().default(false),
+      reversingLights: z.boolean().default(false),
+      dashboardLights: z.boolean().default(false),
+      ...checklistCommentsShape,
+    })
+    .superRefine((data, ctx) => {
+      for (const rule of CHECKLIST_FAILURE_COMMENT_RULES) {
+        const status = data[rule.statusKey];
+        const comment = data[rule.commentKey]?.trim();
+
+        if (!status && !comment) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [rule.commentKey],
+            message: t(
+              "inspectionsPage.form.checklist.validation.commentRequired",
+            ),
+          });
+        }
+      }
+    });
 
 // Step 3: Photos
 export const photosSchema = (t: (key: string) => string) =>
   z.object({
     photos: z
       .array(inspectionPhotoSchema)
-      .min(6, t("inspectionsPage.form.photos.validation.allRequired")),
+      .min(10, t("inspectionsPage.form.photos.validation.allRequired")),
   });
 
 // Step 4: Observations
@@ -138,46 +190,64 @@ export const signatureSchema = (t: (key: string) => string) =>
 
 // Combined full inspection schema
 export const getInspectionSchema = (t: (key: string) => string) =>
-  z.object({
-    // Step 1
-    vehicleId: z
-      .string()
-      .min(1, t("inspectionsPage.form.vehicle.validation.required")),
-    mileage: z.coerce
-      .number()
-      .int()
-      .positive(t("inspectionsPage.form.vehicle.validation.mileagePositive")),
+  z
+    .object({
+      // Step 1
+      vehicleId: z
+        .string()
+        .min(1, t("inspectionsPage.form.vehicle.validation.required")),
+      mileage: z.coerce
+        .number()
+        .int()
+        .positive(t("inspectionsPage.form.vehicle.validation.mileagePositive")),
 
-    // Step 2
-    oilLevel: z.boolean().default(false),
-    coolantLevel: z.boolean().default(false),
-    brakeFluidLevel: z.boolean().default(false),
-    hydraulicLevel: z.boolean().default(false),
-    brakePedal: z.boolean().default(false),
-    clutchPedal: z.boolean().default(false),
-    gasPedal: z.boolean().default(false),
-    headlights: z.boolean().default(false),
-    tailLights: z.boolean().default(false),
-    brakeLights: z.boolean().default(false),
-    turnSignals: z.boolean().default(false),
-    hazardLights: z.boolean().default(false),
-    reversingLights: z.boolean().default(false),
-    dashboardLights: z.boolean().default(false),
+      // Step 2
+      oilLevel: z.boolean().default(false),
+      coolantLevel: z.boolean().default(false),
+      brakeFluidLevel: z.boolean().default(false),
+      hydraulicLevel: z.boolean().default(false),
+      brakePedal: z.boolean().default(false),
+      clutchPedal: z.boolean().default(false),
+      gasPedal: z.boolean().default(false),
+      headlights: z.boolean().default(false),
+      tailLights: z.boolean().default(false),
+      brakeLights: z.boolean().default(false),
+      turnSignals: z.boolean().default(false),
+      hazardLights: z.boolean().default(false),
+      reversingLights: z.boolean().default(false),
+      dashboardLights: z.boolean().default(false),
+      ...checklistCommentsShape,
 
-    // Step 3
-    photos: z
-      .array(inspectionPhotoSchema)
-      .min(6, t("inspectionsPage.form.photos.validation.allRequired")),
+      // Step 3
+      photos: z
+        .array(inspectionPhotoSchema)
+        .min(10, t("inspectionsPage.form.photos.validation.allRequired")),
 
-    // Step 4
-    observations: z.string().optional().default(""),
+      // Step 4
+      observations: z.string().optional().default(""),
 
-    // Step 5
-    signatureUrl: z
-      .string()
-      .min(1, t("inspectionsPage.form.signature.validation.required")),
-    signatureCloudinaryId: z.string().optional(),
-  });
+      // Step 5
+      signatureUrl: z
+        .string()
+        .min(1, t("inspectionsPage.form.signature.validation.required")),
+      signatureCloudinaryId: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      for (const rule of CHECKLIST_FAILURE_COMMENT_RULES) {
+        const status = data[rule.statusKey];
+        const comment = data[rule.commentKey]?.trim();
+
+        if (!status && !comment) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [rule.commentKey],
+            message: t(
+              "inspectionsPage.form.checklist.validation.commentRequired",
+            ),
+          });
+        }
+      }
+    });
 
 export type InspectionFormSchema = z.infer<
   ReturnType<typeof getInspectionSchema>

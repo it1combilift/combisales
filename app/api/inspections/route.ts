@@ -35,6 +35,83 @@ const INSPECTION_INCLUDE = {
   },
 } as const;
 
+const CHECKLIST_COMMENT_RULES = [
+  {
+    statusKey: "oilLevel",
+    commentKey: "oilLevelComment",
+    label: "Nivel de Aceite",
+  },
+  {
+    statusKey: "coolantLevel",
+    commentKey: "coolantLevelComment",
+    label: "Nivel de Refrigerante",
+  },
+  {
+    statusKey: "brakeFluidLevel",
+    commentKey: "brakeFluidLevelComment",
+    label: "Nivel de Liquido de Frenos",
+  },
+  {
+    statusKey: "hydraulicLevel",
+    commentKey: "hydraulicLevelComment",
+    label: "Nivel de Fluido Hidraulico",
+  },
+  {
+    statusKey: "brakePedal",
+    commentKey: "brakePedalComment",
+    label: "Pedal de Freno",
+  },
+  {
+    statusKey: "clutchPedal",
+    commentKey: "clutchPedalComment",
+    label: "Pedal de Embrague",
+  },
+  {
+    statusKey: "gasPedal",
+    commentKey: "gasPedalComment",
+    label: "Pedal de Acelerador",
+  },
+  {
+    statusKey: "headlights",
+    commentKey: "headlightsComment",
+    label: "Luces Delanteras",
+  },
+  {
+    statusKey: "tailLights",
+    commentKey: "tailLightsComment",
+    label: "Luces Traseras",
+  },
+  {
+    statusKey: "brakeLights",
+    commentKey: "brakeLightsComment",
+    label: "Luces de Freno",
+  },
+  {
+    statusKey: "turnSignals",
+    commentKey: "turnSignalsComment",
+    label: "Intermitentes",
+  },
+  {
+    statusKey: "hazardLights",
+    commentKey: "hazardLightsComment",
+    label: "Luces de Emergencia",
+  },
+  {
+    statusKey: "reversingLights",
+    commentKey: "reversingLightsComment",
+    label: "Luces de Marcha Atras",
+  },
+  {
+    statusKey: "dashboardLights",
+    commentKey: "dashboardLightsComment",
+    label: "Luces del Tablero",
+  },
+] as const;
+
+function normalizeOptionalText(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 // ==================== GET /api/inspections ====================
 export async function GET(request: NextRequest) {
   try {
@@ -100,6 +177,21 @@ export async function POST(request: NextRequest) {
       hazardLights,
       reversingLights,
       dashboardLights,
+      // Checklist comments
+      oilLevelComment,
+      coolantLevelComment,
+      brakeFluidLevelComment,
+      hydraulicLevelComment,
+      brakePedalComment,
+      clutchPedalComment,
+      gasPedalComment,
+      headlightsComment,
+      tailLightsComment,
+      brakeLightsComment,
+      turnSignalsComment,
+      hazardLightsComment,
+      reversingLightsComment,
+      dashboardLightsComment,
       // Additional
       observations,
       signatureUrl,
@@ -112,8 +204,8 @@ export async function POST(request: NextRequest) {
       return badRequestResponse("vehicleId and mileage are required");
     }
 
-    if (!photos || !Array.isArray(photos) || photos.length < 6) {
-      return badRequestResponse("All 6 photos are required");
+    if (!photos || !Array.isArray(photos) || photos.length < 10) {
+      return badRequestResponse("All 10 photos are required");
     }
 
     if (!signatureUrl) {
@@ -137,6 +229,73 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const checklistStatus = {
+      oilLevel: Boolean(oilLevel),
+      coolantLevel: Boolean(coolantLevel),
+      brakeFluidLevel: Boolean(brakeFluidLevel),
+      hydraulicLevel: Boolean(hydraulicLevel),
+      brakePedal: Boolean(brakePedal),
+      clutchPedal: Boolean(clutchPedal),
+      gasPedal: Boolean(gasPedal),
+      headlights: Boolean(headlights),
+      tailLights: Boolean(tailLights),
+      brakeLights: Boolean(brakeLights),
+      turnSignals: Boolean(turnSignals),
+      hazardLights: Boolean(hazardLights),
+      reversingLights: Boolean(reversingLights),
+      dashboardLights: Boolean(dashboardLights),
+    };
+
+    const checklistComments = {
+      oilLevelComment: normalizeOptionalText(oilLevelComment),
+      coolantLevelComment: normalizeOptionalText(coolantLevelComment),
+      brakeFluidLevelComment: normalizeOptionalText(brakeFluidLevelComment),
+      hydraulicLevelComment: normalizeOptionalText(hydraulicLevelComment),
+      brakePedalComment: normalizeOptionalText(brakePedalComment),
+      clutchPedalComment: normalizeOptionalText(clutchPedalComment),
+      gasPedalComment: normalizeOptionalText(gasPedalComment),
+      headlightsComment: normalizeOptionalText(headlightsComment),
+      tailLightsComment: normalizeOptionalText(tailLightsComment),
+      brakeLightsComment: normalizeOptionalText(brakeLightsComment),
+      turnSignalsComment: normalizeOptionalText(turnSignalsComment),
+      hazardLightsComment: normalizeOptionalText(hazardLightsComment),
+      reversingLightsComment: normalizeOptionalText(reversingLightsComment),
+      dashboardLightsComment: normalizeOptionalText(dashboardLightsComment),
+    };
+
+    for (const rule of CHECKLIST_COMMENT_RULES) {
+      if (
+        !checklistStatus[rule.statusKey] &&
+        !checklistComments[rule.commentKey]
+      ) {
+        return badRequestResponse(`Comment is required for ${rule.label}`);
+      }
+    }
+
+    const checklistFailureNotes = CHECKLIST_COMMENT_RULES.filter(
+      (rule) => !checklistStatus[rule.statusKey],
+    )
+      .map((rule) => {
+        const note = checklistComments[rule.commentKey];
+        if (!note) {
+          return null;
+        }
+
+        return `- ${rule.label}: ${note}`;
+      })
+      .filter((note): note is string => Boolean(note));
+
+    const failureBlock = checklistFailureNotes.length
+      ? ["Observaciones de Checklist (Fallo):", ...checklistFailureNotes].join(
+          "\n",
+        )
+      : "";
+
+    const normalizedObservation = normalizeOptionalText(observations);
+    const mergedObservations = [normalizedObservation, failureBlock]
+      .filter(Boolean)
+      .join("\n\n");
+
     // Create inspection with photos
     const inspection = await prisma.inspection.create({
       data: {
@@ -144,22 +303,22 @@ export async function POST(request: NextRequest) {
         userId: session.user.id,
         mileage: Number(mileage),
         // Checklist
-        oilLevel: Boolean(oilLevel),
-        coolantLevel: Boolean(coolantLevel),
-        brakeFluidLevel: Boolean(brakeFluidLevel),
-        hydraulicLevel: Boolean(hydraulicLevel),
-        brakePedal: Boolean(brakePedal),
-        clutchPedal: Boolean(clutchPedal),
-        gasPedal: Boolean(gasPedal),
-        headlights: Boolean(headlights),
-        tailLights: Boolean(tailLights),
-        brakeLights: Boolean(brakeLights),
-        turnSignals: Boolean(turnSignals),
-        hazardLights: Boolean(hazardLights),
-        reversingLights: Boolean(reversingLights),
-        dashboardLights: Boolean(dashboardLights),
+        oilLevel: checklistStatus.oilLevel,
+        coolantLevel: checklistStatus.coolantLevel,
+        brakeFluidLevel: checklistStatus.brakeFluidLevel,
+        hydraulicLevel: checklistStatus.hydraulicLevel,
+        brakePedal: checklistStatus.brakePedal,
+        clutchPedal: checklistStatus.clutchPedal,
+        gasPedal: checklistStatus.gasPedal,
+        headlights: checklistStatus.headlights,
+        tailLights: checklistStatus.tailLights,
+        brakeLights: checklistStatus.brakeLights,
+        turnSignals: checklistStatus.turnSignals,
+        hazardLights: checklistStatus.hazardLights,
+        reversingLights: checklistStatus.reversingLights,
+        dashboardLights: checklistStatus.dashboardLights,
         // Additional
-        observations: observations || null,
+        observations: mergedObservations || null,
         signatureUrl,
         signatureCloudinaryId: signatureCloudinaryId || null,
         // Photos
