@@ -10,6 +10,10 @@ import { Camera, X, ImageIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/context";
 import { InspectionPhotoType } from "@prisma/client";
 import { INSPECTION_PHOTO_TYPES } from "@/interfaces/inspection";
+import {
+  CollapsibleImageTrigger,
+  CollapsibleImageContent,
+} from "@/components/ui/collapsible-image";
 
 import {
   InspectionFormSchema,
@@ -32,6 +36,22 @@ export function PhotosStep({ form }: PhotosStepProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activePhotoType, setActivePhotoType] =
     useState<InspectionPhotoType | null>(null);
+  const [isWheelReferenceOpen, setIsWheelReferenceOpen] = useState(false);
+
+  const wheelPhotoTypes = new Set<InspectionPhotoType>([
+    "WHEEL_FRONT_LEFT",
+    "WHEEL_FRONT_RIGHT",
+    "WHEEL_REAR_LEFT",
+    "WHEEL_REAR_RIGHT",
+  ]);
+
+  const wheelPhotoConfigs = INSPECTION_PHOTO_TYPES.filter(({ type }) =>
+    wheelPhotoTypes.has(type),
+  );
+
+  const regularPhotoConfigs = INSPECTION_PHOTO_TYPES.filter(
+    ({ type }) => !wheelPhotoTypes.has(type),
+  );
 
   const maxPhotos = INSPECTION_PHOTO_TYPES.length;
 
@@ -100,6 +120,78 @@ export function PhotosStep({ form }: PhotosStepProps) {
     setValue("photos", filtered, { shouldValidate: true });
   };
 
+  const renderPhotoCard = ({
+    type,
+    labelKey,
+  }: {
+    type: InspectionPhotoType;
+    labelKey: string;
+  }) => {
+    const photo = getPhotoForType(type);
+    const isUploading = uploadingType === type;
+    const isAnyUploading = uploadingType !== null;
+
+    return (
+      <div key={type} className="relative rounded-lg border overflow-hidden">
+        {photo ? (
+          <div className="relative aspect-video">
+            <Image
+              src={photo.cloudinaryUrl}
+              alt={t(labelKey)}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 100vw, 50vw"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+              <span className="text-white text-xs font-medium">
+                {t(labelKey)}
+              </span>
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="h-6 w-6"
+                disabled={isAnyUploading}
+                onClick={() => handleRemovePhoto(type)}
+              >
+                <X className="size-3" />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => handlePhotoCapture(type)}
+            disabled={isAnyUploading || photos.length >= maxPhotos}
+            className="w-full h-full aspect-auto flex flex-col items-center justify-center gap-2 bg-muted/50 hover:bg-muted transition-colors cursor-pointer rounded-lg border border-dashed border-muted text-center p-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-muted/50"
+          >
+            {isUploading ? (
+              <>
+                <Spinner variant="bars" className="size-3.5" />
+                <span className="text-sm text-muted-foreground font-medium animate-pulse">
+                  {t("common.uploading")}...
+                </span>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col items-center gap-1.5">
+                  <Camera className="size-4 text-muted-foreground font-medium" />
+                  <span className="text-sm text-muted-foreground font-medium">
+                    {t(labelKey)}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground/70 text-balance">
+                  {t("inspectionsPage.form.photos.takePhoto")}
+                </span>
+              </>
+            )}
+          </button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <input
@@ -116,75 +208,34 @@ export function PhotosStep({ form }: PhotosStepProps) {
       </p>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {INSPECTION_PHOTO_TYPES.map(({ type, labelKey }) => {
-          const photo = getPhotoForType(type);
-          const isUploading = uploadingType === type;
-          const isAnyUploading = uploadingType !== null;
-
-          return (
-            <div
-              key={type}
-              className="relative rounded-lg border overflow-hidden"
-            >
-              {photo ? (
-                <div className="relative aspect-video">
-                  <Image
-                    src={photo.cloudinaryUrl}
-                    alt={t(labelKey)}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, 50vw"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                    <span className="text-white text-xs font-medium">
-                      {t(labelKey)}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="h-6 w-6"
-                      disabled={isAnyUploading}
-                      onClick={() => handleRemovePhoto(type)}
-                    >
-                      <X className="size-3" />
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => handlePhotoCapture(type)}
-                  disabled={isAnyUploading || photos.length >= maxPhotos}
-                  className="w-full h-full aspect-auto flex flex-col items-center justify-center gap-2 bg-muted/50 hover:bg-muted transition-colors cursor-pointer rounded-lg border border-dashed border-muted text-center p-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-muted/50"
-                >
-                  {isUploading ? (
-                    <>
-                      <Spinner variant="bars" className="size-3.5" />
-                      <span className="text-sm text-muted-foreground font-medium animate-pulse">
-                        {t("common.uploading")}...
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <div className="flex flex-col items-center gap-1.5">
-                        <Camera className="size-4 text-muted-foreground font-medium" />
-                        <span className="text-sm text-muted-foreground font-medium">
-                          {t(labelKey)}
-                        </span>
-                      </div>
-                      <span className="text-xs text-muted-foreground/70 text-balance">
-                        {t("inspectionsPage.form.photos.takePhoto")}
-                      </span>
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-          );
-        })}
+        {regularPhotoConfigs.map(renderPhotoCard)}
       </div>
+
+      <section className="space-y-2.5 rounded-lg border border-border/60 bg-muted/20 p-3">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            {t("inspectionsPage.form.photos.wheelSectionTitle")}
+          </h3>
+          <CollapsibleImageTrigger
+            buttonLabel={t("inspectionsPage.form.photos.wheelReference.button")}
+            isOpen={isWheelReferenceOpen}
+            onClick={() => setIsWheelReferenceOpen((prev) => !prev)}
+            className="h-7"
+          />
+        </div>
+
+        {isWheelReferenceOpen && (
+          <CollapsibleImageContent
+            src="/rueda-ejemplo.jpeg"
+            alt={t("inspectionsPage.form.photos.wheelReference.alt")}
+            maxHeight="medium"
+          />
+        )}
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {wheelPhotoConfigs.map(renderPhotoCard)}
+        </div>
+      </section>
 
       {/* Photos counter */}
       <div className="flex items-center gap-2 text-xs">

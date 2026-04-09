@@ -737,14 +737,19 @@
         "wheelFrontRight": "Rueda D/D",
         "wheelRearLeft": "Rueda T/I",
         "wheelRearRight": "Rueda T/D",
+        "wheelSectionTitle": "Fotografias de ruedas",
+        "wheelReference": {
+          "button": "Ver ejemplo",
+          "alt": "Imagen de referencia para revisar desgaste de la goma de la rueda"
+        },
         "validation": {
           "allRequired": "Las 10 fotografías son obligatorias"
         }
       },
       "observations": {
         "label": "Observaciones",
-        "hint": "Este campo es opcional. Añade cualquier nota relevante sobre la inspección.",
-        "placeholder": "Introduce observaciones, daños o notas..."
+        "hint": "Añade cualquier nota relevante sobre la inspección.",
+        "placeholder": "¿Se aprecia algún daño, ruido o comportamiento inusual en la conducción del vehículo? Describe aquí tus observaciones..."
       },
       "signature": {
         "label": "Firma Digital",

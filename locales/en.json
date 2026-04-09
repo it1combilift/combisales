@@ -738,6 +738,11 @@
         "wheelFrontRight": "Front R/W",
         "wheelRearLeft": "Rear L/W",
         "wheelRearRight": "Rear R/W",
+        "wheelSectionTitle": "Wheel photographs",
+        "wheelReference": {
+          "button": "View example",
+          "alt": "Reference image to inspect tire tread wear"
+        },
         "validation": {
           "allRequired": "All 10 photographs are required"
         }
