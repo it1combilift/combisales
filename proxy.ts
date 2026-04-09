@@ -4,6 +4,24 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+function getDefaultDashboardPath(userRoles: Role[] | undefined): string {
+  // INSPECTOR has priority even when combined with ADMIN.
+  if (hasRole(userRoles, Role.INSPECTOR)) {
+    return "/dashboard/inspections";
+  }
+
+  // DEALER-only users go to dealers.
+  if (
+    hasRole(userRoles, Role.DEALER) &&
+    !hasRole(userRoles, Role.SELLER) &&
+    !hasRole(userRoles, Role.ADMIN)
+  ) {
+    return "/dashboard/dealers";
+  }
+
+  return "/dashboard/tasks";
+}
+
 export async function proxy(request: NextRequest) {
   const protectedPaths = [
     "/dashboard/clients",
@@ -36,31 +54,8 @@ export async function proxy(request: NextRequest) {
     // Only redirect if user has a valid, active token
     if (token && token.isActive !== false) {
       const userRoles = token.roles as Role[] | undefined;
-
-      // Redirect based on role - DEALER-only users go to dealers
-      if (
-        hasRole(userRoles, Role.DEALER) &&
-        !hasRole(userRoles, Role.SELLER) &&
-        !hasRole(userRoles, Role.ADMIN)
-      ) {
-        return NextResponse.redirect(
-          new URL("/dashboard/dealers", request.url),
-        );
-      }
-
-      // INSPECTOR-only users go to inspections
-      if (
-        hasRole(userRoles, Role.INSPECTOR) &&
-        !hasRole(userRoles, Role.SELLER) &&
-        !hasRole(userRoles, Role.ADMIN)
-      ) {
-        return NextResponse.redirect(
-          new URL("/dashboard/inspections", request.url),
-        );
-      }
-
-      // ADMIN and SELLER go to /dashboard/tasks
-      return NextResponse.redirect(new URL("/dashboard/tasks", request.url));
+      const defaultDashboardPath = getDefaultDashboardPath(userRoles);
+      return NextResponse.redirect(new URL(defaultDashboardPath, request.url));
     }
 
     // User not authenticated, show login page

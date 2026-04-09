@@ -69,7 +69,7 @@ export function DeleteInspectionDialog({
                     height={100}
                   />
                 )}
-                <span className="block font-medium text-muted-foreground text-center text-sm mt-1 truncate ">
+                <span className="block font-medium text-muted-foreground text-sm mt-1 truncate text-left">
                   {inspection.vehicle.model} — {inspection.vehicle.plate}
                 </span>
               </div>

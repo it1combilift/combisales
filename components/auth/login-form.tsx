@@ -95,7 +95,8 @@ export function LoginForm({
       } else if (result?.ok) {
         toast.success(t("loginForm.toasts.loginSuccess"));
         await new Promise((resolve) => setTimeout(resolve, 800));
-        router.push("/dashboard/tasks");
+        // Let proxy decide default route based on combined roles.
+        router.push("/");
         router.refresh();
       } else {
         toast.error(t("loginForm.toasts.unexpectedError"));
@@ -111,7 +112,8 @@ export function LoginForm({
   async function handleZohoLogin() {
     setIsLoading(true);
     try {
-      await signIn("zoho", { callbackUrl: "/dashboard/tasks" });
+      // Let proxy decide default route based on combined roles.
+      await signIn("zoho", { callbackUrl: "/" });
     } catch (error) {
       toast.error(t("loginForm.toasts.zohoAuthError"));
       setIsLoading(false);
