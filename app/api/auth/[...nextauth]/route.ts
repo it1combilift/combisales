@@ -34,7 +34,6 @@ export const authOptions: NextAuthOptions = {
       type: "oauth",
       clientId: process.env.ZOHO_CLIENT_ID!,
       clientSecret: process.env.ZOHO_CLIENT_SECRET!,
-      // Permitir vincular cuenta OAuth a usuarios existentes con el mismo email
       allowDangerousEmailAccountLinking: true,
       authorization: {
         url: "https://accounts.zoho.com/oauth/v2/auth",

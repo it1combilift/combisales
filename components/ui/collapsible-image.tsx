@@ -13,28 +13,18 @@ import {
 } from "@/components/ui/collapsible";
 
 interface CollapsibleImageProps {
-  /** Source path for the image (relative to public folder) */
   src: string;
-  /** Alt text for accessibility */
   alt: string;
-  /** Button label text */
   buttonLabel: string;
-  /** Optional className for the container */
   className?: string;
-  /** Optional default open state */
   defaultOpen?: boolean;
-  /** Max height class for the image - defaults to compact */
   maxHeight?: "compact" | "medium" | "large";
 }
 
 interface CollapsibleImageTriggerProps {
-  /** Button label text */
   buttonLabel: string;
-  /** Whether the collapsible is open */
   isOpen: boolean;
-  /** Callback when clicked */
   onClick: () => void;
-  /** Optional className */
   className?: string;
 }
 

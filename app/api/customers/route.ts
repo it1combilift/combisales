@@ -28,7 +28,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Datos completos del cliente
     const customerData = {
       // Información principal
       accountName: data.accountName,
@@ -101,7 +100,6 @@ export async function POST(req: NextRequest) {
       lastActivityTime: data.lastActivityTime || null,
     };
 
-    // Usar upsert: crear si no existe, actualizar si ya existe
     const customer = await prisma.customer.upsert({
       where: { zohoAccountId: data.zohoAccountId },
       create: {

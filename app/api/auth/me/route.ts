@@ -44,13 +44,12 @@ export async function GET() {
       );
     }
 
-    // Return user data without exposing password hash
     const { password, ...userData } = user;
 
     return NextResponse.json({
       user: {
         ...userData,
-        hasPassword: !!password, // Indicate if user has password configured
+        hasPassword: !!password,
       },
     });
   } catch (error) {
